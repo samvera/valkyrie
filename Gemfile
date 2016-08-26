@@ -71,3 +71,10 @@ group :development, :test do
 end
 
 gem 'devise-guests', '~> 0.5'
+gem 'virtus'
+gem 'rdf'
+gem 'reform'
+gem 'reform-rails'
+
+# Maybe extract just the stuff for multi-inputs..
+gem 'hydra-editor'

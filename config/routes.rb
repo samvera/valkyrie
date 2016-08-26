@@ -38,4 +38,5 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :books, only: [:new, :create, :show, :edit, :update]
 end

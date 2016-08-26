@@ -1,3 +1,4 @@
-//= require blacklight
-@import "bootstrap-sprockets";
 @charset "utf-8";
+@import "blacklight";
+@import "bootstrap-sprockets";
+@import "hydra-editor/hydra-editor";
