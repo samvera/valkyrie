@@ -1,0 +1,11 @@
+<ul class="nav navbar-nav">
+  <li class="dropdown my-actions">
+    <a class="dropdown-toggle user-display-name" data-toggle="dropdown" href="#">
+      <%= current_user.email %>
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li><%= link_to 'Log Out', main_app.destroy_user_session_path, class: 'log-out', role: 'menuitem' %></li>
+    </ul>
+  </li>
+</ul>

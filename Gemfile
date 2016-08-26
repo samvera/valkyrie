@@ -19,6 +19,7 @@ gem "sprockets-es6"
 gem "suspenders"
 gem "title"
 gem "uglifier"
+gem 'devise'
 
 group :development do
   gem "listen"
@@ -56,3 +57,17 @@ group :staging, :production do
   gem "rack-timeout"
   gem "rails_stdout_logging"
 end
+
+## Enter Hydra Stuff
+gem 'blacklight'
+
+group :development, :test do
+  gem 'solr_wrapper', '>= 0.3'
+end
+
+gem 'rsolr', '~> 1.0'
+
+group :development, :test do
+end
+
+gem 'devise-guests', '~> 0.5'

@@ -17,3 +17,10 @@ en:
 
   titles:
     application: Valkyrie
+  valkyrie:
+    product_name: "Project Valkyrie"
+    search:
+      form:
+        q:
+          label: "Search Repository"
+          placeholder: "Type keywords in here"
