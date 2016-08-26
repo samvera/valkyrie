@@ -3,6 +3,13 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
   layout "valkyrie"
+  def self.search_config
+    {
+      'qf' => %w(title_ssim),
+      'qt' => 'search',
+      'rows' => 10
+    }
+  end
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
@@ -16,7 +23,9 @@ class CatalogController < ApplicationController
 
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
-      rows: 10
+        qf: search_config['qf'],
+        qt: search_config['qt'],
+        rows: search_config['rows']
     }
 
     # solr path which will be added to solr base url before the other solr params.
@@ -72,5 +81,11 @@ class CatalogController < ApplicationController
     # handler defaults, or have no facets.
     config.add_facet_fields_to_solr_request!
     config.add_search_field('all_fields', label: 'All Fields', include_in_advanced_search: false)
+    config.add_show_tools_partial("edit_link", partial: "edit_link")
+  end
+
+
+  def has_search_parameters?
+    !params[:q].nil? or !params[:f].blank? or !params[:search_field].blank?
   end
 end
