@@ -8,5 +8,9 @@ RSpec.describe BookForm do
     it "delegates down appropriately" do
       expect(subject.title).to eq ["Test"]
     end
+    it "requires a title be set" do
+      subject.title = []
+      expect(subject).not_to be_valid
+    end
   end
 end

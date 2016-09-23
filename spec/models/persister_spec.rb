@@ -23,7 +23,11 @@ RSpec.describe Persister do
 
       output = Persister.save(book)
 
-      expect(Persister.find(Book, book.id)).to eq output
+      expect(find_book(book.id)).to eq output
     end
+  end
+
+  def find_book(id)
+    FindByIdQuery.new(Book, id).run
   end
 end

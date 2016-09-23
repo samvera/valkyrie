@@ -14,10 +14,6 @@ class BooksController < ApplicationController
     end
   end
 
-  def show
-    @book = find_book(params[:id])
-  end
-
   def edit
     @form = form_class.new(find_book(params[:id]))
     render :edit
@@ -37,7 +33,7 @@ class BooksController < ApplicationController
   private
 
     def find_book(id)
-      persister.find(resource_class, id)
+      FindByIdQuery.new(resource_class, id).run
     end
 
     def persister

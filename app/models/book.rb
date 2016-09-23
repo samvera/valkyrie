@@ -1,5 +1,5 @@
 class Book
-  include Virtus
+  include Virtus.model
   include Valkyrie::ActiveModel
   attribute :id, String
   attribute :title, NonBlankArray

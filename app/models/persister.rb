@@ -9,9 +9,7 @@ class Persister
       cache[model.id] = model
       model
     end
-
-    def find(_klass, id)
-      cache[id] || raise("Object not found")
-    end
+  end
+  class ObjectNotFoundError < StandardError
   end
 end

@@ -410,6 +410,7 @@ DEPENDENCIES
   blacklight
   bullet
   bundler-audit (>= 0.5.0)
+  capybara
   database_cleaner
   devise
   devise-guests (~> 0.5)

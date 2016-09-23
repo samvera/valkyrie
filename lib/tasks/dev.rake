@@ -12,6 +12,15 @@ if Rails.env.development? || Rails.env.test?
 
   namespace :server do
     desc "Start a development solr server"
+    task :test do
+      SolrWrapper.wrap(port: 8984, instance_dir: 'tmp/blacklight-core-test') do |solr|
+        solr.with_collection(name: "blacklight-core-test", dir: Rails.root.join("solr", "config").to_s) do
+          while(true)
+            sleep(1)
+          end
+        end
+      end
+    end
     task :development do
       SolrWrapper.wrap(port: 8983, instance_dir: 'tmp/blacklight-core') do |solr|
         solr.with_collection(name: "blacklight-core", dir: Rails.root.join("solr", "config").to_s) do
