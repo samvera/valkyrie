@@ -1,7 +1,8 @@
+# frozen_string_literal: true
 class Mapper
   ## Find a mapper for a given object
   def self.find(obj)
-    self.new(obj)
+    new(obj)
   end
 
   attr_reader :object

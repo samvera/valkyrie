@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 class CatalogController < ApplicationController
-
   include Blacklight::Catalog
   layout "valkyrie"
   def self.search_config
@@ -29,28 +28,28 @@ class CatalogController < ApplicationController
     }
 
     # solr path which will be added to solr base url before the other solr params.
-    #config.solr_path = 'select'
+    # config.solr_path = 'select'
 
     # items to show per page, each number in the array represent another option to choose from.
-    #config.per_page = [10,20,50,100]
+    # config.per_page = [10,20,50,100]
 
     ## Default parameters to send on single-document requests to Solr. These settings are the Blackligt defaults (see SearchHelper#solr_doc_params) or
     ## parameters included in the Blacklight-jetty document requestHandler.
     #
-    #config.default_document_solr_params = {
+    # config.default_document_solr_params = {
     #  qt: 'document',
     #  ## These are hard-coded in the blacklight 'document' requestHandler
     #  # fl: '*',
     #  # rows: 1,
     #  # q: '{!term f=id v=$id}'
-    #}
+    # }
 
     # solr field configuration for search results/index views
     config.index.title_field = 'title_ssim'
 
     # solr field configuration for document/show views
-    #config.show.title_field = 'title_display'
-    #config.show.display_type_field = 'format'
+    # config.show.title_field = 'title_display'
+    # config.show.display_type_field = 'format'
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -84,8 +83,7 @@ class CatalogController < ApplicationController
     config.add_show_tools_partial("edit_link", partial: "edit_link")
   end
 
-
   def has_search_parameters?
-    !params[:q].nil? or !params[:f].blank? or !params[:search_field].blank?
+    !params[:q].nil? || !params[:f].blank? || !params[:search_field].blank?
   end
 end

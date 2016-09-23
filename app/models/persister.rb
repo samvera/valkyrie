@@ -1,9 +1,8 @@
+# frozen_string_literal: true
 class Persister
-  @@cache = {}
-  def self.cache
-    @@cache
-  end
+  @cache = {}
   class << self
+    attr_reader :cache
     def save(model)
       model.id = SecureRandom.uuid unless model.id
       cache[model.id] = model

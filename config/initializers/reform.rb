@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'reform/form/active_model/validations'
 require 'reform/form/active_model/model_reflections'
 Reform::Form.class_eval do

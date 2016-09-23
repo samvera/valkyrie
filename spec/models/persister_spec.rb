@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe Persister do
@@ -5,15 +6,15 @@ RSpec.describe Persister do
     it "saves a book and returns it with a UUID" do
       book = Book.new(title: "Test")
 
-      output = Persister.save(book)
+      output = described_class.save(book)
 
       expect(output.id).not_to be_blank
     end
 
     it "doesn't override a book that already has an ID" do
       book = Book.new(title: "Test", id: "5")
-      
-      output = Persister.save(book)
+
+      output = described_class.save(book)
 
       expect(output.id).to eq "5"
     end
@@ -21,7 +22,7 @@ RSpec.describe Persister do
     it "can be found after being persisted" do
       book = Book.new(title: "Test")
 
-      output = Persister.save(book)
+      output = described_class.save(book)
 
       expect(find_book(book.id)).to eq output
     end

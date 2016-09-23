@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'rails_helper'
 
 RSpec.describe "Book Management" do
@@ -11,10 +12,10 @@ RSpec.describe "Book Management" do
 
   describe "create" do
     it "can create a book with two titles" do
-      post "/books", params: { book: {title: ["One", "Two"]}}
+      post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
       expect(response.location).to start_with "http://www.example.com/catalog/"
-      id = response.location.gsub("http://www.example.com/catalog/","")
+      id = response.location.gsub("http://www.example.com/catalog/", "")
       expect(find_book(id).title).to eq ["One", "Two"]
     end
   end
@@ -22,7 +23,7 @@ RSpec.describe "Book Management" do
   describe "edit" do
     context "when a book doesn't exist" do
       it "raises an error" do
-        expect{get edit_book_path(id: "test")}.to raise_error(Persister::ObjectNotFoundError)
+        expect { get edit_book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)
       end
     end
     context "when it does exist" do
@@ -38,13 +39,13 @@ RSpec.describe "Book Management" do
   describe "update" do
     context "when a bookd oesn't exist" do
       it "raises an error" do
-        expect{patch book_path(id: "test")}.to raise_error(Persister::ObjectNotFoundError)
+        expect { patch book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)
       end
     end
     context "when it does exist" do
       let(:book) { Persister.save(Book.new(title: ["Testing"])) }
       it "saves it and redirects" do
-        patch book_path(id: book.id), params: { book: {title: ["Two"]} }
+        patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
         expect(response.location).to eq solr_document_url(id: book.id)
         get response.location
@@ -56,5 +57,4 @@ RSpec.describe "Book Management" do
   def find_book(id)
     FindByIdQuery.new(Book, id).run
   end
-
 end

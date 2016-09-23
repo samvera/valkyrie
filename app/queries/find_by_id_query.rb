@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class FindByIdQuery
   attr_reader :klass, :id
   def initialize(klass, id)

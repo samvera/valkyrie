@@ -1,6 +1,5 @@
+# frozen_string_literal: true
 Rails.application.routes.draw do
-  
-  
   devise_for :users
   concern :exportable, Blacklight::Routes::Exportable.new
 
@@ -18,7 +17,7 @@ Rails.application.routes.draw do
 
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
-    concern :searchable, Blacklight::Routes::Searchable.new
+  concern :searchable, Blacklight::Routes::Searchable.new
 
   resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
     concerns :searchable

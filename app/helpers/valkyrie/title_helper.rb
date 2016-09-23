@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Valkyrie::TitleHelper
   def application_title
     t('valkyrie.product_name', default: application_name)

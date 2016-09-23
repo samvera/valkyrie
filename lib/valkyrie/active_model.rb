@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Valkyrie
   module ActiveModel
     def has_attribute?(name)

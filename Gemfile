@@ -38,6 +38,8 @@ group :development, :test do
   gem "pry-rails"
   gem "rspec-rails", "~> 3.5.0.beta4"
   gem 'capybara'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
 end
 
 group :development, :staging do

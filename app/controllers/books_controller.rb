@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class BooksController < ApplicationController
   def new
     @form = form_class.new(resource_class.new)
