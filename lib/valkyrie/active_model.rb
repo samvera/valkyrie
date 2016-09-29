@@ -20,9 +20,5 @@ module Valkyrie
     def to_param
       id
     end
-
-    def [](key)
-      send(key) if respond_to?(key)
-    end
   end
 end

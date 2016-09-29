@@ -18,6 +18,10 @@ RSpec.describe "Book Management" do
       id = response.location.gsub("http://www.example.com/catalog/", "")
       expect(find_book(id).title).to eq ["One", "Two"]
     end
+    it "renders the form if it doesn't create a book" do
+      post "/books", params: { book: { test: ["1"] } }
+      expect(response.body).to have_field "Title"
+    end
   end
 
   describe "edit" do
@@ -50,6 +54,10 @@ RSpec.describe "Book Management" do
         expect(response.location).to eq solr_document_url(id: book.id)
         get response.location
         expect(response.body).to have_content "Two"
+      end
+      it "renders the form if it fails validations" do
+        patch book_path(id: book.id), params: { book: { title: [""] } }
+        expect(response.body).to have_field "Title"
       end
     end
   end
