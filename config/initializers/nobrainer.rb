@@ -40,7 +40,7 @@ NoBrainer.configure do |config|
   # You probably do not want to use both NoBrainer and ActiveRecord in your
   # application. NoBrainer will emit a warning if you do so.
   # You can turn off the warning if you want to use both.
-  # config.warn_on_active_record = true
+  config.warn_on_active_record = false
 
   # Configures the run options passed to r.run() when executing queries.
   # The options are listed in the RethinkDB run() documentation.
