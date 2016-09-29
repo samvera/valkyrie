@@ -24,7 +24,7 @@ RSpec.describe Persister do
 
       output = described_class.save(book)
 
-      expect(find_book(book.id)).to eq output
+      expect(find_book(output.id).to_h).to eq output.to_h
     end
   end
 

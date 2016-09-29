@@ -7,6 +7,14 @@ class FindByIdQuery
   end
 
   def run
-    Persister.cache[id] || raise(::Persister::ObjectNotFoundError)
+    klass.new(orm_model.find(id).attributes)
+  rescue NoBrainer::Error::DocumentNotFound
+    raise Persister::ObjectNotFoundError
   end
+
+  private
+
+    def orm_model
+      ORM::Book
+    end
 end
