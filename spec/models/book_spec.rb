@@ -18,6 +18,10 @@ RSpec.describe Book do
       subject.title = ["Test", ""]
       expect(subject.title).to eq ["Test"]
     end
+    it "de-duplicates" do
+      subject.title = ["Test", "Test"]
+      expect(subject.title).to eq ["Test"]
+    end
   end
 
   describe "#id" do
