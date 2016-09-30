@@ -81,6 +81,7 @@ class CatalogController < ApplicationController
     config.add_facet_fields_to_solr_request!
     config.add_search_field('all_fields', label: 'All Fields', include_in_advanced_search: false)
     config.add_show_tools_partial("edit_link", partial: "edit_link")
+    config.add_show_field('author_tesim', label: 'Author')
   end
 
   def has_search_parameters?

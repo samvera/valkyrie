@@ -12,8 +12,28 @@ class Mapper
 
   def to_h
     {
-      "id": object.id,
-      "title_ssim": object.title
-    }
+      "id": object.id
+    }.merge(attribute_hash)
   end
+
+  private
+
+    def attribute_hash
+      properties.each_with_object({}) do |property, hsh|
+        suffixes.each do |suffix|
+          hsh[:"#{property}_#{suffix}"] = object.__send__(property)
+        end
+      end
+    end
+
+    def suffixes
+      [
+        :ssim,
+        :tesim
+      ]
+    end
+
+    def properties
+      object.class.attribute_set.map(&:name) - [:id]
+    end
 end

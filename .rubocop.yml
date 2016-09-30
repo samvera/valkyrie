@@ -137,3 +137,6 @@ RSpec/DescribeClass:
     - 'spec/routing/**/*'
     - 'spec/inputs/**/*'
     - 'spec/requests/**/*'
+RSpec/ExampleLength:
+  Exclude:
+    - 'spec/**/*'

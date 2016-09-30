@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 NoBrainer.configure do |config|
   # app_name is the name of your application in lowercase.
   # When using Rails, the application name is automatically inferred.

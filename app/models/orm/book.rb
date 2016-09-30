@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ORM
   class Book
     include NoBrainer::Document

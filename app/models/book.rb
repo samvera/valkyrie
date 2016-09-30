@@ -4,4 +4,5 @@ class Book
   include Valkyrie::ActiveModel
   attribute :id, String
   attribute :title, UniqueNonBlankArray
+  attribute :author, UniqueNonBlankArray
 end

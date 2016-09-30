@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 class BookForm < Reform::Form
   validate :title_not_empty
-  property :id
-  property :title
+  ::Book.attribute_set.map(&:name).each do |attribute|
+    property attribute
+  end
 
   def [](key)
     send(key) if respond_to?(key)
