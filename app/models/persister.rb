@@ -6,9 +6,11 @@ class Persister
     def save(model)
       book_attributes = model.attributes
       book_attributes.delete(:id) if book_attributes[:id].blank?
-      book_attributes = { id: NoBrainer::Document::PrimaryKey::Generator.generate }.merge(book_attributes)
-      book = ORM::Book.upsert(book_attributes)
-      model = model.class.new(book.attributes)
+      id = book_attributes.delete(:id)
+      book = ORM::Book.first_or_initialize(id: id)
+      book.metadata = book.metadata.merge(book_attributes)
+      book.save
+      model = model.class.new(book.attributes.merge(book.metadata))
       model
     end
   end

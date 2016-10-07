@@ -12,8 +12,12 @@ class Mapper
 
   def to_h
     {
-      "id": object.id
+      "id": id
     }.merge(attribute_hash)
+  end
+
+  def id
+    "#{object.class.to_s.underscore}_#{object.id}"
   end
 
   private

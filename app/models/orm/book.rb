@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 module ORM
-  class Book
-    include NoBrainer::Document
-    (::Book.attribute_set.map(&:name) - [:id]).each do |attribute|
-      field attribute, type: Array
-    end
+  class Book < ApplicationRecord
+    serialize :metadata, HashSerializer
+    store_accessor :metadata, *(::Book.attribute_set.map(&:name) - [:id])
   end
 end

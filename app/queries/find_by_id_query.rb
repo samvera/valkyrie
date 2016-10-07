@@ -7,8 +7,8 @@ class FindByIdQuery
   end
 
   def run
-    klass.new(orm_model.find(id).attributes)
-  rescue NoBrainer::Error::DocumentNotFound
+    klass.new(mapper.new(orm_model.find(id)).attributes)
+  rescue ActiveRecord::RecordNotFound
     raise Persister::ObjectNotFoundError
   end
 
@@ -16,5 +16,9 @@ class FindByIdQuery
 
     def orm_model
       ORM::Book
+    end
+
+    def mapper
+      ORMToObjectMapper
     end
 end

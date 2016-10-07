@@ -15,7 +15,7 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
       expect(response.location).to start_with "http://www.example.com/catalog/"
-      id = response.location.gsub("http://www.example.com/catalog/", "")
+      id = response.location.gsub("http://www.example.com/catalog/book_", "")
       expect(find_book(id).title).to eq ["One", "Two"]
     end
     it "renders the form if it doesn't create a book" do
@@ -51,7 +51,7 @@ RSpec.describe "Book Management" do
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
-        expect(response.location).to eq solr_document_url(id: book.id)
+        expect(response.location).to eq solr_document_url(id: Mapper.new(book).id)
         get response.location
         expect(response.body).to have_content "Two"
       end
