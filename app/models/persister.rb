@@ -8,10 +8,15 @@ class Persister
       book_attributes.delete(:id) if book_attributes[:id].blank?
       id = book_attributes.delete(:id)
       book = ORM::Book.first_or_initialize(id: id)
-      book.metadata = book.metadata.merge(book_attributes)
+      mapper = self.mapper.new(book)
+      mapper.apply!(book_attributes)
       book.save
-      model = model.class.new(book.attributes.merge(book.metadata))
+      model = model.class.new(mapper.attributes)
       model
+    end
+
+    def mapper
+      ORMToObjectMapper
     end
   end
   class ObjectNotFoundError < StandardError

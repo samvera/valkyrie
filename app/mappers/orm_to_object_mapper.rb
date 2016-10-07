@@ -8,4 +8,8 @@ class ORMToObjectMapper
   def attributes
     orm_model.attributes.merge(orm_model.metadata)
   end
+
+  def apply!(attributes)
+    orm_model.metadata.merge!(attributes)
+  end
 end
