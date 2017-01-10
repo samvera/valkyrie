@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 class BookForm < Reform::Form
   validate :title_not_empty
-  ::Book.attribute_set.map(&:name).each do |attribute|
+  def self.fields
+    Book.fields - [:id]
+  end
+
+  fields.each do |attribute|
     property attribute
   end
 

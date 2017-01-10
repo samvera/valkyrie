@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie
   module ActiveModel
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
     def has_attribute?(name)
       respond_to?(name)
     end
@@ -19,6 +23,12 @@ module Valkyrie
 
     def to_param
       id
+    end
+
+    module ClassMethods
+      def fields
+        ::Book.attribute_set.map(&:name)
+      end
     end
   end
 end

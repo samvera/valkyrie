@@ -5,4 +5,5 @@ class Book
   attribute :id, String
   attribute :title, UniqueNonBlankArray
   attribute :author, UniqueNonBlankArray
+  attribute :testing, UniqueNonBlankArray
 end

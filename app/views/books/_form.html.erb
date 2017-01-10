@@ -1,5 +1,6 @@
 <%= simple_form_for @form do |f| %>
-  <%= f.input :title, as: :multi_value %>
-  <%= f.input :author, as: :multi_value %>
+  <% @form.class.fields.each do |field| %>
+    <%= f.input field, as: :multi_value %>
+  <% end %>
   <%= f.button :submit %>
 <% end %>
