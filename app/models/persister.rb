@@ -4,15 +4,7 @@ class Persister
   class << self
     attr_reader :cache
     def save(model)
-      book_attributes = model.attributes
-      book_attributes.delete(:id) if book_attributes[:id].blank?
-      id = book_attributes.delete(:id)
-      book = ORM::Book.first_or_initialize(id: id)
-      mapper = self.mapper.new(book)
-      mapper.apply!(book_attributes)
-      book.save
-      model = model.class.new(mapper.attributes)
-      model
+      new(model: model, mapper: mapper).persist
     end
 
     def mapper
@@ -21,4 +13,33 @@ class Persister
   end
   class ObjectNotFoundError < StandardError
   end
+
+  attr_reader :model, :mapper
+
+  def initialize(model:, mapper:)
+    @model = model
+    @mapper = mapper
+  end
+
+  def persist
+    book = ORM::Book.first_or_initialize(id: id)
+    mapper_instance = mapper.new(book)
+    mapper_instance.apply!(clean_book_attributes)
+    book.save
+    @model = model.class.new(mapper_instance.attributes)
+  end
+
+  private
+
+    def book_attributes
+      @book_attributes ||= model.attributes
+    end
+
+    def clean_book_attributes
+      @clean_book_attributes ||= book_attributes.except(:id)
+    end
+
+    def id
+      @id ||= book_attributes[:id].present? ? book_attributes[:id] : nil
+    end
 end
