@@ -14,18 +14,17 @@ class Persister
   class ObjectNotFoundError < StandardError
   end
 
-  attr_reader :model, :mapper
+  attr_reader :model, :mapper, :orm_model
 
-  def initialize(model:, mapper:)
+  def initialize(model:, mapper:, orm_model: ORM::Book)
     @model = model
     @mapper = mapper
+    @orm_model ||= orm_model
   end
 
   def persist
-    book = ORM::Book.first_or_initialize(id: id)
-    mapper_instance = mapper.new(book)
     mapper_instance.apply!(clean_book_attributes)
-    book.save
+    orm_object.save
     @model = model.class.new(mapper_instance.attributes)
   end
 
@@ -35,8 +34,16 @@ class Persister
       @book_attributes ||= model.attributes
     end
 
+    def orm_object
+      @orm_object ||= orm_model.first_or_initialize(id: id)
+    end
+
     def clean_book_attributes
       @clean_book_attributes ||= book_attributes.except(:id)
+    end
+
+    def mapper_instance
+      @mapper_instance ||= mapper.new(orm_object)
     end
 
     def id
