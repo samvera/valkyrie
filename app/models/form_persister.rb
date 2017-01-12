@@ -2,7 +2,7 @@
 class FormPersister < Persister
   attr_reader :form
 
-  def initialize(form:, mapper:, post_processors: [AppendProcessor], orm_model: ORM::Book)
+  def initialize(form:, mapper:, post_processors: [Processors::AppendProcessor], orm_model: ORM::Book)
     @form = form
     @mapper = mapper
     @orm_model = orm_model
@@ -11,21 +11,5 @@ class FormPersister < Persister
 
   def model
     @model ||= form.model
-  end
-
-  class AppendProcessor
-    attr_reader :persister
-    delegate :model, :form, to: :persister
-    delegate :append_id, to: :form
-    def initialize(persister:)
-      @persister = persister
-    end
-
-    def run
-      return unless append_id.present?
-      parent = FindByIdQuery.new(Book, append_id).run
-      parent.member_ids = parent.member_ids + [model.id]
-      Persister.save(parent)
-    end
   end
 end
