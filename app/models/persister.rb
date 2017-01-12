@@ -23,9 +23,12 @@ class Persister
   end
 
   def persist
+    append_id = model.append_id
     mapper_instance.apply!(clean_book_attributes)
     orm_object.save
     @model = model.class.new(mapper_instance.attributes)
+    apply_append(append_id)
+    model
   end
 
   private
@@ -35,7 +38,7 @@ class Persister
     end
 
     def orm_object
-      @orm_object ||= orm_model.first_or_initialize(id: id)
+      @orm_object ||= orm_model.find_or_initialize_by(id: id)
     end
 
     def clean_book_attributes
@@ -48,5 +51,12 @@ class Persister
 
     def id
       @id ||= book_attributes[:id].present? ? book_attributes[:id] : nil
+    end
+
+    def apply_append(append_id)
+      return unless append_id.present?
+      parent = FindByIdQuery.new(Book, append_id).run
+      parent.member_ids = parent.member_ids + [model.id]
+      Persister.save(parent)
     end
 end

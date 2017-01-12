@@ -2,5 +2,8 @@
   <% @form.class.fields.each do |field| %>
     <%= f.input field, as: :multi_value %>
   <% end %>
+  <% if @form.append_id.present? %>
+    <%= f.input :append_id, as: :hidden %>
+  <% end %>
   <%= f.button :submit %>
 <% end %>

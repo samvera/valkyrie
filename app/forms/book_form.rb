@@ -2,12 +2,14 @@
 class BookForm < Reform::Form
   validate :title_not_empty
   def self.fields
-    Book.fields - [:id]
+    Book.fields - [:id, :member_ids]
   end
 
   fields.each do |attribute|
     property attribute
   end
+
+  property :append_id
 
   def [](key)
     send(key) if respond_to?(key)

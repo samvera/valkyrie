@@ -16,4 +16,16 @@ class SolrDocument
   # and Blacklight::Document::SemanticFields#to_semantic_values
   # Recommendation: Use field names from Dublin Core
   use_extension(Blacklight::Document::DublinCore)
+
+  def member_ids
+    fetch(:member_ids_ssim, [])
+  end
+
+  def members
+    FindMembersQuery.new(Book.new(id: model_id)).run
+  end
+
+  def model_id
+    id.gsub(/^.*_/, "")
+  end
 end

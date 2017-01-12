@@ -31,6 +31,10 @@ class BooksController < ApplicationController
     end
   end
 
+  def append
+    @form = form_class.new(resource_class.new(append_id: params[:id]))
+  end
+
   private
 
     def find_book(id)

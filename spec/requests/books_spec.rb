@@ -22,6 +22,12 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { test: ["1"] } }
       expect(response.body).to have_field "Title"
     end
+    it "can create a book as a child of another" do
+      post "/books", params: { book: { title: ["One", "Two"] } }
+      id = response.location.gsub("http://www.example.com/catalog/book_", "")
+      post "/books", params: { book: { title: ["Child"], append_id: id } }
+      expect(find_book(id).member_ids).not_to be_blank
+    end
   end
 
   describe "edit" do
