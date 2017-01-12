@@ -8,7 +8,7 @@ class BooksController < ApplicationController
     @form = form_class.new(resource_class.new)
     if @form.validate(params[:book])
       @form.sync
-      obj = persister.save(@form.model)
+      obj = persister.save(@form)
       redirect_to solr_document_path(id: Mapper.new(obj).id)
     else
       render :new
@@ -24,7 +24,7 @@ class BooksController < ApplicationController
     @form = form_class.new(find_book(params[:id]))
     if @form.validate(params[:book])
       @form.sync
-      obj = persister.save(@form.model)
+      obj = persister.save(@form)
       redirect_to solr_document_path(id: Mapper.new(obj).id)
     else
       render :edit

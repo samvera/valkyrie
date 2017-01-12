@@ -4,6 +4,7 @@ class Persister
   class << self
     attr_reader :cache
     def save(model)
+      return FormPersister.new(form: model, mapper: mapper).persist if model.respond_to?(:model)
       new(model: model, mapper: mapper).persist
     end
 
@@ -14,20 +15,22 @@ class Persister
   class ObjectNotFoundError < StandardError
   end
 
-  attr_reader :model, :mapper, :orm_model
+  attr_reader :model, :mapper, :orm_model, :post_processors
 
-  def initialize(model:, mapper:, orm_model: ORM::Book)
+  def initialize(model:, mapper:, post_processors: [], orm_model: ORM::Book)
     @model = model
     @mapper = mapper
     @orm_model ||= orm_model
+    @post_processors ||= post_processors
   end
 
   def persist
-    append_id = model.append_id
     mapper_instance.apply!(clean_book_attributes)
     orm_object.save
     @model = model.class.new(mapper_instance.attributes)
-    apply_append(append_id)
+    post_processors.each do |processor|
+      processor.new(persister: self).run
+    end
     model
   end
 
@@ -51,12 +54,5 @@ class Persister
 
     def id
       @id ||= book_attributes[:id].present? ? book_attributes[:id] : nil
-    end
-
-    def apply_append(append_id)
-      return unless append_id.present?
-      parent = FindByIdQuery.new(Book, append_id).run
-      parent.member_ids = parent.member_ids + [model.id]
-      Persister.save(parent)
     end
 end

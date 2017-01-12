@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 class Book
-  attr_accessor :append_id
   include Virtus.model
   include Valkyrie::ActiveModel
   attribute :id, String

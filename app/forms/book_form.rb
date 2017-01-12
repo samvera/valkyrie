@@ -6,10 +6,10 @@ class BookForm < Reform::Form
   end
 
   fields.each do |attribute|
-    property attribute
+    collection attribute
   end
 
-  property :append_id
+  property :append_id, virtual: true
 
   def [](key)
     send(key) if respond_to?(key)
