@@ -24,6 +24,20 @@ RSpec.describe Book do
     end
   end
 
+  describe "#member_ids" do
+    it "stores local IDs" do
+      subject.member_ids = ["123", "456", "789"]
+    end
+    it "can be set to the IDs created for other books" do
+      member = Persister.save(described_class.new)
+      parent = described_class.new
+      parent.member_ids = member.id
+      parent = FindByIdQuery.new(described_class, Persister.save(parent).id).run
+
+      expect(parent.member_ids).to eq [member.id]
+    end
+  end
+
   describe "#id" do
     it "can be set to a string" do
       subject.id = "test"

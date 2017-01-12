@@ -29,6 +29,13 @@ Metrics/ClassLength:
   Exclude:
     - 'app/controllers/catalog_controller.rb'
 
+Metrics/BlockLength:
+  Exclude:
+    - 'config/environments/**/*'
+    - 'spec/**/*'
+    - 'config/initializers/*'
+    - 'config/routes.rb'
+
 Metrics/MethodLength:
   Enabled: false
 
@@ -140,3 +147,6 @@ RSpec/DescribeClass:
 RSpec/ExampleLength:
   Exclude:
     - 'spec/**/*'
+
+RSpec/MultipleExpectations:
+  Enabled: false

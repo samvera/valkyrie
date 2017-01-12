@@ -18,6 +18,7 @@ gem "suspenders"
 gem "title"
 gem "uglifier"
 gem 'devise'
+gem 'activerecord-import'
 
 group :development do
   gem "listen"

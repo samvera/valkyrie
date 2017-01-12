@@ -12,11 +12,12 @@ RSpec.describe Persister do
     end
 
     it "doesn't override a book that already has an ID" do
-      book = Book.new(title: "Test", id: "5")
+      book = described_class.save(Book.new(title: "Test"))
+      id = book.id
 
       output = described_class.save(book)
 
-      expect(output.id).to eq "5"
+      expect(output.id).to eq id
     end
 
     it "can be found after being persisted" do

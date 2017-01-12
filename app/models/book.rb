@@ -6,4 +6,5 @@ class Book
   attribute :title, UniqueNonBlankArray
   attribute :author, UniqueNonBlankArray
   attribute :testing, UniqueNonBlankArray
+  attribute :member_ids, NonBlankArray
 end
