@@ -4,8 +4,8 @@ class ContextualPath
   include ActionDispatch::Routing::PolymorphicRoutes
   attr_reader :solr_document, :parent_document
   def initialize(solr_document, parent_document = nil)
-    @solr_document = adjusted_id(solr_document)
-    @parent_document = adjusted_id(parent_document)
+    @solr_document = solr_document
+    @parent_document = parent_document
   end
 
   def show
@@ -14,10 +14,5 @@ class ContextualPath
     else
       polymorphic_path([:solr_document], id: solr_document)
     end
-  end
-
-  def adjusted_id(id)
-    return unless id.present?
-    "book_#{id}"
   end
 end

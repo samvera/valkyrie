@@ -15,7 +15,7 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
       expect(response.location).to start_with "http://www.example.com/catalog/"
-      id = response.location.gsub("http://www.example.com/catalog/book_", "")
+      id = response.location.gsub("http://www.example.com/catalog/", "")
       expect(find_book(id).title).to eq ["One", "Two"]
     end
     it "renders the form if it doesn't create a book" do
@@ -24,12 +24,12 @@ RSpec.describe "Book Management" do
     end
     it "can create a book as a child of another" do
       post "/books", params: { book: { title: ["One", "Two"] } }
-      id = response.location.gsub("http://www.example.com/catalog/book_", "")
+      id = response.location.gsub("http://www.example.com/catalog/", "")
       post "/books", params: { book: { title: ["Child"], append_id: id } }
       parent_book = find_book(id)
       expect(parent_book.member_ids).not_to be_blank
 
-      expect(request).to redirect_to parent_solr_document_path(parent_id: "book_#{id}", id: "book_#{parent_book.member_ids.first}")
+      expect(request).to redirect_to parent_solr_document_path(parent_id: id, id: parent_book.member_ids.first)
     end
   end
 

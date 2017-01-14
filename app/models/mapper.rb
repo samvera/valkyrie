@@ -6,6 +6,8 @@ class Mapper
   end
 
   attr_reader :object
+  delegate :id, to: :object
+
   def initialize(object)
     @object = object
   end
@@ -14,10 +16,6 @@ class Mapper
     {
       "id": id
     }.merge(attribute_hash)
-  end
-
-  def id
-    "#{object.class.to_s.underscore}_#{object.id}"
   end
 
   private

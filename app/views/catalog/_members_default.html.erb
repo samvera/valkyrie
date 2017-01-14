@@ -9,7 +9,7 @@
     <tbody>
       <% document.members.each do |member| %>
       <tr>
-        <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub("book_","")).show %> </td>
+        <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id).show %> </td>
       </tr>
       <% end %>
     </tbody>

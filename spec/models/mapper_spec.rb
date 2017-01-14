@@ -10,7 +10,7 @@ RSpec.describe Mapper do
   describe "#to_h" do
     it "maps all available properties to the solr record" do
       expect(subject.to_h).to eq(
-        id: "#{resource.class.to_s.underscore}_#{resource.id}",
+        id: resource.id,
         title_ssim: ["Test"],
         title_tesim: ["Test"],
         author_ssim: ["Author"],
