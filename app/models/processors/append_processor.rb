@@ -12,7 +12,7 @@ module Processors
       return unless append_id.present?
       parent = FindByIdQuery.new(Book, append_id).run
       parent.member_ids = parent.member_ids + [model.id]
-      Persister.save(parent)
+      Indexer.new(Persister).save(parent)
     end
   end
 end

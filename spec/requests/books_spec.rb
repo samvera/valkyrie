@@ -26,7 +26,10 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       id = response.location.gsub("http://www.example.com/catalog/book_", "")
       post "/books", params: { book: { title: ["Child"], append_id: id } }
-      expect(find_book(id).member_ids).not_to be_blank
+      parent_book = find_book(id)
+      expect(parent_book.member_ids).not_to be_blank
+
+      expect(request).to redirect_to parent_solr_document_path(parent_id: "book_#{id}", id: "book_#{parent_book.member_ids.first}")
     end
   end
 

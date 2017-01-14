@@ -1,0 +1,16 @@
+<div class="panel panel-default admin-tools">
+  <div class="panel-heading">
+    Admin Tools
+  </div>
+
+  <div class="panel-body">
+    <ul class="nav">
+      <li>
+        <%= link_to "Edit", edit_book_path(id: document.id.split("_").last) %>
+      </li>
+      <li>
+        <%= link_to "Add Child", append_book_path(id: document.id.split("_").last) %>
+      </li>
+    </ul>
+  </div>
+</div>

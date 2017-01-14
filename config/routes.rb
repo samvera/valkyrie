@@ -29,6 +29,8 @@ Rails.application.routes.draw do
     concerns :exportable
   end
 
+  get '/catalog/parent/:parent_id/:id', to: 'catalog#show', as: :parent_solr_document
+
   resources :bookmarks do
     concerns :exportable
 

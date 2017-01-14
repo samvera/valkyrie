@@ -9,7 +9,7 @@ class BooksController < ApplicationController
     if @form.validate(params[:book])
       @form.sync
       obj = persister.save(@form)
-      redirect_to solr_document_path(id: Mapper.new(obj).id)
+      redirect_to contextual_path(obj, @form).show
     else
       render :new
     end
@@ -36,6 +36,10 @@ class BooksController < ApplicationController
   end
 
   private
+
+    def contextual_path(obj, form)
+      ContextualPath.new(obj.id, form.append_id)
+    end
 
     def find_book(id)
       FindByIdQuery.new(resource_class, id).run

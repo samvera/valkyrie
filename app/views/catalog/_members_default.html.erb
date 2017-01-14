@@ -1,4 +1,17 @@
-<h2> Members </h2>
-<% document.members.each do |member| %>
-  Title: <%= member.title %>
+<% if document.member_ids.length > 0 %>
+  <h2> Members </h2>
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Title</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% document.members.each do |member| %>
+      <tr>
+        <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub("book_","")).show %> </td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>
