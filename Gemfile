@@ -1,7 +1,6 @@
 source "https://rubygems.org"
 
 gem "autoprefixer-rails"
-gem "flutie"
 gem "jquery-rails"
 gem "normalize-rails", "~> 3.0.0"
 gem "pg"
@@ -35,7 +34,7 @@ group :development, :test do
   gem "factory_girl_rails"
   gem "pry-byebug"
   gem "pry-rails"
-  gem "rspec-rails", "~> 3.5.0.beta4"
+  gem "rspec-rails"
   gem 'capybara'
   gem 'rubocop'
   gem 'rubocop-rspec'
@@ -65,12 +64,10 @@ gem 'blacklight'
 
 group :development, :test do
   gem 'solr_wrapper', '>= 0.3'
+  gem 'rails-controller-testing'
 end
 
 gem 'rsolr', '~> 1.0'
-
-group :development, :test do
-end
 
 gem 'devise-guests', '~> 0.5'
 gem 'virtus'

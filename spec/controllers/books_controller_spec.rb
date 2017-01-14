@@ -9,4 +9,13 @@ RSpec.describe BooksController do
       expect(response).to be_success
     end
   end
+
+  describe "GET /books/:id/append" do
+    it "renders a form to append a child book" do
+      parent = Persister.save(Book.new)
+      get :append, params: { id: parent.id }
+
+      expect(assigns(:form).append_id).to eq parent.id
+    end
+  end
 end
