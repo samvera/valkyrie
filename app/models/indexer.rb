@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class Indexer
   attr_reader :repository
-  delegate :find, to: :repository
   def initialize(repository)
     @repository = repository
   end
