@@ -35,6 +35,11 @@ class BooksController < ApplicationController
     @form = form_class.new(resource_class.new, append_id: params[:id])
   end
 
+  def file_manager
+    @record = form_class.new(find_book(params[:id]))
+    @children = FindMembersQuery.new(@record).run.map { |x| form_class.new(x) }.to_a
+  end
+
   private
 
     def contextual_path(obj, form)

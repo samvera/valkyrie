@@ -2,7 +2,7 @@
 class BookForm < Reform::Form
   validate :title_not_empty
   def self.fields
-    Book.fields - [:id, :member_ids]
+    Book.fields - [:id]
   end
 
   fields.each do |attribute|

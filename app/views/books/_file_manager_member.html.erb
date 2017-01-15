@@ -1,0 +1,17 @@
+<li data-reorder-id='<%= node.id %>'>
+    <div class="panel panel-default">
+      <%= simple_form_for node, remote: true, html: {'data-type': 'json'} do |f| %>
+        <div class="panel-heading">
+          <div class="order-title">
+            <%= f.input :title, as: :string, input_html: { name: "#{f.object.model_name.singular}[title][]", class: "title" }, value: node.to_s, label: false, hint: false %>
+          </div>
+          <div class="file-set-link pull-right">
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="spacer">
+          </div>
+        </div>
+      <% end %>
+    </div>
+</li>

@@ -10,11 +10,21 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
-//= require jquery
+//= require jquery3
 //= require jquery_ujs//
+//= require jquery-ui/widgets/sortable
+//= require jquery-ui/widgets/draggable
 // Required by Blacklight
 //= require blacklight/blacklight
 //= require hydra-editor/hydra-editor
-
+//= require bootstrap/affix
+//= require file_manager
+//= require boot
 
 //= require_tree .
+
+$(document).ready(function() {
+  cc = require('boot')
+
+  window.booter = new cc.Initializer()
+});

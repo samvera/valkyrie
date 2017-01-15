@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     member do
       get :append
       post :append, action: :save_append
+      get :file_manager
     end
   end
 end

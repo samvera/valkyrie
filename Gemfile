@@ -77,3 +77,4 @@ gem 'reform-rails'
 
 # Maybe extract just the stuff for multi-inputs..
 gem 'hydra-editor'
+gem 'jquery-ui-rails', '~> 6.0'
