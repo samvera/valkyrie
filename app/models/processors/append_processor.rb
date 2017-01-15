@@ -1,11 +1,22 @@
 # frozen_string_literal: true
 module Processors
   class AppendProcessor
-    attr_reader :persister
-    delegate :model, :form, to: :persister
+    class Factory
+      attr_reader :form
+      def initialize(form:)
+        @form = form
+      end
+
+      def new(hsh_args)
+        Processors::AppendProcessor.new(hsh_args.merge(form: form))
+      end
+    end
+    attr_reader :persister, :form
+    delegate :model, to: :persister
     delegate :append_id, to: :form
-    def initialize(persister:)
+    def initialize(persister:, form:)
       @persister = persister
+      @form = form
     end
 
     def run

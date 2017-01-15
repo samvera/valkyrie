@@ -4,8 +4,15 @@ class Persister
   class << self
     attr_reader :cache
     def save(model)
-      return FormPersister.new(form: model, mapper: mapper).persist if model.respond_to?(:model)
-      new(model: model, mapper: mapper).persist
+      persister(model).persist
+    end
+
+    def persister(model)
+      if model.respond_to?(:model)
+        Persister.new(model: model.model, mapper: mapper, post_processors: [Processors::AppendProcessor::Factory.new(form: model)])
+      else
+        Persister.new(model: model, mapper: mapper)
+      end
     end
 
     def mapper
