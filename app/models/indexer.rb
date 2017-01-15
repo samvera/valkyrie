@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class Indexer
   attr_reader :repository
-  def initialize(repository)
+  def initialize(repository = NullPersister)
     @repository = repository
   end
 
