@@ -1,7 +1,11 @@
 import FileManager from 'file_manager'
+import PlumFileManager from 'plum_file_manager'
+import BulkLabeler from "bulk_labeler/bulk_label"
 export class Initializer {
   constructor() {
     this.file_manager = new FileManager
+    this.file_manager_extensions = new PlumFileManager
+    this.bulk_labeler = new BulkLabeler
     this.sortable_placeholder()
   }
 

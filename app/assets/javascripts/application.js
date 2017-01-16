@@ -14,7 +14,9 @@
 //= require jquery_ujs//
 //= require jquery-ui/widgets/sortable
 //= require jquery-ui/widgets/draggable
+//= require jquery-ui/widgets/selectable
 // Required by Blacklight
+//= require babel/polyfill
 //= require blacklight/blacklight
 //= require hydra-editor/hydra-editor
 //= require bootstrap/affix
@@ -27,4 +29,8 @@ $(document).ready(function() {
   cc = require('boot')
 
   window.booter = new cc.Initializer()
+});
+
+$(document).ready(function() {
+  $('.multi_value.form-group').manage_fields();
 });

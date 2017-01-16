@@ -24,3 +24,10 @@ en:
         q:
           label: "Search Repository"
           placeholder: "Type keywords in here"
+  simple_form:
+    options:
+      defaults:
+        viewing_hint:
+          "": 'Single Page'
+          non-paged: 'Non-Paged'
+          facing-pages: 'Facing pages'
