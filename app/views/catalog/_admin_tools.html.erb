@@ -11,6 +11,9 @@
       <li>
         <%= link_to "Add Child", append_book_path(id: document.id.split("_").last) %>
       </li>
+      <li>
+        <%= link_to "File Manager", file_manager_book_path(id: document.id.split("_").last) %>
+      </li>
     </ul>
   </div>
 </div>

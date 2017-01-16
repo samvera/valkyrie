@@ -18,4 +18,16 @@ RSpec.describe BooksController do
       expect(assigns(:form).append_id).to eq parent.id
     end
   end
+
+  describe "GET /books/:id/file_manager" do
+    it "sets the record and children variables" do
+      child = Persister.save(Book.new)
+      parent = Persister.save(Book.new(member_ids: child.id))
+
+      get :file_manager, params: { id: parent.id }
+
+      expect(assigns(:record).id).to eq parent.id
+      expect(assigns(:children).map(&:id)).to eq [child.id]
+    end
+  end
 end

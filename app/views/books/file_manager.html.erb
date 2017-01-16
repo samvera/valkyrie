@@ -1,4 +1,8 @@
 <h1>File Manager</h1>
+<ul class="breadcrumb">
+  <li><%= link_to @record.title.to_sentence, solr_document_path(id: @record.id) %></li>
+  <li class="active">File Manager</li>
+</ul>
 <% if !@children.empty? %>
   <div data-action="file-manager">
     <div class="col-md-3" id="file-manager-tools">

@@ -15,4 +15,8 @@ class ContextualPath
       polymorphic_path([:solr_document], id: solr_document)
     end
   end
+
+  def to_model
+    nil
+  end
 end
