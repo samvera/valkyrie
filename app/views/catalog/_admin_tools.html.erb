@@ -6,13 +6,25 @@
   <div class="panel-body">
     <ul class="nav">
       <li>
-        <%= link_to "Edit", edit_book_path(id: document.id.split("_").last) %>
+        <%= link_to "Edit", polymorphic_path([:edit, document.resource]) %>
       </li>
       <li>
-        <%= link_to "Add Child", append_book_path(id: document.id.split("_").last) %>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add Child <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <%= link_to "Add Book", book_append_book_path(id: document.id) %>
+            </li>
+            <li>
+              <%= link_to "Add Page", page_append_book_path(id: document.id) %>
+            </li>
+          </ul>
+        </div>
       </li>
       <li>
-        <%= link_to "File Manager", file_manager_book_path(id: document.id.split("_").last) %>
+        <%= link_to "File Manager", file_manager_book_path(id: document.id) %>
       </li>
     </ul>
   </div>

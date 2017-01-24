@@ -27,7 +27,13 @@ class FindMembersQuery
     end
 
     def member_klass
-      Book
+      KlassFinder.new
+    end
+
+    class KlassFinder
+      def new(attributes)
+        attributes["model_type"].constantize.new(attributes)
+      end
     end
 
     def orm_model

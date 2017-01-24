@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161007101725) do
+ActiveRecord::Schema.define(version: 20170124135846) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 20161007101725) do
     t.jsonb    "metadata",   default: {}, null: false
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false
+    t.string   "model_type"
     t.index ["metadata"], name: "index_orm_resources_on_metadata", using: :gin
   end
 

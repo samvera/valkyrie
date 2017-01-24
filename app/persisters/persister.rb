@@ -33,6 +33,7 @@ class Persister
 
   def persist
     mapper_instance.apply!(clean_book_attributes)
+    orm_object.model_type = model.class.to_s
     orm_object.save
     @model = model.class.new(mapper_instance.attributes)
     post_processors.each do |processor|

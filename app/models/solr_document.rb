@@ -28,4 +28,14 @@ class SolrDocument
   def model_id
     id.gsub(/^.*_/, "")
   end
+
+  def resource
+    @resource ||= FindByIdQuery.new(DynamicKlass.new, id).run
+  end
+
+  class DynamicKlass
+    def new(attributes)
+      attributes["model_type"].constantize.new(attributes)
+    end
+  end
 end

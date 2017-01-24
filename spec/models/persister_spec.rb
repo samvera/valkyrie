@@ -11,6 +11,14 @@ RSpec.describe Persister do
       expect(output.id).not_to be_blank
     end
 
+    it "persists the model it was saved as" do
+      book = Book.new(title: "Test")
+
+      described_class.save(book)
+
+      expect(ORM::Resource.where(model_type: "Book").length).to eq 1
+    end
+
     it "doesn't override a book that already has an ID" do
       book = described_class.save(Book.new(title: "Test"))
       id = book.id

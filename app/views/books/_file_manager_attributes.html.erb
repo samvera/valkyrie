@@ -1,1 +1,3 @@
-<%= f.input :viewing_hint, collection: [:"", :"non-paged", :"facing-pages"], as: :radio_buttons, label: false, defaults: { input_html: { class: '' }}%>
+<% if f.object.kind_of?(PageForm) %>
+  <%= f.input :viewing_hint, collection: [:"", :"non-paged", :"facing-pages"], as: :radio_buttons, label: false, defaults: { input_html: { class: '' }}%>
+<% end %>

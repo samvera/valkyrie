@@ -25,9 +25,17 @@ module Valkyrie
       id
     end
 
+    def to_model
+      self
+    end
+
+    def model_name
+      ::ActiveModel::Name.new(self.class)
+    end
+
     module ClassMethods
       def fields
-        ::Book.attribute_set.map(&:name)
+        attribute_set.map(&:name)
       end
     end
   end
