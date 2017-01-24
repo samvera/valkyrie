@@ -24,7 +24,7 @@ class Persister
 
   attr_reader :model, :mapper, :orm_model, :post_processors
 
-  def initialize(model:, mapper:, post_processors: [], orm_model: ORM::Book)
+  def initialize(model:, mapper:, post_processors: [], orm_model: ORM::Resource)
     @model = model
     @mapper = mapper
     @orm_model ||= orm_model

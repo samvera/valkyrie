@@ -20,7 +20,7 @@ class FindAllQuery
     end
 
     def orm_model
-      ORM::Book
+      ORM::Resource
     end
 
     def mapper

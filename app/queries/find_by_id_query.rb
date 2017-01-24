@@ -15,7 +15,7 @@ class FindByIdQuery
   private
 
     def orm_model
-      ORM::Book
+      ORM::Resource
     end
 
     def mapper
