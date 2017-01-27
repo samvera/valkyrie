@@ -2,6 +2,7 @@
 module Valkyrie
   module ActiveModel
     def self.included(base)
+      base.include(Virtus.model)
       base.extend ClassMethods
     end
 
