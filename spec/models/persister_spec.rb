@@ -35,6 +35,15 @@ RSpec.describe Persister do
 
       expect(find_book(output.id).to_h).to eq output.to_h
     end
+
+    it "can persist a form object" do
+      book = Book.new
+      form = BookForm.new(book)
+
+      output = described_class.save(form)
+
+      expect(output.id).not_to be_blank
+    end
   end
 
   def find_book(id)
