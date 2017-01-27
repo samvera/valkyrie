@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 class Persister
-  @cache = {}
   class << self
-    attr_reader :cache
     def save(model)
       persister(model).persist
     end
