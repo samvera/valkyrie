@@ -6,11 +6,15 @@ class Persister
     end
 
     def persister(model)
-      if model.respond_to?(:model)
-        Persister.new(model: model.model, mapper: mapper, post_processors: [Processors::AppendProcessor::Factory.new(form: model)])
-      else
-        Persister.new(model: model, mapper: mapper)
-      end
+      Persister.new(sync_object: sync_object(model), post_processors: post_processors(model))
+    end
+
+    def sync_object(model)
+      ORMSyncer.new(model: model, orm_model: ORM::Resource)
+    end
+
+    def post_processors(model)
+      [Processors::AppendProcessor::Factory.new(form: model)]
     end
 
     def mapper
@@ -20,45 +24,19 @@ class Persister
   class ObjectNotFoundError < StandardError
   end
 
-  attr_reader :model, :mapper, :orm_model, :post_processors
+  attr_reader :post_processors, :sync_object
+  delegate :model, to: :sync_object
 
-  def initialize(model:, mapper:, post_processors: [], orm_model: ORM::Resource)
-    @model = model
-    @mapper = mapper
-    @orm_model ||= orm_model
+  def initialize(sync_object: nil, post_processors: [])
+    @sync_object = sync_object
     @post_processors ||= post_processors
   end
 
   def persist
-    mapper_instance.apply!(clean_book_attributes)
-    orm_object.model_type = model.class.to_s
-    orm_object.save
-    @model = model.class.new(mapper_instance.attributes)
+    sync_object.save
     post_processors.each do |processor|
       processor.new(persister: self).run
     end
-    model
+    sync_object.model
   end
-
-  private
-
-    def book_attributes
-      @book_attributes ||= model.attributes
-    end
-
-    def orm_object
-      @orm_object ||= orm_model.find_or_initialize_by(id: id)
-    end
-
-    def clean_book_attributes
-      @clean_book_attributes ||= book_attributes.except(:id)
-    end
-
-    def mapper_instance
-      @mapper_instance ||= mapper.new(orm_object)
-    end
-
-    def id
-      @id ||= book_attributes[:id].present? ? book_attributes[:id] : nil
-    end
 end

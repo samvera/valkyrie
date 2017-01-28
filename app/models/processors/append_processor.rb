@@ -13,7 +13,6 @@ module Processors
     end
     attr_reader :persister, :form
     delegate :model, to: :persister
-    delegate :append_id, to: :form
     def initialize(persister:, form:)
       @persister = persister
       @form = form
@@ -24,6 +23,10 @@ module Processors
       parent = FindByIdQuery.new(Book, append_id).run
       parent.member_ids = parent.member_ids + [model.id]
       Indexer.new(Persister).save(parent)
+    end
+
+    def append_id
+      form.try(:append_id)
     end
   end
 end

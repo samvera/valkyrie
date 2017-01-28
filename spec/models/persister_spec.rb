@@ -38,7 +38,7 @@ RSpec.describe Persister do
 
     it "can persist a form object" do
       book = Book.new
-      form = BookForm.new(book)
+      form = PersistableForm.new(BookForm.new(book))
 
       output = described_class.save(form)
 
