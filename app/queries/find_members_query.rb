@@ -6,8 +6,8 @@ class FindMembersQuery
   end
 
   def run
-    relation.lazy.map do |orm_book|
-      member_klass.new(mapper.new(orm_book).attributes)
+    relation.lazy.map do |orm_object|
+      ResourceFactory.from_orm(orm_object)
     end
   end
 
@@ -27,20 +27,10 @@ class FindMembersQuery
     end
 
     def member_klass
-      KlassFinder.new
-    end
-
-    class KlassFinder
-      def new(attributes)
-        attributes["model_type"].constantize.new(attributes)
-      end
+      DynamicKlass
     end
 
     def orm_model
       ORM::Resource
-    end
-
-    def mapper
-      ORMToObjectMapper
     end
 end

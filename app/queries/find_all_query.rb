@@ -4,8 +4,8 @@ class FindAllQuery
   def initialize; end
 
   def run
-    relation.lazy.map do |orm_book|
-      member_klass.new(mapper.new(orm_book).attributes)
+    relation.lazy.map do |orm_object|
+      ResourceFactory.from_orm(orm_object)
     end
   end
 
@@ -16,14 +16,10 @@ class FindAllQuery
     end
 
     def member_klass
-      Book
+      DynamicKlass
     end
 
     def orm_model
       ORM::Resource
-    end
-
-    def mapper
-      ORMToObjectMapper
     end
 end

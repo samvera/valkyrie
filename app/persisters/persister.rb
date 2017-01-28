@@ -10,15 +10,11 @@ class Persister
     end
 
     def sync_object(model)
-      ORMSyncer.new(model: model, orm_model: ORM::Resource)
+      ORMSyncer.new(model: model)
     end
 
     def post_processors(model)
       [Processors::AppendProcessor::Factory.new(form: model)]
-    end
-
-    def mapper
-      ORMToObjectMapper
     end
   end
   class ObjectNotFoundError < StandardError

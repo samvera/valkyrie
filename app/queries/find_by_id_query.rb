@@ -7,12 +7,16 @@ class FindByIdQuery
   end
 
   def run
-    klass.new(mapper.new(orm_model.find(id)).attributes)
+    ResourceFactory.from_orm(relation)
   rescue ActiveRecord::RecordNotFound
     raise Persister::ObjectNotFoundError
   end
 
   private
+
+    def relation
+      orm_model.find(id)
+    end
 
     def orm_model
       ORM::Resource

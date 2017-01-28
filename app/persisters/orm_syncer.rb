@@ -1,8 +1,9 @@
+# frozen_string_literal: true
 class ORMSyncer
-  attr_reader :model, :orm_model
-  def initialize(model:, orm_model:)
+  delegate :orm_attributes, :model_attributes, to: :attribute_mapper
+  attr_reader :model
+  def initialize(model:)
     @model = model
-    @orm_model = orm_model
   end
 
   def sync!
@@ -10,28 +11,24 @@ class ORMSyncer
   end
 
   def save
-    sync! && apply_model! && orm_object.save! && rebuild_model
+    sync! && orm_object.save! && rebuild_model
   end
 
   private
 
-  def orm_object
-    @orm_object ||= orm_model.find_or_initialize_by(id: model.id)
-  end
+    def attribute_mapper
+      AttributeMapper.new(orm_object: orm_object, model: model)
+    end
 
-  def apply_model!
-    orm_object.model_type = model.class.to_s
-  end
+    def orm_object
+      @orm_object ||= ResourceFactory.from_model(model)
+    end
 
-  def rebuild_model
-    @model = model.class.new(orm_attributes)
-  end
+    def rebuild_model
+      @model = ResourceFactory.from_orm(orm_object)
+    end
 
-  def orm_attributes
-    orm_object.attributes.merge(orm_object.metadata)
-  end
-
-  def clean_attributes
-    model.attributes.except(:id)
-  end
+    def clean_attributes
+      model_attributes.except(:id)
+    end
 end
