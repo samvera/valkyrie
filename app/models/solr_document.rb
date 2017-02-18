@@ -22,7 +22,7 @@ class SolrDocument
   end
 
   def members
-    FindMembersQuery.new(Book.new(id: model_id)).run
+    QueryService.find_members(Book.new(id: model_id))
   end
 
   def model_id
@@ -30,12 +30,6 @@ class SolrDocument
   end
 
   def resource
-    @resource ||= FindByIdQuery.new(DynamicKlass.new, id).run
-  end
-
-  class DynamicKlass
-    def new(attributes)
-      attributes["model_type"].constantize.new(attributes)
-    end
+    @resource ||= QueryService.find_by_id(id)
   end
 end

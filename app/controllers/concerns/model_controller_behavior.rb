@@ -49,7 +49,7 @@ module ModelControllerBehavior
     end
 
     def find_book(id)
-      FindByIdQuery.new(resource_class, id).run
+      QueryService.find_by_id(id)
     end
 
     def persister

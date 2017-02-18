@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe Persister do
+RSpec.describe Valkyrie::Persistence::Postgres::Persister do
   describe ".save" do
     it "saves a book and returns it with a UUID" do
       book = Book.new(title: "Test")
@@ -16,7 +16,7 @@ RSpec.describe Persister do
 
       described_class.save(book)
 
-      expect(ORM::Resource.where(model_type: "Book").length).to eq 1
+      expect(::Valkyrie::Persistence::Postgres::ORM::Resource.where(model_type: "Book").length).to eq 1
     end
 
     it "doesn't override a book that already has an ID" do
@@ -47,6 +47,6 @@ RSpec.describe Persister do
   end
 
   def find_book(id)
-    FindByIdQuery.new(Book, id).run
+    QueryService.find_by_id(id)
   end
 end

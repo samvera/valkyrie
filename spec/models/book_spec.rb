@@ -32,7 +32,7 @@ RSpec.describe Book do
       member = Persister.save(described_class.new)
       parent = described_class.new
       parent.member_ids = member.id
-      parent = FindByIdQuery.new(described_class, Persister.save(parent).id).run
+      parent = QueryService.find_by_id(Persister.save(parent).id)
 
       expect(parent.member_ids).to eq [member.id]
     end

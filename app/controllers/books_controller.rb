@@ -9,7 +9,7 @@ class BooksController < ApplicationController
 
   def file_manager
     @record = form_class.new(find_book(params[:id]))
-    @children = FindMembersQuery.new(@record).run.map do |x|
+    @children = QueryService.find_members(@record).map do |x|
       form_class.new(x)
     end.to_a
   end

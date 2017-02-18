@@ -3,7 +3,7 @@ class ReindexEverything
   class << self
     def call
       persister = Indexer.new
-      FindAllQuery.new.run.each do |book|
+      QueryService.find_all.each do |book|
         persister.save(book)
       end
     end

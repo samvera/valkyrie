@@ -72,6 +72,6 @@ RSpec.describe "Book Management" do
   end
 
   def find_book(id)
-    FindByIdQuery.new(Book, id).run
+    QueryService.find_by_id(id)
   end
 end

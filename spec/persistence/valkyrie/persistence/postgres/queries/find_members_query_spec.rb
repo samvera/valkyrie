@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe FindMembersQuery do
+RSpec.describe Valkyrie::Persistence::Postgres::Queries::FindMembersQuery do
   describe "#run" do
     it "finds all member objects in #member_ids" do
       member = Persister.save(Book.new)

@@ -1,17 +1,18 @@
 # frozen_string_literal: true
-class FindMembersQuery
-  attr_reader :obj
-  def initialize(obj)
-    @obj = obj
-  end
-
-  def run
-    relation.lazy.map do |orm_object|
-      ResourceFactory.from_orm(orm_object)
+module Valkyrie::Persistence::Postgres::Queries
+  class FindMembersQuery
+    attr_reader :obj
+    def initialize(obj)
+      @obj = obj
     end
-  end
 
-  private
+    def run
+      relation.lazy.map do |orm_object|
+        ::ResourceFactory.from_orm(orm_object)
+      end
+    end
+
+    private
 
     def relation
       orm_model.find_by_sql([query, obj.id])
@@ -26,11 +27,8 @@ class FindMembersQuery
       SQL
     end
 
-    def member_klass
-      DynamicKlass
-    end
-
     def orm_model
-      ORM::Resource
+      ::Valkyrie::Persistence::Postgres::ORM::Resource
     end
+  end
 end
