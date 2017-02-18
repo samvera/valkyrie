@@ -12,12 +12,12 @@ module Valkyrie::Persistence::Postgres::Queries
 
     private
 
-    def relation
-      orm_model.all
-    end
+      def relation
+        orm_model.all
+      end
 
-    def orm_model
-      Valkyrie::Persistence::Postgres::ORM::Resource
-    end
+      def orm_model
+        Valkyrie::Persistence::Postgres::ORM::Resource
+      end
   end
 end

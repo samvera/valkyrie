@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Persister
   class_attribute :adapter
   self.adapter = Valkyrie::Persistence::Postgres
@@ -5,7 +6,7 @@ class Persister
     delegate :save, :persister, to: :default_adapter
 
     def default_adapter
-      self.new(adapter: adapter)
+      new(adapter: adapter)
     end
   end
 

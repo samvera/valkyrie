@@ -21,23 +21,23 @@ module Valkyrie::Persistence::Solr
 
     private
 
-    def attribute_hash
-      properties.each_with_object({}) do |property, hsh|
-        suffixes.each do |suffix|
-          hsh[:"#{property}_#{suffix}"] = object.__send__(property)
+      def attribute_hash
+        properties.each_with_object({}) do |property, hsh|
+          suffixes.each do |suffix|
+            hsh[:"#{property}_#{suffix}"] = object.__send__(property)
+          end
         end
       end
-    end
 
-    def suffixes
-      [
-        :ssim,
-        :tesim
-      ]
-    end
+      def suffixes
+        [
+          :ssim,
+          :tesim
+        ]
+      end
 
-    def properties
-      object.class.attribute_set.map(&:name) - [:id]
-    end
+      def properties
+        object.class.attribute_set.map(&:name) - [:id]
+      end
   end
 end

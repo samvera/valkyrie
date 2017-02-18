@@ -17,20 +17,20 @@ module Valkyrie::Persistence::Postgres
 
     private
 
-    def attribute_mapper
-      ::Valkyrie::Persistence::Postgres::AttributeMapper.new(orm_object: orm_object, model: model)
-    end
+      def attribute_mapper
+        ::Valkyrie::Persistence::Postgres::AttributeMapper.new(orm_object: orm_object, model: model)
+      end
 
-    def orm_object
-      @orm_object ||= ResourceFactory.from_model(model)
-    end
+      def orm_object
+        @orm_object ||= ResourceFactory.from_model(model)
+      end
 
-    def rebuild_model
-      @model = ResourceFactory.from_orm(orm_object)
-    end
+      def rebuild_model
+        @model = ResourceFactory.from_orm(orm_object)
+      end
 
-    def clean_attributes
-      model_attributes.except(:id)
-    end
+      def clean_attributes
+        model_attributes.except(:id)
+      end
   end
 end

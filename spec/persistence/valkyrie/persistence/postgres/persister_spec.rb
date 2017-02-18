@@ -47,6 +47,6 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
   end
 
   def find_book(id)
-    QueryService.find_by_id(id)
+    QueryService.find_by(id: id)
   end
 end

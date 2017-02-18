@@ -5,7 +5,7 @@ class ResourceFactory
   class << self
     delegate :from_orm, :from_model, to: :delegate_class
     def delegate_class
-      self.new(adapter: adapter)
+      new(adapter: adapter)
     end
   end
 

@@ -1,8 +1,8 @@
+# frozen_string_literal: true
 class QueryService
   class_attribute :adapter
   self.adapter = Valkyrie::Persistence::Postgres
   class << self
-
     def find_all
       build_query_class("FindAllQuery").new.run
     end

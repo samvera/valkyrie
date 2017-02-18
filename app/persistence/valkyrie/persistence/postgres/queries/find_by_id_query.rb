@@ -15,16 +15,16 @@ module Valkyrie::Persistence::Postgres::Queries
 
     private
 
-    def relation
-      orm_model.find(id)
-    end
+      def relation
+        orm_model.find(id)
+      end
 
-    def orm_model
-      ::Valkyrie::Persistence::Postgres::ORM::Resource
-    end
+      def orm_model
+        ::Valkyrie::Persistence::Postgres::ORM::Resource
+      end
 
-    def mapper
-      ORMToObjectMapper
-    end
+      def mapper
+        ORMToObjectMapper
+      end
   end
 end

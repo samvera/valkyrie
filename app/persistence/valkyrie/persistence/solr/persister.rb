@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Solr
   class Persister
     class << self
       def save(model)
-        self.new(model: model).persist
+        new(model: model).persist
       end
     end
 

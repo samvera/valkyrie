@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Valkyrie::Persistence::Postgres
   class ResourceFactory
     class << self
