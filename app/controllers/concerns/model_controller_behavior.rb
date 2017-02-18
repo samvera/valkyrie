@@ -30,7 +30,7 @@ module ModelControllerBehavior
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(@form)
-      redirect_to solr_document_path(id: Mapper.new(obj).id)
+      redirect_to solr_document_path(id: ResourceFactory.new(adapter: ::Valkyrie::Persistence::Solr).from_model(obj).id)
     else
       render :edit
     end

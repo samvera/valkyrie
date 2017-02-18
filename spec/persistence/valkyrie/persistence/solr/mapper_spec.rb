@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe Mapper do
+RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   subject { described_class.new(resource) }
   let(:resource) { instance_double(Book, id: "1", title: ["Test"], author: ["Author"], class: resource_class) }
   let(:resource_class) { class_double(Book, attribute_set: [object_double(obj_double, name: :id), object_double(obj_double, name: :title), object_double(obj_double, name: :author)]) }

@@ -5,7 +5,17 @@ class ResourceFactory
   class << self
     delegate :from_orm, :from_model, to: :delegate_class
     def delegate_class
-      "#{adapter}::ResourceFactory".constantize
+      self.new(adapter: adapter)
     end
+  end
+
+  attr_reader :adapter
+  delegate :from_orm, :from_model, to: :adapter_class
+  def initialize(adapter:)
+    @adapter = adapter
+  end
+
+  def adapter_class
+    "#{adapter}::ResourceFactory".constantize
   end
 end

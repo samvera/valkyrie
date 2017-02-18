@@ -1,24 +1,25 @@
 # frozen_string_literal: true
-class Mapper
-  ## Find a mapper for a given object
-  def self.find(obj)
-    new(obj)
-  end
+module Valkyrie::Persistence::Solr
+  class Mapper
+    ## Find a mapper for a given object
+    def self.find(obj)
+      new(obj)
+    end
 
-  attr_reader :object
-  delegate :id, to: :object
+    attr_reader :object
+    delegate :id, to: :object
 
-  def initialize(object)
-    @object = object
-  end
+    def initialize(object)
+      @object = object
+    end
 
-  def to_h
-    {
-      "id": id
-    }.merge(attribute_hash)
-  end
+    def to_h
+      {
+        "id": id
+      }.merge(attribute_hash)
+    end
 
-  private
+    private
 
     def attribute_hash
       properties.each_with_object({}) do |property, hsh|
@@ -38,4 +39,5 @@ class Mapper
     def properties
       object.class.attribute_set.map(&:name) - [:id]
     end
+  end
 end

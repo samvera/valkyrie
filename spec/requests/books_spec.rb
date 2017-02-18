@@ -60,7 +60,7 @@ RSpec.describe "Book Management" do
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
-        expect(response.location).to eq solr_document_url(id: Mapper.new(book).id)
+        expect(response.location).to eq solr_document_url(id: ResourceFactory.new(adapter: Valkyrie::Persistence::Solr).from_model(book).id)
         get response.location
         expect(response.body).to have_content "Two"
       end
