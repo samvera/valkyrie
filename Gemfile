@@ -19,6 +19,11 @@ gem "uglifier"
 gem 'devise'
 gem 'activerecord-import'
 
+## Fedora Adapter
+gem 'active-fedora'
+gem 'rdf'
+gem 'hydra-works'
+
 group :development do
   gem "listen"
   gem "spring"
