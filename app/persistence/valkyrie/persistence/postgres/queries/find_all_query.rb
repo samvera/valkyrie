@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Postgres::Queries
 
     def run
       relation.lazy.map do |orm_object|
-        ::Valkyrie::Persistence::Postgres::ResourceFactory.from_orm(orm_object)
+        ::Valkyrie::Persistence::Postgres::ResourceFactory.to_model(orm_object)
       end
     end
 

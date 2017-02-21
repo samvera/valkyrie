@@ -14,4 +14,11 @@ RSpec.describe PageForm do
       expect(subject).not_to be_valid
     end
   end
+
+  describe "#viewing_hint" do
+    let(:book) { Page.new(viewing_hint: ["left-to-right"]) }
+    it "returns the first one" do
+      expect(subject.viewing_hint).to eq "left-to-right"
+    end
+  end
 end

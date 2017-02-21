@@ -1,4 +1,3 @@
-
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres::Queries
   class FindByIdQuery
@@ -8,9 +7,9 @@ module Valkyrie::Persistence::Postgres::Queries
     end
 
     def run
-      ::ResourceFactory.from_orm(relation)
+      ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Postgres).to_model(relation)
     rescue ActiveRecord::RecordNotFound
-      raise Persister::ObjectNotFoundError
+      raise ::Persister::ObjectNotFoundError
     end
 
     private
@@ -21,10 +20,6 @@ module Valkyrie::Persistence::Postgres::Queries
 
       def orm_model
         ::Valkyrie::Persistence::Postgres::ORM::Resource
-      end
-
-      def mapper
-        ORMToObjectMapper
       end
   end
 end
