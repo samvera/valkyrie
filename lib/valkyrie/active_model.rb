@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 module Valkyrie
+  def config
+    Config.new(
+      YAML.load(ERB.new(File.read("#{Rails.root}/config/valkyrie.yml")).result)[Rails.env]
+    )
+  end
+
+  class Config < OpenStruct
+    def adapter
+      super.constantize
+    end
+  end
+
+  module_function :config
   module ActiveModel
     def self.included(base)
       base.include Virtus.model

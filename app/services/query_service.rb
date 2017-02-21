@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 class QueryService
   class_attribute :adapter
-  # self.adapter = Valkyrie::Persistence::Postgres
-  self.adapter = Valkyrie::Persistence::Fedora
+  self.adapter = Valkyrie.config.adapter
   class << self
     delegate :find_all, :find_by_id, :find_members, to: :default_adapter
 

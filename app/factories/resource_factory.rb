@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 class ResourceFactory
   class_attribute :adapter
-  # self.adapter = Valkyrie::Persistence::Postgres
-  self.adapter = Valkyrie::Persistence::Fedora
+  self.adapter = Valkyrie.config.adapter
   class << self
-    delegate :to_model, :from_model, to: :delegate_class
-    def delegate_class
+    delegate :to_model, :from_model, to: :default_adapter
+
+    def default_adapter
       new(adapter: adapter)
     end
   end

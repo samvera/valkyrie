@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 class Persister
   class_attribute :adapter
-  # self.adapter = Valkyrie::Persistence::Postgres
-  self.adapter = Valkyrie::Persistence::Fedora
+  self.adapter = Valkyrie.config.adapter
   class << self
     delegate :save, :persister, to: :default_adapter
 
