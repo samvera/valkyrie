@@ -1,5 +1,5 @@
 defaults: &defaults
-  adapter: Valkyrie::Persistence::Postgres
+  adapter: Valkyrie::Persistence::Fedora
 development:
   <<: *defaults
 

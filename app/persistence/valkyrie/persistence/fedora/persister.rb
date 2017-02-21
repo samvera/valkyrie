@@ -3,21 +3,49 @@ module Valkyrie::Persistence::Fedora
   class Persister
     class << self
       def save(model)
-        obj = resource_factory.from_model(model)
-        obj.attributes = model.attributes.except(:id, :member_ids)
-        member_ids = model.attributes.delete(:member_ids)
-        if member_ids
-          obj.ordered_members = member_ids.map do |member_id|
-            resource_factory.from_model(query_service.find_by_id(member_id))
-          end
+        new(model: model, post_processors: [append_processor(model)]).save
+      end
+
+      def append_processor(model)
+        Valkyrie::Persistence::Fedora::Processors::AppendProcessor::Factory.new(form: model)
+      end
+    end
+
+    attr_reader :model, :post_processors
+    def initialize(model:, post_processors: [])
+      @model = model
+      @post_processors = post_processors
+    end
+
+    def save
+      orm_object.attributes = model.attributes.except(:id, :member_ids)
+      process_members if member_ids
+      orm_object.save!
+      @model = resource_factory.to_model(orm_object)
+      post_processors.each do |processor|
+        processor.new(persister: self).run
+      end
+      model
+    end
+
+    private
+
+      def orm_object
+        @orm_object ||= resource_factory.from_model(model)
+      end
+
+      def process_members
+        orm_object.ordered_members = orm_member_objects
+      end
+
+      def orm_member_objects
+        member_ids.map do |member_id|
+          resource_factory.from_model(query_service.find_by_id(member_id))
         end
-        obj.save!
-        if model.respond_to?(:append_id) && model.append_id.present?
-          resource = ::Valkyrie::Persistence::Fedora::ORM::Resource.find(model.append_id)
-          resource.ordered_members << obj
-          resource.save!
-        end
-        ::Valkyrie::Persistence::Fedora::ResourceFactory.to_model(obj)
+      end
+
+      def member_ids
+        model.attributes[:member_ids]
       end
 
       def resource_factory
@@ -27,6 +55,5 @@ module Valkyrie::Persistence::Fedora
       def query_service
         ::QueryService.new(adapter: Valkyrie::Persistence::Fedora)
       end
-    end
   end
 end
