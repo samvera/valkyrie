@@ -3,11 +3,7 @@ module Valkyrie::Persistence::Postgres
   class Persister
     class << self
       def save(model)
-        persister(model).persist
-      end
-
-      def persister(model)
-        Persister.new(sync_object: sync_object(model), post_processors: post_processors(model))
+        new(sync_object: sync_object(model), post_processors: post_processors(model)).persist
       end
 
       def sync_object(model)
@@ -15,7 +11,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def post_processors(model)
-        [Processors::AppendProcessor::Factory.new(form: model)]
+        [::Valkyrie::Persistence::Postgres::Processors::AppendProcessor::Factory.new(form: model)]
       end
     end
 
