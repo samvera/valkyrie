@@ -5,10 +5,6 @@ class BookForm < Valkyrie::Form
 
   property :append_id, virtual: true
 
-  def [](key)
-    send(key) if respond_to?(key)
-  end
-
   def viewing_hint
     Array(model.viewing_hint).first
   end

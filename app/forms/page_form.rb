@@ -1,19 +1,9 @@
 # frozen_string_literal: true
-class PageForm < Reform::Form
+class PageForm < Valkyrie::Form
   validate :title_not_empty
-  def self.fields
-    Page.fields - [:id]
-  end
-
-  fields.each do |attribute|
-    property attribute
-  end
+  self.fields = Page.fields - [:id]
 
   property :append_id, virtual: true
-
-  def [](key)
-    send(key) if respond_to?(key)
-  end
 
   def viewing_hint
     Array(model.viewing_hint).first

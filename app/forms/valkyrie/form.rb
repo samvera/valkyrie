@@ -15,6 +15,10 @@ module Valkyrie
       fields
     end
 
+    def [](key)
+      send(key) if respond_to?(key)
+    end
+
     delegate :attributes, to: :model
 
     def resource_class
