@@ -152,6 +152,8 @@ GEM
       railties (>= 3.0.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
+    fcrepo_wrapper (0.8.0)
+      ruby-progressbar
     ffi (1.9.17)
     formulaic (0.3.0)
       activesupport
@@ -471,6 +473,7 @@ DEPENDENCIES
   devise-guests (~> 0.5)
   dotenv-rails
   factory_girl_rails
+  fcrepo_wrapper
   formulaic
   hydra-editor
   hydra-works

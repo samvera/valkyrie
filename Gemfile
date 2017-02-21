@@ -43,6 +43,7 @@ group :development, :test do
   gem 'capybara'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'fcrepo_wrapper'
 end
 
 group :development, :staging do

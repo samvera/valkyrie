@@ -12,3 +12,4 @@
 /tags
 /tmp/*
 /rethinkdb_data/
+/fcrepo4-test-data
