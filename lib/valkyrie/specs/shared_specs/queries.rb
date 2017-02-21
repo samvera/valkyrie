@@ -24,6 +24,9 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       expect(query_service.find_by_id(resource.id).id).to eq resource.id
     end
+    it "returns a ::Persister::ObjectNotFoundError for a non-found ID" do
+      expect { query_service.find_by_id("123123123") }.to raise_error ::Persister::ObjectNotFoundError
+    end
   end
 
   describe ".find_members" do
