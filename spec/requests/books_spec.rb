@@ -15,8 +15,8 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
       expect(response.location).to start_with "http://www.example.com/catalog/"
-      id = response.location.gsub("http://www.example.com/catalog/", "")
-      expect(find_book(id).title).to eq ["One", "Two"]
+      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/")
+      expect(find_book(id).title).to contain_exactly "One", "Two"
     end
     it "renders the form if it doesn't create a book" do
       post "/books", params: { book: { test: ["1"] } }
@@ -24,7 +24,7 @@ RSpec.describe "Book Management" do
     end
     it "can create a book as a child of another" do
       post "/books", params: { book: { title: ["One", "Two"] } }
-      id = response.location.gsub("http://www.example.com/catalog/", "")
+      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/")
       post "/books", params: { book: { title: ["Child"], append_id: id } }
       parent_book = find_book(id)
       expect(parent_book.member_ids).not_to be_blank
@@ -72,6 +72,6 @@ RSpec.describe "Book Management" do
   end
 
   def find_book(id)
-    QueryService.find_by(id: id)
+    QueryService.find_by_id(id)
   end
 end

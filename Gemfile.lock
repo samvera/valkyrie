@@ -152,6 +152,8 @@ GEM
       railties (>= 3.0.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
+    fcrepo_wrapper (0.8.0)
+      ruby-progressbar
     ffi (1.9.17)
     formulaic (0.3.0)
       activesupport
@@ -163,6 +165,12 @@ GEM
       concurrent-ruby (~> 1.0)
     hashdiff (0.3.2)
     http_logger (0.5.1)
+    hydra-derivatives (3.2.1)
+      active-fedora (>= 9.0, < 12)
+      activesupport (>= 4.0, < 6)
+      deprecation
+      mime-types (> 2.0, < 4.0)
+      mini_magick (>= 3.2, < 5)
     hydra-editor (3.1.2)
       active-fedora (>= 9.0.0)
       almond-rails (~> 0.0.3)
@@ -170,6 +178,16 @@ GEM
       rails (>= 4.2.0, < 6)
       simple_form (~> 3.2)
       sprockets-es6
+    hydra-file_characterization (0.3.3)
+      activesupport (>= 3.0.0)
+    hydra-pcdm (0.9.0)
+      active-fedora (>= 10, < 12)
+      mime-types (>= 1)
+    hydra-works (0.15.0)
+      hydra-derivatives (~> 3.0)
+      hydra-file_characterization (~> 0.3, >= 0.3.3)
+      hydra-pcdm (>= 0.9)
+      om (~> 3.1)
     i18n (0.7.0)
     ice_nine (0.11.2)
     jquery-rails (4.2.2)
@@ -219,6 +237,7 @@ GEM
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
+    mini_magick (4.6.1)
     mini_portile2 (2.1.0)
     minitest (5.10.1)
     multi_json (1.12.1)
@@ -227,6 +246,11 @@ GEM
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
     normalize-rails (3.0.3)
+    om (3.1.1)
+      activemodel
+      activesupport
+      nokogiri (>= 1.4.2)
+      solrizer (~> 3.3)
     orm_adapter (0.5.0)
     parser (2.3.3.1)
       ast (~> 2.2)
@@ -436,6 +460,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active-fedora
   activerecord-import
   autoprefixer-rails
   awesome_print
@@ -448,8 +473,10 @@ DEPENDENCIES
   devise-guests (~> 0.5)
   dotenv-rails
   factory_girl_rails
+  fcrepo_wrapper
   formulaic
   hydra-editor
+  hydra-works
   jquery-rails
   jquery-ui-rails (~> 6.0)
   launchy

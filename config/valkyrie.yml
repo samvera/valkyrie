@@ -1,0 +1,11 @@
+defaults: &defaults
+  adapter: Valkyrie::Persistence::Postgres
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
+
