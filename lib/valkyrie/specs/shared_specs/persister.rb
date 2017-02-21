@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 RSpec.shared_examples 'a Valkyrie::Persister' do
   before do
-    raise 'resource_class must be set with `let(:resource_class)`' unless
-      defined? resource_class
+    class CustomResource
+      include Valkyrie::ActiveModel
+      attribute :id
+      attribute :title
+    end
   end
-  let(:resource) { resource_class.new }
+  after do
+    Object.send(:remove_const, :CustomResource)
+  end
+  let(:resource) { CustomResource.new }
+  let(:resource_class) { CustomResource }
 
   it "can save a resource" do
     expect(described_class.save(resource).id).not_to be_blank
