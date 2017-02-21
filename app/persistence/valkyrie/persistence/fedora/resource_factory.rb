@@ -2,6 +2,11 @@
 module Valkyrie::Persistence::Fedora
   class ResourceFactory
     class << self
+
+      def adapter
+        Valkyrie::Persistence::Fedora
+      end
+
       def to_model(orm_obj)
         return solr_to_model(orm_obj) if orm_obj.is_a?(ActiveFedora::SolrHit)
         ::Valkyrie::Persistence::Fedora::DynamicKlass.new(orm_obj)

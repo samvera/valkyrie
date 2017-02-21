@@ -10,9 +10,13 @@ RSpec.shared_examples 'a Valkyrie::ResourceFactory' do
     Object.send(:remove_const, :CustomResource)
   end
 
+  it "responds to adapter" do
+    expect(described_class.adapter).not_to be_nil
+  end
+
   describe ".from_model" do
-    xit "creates a resource that can be fed into #to_model" do
-      model = CustomResource.new(id: "test")
+    it "creates a resource that can be fed into #to_model" do
+      model = Persister.new(adapter: described_class.adapter).save(CustomResource.new)
       orm_object = described_class.from_model(model)
       new_model = described_class.to_model(orm_object)
 

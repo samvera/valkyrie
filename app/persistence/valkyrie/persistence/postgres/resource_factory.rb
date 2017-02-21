@@ -12,6 +12,10 @@ module Valkyrie::Persistence::Postgres
           orm_object.metadata.merge!(resource.attributes.except(:id))
         end
       end
+
+      def adapter
+        Valkyrie::Persistence::Postgres
+      end
     end
   end
 end
