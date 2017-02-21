@@ -21,9 +21,5 @@ module Valkyrie::Persistence::Postgres::Queries
       def orm_model
         ::Valkyrie::Persistence::Postgres::ORM::Resource
       end
-
-      def mapper
-        ORMToObjectMapper
-      end
   end
 end
