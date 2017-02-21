@@ -1,12 +1,12 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres::Queries
+module Valkyrie::Persistence::Fedora::Queries
   class FindAllQuery
     attr_reader :obj
     def initialize; end
 
     def run
       relation.lazy.map do |orm_object|
-        ::Valkyrie::Persistence::Postgres::ResourceFactory.to_model(orm_object)
+        resource_factory.to_model(orm_object)
       end
     end
 
@@ -17,7 +17,11 @@ module Valkyrie::Persistence::Postgres::Queries
       end
 
       def orm_model
-        Valkyrie::Persistence::Postgres::ORM::Resource
+        Valkyrie::Persistence::Fedora::ORM::Resource
+      end
+
+      def resource_factory
+        ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Fedora)
       end
   end
 end

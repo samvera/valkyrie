@@ -22,11 +22,15 @@ module Valkyrie::Persistence::Postgres
       end
 
       def orm_object
-        @orm_object ||= ResourceFactory.from_model(model)
+        @orm_object ||= resource_factory.from_model(model)
       end
 
       def rebuild_model
-        @model = ResourceFactory.from_orm(orm_object)
+        @model = resource_factory.to_model(orm_object)
+      end
+
+      def resource_factory
+        ::ResourceFactory.new(adapter: Valkyrie::Persistence::Postgres)
       end
 
       def clean_attributes

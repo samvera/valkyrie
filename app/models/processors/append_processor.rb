@@ -20,7 +20,7 @@ module Processors
 
     def run
       return unless append_id.present?
-      parent = QueryService.find_by(id: append_id)
+      parent = QueryService.find_by_id(append_id)
       parent.member_ids = parent.member_ids + [model.id]
       Indexer.new(Persister).save(parent)
     end

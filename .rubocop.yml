@@ -118,6 +118,9 @@ Rails/Date:
 Rails/TimeZone:
   Enabled: false
 
+Rails/DynamicFindBy:
+  Enabled: false
+
 RSpec/ExampleWording:
   CustomTransform:
     be: is

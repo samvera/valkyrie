@@ -2,7 +2,7 @@
 module Valkyrie::Persistence::Postgres
   class ResourceFactory
     class << self
-      def from_orm(orm_object)
+      def to_model(orm_object)
         ::Valkyrie::Persistence::Postgres::DynamicKlass.new(::Valkyrie::Persistence::Postgres::AttributeMapper.new(orm_object: orm_object).orm_attributes)
       end
 

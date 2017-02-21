@@ -9,7 +9,7 @@ module Valkyrie::Persistence::Fedora::Queries
     def run
       ::ResourceFactory.to_model(relation)
     rescue ActiveFedora::ObjectNotFoundError
-      raise Persister::ObjectNotFoundError
+      raise ::Persister::ObjectNotFoundError
     end
 
     private
