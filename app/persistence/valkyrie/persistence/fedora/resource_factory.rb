@@ -14,7 +14,7 @@ module Valkyrie::Persistence::Fedora
           rescue
             ::Valkyrie::Persistence::Fedora::ORM::Resource.new
           end
-        resource.internal_model = [model.class.to_s]
+        resource.internal_model = [model.resource_class.to_s]
         resource
       end
 

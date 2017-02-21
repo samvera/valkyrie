@@ -7,7 +7,11 @@ module Valkyrie::Persistence::Fedora
       end
 
       def append_processor(model)
-        Valkyrie::Persistence::Fedora::Processors::AppendProcessor::Factory.new(form: model)
+        Valkyrie::Processors::AppendProcessor::Factory.new(form: model, adapter: adapter)
+      end
+
+      def adapter
+        Valkyrie::Persistence::Fedora
       end
     end
 

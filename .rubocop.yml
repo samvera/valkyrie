@@ -35,6 +35,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/initializers/*'
     - 'config/routes.rb'
+    - 'lib/valkyrie/specs/**/*'
 
 Metrics/MethodLength:
   Enabled: false

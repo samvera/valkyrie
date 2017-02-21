@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Postgres
 
       def from_model(resource)
         ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(id: resource.id).tap do |orm_object|
-          orm_object.model_type ||= resource.class.to_s
+          orm_object.model_type ||= resource.resource_class.to_s
         end
       end
     end

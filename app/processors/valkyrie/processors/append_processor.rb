@@ -1,19 +1,20 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres::Processors
+module Valkyrie::Processors
   class AppendProcessor
     class Factory
-      attr_reader :form
-      def initialize(form:)
+      attr_reader :form, :adapter
+      def initialize(form:, adapter:)
         @form = form
+        @adapter = adapter
       end
 
       def new(hsh_args)
-        ::Valkyrie::Persistence::Postgres::Processors::AppendProcessor.new(hsh_args.merge(form: form))
+        ::Valkyrie::Processors::AppendProcessor.new(hsh_args.merge(form: form, adapter: adapter))
       end
     end
     attr_reader :persister, :form, :adapter
     delegate :model, to: :persister
-    def initialize(persister:, form:, adapter: ::Valkyrie::Persistence::Postgres)
+    def initialize(persister:, form:, adapter:)
       @persister = persister
       @form = form
       @adapter = adapter

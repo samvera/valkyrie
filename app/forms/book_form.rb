@@ -1,13 +1,7 @@
 # frozen_string_literal: true
-class BookForm < Reform::Form
+class BookForm < Valkyrie::Form
   validate :title_not_empty
-  def self.fields
-    Book.fields - [:id]
-  end
-
-  fields.each do |attribute|
-    property attribute
-  end
+  self.fields = Book.fields - [:id]
 
   property :append_id, virtual: true
 

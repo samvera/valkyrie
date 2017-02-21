@@ -10,7 +10,7 @@ module ModelControllerBehavior
   end
 
   def create
-    @form = PersistableForm.new(form_class.new(resource_class.new))
+    @form = form_class.new(resource_class.new)
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(@form)
@@ -26,7 +26,7 @@ module ModelControllerBehavior
   end
 
   def update
-    @form = PersistableForm.new(form_class.new(find_book(params[:id])))
+    @form = form_class.new(find_book(params[:id]))
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(@form)

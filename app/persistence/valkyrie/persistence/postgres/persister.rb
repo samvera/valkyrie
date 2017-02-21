@@ -11,7 +11,11 @@ module Valkyrie::Persistence::Postgres
       end
 
       def post_processors(model)
-        [::Valkyrie::Persistence::Postgres::Processors::AppendProcessor::Factory.new(form: model)]
+        [Valkyrie::Processors::AppendProcessor::Factory.new(form: model, adapter: ::Valkyrie::Persistence::Postgres)]
+      end
+
+      def adapter
+        Valkyrie::Persistence::Postgres
       end
     end
 

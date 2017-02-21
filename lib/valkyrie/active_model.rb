@@ -47,6 +47,10 @@ module Valkyrie
       ::ActiveModel::Name.new(self.class)
     end
 
+    def resource_class
+      self.class
+    end
+
     module ClassMethods
       def fields
         attribute_set.map(&:name)
