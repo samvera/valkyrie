@@ -2,7 +2,6 @@
 module Valkyrie::Persistence::Fedora
   class ResourceFactory
     class << self
-
       def adapter
         Valkyrie::Persistence::Fedora
       end
