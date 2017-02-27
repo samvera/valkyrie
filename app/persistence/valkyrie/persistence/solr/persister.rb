@@ -14,6 +14,7 @@ module Valkyrie::Persistence::Solr
 
     def persist
       solr_connection.add solr_document, params: { softCommit: true }
+      model
     end
 
     def solr_document

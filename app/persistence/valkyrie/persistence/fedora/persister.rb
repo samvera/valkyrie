@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def append_processor(model)
-        Valkyrie::Processors::AppendProcessor::Factory.new(form: model, adapter: adapter)
+        Valkyrie::Processors::AppendProcessor.new(form: model, persister: self)
       end
 
       def adapter
@@ -27,7 +27,7 @@ module Valkyrie::Persistence::Fedora
       orm_object.save!
       @model = resource_factory.to_model(orm_object)
       post_processors.each do |processor|
-        processor.new(persister: self).run
+        processor.run(model: model)
       end
       model
     end

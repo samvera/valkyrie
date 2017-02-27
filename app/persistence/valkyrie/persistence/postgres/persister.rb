@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def post_processors(model)
-        [Valkyrie::Processors::AppendProcessor::Factory.new(form: model, adapter: ::Valkyrie::Persistence::Postgres)]
+        [Valkyrie::Processors::AppendProcessor.new(form: model, persister: self)]
       end
 
       def adapter
@@ -30,9 +30,9 @@ module Valkyrie::Persistence::Postgres
     def persist
       sync_object.save
       post_processors.each do |processor|
-        processor.new(persister: self).run
+        processor.run(model: model)
       end
-      sync_object.model
+      model
     end
   end
 end
