@@ -5,6 +5,10 @@ module Valkyrie::Persistence::Solr
       def save(model)
         new(model: model).persist
       end
+
+      def adapter
+        self
+      end
     end
 
     attr_reader :model
@@ -13,6 +17,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def persist
+      generate_id if model.id.blank?
       solr_connection.add solr_document, params: { softCommit: true }
       model
     end
@@ -23,6 +28,19 @@ module Valkyrie::Persistence::Solr
 
     def solr_connection
       Blacklight.default_index.connection
+    end
+
+    def inner_model
+      if model.respond_to?(:model)
+        model.model
+      else
+        model
+      end
+    end
+
+    def generate_id
+      Rails.logger.warn "The Solr adapter is not meant to persist new resources, but is now generating an ID."
+      inner_model.id = SecureRandom.uuid
     end
   end
 end

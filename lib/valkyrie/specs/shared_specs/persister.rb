@@ -48,7 +48,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
       Object.send(:remove_const, :ResourceForm)
     end
     it "works" do
-      form = ResourceForm.new(Book.new)
+      form = ResourceForm.new(CustomResource.new)
 
       expect(persister.save(form).id).not_to be_blank
     end

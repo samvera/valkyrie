@@ -37,7 +37,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def properties
-        object.class.attribute_set.map(&:name) - [:id]
+        object.attributes.keys - [:id]
       end
   end
 end
