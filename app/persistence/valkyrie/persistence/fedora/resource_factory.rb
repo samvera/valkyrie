@@ -43,6 +43,10 @@ module Valkyrie::Persistence::Fedora
             solr_hit.fetch("member_ids_ssim", [])
           end
 
+          def ordered_member_ids
+            solr_hit.fetch("member_ids_ssim", [])
+          end
+
           def method_missing(meth_name, *args)
             return super if args.present?
             if solr_hit["#{meth_name}_ssim"]
