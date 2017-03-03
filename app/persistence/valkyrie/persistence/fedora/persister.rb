@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Fedora
       if model.respond_to?(:changed?)
         process_members if model.changed?(:member_ids)
       else
-        process_members if model.member_ids
+        process_members if member_ids
       end
       orm_object.save!
       @model = resource_factory.to_model(orm_object)
