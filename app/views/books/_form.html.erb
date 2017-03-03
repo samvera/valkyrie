@@ -1,5 +1,5 @@
 <%= simple_form_for @form do |f| %>
-  <% @form.class.fields.each do |field| %>
+  <% (@form.class.fields - [:member_ids]).each do |field| %>
     <% if f.object.send(field).respond_to?(:each) %>
       <%= f.input field, as: :multi_value %>
     <% else %>

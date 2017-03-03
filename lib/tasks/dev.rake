@@ -17,7 +17,7 @@ if Rails.env.development? || Rails.env.test?
         solr.with_collection(name: "blacklight-core-test", dir: Rails.root.join("solr", "config").to_s) do
           SolrWrapper.wrap(managed: true, verbose: true, port: 8985, instance_dir: 'tmp/hydra-test', persist: false) do |solr_2|
             solr_2.with_collection(name: "hydra-test", dir: Rails.root.join("solr", "config").to_s) do
-              FcrepoWrapper.wrap(managed: true, verbose: true, port: 8986, enable_jms: false, fcrepo_home_dir: "fcrepo4-test-data") do |fcrepo|
+              FcrepoWrapper.wrap(managed: true, verbose: true, port: 8988, enable_jms: false, fcrepo_home_dir: "fcrepo4-test-data") do |fcrepo|
                 puts "Setup two solr servers & Fedora"
                 while(true)
                   sleep(1)
