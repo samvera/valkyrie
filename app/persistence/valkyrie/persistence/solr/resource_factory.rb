@@ -34,9 +34,9 @@ module Valkyrie::Persistence::Solr
       end
 
       def attribute_hash
-        strip_ssim(solr_document.select do |k, _v|
+        build_literals(strip_ssim(solr_document.select do |k, _v|
           k.end_with?("ssim")
-        end)
+        end))
       end
 
       def strip_ssim(hsh)
@@ -45,6 +45,23 @@ module Valkyrie::Persistence::Solr
             [k.gsub("_ssim", ""), v]
           end
         ]
+      end
+
+      def build_literals(hsh)
+        hsh.each_with_object({}) do |(key, value), output|
+          next if key.end_with?("_lang")
+          output[key] = if hsh["#{key}_lang"]
+                          literal_values(key, hsh)
+                        else
+                          value
+                        end
+        end
+      end
+
+      def literal_values(key, hsh)
+        Array.wrap(hsh[key]).each_with_index.map do |value, index|
+          RDF::Literal.new(value, language: Array.wrap(hsh["#{key}_lang"])[index])
+        end
       end
     end
   end
