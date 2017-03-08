@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   subject { described_class.new(resource) }
-  let(:resource) { instance_double(Book, id: "1", title: ["Test"], author: ["Author"], attributes: {title: nil, author: nil, id: nil}) }
+  let(:resource) { instance_double(Book, id: "1", title: ["Test"], author: ["Author"], attributes: { title: nil, author: nil, id: nil }) }
 
   describe "#to_h" do
     it "maps all available properties to the solr record" do

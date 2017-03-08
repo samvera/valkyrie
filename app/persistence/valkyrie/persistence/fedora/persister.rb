@@ -23,11 +23,7 @@ module Valkyrie::Persistence::Fedora
 
     def save
       orm_object.attributes = model.attributes.except(:id, :member_ids)
-      if model.respond_to?(:changed?)
-        process_members if model.changed?(:member_ids)
-      else
-        process_members if member_ids
-      end
+      process_members if member_ids
       orm_object.save!
       @model = resource_factory.to_model(orm_object)
       post_processors.each do |processor|

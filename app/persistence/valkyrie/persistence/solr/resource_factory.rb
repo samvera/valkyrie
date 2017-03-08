@@ -2,7 +2,6 @@
 module Valkyrie::Persistence::Solr
   class ResourceFactory
     class << self
-
       def to_model(solr_document)
         ModelBuilder.new(solr_document).model
       end

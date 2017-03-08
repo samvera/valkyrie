@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def adapter
-        self
+        Valkyrie::Persistence::Solr
       end
     end
 

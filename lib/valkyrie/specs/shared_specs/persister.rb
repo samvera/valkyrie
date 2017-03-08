@@ -7,6 +7,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
       include Valkyrie::ActiveModel
       attribute :id
       attribute :title
+      attribute :member_ids
     end
   end
   after do
@@ -17,6 +18,16 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
 
   it "can save a resource" do
     expect(persister.save(resource).id).not_to be_blank
+  end
+
+  it "can order members" do
+    book = persister.save(resource_class.new)
+    book2 = persister.save(resource_class.new)
+    book3 = persister.save(resource_class.new)
+    parent = persister.save(resource_class.new(member_ids: [book2.id, book.id, book3.id]))
+
+    reloaded = QueryService.new(adapter: persister.adapter).find_by_id(parent.id)
+    expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
   end
 
   it "doesn't override a resource that already has an ID" do
@@ -41,7 +52,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   context "when wrapped with a form object" do
     before do
       class ResourceForm < Valkyrie::Form
-        self.fields = [:title]
+        self.fields = [:title, :member_ids]
       end
     end
     after do

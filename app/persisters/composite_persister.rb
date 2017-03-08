@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class CompositePersister
   attr_reader :persisters
   def initialize(*persisters)

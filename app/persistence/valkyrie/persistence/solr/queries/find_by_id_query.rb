@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindByIdQuery
     attr_reader :id
@@ -10,7 +11,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def model
-      solr_connection.get("select", params: {q: "id:#{id}", fl: "*", rows: 1})["response"]["docs"].first
+      solr_connection.get("select", params: { q: "id:#{id}", fl: "*", rows: 1 })["response"]["docs"].first
     end
 
     def solr_connection
