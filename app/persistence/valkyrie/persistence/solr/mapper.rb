@@ -34,15 +34,21 @@ module Valkyrie::Persistence::Solr
       end
 
       class Value
+        class_attribute :value_processors
+        self.value_processors = []
         class << self
+          def register(klass)
+            value_processors << klass
+          end
+
           def for(property, value)
-            if value.respond_to?(:each)
-              EnumeratorValue.new(property, value)
-            elsif value.try(:term?)
-              RDFLiteralValue.new(property, value)
-            else
-              Value.new(property, value)
-            end
+            (value_processors + [Value]).find do |value_processor|
+              value_processor.handles?(property, value)
+            end.new(property, value)
+          end
+
+          def handles?(_property, _value)
+            true
           end
         end
 
@@ -69,6 +75,12 @@ module Valkyrie::Persistence::Solr
       end
 
       class RDFLiteralValue < Value
+        Value.register(self)
+        class << self
+          def handles?(_property, value)
+            value.try(:term?)
+          end
+        end
         def result
           Value.for(property, value.to_s).result.merge(
             Value.for(language_property, value.language.to_s).result
@@ -81,6 +93,13 @@ module Valkyrie::Persistence::Solr
       end
 
       class EnumeratorValue < Value
+        Value.register(self)
+        class << self
+          def handles?(_property, value)
+            value.is_a?(Enumerable)
+          end
+        end
+
         def result
           combine_hashes(value.map do |v|
             Value.for(property, v).result
