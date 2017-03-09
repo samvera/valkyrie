@@ -72,19 +72,35 @@ module Valkyrie::Persistence::Solr
             :tesim
           ]
         end
+
+        def combine_hashes(values)
+          values.inject do |first_hsh, second_hsh|
+            first_hsh.merge(second_hsh) do |_key, second_value, third_value|
+              Array.wrap(second_value) + Array.wrap(third_value)
+            end
+          end
+        end
       end
 
       class RDFLiteralValue < Value
         Value.register(self)
         class << self
           def handles?(_property, value)
-            value.try(:term?)
+            Array.wrap(value).find { |x| x.try(:term?) }
           end
         end
         def result
-          Value.for(property, value.to_s).result.merge(
-            Value.for(language_property, value.language.to_s).result
-          )
+          combine_hashes(Array.wrap(value).map do |val|
+            if val.try(:term?)
+              Value.for(property, val.to_s).result.merge(
+                Value.for(language_property, val.language.to_s).result
+              )
+            else
+              Value.for(property, val).result.merge(
+                Value.for(language_property, "eng").result
+              )
+            end
+          end)
         end
 
         def language_property
@@ -104,14 +120,6 @@ module Valkyrie::Persistence::Solr
           combine_hashes(value.map do |v|
             Value.for(property, v).result
           end) || {}
-        end
-
-        def combine_hashes(values)
-          values.inject do |first_hsh, second_hsh|
-            first_hsh.merge(second_hsh) do |_key, second_value, third_value|
-              Array.wrap(second_value) + Array.wrap(third_value)
-            end
-          end
         end
       end
   end

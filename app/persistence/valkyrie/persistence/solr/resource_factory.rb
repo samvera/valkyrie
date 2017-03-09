@@ -60,7 +60,12 @@ module Valkyrie::Persistence::Solr
 
       def literal_values(key, hsh)
         Array.wrap(hsh[key]).each_with_index.map do |value, index|
-          RDF::Literal.new(value, language: Array.wrap(hsh["#{key}_lang"])[index])
+          language = Array.wrap(hsh["#{key}_lang"])[index]
+          if language == "eng"
+            value
+          else
+            RDF::Literal.new(value, language: language)
+          end
         end
       end
     end

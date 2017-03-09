@@ -21,11 +21,11 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   end
 
   it "can handle RDF properties" do
-    book = persister.save(resource_class.new(title: [RDF::Literal.new("Test", language: :fr)]))
+    book = persister.save(resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 
     reloaded = QueryService.new(adapter: persister.adapter).find_by_id(book.id)
 
-    expect(reloaded.title).to eq [RDF::Literal.new("Test", language: :fr)]
+    expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
   end
 
   it "can order members" do
