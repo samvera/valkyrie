@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def query_service
-      Valkyrie::Persistence::Solr::QueryService
+      Valkyrie::Persistence::Solr::QueryService.new(connection: connection)
     end
 
     def resource_factory

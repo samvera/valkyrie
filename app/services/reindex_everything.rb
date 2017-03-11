@@ -2,7 +2,7 @@
 class ReindexEverything
   class << self
     def call
-      persister = Persister.new(adapter: ::Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection))
+      persister = Valkyrie::Adapter.find(:index_solr).persister
       QueryService.find_all.each do |book|
         persister.save(book)
       end

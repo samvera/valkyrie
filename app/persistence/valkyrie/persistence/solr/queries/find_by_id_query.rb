@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindByIdQuery
-    attr_reader :id
-    def initialize(id)
+    attr_reader :id, :connection
+    def initialize(id, connection:)
       @id = id
+      @connection = connection
     end
 
     def run
@@ -11,11 +12,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def model
-      solr_connection.get("select", params: { q: "id:#{id}", fl: "*", rows: 1 })["response"]["docs"].first
-    end
-
-    def solr_connection
-      Blacklight.default_index.connection
+      connection.get("select", params: { q: "id:#{id}", fl: "*", rows: 1 })["response"]["docs"].first
     end
   end
 end
