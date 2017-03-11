@@ -17,6 +17,6 @@ class ResourceFactory
   end
 
   def adapter_class
-    "#{adapter}::ResourceFactory".constantize
+    adapter.resource_factory
   end
 end

@@ -9,6 +9,10 @@ module Valkyrie::Persistence
       Valkyrie::Persistence::Fedora::QueryService
     end
 
-    module_function :persister, :query_service
+    def resource_factory
+      Valkyrie::Persistence::Fedora::ResourceFactory
+    end
+
+    module_function :persister, :query_service, :resource_factory
   end
 end

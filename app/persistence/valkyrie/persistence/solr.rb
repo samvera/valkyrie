@@ -9,6 +9,10 @@ module Valkyrie::Persistence
       Valkyrie::Persistence::Solr::QueryService
     end
 
-    module_function :persister, :query_service
+    def resource_factory
+      Valkyrie::Persistence::Solr::ResourceFactory
+    end
+
+    module_function :persister, :query_service, :resource_factory
   end
 end
