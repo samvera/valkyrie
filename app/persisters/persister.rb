@@ -16,7 +16,7 @@ class Persister
   end
 
   def adapted_persister
-    "#{adapter}::Persister".constantize
+    adapter.persister
   end
 
   class ObjectNotFoundError < StandardError

@@ -11,23 +11,26 @@ class QueryService
   end
 
   attr_reader :adapter
+  delegate :find_all, :find_by_id, :find_members, to: :adapter_query_service
   def initialize(adapter:)
     @adapter = adapter
   end
 
-  def find_all
-    build_query_class("FindAllQuery").new.run
-  end
-
-  def find_by_id(id)
-    build_query_class("FindByIdQuery").new(id).run
-  end
-
-  def find_members(book)
-    build_query_class("FindMembersQuery").new(book).run
-  end
-
-  def build_query_class(query_class_name)
-    "#{adapter}::Queries::#{query_class_name}".constantize
-  end
+  delegate :query_service, to: :adapter, prefix: true
+  #
+  # def find_all
+  #   build_query_class("FindAllQuery").new.run
+  # end
+  #
+  # def find_by_id(id)
+  #   build_query_class("FindByIdQuery").new(id).run
+  # end
+  #
+  # def find_members(book)
+  #   build_query_class("FindMembersQuery").new(book).run
+  # end
+  #
+  # def build_query_class(query_class_name)
+  #   "#{adapter}::Queries::#{query_class_name}".constantize
+  # end
 end
