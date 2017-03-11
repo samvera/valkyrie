@@ -30,7 +30,7 @@ module ModelControllerBehavior
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(@form)
-      redirect_to solr_document_path(id: ResourceFactory.new(adapter: ::Valkyrie::Persistence::Solr).from_model(obj).id)
+      redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj).id)
     else
       render :edit
     end
@@ -53,6 +53,10 @@ module ModelControllerBehavior
     end
 
     def persister
-      CompositePersister.new(Persister, Persister.new(adapter: Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection)))
+      CompositePersister.new(Persister, solr_adapter.persister)
+    end
+
+    def solr_adapter
+      Valkyrie::Adapter.find(:index_solr)
     end
 end

@@ -57,10 +57,11 @@ RSpec.describe "Book Management" do
     end
     context "when it does exist" do
       let(:book) { Persister.save(Book.new(title: ["Testing"])) }
+      let(:solr_adapter) { Valkyrie::Adapter.find(:index_solr) }
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
-        expect(response.location).to eq solr_document_url(id: ResourceFactory.new(adapter: Valkyrie::Persistence::Solr).from_model(book).id)
+        expect(response.location).to eq solr_document_url(id: solr_adapter.resource_factory.from_model(book).id)
         get response.location
         expect(response.body).to have_content "Two"
       end

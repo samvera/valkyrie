@@ -3,7 +3,8 @@ require 'rails_helper'
 
 RSpec.describe SolrDocument do
   subject { described_class.new(solr_hash) }
-  let(:solr_hash) { ResourceFactory.new(adapter: Valkyrie::Persistence::Solr).from_model(book).to_h }
+  let(:solr_adapter) { Valkyrie::Adapter.find(:index_solr) }
+  let(:solr_hash) { solr_adapter.resource_factory.from_model(book).to_h }
   let(:book) { Book.new }
 
   describe "#members" do

@@ -8,7 +8,7 @@ module Valkyrie
 
   class Config < OpenStruct
     def adapter
-      super.constantize
+      Valkyrie::Adapter.find(super.to_sym)
     end
   end
 
