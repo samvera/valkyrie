@@ -1,8 +1,13 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence
-  module Solr
+module Valkyrie::Persistence::Solr
+  class Adapter
+    attr_reader :connection
+    def initialize(connection:)
+      @connection = connection
+    end
+
     def persister
-      # Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection).persister
+      Valkyrie::Persistence::Solr::Persister.new(adapter: self)
     end
 
     def query_service
@@ -12,7 +17,5 @@ module Valkyrie::Persistence
     def resource_factory
       Valkyrie::Persistence::Solr::ResourceFactory
     end
-
-    module_function :persister, :query_service, :resource_factory
   end
 end

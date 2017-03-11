@@ -53,6 +53,6 @@ module ModelControllerBehavior
     end
 
     def persister
-      CompositePersister.new(Persister, Persister.new(adapter: Valkyrie::Persistence::Solr))
+      CompositePersister.new(Persister, Persister.new(adapter: Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection)))
     end
 end
