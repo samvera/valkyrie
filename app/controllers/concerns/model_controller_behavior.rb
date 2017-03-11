@@ -53,7 +53,7 @@ module ModelControllerBehavior
     end
 
     def persister
-      CompositePersister.new(Persister, solr_adapter.persister)
+      Valkyrie::Adapter.find(:indexing_persister)
     end
 
     def solr_adapter
