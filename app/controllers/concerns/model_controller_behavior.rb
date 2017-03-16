@@ -36,6 +36,13 @@ module ModelControllerBehavior
     end
   end
 
+  def destroy
+    @book = find_book(params[:id])
+    persister.delete(@book)
+    flash[:alert] = "Deleted #{@book}"
+    redirect_to root_path
+  end
+
   private
 
     # Include 'curation_concerns/base' in the search path for views, while prefering

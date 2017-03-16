@@ -7,6 +7,7 @@
     <ul class="nav">
       <li>
         <%= link_to "Edit", polymorphic_path([:edit, document.resource]) %>
+        <%= link_to "Delete", polymorphic_path([document.resource]), method: :delete %>
       </li>
       <li>
         <div class="btn-group">

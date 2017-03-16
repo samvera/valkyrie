@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :books, only: [:new, :create, :edit, :update] do
+  resources :books, only: [:new, :create, :edit, :update, :destroy] do
     member do
       get '/append/book', action: :append, model: Book, as: :book_append
       get '/append/page', action: :append, model: Page, as: :page_append
@@ -47,5 +47,5 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :pages, only: [:new, :create, :edit, :update]
+  resources :pages, only: [:new, :create, :edit, :update, :destroy]
 end

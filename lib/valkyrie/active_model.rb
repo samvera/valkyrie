@@ -51,6 +51,10 @@ module Valkyrie
       self.class
     end
 
+    def to_s
+      "#{resource_class}: #{id}"
+    end
+
     module ClassMethods
       def fields
         attribute_set.map(&:name)

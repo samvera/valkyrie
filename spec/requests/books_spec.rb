@@ -33,6 +33,16 @@ RSpec.describe "Book Management" do
     end
   end
 
+  describe "destroy" do
+    it "can delete a book" do
+      book = Persister.save(Book.new(title: "Test"))
+      delete "/books/#{book.id}"
+
+      expect(response).to redirect_to root_path
+      expect { QueryService.find_by_id(book.id) }.to raise_error ::Persister::ObjectNotFoundError
+    end
+  end
+
   describe "edit" do
     context "when a book doesn't exist" do
       it "raises an error" do
