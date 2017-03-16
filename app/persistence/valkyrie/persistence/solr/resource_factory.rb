@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class ResourceFactory
-    class << self
-      def to_model(solr_document)
-        ModelBuilder.new(solr_document).model
-      end
+    attr_reader :resource_indexer
+    def initialize(resource_indexer:)
+      @resource_indexer = resource_indexer
+    end
 
-      def from_model(model)
-        ::SolrDocument.new(::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(inner_model_ssim: model.resource_class.to_s))
-      end
+    def to_model(solr_document)
+      ModelBuilder.new(solr_document).model
+    end
+
+    def from_model(model)
+      ::SolrDocument.new(::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(inner_model_ssim: model.resource_class.to_s).merge(indexer_solr(model)))
+    end
+
+    def indexer_solr(model)
+      resource_indexer.new(resource: model).to_solr
     end
 
     class ModelBuilder

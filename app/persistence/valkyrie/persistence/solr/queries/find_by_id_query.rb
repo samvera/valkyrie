@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindByIdQuery
-    attr_reader :id, :connection
-    def initialize(id, connection:)
+    attr_reader :id, :connection, :resource_factory
+    def initialize(id, connection:, resource_factory:)
       @id = id
       @connection = connection
+      @resource_factory = resource_factory
     end
 
     def run
-      Valkyrie::Persistence::Solr::ResourceFactory.to_model(model)
+      resource_factory.to_model(model)
     end
 
     def model

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class Repository
-    attr_reader :model, :connection
-    def initialize(model:, connection:)
+    attr_reader :model, :connection, :resource_factory
+    def initialize(model:, connection:, resource_factory:)
       @model = model
       @connection = connection
+      @resource_factory = resource_factory
     end
 
     def persist
@@ -14,7 +15,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def solr_document
-      ::Valkyrie::Persistence::Solr::ResourceFactory.from_model(model).to_h
+      resource_factory.from_model(model).to_h
     end
 
     def inner_model
