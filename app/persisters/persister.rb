@@ -3,14 +3,14 @@ class Persister
   class_attribute :adapter
   self.adapter = Valkyrie.config.adapter
   class << self
-    delegate :save, :persister, to: :default_adapter
+    delegate :save, :delete, :persister, to: :default_adapter
 
     def default_adapter
       new(adapter: adapter)
     end
   end
 
-  delegate :save, :persister, to: :adapted_persister
+  delegate :save, :delete, :persister, to: :adapted_persister
   def initialize(adapter:)
     @adapter = adapter
   end

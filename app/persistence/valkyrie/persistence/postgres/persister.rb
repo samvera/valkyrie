@@ -3,7 +3,11 @@ module Valkyrie::Persistence::Postgres
   class Persister
     class << self
       def save(model)
-        new(sync_object: sync_object(model), post_processors: post_processors(model)).persist
+        instance(model).persist
+      end
+
+      def delete(model)
+        instance(model).delete
       end
 
       def sync_object(model)
@@ -16,6 +20,10 @@ module Valkyrie::Persistence::Postgres
 
       def adapter
         Valkyrie::Persistence::Postgres
+      end
+
+      def instance(model)
+        new(sync_object: sync_object(model), post_processors: post_processors(model))
       end
     end
 
@@ -32,6 +40,11 @@ module Valkyrie::Persistence::Postgres
       post_processors.each do |processor|
         processor.run(model: model)
       end
+      model
+    end
+
+    def delete
+      sync_object.delete
       model
     end
   end

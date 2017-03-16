@@ -10,6 +10,10 @@ module Valkyrie::Persistence::Postgres
       orm_object.save! && rebuild_model
     end
 
+    def delete
+      orm_object.delete && rebuild_model
+    end
+
     private
 
       def orm_object

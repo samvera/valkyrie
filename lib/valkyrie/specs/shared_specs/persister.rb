@@ -57,6 +57,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect(QueryService.new(adapter: persister.adapter).find_by_id(id)).to be_kind_of resource_class
   end
 
+  it "can delete objects" do
+    persisted = persister.save(resource)
+    query_service = persister.adapter.query_service
+    persister.delete(persisted)
+
+    expect { query_service.find_by_id(persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
+  end
+
   context "when wrapped with a form object" do
     before do
       class ResourceForm < Valkyrie::Form

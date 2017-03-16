@@ -16,4 +16,11 @@ class CompositePersister
     end
     model
   end
+
+  def delete(model)
+    persisters.each do |persister|
+      model = persister.delete(model)
+    end
+    model
+  end
 end

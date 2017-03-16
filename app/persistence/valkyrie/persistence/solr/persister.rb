@@ -8,7 +8,15 @@ module Valkyrie::Persistence::Solr
     end
 
     def save(model)
-      Valkyrie::Persistence::Solr::Repository.new(model: model, connection: connection, resource_factory: resource_factory).persist
+      repository(model).persist
+    end
+
+    def delete(model)
+      repository(model).delete
+    end
+
+    def repository(model)
+      Valkyrie::Persistence::Solr::Repository.new(model: model, connection: connection, resource_factory: resource_factory)
     end
   end
 end

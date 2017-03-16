@@ -14,6 +14,11 @@ module Valkyrie::Persistence::Solr
       model
     end
 
+    def delete
+      connection.delete_by_id model.id, params: { softCommit: true }
+      model
+    end
+
     def solr_document
       resource_factory.from_model(model).to_h
     end

@@ -2,8 +2,13 @@
 module Valkyrie::Persistence::Fedora
   class Persister
     class << self
+      delegate :save, :delete, to: :instance
       def save(model)
-        new(model: model, post_processors: [append_processor(model)]).save
+        instance(model).save
+      end
+
+      def delete(model)
+        instance(model).delete
       end
 
       def append_processor(model)
@@ -12,6 +17,10 @@ module Valkyrie::Persistence::Fedora
 
       def adapter
         Valkyrie::Persistence::Fedora
+      end
+
+      def instance(model)
+        new(model: model, post_processors: [append_processor(model)])
       end
     end
 
@@ -30,6 +39,11 @@ module Valkyrie::Persistence::Fedora
         processor.run(model: model)
       end
       model
+    end
+
+    def delete
+      orm_object.delete
+      orm_object
     end
 
     private

@@ -9,6 +9,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def run
+      raise ::Persister::ObjectNotFoundError unless model
       resource_factory.to_model(model)
     end
 
