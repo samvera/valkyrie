@@ -17,9 +17,11 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    CompositePersister.new(
-      Valkyrie.config.adapter.persister,
-      Valkyrie::Adapter.find(:index_solr).persister
+    AppendingPersister.new(
+      CompositePersister.new(
+        Valkyrie.config.adapter.persister,
+        Valkyrie::Adapter.find(:index_solr).persister
+      )
     ),
     :indexing_persister
   )
