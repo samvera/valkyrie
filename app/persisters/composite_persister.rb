@@ -11,16 +11,10 @@ class CompositePersister
   end
 
   def save(model)
-    persisters.each do |persister|
-      model = persister.save(model)
-    end
-    model
+    persisters.inject(model) { |m, persister| persister.save(m) }
   end
 
   def delete(model)
-    persisters.each do |persister|
-      model = persister.delete(model)
-    end
-    model
+    persisters.inject(model) { |m, persister| persister.delete(m) }
   end
 end
