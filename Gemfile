@@ -77,7 +77,6 @@ gem 'rsolr', '~> 1.0'
 
 gem 'devise-guests', '~> 0.5'
 gem 'virtus'
-gem 'rdf'
 gem 'reform'
 gem 'reform-rails'
 
