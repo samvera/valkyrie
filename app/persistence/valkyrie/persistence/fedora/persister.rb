@@ -49,12 +49,14 @@ module Valkyrie::Persistence::Fedora
       end
 
       def process_members
-        orm_object.ordered_members = orm_member_objects
+        new_members.each do |member|
+          orm_object.ordered_members << member
+        end
       end
 
-      def orm_member_objects
-        member_ids.map do |member_id|
-          resource_factory.from_model(query_service.find_by_id(member_id))
+      def new_members
+        (member_ids - orm_object.ordered_member_proxies.map(&:target_uri).map { |x| ActiveFedora::Base.uri_to_id(x) }).map do |member_id|
+          ActiveFedora::Base.find(member_id)
         end
       end
 
