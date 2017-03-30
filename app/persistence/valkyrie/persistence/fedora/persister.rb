@@ -20,14 +20,13 @@ module Valkyrie::Persistence::Fedora
       end
 
       def instance(model)
-        new(model: model, post_processors: [append_processor(model)])
+        new(model: model)
       end
     end
 
-    attr_reader :model, :post_processors
-    def initialize(model:, post_processors: [])
+    attr_reader :model
+    def initialize(model:)
       @model = model
-      @post_processors = post_processors
     end
 
     def save
@@ -35,9 +34,6 @@ module Valkyrie::Persistence::Fedora
       process_members if member_ids
       orm_object.save!
       @model = resource_factory.to_model(orm_object)
-      post_processors.each do |processor|
-        processor.run(model: model)
-      end
       model
     end
 

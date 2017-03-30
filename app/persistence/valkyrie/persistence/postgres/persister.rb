@@ -14,32 +14,24 @@ module Valkyrie::Persistence::Postgres
         ::Valkyrie::Persistence::Postgres::ORMSyncer.new(model: model)
       end
 
-      def post_processors(model)
-        [Valkyrie::Processors::AppendProcessor.new(form: model, persister: self)]
-      end
-
       def adapter
         Valkyrie::Persistence::Postgres
       end
 
       def instance(model)
-        new(sync_object: sync_object(model), post_processors: post_processors(model))
+        new(sync_object: sync_object(model))
       end
     end
 
-    attr_reader :post_processors, :sync_object
+    attr_reader :sync_object
     delegate :model, to: :sync_object
 
-    def initialize(sync_object: nil, post_processors: [])
+    def initialize(sync_object: nil)
       @sync_object = sync_object
-      @post_processors ||= post_processors
     end
 
     def persist
       sync_object.save
-      post_processors.each do |processor|
-        processor.run(model: model)
-      end
       model
     end
 
