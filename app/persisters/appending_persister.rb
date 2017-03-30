@@ -12,6 +12,8 @@ class AppendingPersister
     end
   end
 
+
+
   private
 
     def append_model(model, parent_id)
