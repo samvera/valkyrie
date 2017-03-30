@@ -1,9 +1,9 @@
 require 'benchmark'
 
-num_children = 50
+num_children = 100
 
 # Pop off the indexing_persister  so we don't test it
-Valkyrie::Adapter.adapters.to_a[0..1].each do |adapter_name, adapter|
+Valkyrie::Adapter.adapters.to_a[0..-2].each do |adapter_name, adapter|
   Benchmark.bm do |bench|
     parent = Book.new
     children = nil
