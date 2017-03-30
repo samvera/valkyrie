@@ -12,6 +12,11 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
+    Valkyrie::Persistence::Memory::Adapter.new,
+    :XXTREME
+  )
+
+  Valkyrie::Adapter.register(
     Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection),
     :index_solr
   )

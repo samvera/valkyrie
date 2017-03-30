@@ -1,7 +1,8 @@
+# frozen_string_literal: true
 module Valkyrie::Persistence::Memory
   class Adapter
-    def resource_factory
-    end
+    attr_writer :cache
+    def resource_factory; end
 
     def persister
       Valkyrie::Persistence::Memory::Persister.new(self)

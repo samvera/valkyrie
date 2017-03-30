@@ -80,5 +80,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
 
       expect(persister.save(form).id).not_to be_blank
     end
+    it "doesn't return a form object" do
+      form = ResourceForm.new(CustomResource.new)
+
+      persisted = persister.save(form)
+      reloaded = query_service.find_by_id(persisted.id)
+
+      expect(reloaded).to be_kind_of(CustomResource)
+    end
   end
 end

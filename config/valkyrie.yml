@@ -1,5 +1,5 @@
 defaults: &defaults
-  adapter: postgres
+  adapter: XXTREME
 development:
   <<: *defaults
 
