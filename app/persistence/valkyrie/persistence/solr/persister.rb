@@ -7,11 +7,11 @@ module Valkyrie::Persistence::Solr
       @adapter = adapter
     end
 
-    def save(model)
+    def save(model:)
       repository(model).persist
     end
 
-    def delete(model)
+    def delete(model:)
       repository(model).delete
     end
 

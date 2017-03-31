@@ -4,7 +4,7 @@ class ReindexEverything
     def call
       persister = Valkyrie::Adapter.find(:index_solr).persister
       QueryService.find_all.each do |book|
-        persister.save(book)
+        persister.save(model: book)
       end
     end
   end

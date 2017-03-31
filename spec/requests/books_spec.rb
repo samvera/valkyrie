@@ -35,7 +35,7 @@ RSpec.describe "Book Management" do
 
   describe "destroy" do
     it "can delete a book" do
-      book = Persister.save(Book.new(title: "Test"))
+      book = Persister.save(model: Book.new(title: "Test"))
       delete "/books/#{book.id}"
 
       expect(response).to redirect_to root_path
@@ -50,7 +50,7 @@ RSpec.describe "Book Management" do
       end
     end
     context "when it does exist" do
-      let(:book) { Persister.save(Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
       it "renders a form" do
         get edit_book_path(id: book.id)
         expect(response.body).to have_field "Title", with: "Testing"
@@ -66,7 +66,7 @@ RSpec.describe "Book Management" do
       end
     end
     context "when it does exist" do
-      let(:book) { Persister.save(Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
       let(:solr_adapter) { Valkyrie::Adapter.find(:index_solr) }
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }

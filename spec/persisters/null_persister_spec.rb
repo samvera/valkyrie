@@ -14,7 +14,7 @@ RSpec.describe NullPersister do
 
   describe ".save" do
     it "returns the given object" do
-      expect(described_class.save(book)).to eq book
+      expect(described_class.save(model: book)).to eq book
     end
   end
 end

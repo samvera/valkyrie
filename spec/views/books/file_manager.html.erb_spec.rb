@@ -3,8 +3,8 @@ require 'rails_helper'
 
 RSpec.describe "books/file_manager.html.erb", type: :view do
   let(:members) { [member] }
-  let(:member) { BookForm.new(Persister.save(Book.new)) }
-  let(:parent) { BookForm.new(Persister.save(Book.new(title: "Test title", member_ids: members.map(&:id)))) }
+  let(:member) { BookForm.new(Persister.save(model: Book.new)) }
+  let(:parent) { BookForm.new(Persister.save(model: Book.new(title: "Test title", member_ids: members.map(&:id)))) }
 
   before do
     assign(:record, parent)
