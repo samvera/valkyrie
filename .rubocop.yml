@@ -89,10 +89,6 @@ Style/PredicateName:
     - 'app/controllers/catalog_controller.rb'
     - 'lib/valkyrie/active_model.rb'
 
-Style/MultilineBlockChain:
-  Exclude:
-    - 'spec/support/**/*.rb'
-
 RSpec/NamedSubject:
   Enabled: false
 
