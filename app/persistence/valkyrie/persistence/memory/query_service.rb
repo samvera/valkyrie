@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Memory
   class QueryService
     attr_reader :adapter
     delegate :cache, to: :adapter
-    def initialize(adapter)
+    def initialize(adapter:)
       @adapter = adapter
     end
 

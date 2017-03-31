@@ -9,7 +9,7 @@ module Valkyrie::Persistence::Memory
     end
 
     def query_service
-      Valkyrie::Persistence::Memory::QueryService.new(self)
+      Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
     end
 
     def cache
