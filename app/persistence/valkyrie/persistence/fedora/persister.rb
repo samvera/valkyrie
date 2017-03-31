@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Fedora
         instance(model).save
       end
 
-      def delete(model)
+      def delete(model:)
         instance(model).delete
       end
 

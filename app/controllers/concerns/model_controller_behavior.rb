@@ -38,7 +38,7 @@ module ModelControllerBehavior
 
   def destroy
     @book = find_book(params[:id])
-    persister.delete(@book)
+    persister.delete(model: @book)
     flash[:alert] = "Deleted #{@book}"
     redirect_to root_path
   end

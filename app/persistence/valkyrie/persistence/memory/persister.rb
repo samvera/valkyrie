@@ -12,7 +12,7 @@ module Valkyrie::Persistence::Memory
       cache[model.id] = inner_model(model)
     end
 
-    def delete(model)
+    def delete(model:)
       cache.delete(model.id)
     end
 

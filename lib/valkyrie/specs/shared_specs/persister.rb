@@ -61,7 +61,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   it "can delete objects" do
     persisted = persister.save(model: resource)
     query_service = persister.adapter.query_service
-    persister.delete(persisted)
+    persister.delete(model: persisted)
 
     expect { query_service.find_by_id(id: persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
   end
