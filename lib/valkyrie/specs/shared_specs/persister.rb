@@ -15,6 +15,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   end
   let(:resource) { CustomResource.new }
   let(:resource_class) { CustomResource }
+  let(:query_service) { persister.adapter.query_service }
 
   it "can save a resource" do
     expect(persister.save(resource).id).not_to be_blank
@@ -23,7 +24,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   it "can handle language-typed RDF properties" do
     book = persister.save(resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 
-    reloaded = QueryService.new(adapter: persister.adapter).find_by_id(book.id)
+    reloaded = query_service.find_by_id(book.id)
 
     expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
   end
@@ -34,7 +35,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     book3 = persister.save(resource_class.new)
     parent = persister.save(resource_class.new(member_ids: [book2.id, book.id, book3.id]))
 
-    reloaded = QueryService.new(adapter: persister.adapter).find_by_id(parent.id)
+    reloaded = query_service.find_by_id(parent.id)
     expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
   end
 
@@ -54,7 +55,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   it "can find that resource again" do
     id = persister.save(resource).id
 
-    expect(QueryService.new(adapter: persister.adapter).find_by_id(id)).to be_kind_of resource_class
+    expect(persister.adapter.query_service.find_by_id(id)).to be_kind_of resource_class
   end
 
   it "can delete objects" do
@@ -78,6 +79,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
       form = ResourceForm.new(CustomResource.new)
 
       expect(persister.save(form).id).not_to be_blank
+    end
+    it "doesn't return a form object" do
+      form = ResourceForm.new(CustomResource.new)
+
+      persisted = persister.save(form)
+      reloaded = query_service.find_by_id(persisted.id)
+
+      expect(reloaded).to be_kind_of(CustomResource)
     end
   end
 end
