@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe Valkyrie::Persistence::Solr::Mapper do
+RSpec.describe Penguin::Persistence::Solr::Mapper do
   subject { described_class.new(resource) }
   let(:resource) { instance_double(Book, id: "1", title: ["Test"], author: ["Author"], attributes: { title: nil, author: nil, id: nil }) }
 

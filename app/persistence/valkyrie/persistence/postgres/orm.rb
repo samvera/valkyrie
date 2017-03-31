@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres
+module Penguin::Persistence::Postgres
   module ORM
     def self.table_name_prefix
       'orm_'

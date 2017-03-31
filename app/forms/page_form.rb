@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class PageForm < Valkyrie::Form
+class PageForm < Penguin::Form
   validate :title_not_empty
   self.fields = Page.fields - [:id]
 

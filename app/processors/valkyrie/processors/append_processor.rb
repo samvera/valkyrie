@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Processors
+module Penguin::Processors
   class AppendProcessor
     attr_reader :persister, :form
     delegate :adapter, to: :persister

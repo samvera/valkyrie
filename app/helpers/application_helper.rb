@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 module ApplicationHelper
-  include Valkyrie::TitleHelper
+  include Penguin::TitleHelper
   include ContextualPathHelper
 end

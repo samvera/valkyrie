@@ -16,9 +16,9 @@ en:
         "%B %d"
 
   titles:
-    application: Valkyrie
-  valkyrie:
-    product_name: "Project Valkyrie"
+    application: Penguin
+  penguin:
+    product_name: "Project Penguin"
     search:
       form:
         q:

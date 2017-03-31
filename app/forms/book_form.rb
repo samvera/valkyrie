@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class BookForm < Valkyrie::Form
+class BookForm < Penguin::Form
   validate :title_not_empty
   self.fields = Book.fields - [:id]
 

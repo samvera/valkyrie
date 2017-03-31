@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres
+module Penguin::Persistence::Postgres
   class Persister
     class << self
       def save(model)
@@ -11,11 +11,11 @@ module Valkyrie::Persistence::Postgres
       end
 
       def sync_object(model)
-        ::Valkyrie::Persistence::Postgres::ORMSyncer.new(model: model)
+        ::Penguin::Persistence::Postgres::ORMSyncer.new(model: model)
       end
 
       def adapter
-        Valkyrie::Persistence::Postgres
+        Penguin::Persistence::Postgres
       end
 
       def instance(model)

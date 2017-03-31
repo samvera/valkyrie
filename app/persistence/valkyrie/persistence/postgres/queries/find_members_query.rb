@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres::Queries
+module Penguin::Persistence::Postgres::Queries
   class FindMembersQuery
     attr_reader :obj
     def initialize(obj)
@@ -28,11 +28,11 @@ module Valkyrie::Persistence::Postgres::Queries
       end
 
       def orm_model
-        ::Valkyrie::Persistence::Postgres::ORM::Resource
+        ::Penguin::Persistence::Postgres::ORM::Resource
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Postgres)
+        ::ResourceFactory.new(adapter: ::Penguin::Persistence::Postgres)
       end
   end
 end

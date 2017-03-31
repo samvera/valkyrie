@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie query provider' do
+RSpec.shared_examples 'a Penguin query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter

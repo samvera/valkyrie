@@ -1,14 +1,14 @@
 # frozen_string_literal: true
-module Valkyrie
+module Penguin
   def config
     Config.new(
-      YAML.load(ERB.new(File.read("#{Rails.root}/config/valkyrie.yml")).result)[Rails.env]
+      YAML.load(ERB.new(File.read("#{Rails.root}/config/penguin.yml")).result)[Rails.env]
     )
   end
 
   class Config < OpenStruct
     def adapter
-      Valkyrie::Adapter.find(super.to_sym)
+      Penguin::Adapter.find(super.to_sym)
     end
   end
 

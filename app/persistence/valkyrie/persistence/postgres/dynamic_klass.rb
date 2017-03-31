@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres
+module Penguin::Persistence::Postgres
   class DynamicKlass
     def self.new(attributes)
       attributes["model_type"].constantize.new(attributes)

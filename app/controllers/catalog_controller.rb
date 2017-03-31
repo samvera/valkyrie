@@ -3,7 +3,7 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   include Catalog
   before_action :parent_document, only: :show
-  layout "valkyrie"
+  layout "penguin"
 
   def has_search_parameters?
     !params[:q].nil? || !params[:f].blank? || !params[:search_field].blank?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class ResourceFactory
   class_attribute :adapter
-  self.adapter = Valkyrie.config.adapter
+  self.adapter = Penguin.config.adapter
   class << self
     delegate :to_model, :from_model, to: :default_adapter
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe Valkyrie::Persistence::Postgres::Queries::FindMembersQuery do
+RSpec.describe Penguin::Persistence::Postgres::Queries::FindMembersQuery do
   describe "#run" do
     it "finds all member objects in #member_ids" do
       member = persister.save(Book.new)
@@ -20,7 +20,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Queries::FindMembersQuery do
     end
 
     def persister
-      ::Persister.new(adapter: Valkyrie::Persistence::Postgres)
+      ::Persister.new(adapter: Penguin::Persistence::Postgres)
     end
   end
 end

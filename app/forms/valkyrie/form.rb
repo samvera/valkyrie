@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie
+module Penguin
   class Form < Reform::Form
     class_attribute :fields
     self.fields = []
