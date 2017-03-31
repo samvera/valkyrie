@@ -12,7 +12,7 @@ RSpec.describe AppendingPersister do
     form.append_id = parent.id
 
     output = persister.save(form)
-    reloaded = persister.adapter.query_service.find_by_id(parent.id)
+    reloaded = persister.adapter.query_service.find_by_id(id: parent.id)
 
     expect(reloaded.member_ids).to eq [output.id]
   end

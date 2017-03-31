@@ -30,6 +30,6 @@ class SolrDocument
   end
 
   def resource
-    @resource ||= QueryService.find_by_id(id)
+    @resource ||= QueryService.find_by_id(id: id)
   end
 end
