@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Solr
       @resource_factory = resource_factory
     end
 
-    def find_by_id(id: nil)
+    def find_by_id(id:)
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
   end
