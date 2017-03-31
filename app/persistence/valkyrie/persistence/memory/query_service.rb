@@ -15,9 +15,7 @@ module Valkyrie::Persistence::Memory
       cache.values
     end
 
-    def find_members(*opts)
-      model = opts.fetch(:model) if opts[0].respond_to?(:fetch)
-      model = opts[0]
+    def find_members(model:)
       model.member_ids.map do |id|
         find_by_id(id: id)
       end

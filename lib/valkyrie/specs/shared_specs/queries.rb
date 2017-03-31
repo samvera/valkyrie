@@ -35,7 +35,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       child2 = persister.save(resource_class.new)
       parent = persister.save(resource_class.new(member_ids: [child2.id, child1.id]))
 
-      expect(query_service.find_members(parent).map(&:id).to_a).to eq [child2.id, child1.id]
+      expect(query_service.find_members(model: parent).map(&:id).to_a).to eq [child2.id, child1.id]
     end
   end
 end
