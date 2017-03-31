@@ -39,7 +39,7 @@ RSpec.describe "Book Management" do
       delete "/books/#{book.id}"
 
       expect(response).to redirect_to root_path
-      expect { QueryService.find_by_id(book.id) }.to raise_error ::Persister::ObjectNotFoundError
+      expect { QueryService.find_by_id(id: book.id) }.to raise_error ::Persister::ObjectNotFoundError
     end
   end
 
@@ -83,6 +83,6 @@ RSpec.describe "Book Management" do
   end
 
   def find_book(id)
-    QueryService.find_by_id(id)
+    QueryService.find_by_id(id: id)
   end
 end
