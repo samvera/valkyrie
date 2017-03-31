@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Postgres
         instance(model).persist
       end
 
-      def delete(model)
+      def delete(model:)
         instance(model).delete
       end
 

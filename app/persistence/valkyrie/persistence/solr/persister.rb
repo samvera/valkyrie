@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Solr
       repository(model).persist
     end
 
-    def delete(model)
+    def delete(model:)
       repository(model).delete
     end
 
