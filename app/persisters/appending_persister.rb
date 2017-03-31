@@ -16,7 +16,7 @@ class AppendingPersister
 
     def append_model(model, parent_id)
       return unless parent_id
-      parent = query_service.find_by_id(id: parent_id)
+      parent = query_service.find_by(id: parent_id)
       parent.member_ids = parent.member_ids + [model.id]
       persister.save(model: parent)
     end

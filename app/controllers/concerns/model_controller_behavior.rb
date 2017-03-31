@@ -56,7 +56,7 @@ module ModelControllerBehavior
     end
 
     def find_book(id)
-      QueryService.find_by_id(id: id)
+      QueryService.find_by(id: id)
     end
 
     def persister

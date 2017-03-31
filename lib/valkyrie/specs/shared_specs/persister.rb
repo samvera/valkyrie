@@ -24,7 +24,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   it "can handle language-typed RDF properties" do
     book = persister.save(model: resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 
-    reloaded = query_service.find_by_id(id: book.id)
+    reloaded = query_service.find_by(id: book.id)
 
     expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
   end
@@ -35,7 +35,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     book3 = persister.save(model: resource_class.new)
     parent = persister.save(model: resource_class.new(member_ids: [book2.id, book.id, book3.id]))
 
-    reloaded = query_service.find_by_id(id: parent.id)
+    reloaded = query_service.find_by(id: parent.id)
     expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
   end
 
@@ -55,7 +55,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   it "can find that resource again" do
     id = persister.save(model: resource).id
 
-    expect(persister.adapter.query_service.find_by_id(id: id)).to be_kind_of resource_class
+    expect(persister.adapter.query_service.find_by(id: id)).to be_kind_of resource_class
   end
 
   it "can delete objects" do
@@ -63,7 +63,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     query_service = persister.adapter.query_service
     persister.delete(model: persisted)
 
-    expect { query_service.find_by_id(id: persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
+    expect { query_service.find_by(id: persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
   end
 
   context "when wrapped with a form object" do
@@ -84,7 +84,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
       form = ResourceForm.new(CustomResource.new)
 
       persisted = persister.save(model: form)
-      reloaded = query_service.find_by_id(id: persisted.id)
+      reloaded = query_service.find_by(id: persisted.id)
 
       expect(reloaded).to be_kind_of(CustomResource)
     end
