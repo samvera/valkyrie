@@ -6,8 +6,8 @@ class AppendingPersister
     @persister = persister
   end
 
-  def save(model)
-    persister.save(model).tap do |result|
+  def save(model:)
+    persister.save(model: model).tap do |result|
       append_model(result, model.try(:append_id))
     end
   end
@@ -18,7 +18,7 @@ class AppendingPersister
       return unless parent_id
       parent = query_service.find_by_id(id: parent_id)
       parent.member_ids = parent.member_ids + [model.id]
-      persister.save(parent)
+      persister.save(model: parent)
     end
 
     def query_service

@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Memory
       @adapter = adapter
     end
 
-    def save(model)
+    def save(model:)
       generate_id(model) if model.id.blank?
       cache[model.id] = inner_model(model)
     end

@@ -2,7 +2,7 @@
 module Valkyrie::Persistence::Postgres
   class Persister
     class << self
-      def save(model)
+      def save(model:)
         instance(model).persist
       end
 

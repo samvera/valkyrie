@@ -10,8 +10,8 @@ class CompositePersister
     persisters.first.adapter
   end
 
-  def save(model)
-    persisters.inject(model) { |m, persister| persister.save(m) }
+  def save(model:)
+    persisters.inject(model) { |m, persister| persister.save(model: m) }
   end
 
   def delete(model)

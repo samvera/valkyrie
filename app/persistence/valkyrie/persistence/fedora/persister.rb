@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Fedora
   class Persister
     class << self
       delegate :save, :delete, to: :instance
-      def save(model)
+      def save(model:)
         instance(model).save
       end
 
