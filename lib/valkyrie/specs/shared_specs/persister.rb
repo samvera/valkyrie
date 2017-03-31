@@ -18,32 +18,32 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   let(:query_service) { persister.adapter.query_service }
 
   it "can save a resource" do
-    expect(persister.save(resource).id).not_to be_blank
+    expect(persister.save(model: resource).id).not_to be_blank
   end
 
   it "can handle language-typed RDF properties" do
-    book = persister.save(resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
+    book = persister.save(model: resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 
-    reloaded = query_service.find_by_id(book.id)
+    reloaded = query_service.find_by_id(id: book.id)
 
     expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
   end
 
   it "can order members" do
-    book = persister.save(resource_class.new)
-    book2 = persister.save(resource_class.new)
-    book3 = persister.save(resource_class.new)
-    parent = persister.save(resource_class.new(member_ids: [book2.id, book.id, book3.id]))
+    book = persister.save(model: resource_class.new)
+    book2 = persister.save(model: resource_class.new)
+    book3 = persister.save(model: resource_class.new)
+    parent = persister.save(model: resource_class.new(member_ids: [book2.id, book.id, book3.id]))
 
-    reloaded = query_service.find_by_id(parent.id)
+    reloaded = query_service.find_by_id(id: parent.id)
     expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
   end
 
   it "doesn't override a resource that already has an ID" do
-    book = persister.save(resource_class.new)
+    book = persister.save(model: resource_class.new)
     id = book.id
 
-    output = persister.save(book)
+    output = persister.save(model: book)
 
     expect(output.id).to eq id
   end
@@ -53,17 +53,17 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   end
 
   it "can find that resource again" do
-    id = persister.save(resource).id
+    id = persister.save(model: resource).id
 
-    expect(persister.adapter.query_service.find_by_id(id)).to be_kind_of resource_class
+    expect(persister.adapter.query_service.find_by_id(id: id)).to be_kind_of resource_class
   end
 
   it "can delete objects" do
-    persisted = persister.save(resource)
+    persisted = persister.save(model: resource)
     query_service = persister.adapter.query_service
-    persister.delete(persisted)
+    persister.delete(model: persisted)
 
-    expect { query_service.find_by_id(persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
+    expect { query_service.find_by_id(id: persisted.id) }.to raise_error ::Persister::ObjectNotFoundError
   end
 
   context "when wrapped with a form object" do
@@ -78,13 +78,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     it "works" do
       form = ResourceForm.new(CustomResource.new)
 
-      expect(persister.save(form).id).not_to be_blank
+      expect(persister.save(model: form).id).not_to be_blank
     end
     it "doesn't return a form object" do
       form = ResourceForm.new(CustomResource.new)
 
-      persisted = persister.save(form)
-      reloaded = query_service.find_by_id(persisted.id)
+      persisted = persister.save(model: form)
+      reloaded = query_service.find_by_id(id: persisted.id)
 
       expect(reloaded).to be_kind_of(CustomResource)
     end

@@ -10,21 +10,21 @@ Valkyrie::Adapter.adapters.to_a[0..-2].each do |adapter_name, adapter|
     bench.report("#{adapter_name} create #{num_children} children") do
       children = num_children.times.map do |page_num|
         p = Page.new
-        adapter.persister.save(p)
+        adapter.persister.save(model: p)
       end
     end
     parent.member_ids = children.map(&:id)
     bench.report("#{adapter_name} save parent with #{num_children} children") do
-      parent = adapter.persister.save(parent)
+      parent = adapter.persister.save(model: parent)
     end
     bench.report("#{adapter_name} reload parent with #{num_children} children") do
-      parent = adapter.query_service.find_by_id(parent.id)
+      parent = adapter.query_service.find_by_id(id: parent.id)
     end
     last_page = Page.new
-    adapter.persister.save(last_page)
+    adapter.persister.save(model: last_page)
     bench.report("#{adapter_name} add one more page to a parent with #{num_children} existing children") do
       parent.member_ids += [last_page.id]
-      parent = adapter.persister.save(parent)
+      parent = adapter.persister.save(model: parent)
     end
   end
 end

@@ -11,8 +11,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
   describe ".find_all" do
     it "returns all created resources" do
-      resource1 = persister.save(resource_class.new)
-      resource2 = persister.save(resource_class.new)
+      resource1 = persister.save(model: resource_class.new)
+      resource2 = persister.save(model: resource_class.new)
 
       expect(query_service.find_all.map(&:id)).to contain_exactly resource1.id, resource2.id
     end
@@ -20,22 +20,22 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
   describe ".find_by_id" do
     it "returns a resource by id" do
-      resource = persister.save(resource_class.new)
+      resource = persister.save(model: resource_class.new)
 
-      expect(query_service.find_by_id(resource.id).id).to eq resource.id
+      expect(query_service.find_by_id(id: resource.id).id).to eq resource.id
     end
     it "returns a ::Persister::ObjectNotFoundError for a non-found ID" do
-      expect { query_service.find_by_id("123123123") }.to raise_error ::Persister::ObjectNotFoundError
+      expect { query_service.find_by_id(id: "123123123") }.to raise_error ::Persister::ObjectNotFoundError
     end
   end
 
   describe ".find_members" do
     it "returns all a resource's members in order" do
-      child1 = persister.save(resource_class.new)
-      child2 = persister.save(resource_class.new)
-      parent = persister.save(resource_class.new(member_ids: [child2.id, child1.id]))
+      child1 = persister.save(model: resource_class.new)
+      child2 = persister.save(model: resource_class.new)
+      parent = persister.save(model: resource_class.new(member_ids: [child2.id, child1.id]))
 
-      expect(query_service.find_members(parent).map(&:id).to_a).to eq [child2.id, child1.id]
+      expect(query_service.find_members(model: parent).map(&:id).to_a).to eq [child2.id, child1.id]
     end
   end
 end

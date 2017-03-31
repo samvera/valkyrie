@@ -6,12 +6,12 @@ module Valkyrie::Persistence::Fedora
         Valkyrie::Persistence::Fedora::Queries::FindAllQuery.new.run
       end
 
-      def find_by_id(id)
+      def find_by_id(id:)
         Valkyrie::Persistence::Fedora::Queries::FindByIdQuery.new(id).run
       end
 
-      def find_members(book)
-        Valkyrie::Persistence::Fedora::Queries::FindMembersQuery.new(book).run
+      def find_members(model:)
+        Valkyrie::Persistence::Fedora::Queries::FindMembersQuery.new(model).run
       end
     end
   end
