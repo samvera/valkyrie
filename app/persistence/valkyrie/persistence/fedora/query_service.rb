@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def find_members(*opts)
-        model = opts.fetch(:model) if model.respond_to?(:fetch)
+        model = opts.fetch(:model) if opts[0].respond_to?(:fetch)
         model = opts[0]
         Valkyrie::Persistence::Fedora::Queries::FindMembersQuery.new(model).run
       end
