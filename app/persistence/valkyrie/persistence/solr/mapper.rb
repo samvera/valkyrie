@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class Mapper
     ## Find a mapper for a given object
     def self.find(obj)

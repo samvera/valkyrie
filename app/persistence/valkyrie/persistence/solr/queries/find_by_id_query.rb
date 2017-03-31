@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr::Queries
+module Penguin::Persistence::Solr::Queries
   class FindByIdQuery
     attr_reader :id, :connection, :resource_factory
     def initialize(id, connection:, resource_factory:)

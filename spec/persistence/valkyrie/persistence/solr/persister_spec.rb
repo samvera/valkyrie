@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 require 'rails_helper'
-require 'valkyrie/specs/shared_specs'
+require 'penguin/specs/shared_specs'
 
-RSpec.describe Valkyrie::Persistence::Solr::Persister do
-  let(:persister) { Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection).persister }
-  it_behaves_like "a Valkyrie::Persister"
+RSpec.describe Penguin::Persistence::Solr::Persister do
+  let(:persister) { Penguin::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection).persister }
+  it_behaves_like "a Penguin::Persister"
 
   context "when given additional persisters" do
-    let(:adapter) { Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection, resource_indexer: indexer) }
+    let(:adapter) { Penguin::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection, resource_indexer: indexer) }
     let(:indexer) { ResourceIndexer }
     before do
       class ResourceIndexer
@@ -23,7 +23,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
         end
       end
       class Resource
-        include Valkyrie::ActiveModel
+        include Penguin::ActiveModel
         attribute :id, String
         attribute :title, UniqueNonBlankArray
         attribute :other_title, UniqueNonBlankArray

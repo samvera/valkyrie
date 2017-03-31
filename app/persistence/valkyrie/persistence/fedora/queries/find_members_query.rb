@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora::Queries
+module Penguin::Persistence::Fedora::Queries
   class FindMembersQuery
     attr_reader :obj
     delegate :id, to: :obj
@@ -31,7 +31,7 @@ module Valkyrie::Persistence::Fedora::Queries
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Fedora)
+        ::ResourceFactory.new(adapter: ::Penguin::Persistence::Fedora)
       end
   end
 end

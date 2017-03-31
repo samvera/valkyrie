@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class Repository
     attr_reader :model, :connection, :resource_factory
     def initialize(model:, connection:, resource_factory:)

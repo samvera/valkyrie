@@ -1,10 +1,10 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie::Persister' do
+RSpec.shared_examples 'a Penguin::Persister' do
   before do
     raise 'persister must be set with `let(:persister)`' unless
       defined? persister
     class CustomResource
-      include Valkyrie::ActiveModel
+      include Penguin::ActiveModel
       attribute :id
       attribute :title
       attribute :member_ids
@@ -67,7 +67,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
 
   context "when wrapped with a form object" do
     before do
-      class ResourceForm < Valkyrie::Form
+      class ResourceForm < Penguin::Form
         self.fields = [:title, :member_ids]
       end
     end

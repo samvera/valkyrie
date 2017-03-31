@@ -1,8 +1,8 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie::ResourceFactory' do
+RSpec.shared_examples 'a Penguin::ResourceFactory' do
   before do
     class CustomResource
-      include Valkyrie::ActiveModel
+      include Penguin::ActiveModel
       attribute :id
     end
   end

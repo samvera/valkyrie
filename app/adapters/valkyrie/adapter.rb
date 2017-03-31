@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie
+module Penguin
   class Adapter
     class_attribute :adapters
     self.adapters = {}

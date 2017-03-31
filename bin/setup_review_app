@@ -10,10 +10,10 @@ if [ -z "$1" ]; then
 fi
 
 heroku pg:backups restore \
-  `heroku pg:backups public-url -a Valkyrie-staging` \
+  `heroku pg:backups public-url -a Penguin-staging` \
   DATABASE_URL \
-  --confirm Valkyrie-staging-pr-$1 \
-  --app Valkyrie-staging-pr-$1
-heroku run rake db:migrate --exit-code --app Valkyrie-staging-pr-$1
-heroku ps:scale worker=1 --app Valkyrie-staging-pr-$1
-heroku restart --app Valkyrie-staging-pr-$1
+  --confirm Penguin-staging-pr-$1 \
+  --app Penguin-staging-pr-$1
+heroku run rake db:migrate --exit-code --app Penguin-staging-pr-$1
+heroku ps:scale worker=1 --app Penguin-staging-pr-$1
+heroku restart --app Penguin-staging-pr-$1

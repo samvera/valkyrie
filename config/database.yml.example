@@ -1,7 +1,7 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: valkyrie_dev
+  database: penguin_dev
   pool: 5
   username: YOUR_USER_NAME
   password:
@@ -9,7 +9,7 @@ development:
 test:
   adapter: postgresql
   encoding: unicode
-  database: valkyrie_test
+  database: penguin_test
   pool: 5
   username: YOUR_USER_NAME
   password:

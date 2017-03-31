@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class Persister
     attr_reader :adapter
     delegate :connection, :resource_factory, to: :adapter
@@ -16,7 +16,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def repository(model)
-      Valkyrie::Persistence::Solr::Repository.new(model: model, connection: connection, resource_factory: resource_factory)
+      Penguin::Persistence::Solr::Repository.new(model: model, connection: connection, resource_factory: resource_factory)
     end
   end
 end

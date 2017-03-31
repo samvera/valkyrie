@@ -35,7 +35,7 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/initializers/*'
     - 'config/routes.rb'
-    - 'lib/valkyrie/specs/**/*'
+    - 'lib/penguin/specs/**/*'
 
 Metrics/MethodLength:
   Enabled: false
@@ -87,7 +87,7 @@ Style/GlobalVars:
 Style/PredicateName:
   Exclude:
     - 'app/controllers/catalog_controller.rb'
-    - 'lib/valkyrie/active_model.rb'
+    - 'lib/penguin/active_model.rb'
 
 RSpec/NamedSubject:
   Enabled: false

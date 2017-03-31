@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class ResourceFactory
     attr_reader :resource_indexer
     def initialize(resource_indexer:)
@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def from_model(model)
-      ::SolrDocument.new(::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(inner_model_ssim: model.resource_class.to_s).merge(indexer_solr(model)))
+      ::SolrDocument.new(::Penguin::Persistence::Solr::Mapper.find(model).to_h.merge(inner_model_ssim: model.resource_class.to_s).merge(indexer_solr(model)))
     end
 
     def indexer_solr(model)

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora
+module Penguin::Persistence::Fedora
   class Persister
     class << self
       delegate :save, :delete, to: :instance
@@ -12,11 +12,11 @@ module Valkyrie::Persistence::Fedora
       end
 
       def append_processor(model)
-        Valkyrie::Processors::AppendProcessor.new(form: model, persister: self)
+        Penguin::Processors::AppendProcessor.new(form: model, persister: self)
       end
 
       def adapter
-        Valkyrie::Persistence::Fedora
+        Penguin::Persistence::Fedora
       end
 
       def instance(model)
@@ -63,11 +63,11 @@ module Valkyrie::Persistence::Fedora
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: Valkyrie::Persistence::Fedora)
+        ::ResourceFactory.new(adapter: Penguin::Persistence::Fedora)
       end
 
       def query_service
-        ::QueryService.new(adapter: Valkyrie::Persistence::Fedora)
+        ::QueryService.new(adapter: Penguin::Persistence::Fedora)
       end
   end
 end

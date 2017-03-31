@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class QueryService
     attr_reader :connection, :resource_factory
     def initialize(connection:, resource_factory:)
@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def find_by_id(id)
-      Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
+      Penguin::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
   end
 end

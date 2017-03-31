@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Solr
+module Penguin::Persistence::Solr
   class Adapter
     attr_reader :connection, :resource_indexer
     def initialize(connection:, resource_indexer: NullIndexer)
@@ -8,15 +8,15 @@ module Valkyrie::Persistence::Solr
     end
 
     def persister
-      Valkyrie::Persistence::Solr::Persister.new(adapter: self)
+      Penguin::Persistence::Solr::Persister.new(adapter: self)
     end
 
     def query_service
-      Valkyrie::Persistence::Solr::QueryService.new(connection: connection, resource_factory: resource_factory)
+      Penguin::Persistence::Solr::QueryService.new(connection: connection, resource_factory: resource_factory)
     end
 
     def resource_factory
-      Valkyrie::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer)
+      Penguin::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer)
     end
 
     class NullIndexer

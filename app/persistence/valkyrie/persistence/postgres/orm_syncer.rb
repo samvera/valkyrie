@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Postgres
+module Penguin::Persistence::Postgres
   class ORMSyncer
     attr_reader :model
     def initialize(model:)
@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: Valkyrie::Persistence::Postgres)
+        ::ResourceFactory.new(adapter: Penguin::Persistence::Postgres)
       end
   end
 end

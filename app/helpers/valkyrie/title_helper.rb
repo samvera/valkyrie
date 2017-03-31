@@ -1,7 +1,7 @@
 # frozen_string_literal: true
-module Valkyrie::TitleHelper
+module Penguin::TitleHelper
   def application_title
-    t('valkyrie.product_name', default: application_name)
+    t('penguin.product_name', default: application_name)
   end
 
   def construct_page_title(*elements)

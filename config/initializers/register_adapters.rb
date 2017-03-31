@@ -1,26 +1,26 @@
 # frozen_string_literal: true
-require 'valkyrie/active_model'
+require 'penguin/active_model'
 Rails.application.config.to_prepare do
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Postgres,
+  Penguin::Adapter.register(
+    Penguin::Persistence::Postgres,
     :postgres
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Fedora,
+  Penguin::Adapter.register(
+    Penguin::Persistence::Fedora,
     :fedora
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection),
+  Penguin::Adapter.register(
+    Penguin::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection),
     :index_solr
   )
 
-  Valkyrie::Adapter.register(
+  Penguin::Adapter.register(
     AppendingPersister.new(
       CompositePersister.new(
-        Valkyrie.config.adapter.persister,
-        Valkyrie::Adapter.find(:index_solr).persister
+        Penguin.config.adapter.persister,
+        Penguin::Adapter.find(:index_solr).persister
       )
     ),
     :indexing_persister
