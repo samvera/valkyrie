@@ -11,10 +11,6 @@ module Valkyrie::Persistence::Fedora
         instance(model).delete
       end
 
-      def append_processor(model)
-        Valkyrie::Processors::AppendProcessor.new(form: model, persister: self)
-      end
-
       def adapter
         Valkyrie::Persistence::Fedora
       end
