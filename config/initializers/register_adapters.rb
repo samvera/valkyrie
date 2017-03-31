@@ -13,7 +13,7 @@ Rails.application.config.to_prepare do
 
   Valkyrie::Adapter.register(
     Valkyrie::Persistence::Memory::Adapter.new,
-    :XXTREME
+    :memory
   )
 
   Valkyrie::Adapter.register(

@@ -55,8 +55,14 @@ module Valkyrie::Persistence::Fedora
       end
 
       def new_members
-        (member_ids - orm_object.ordered_member_proxies.map(&:target_uri).map { |x| ActiveFedora::Base.uri_to_id(x) }).map do |member_id|
+        (member_ids - orm_member_ids).map do |member_id|
           ActiveFedora::Base.find(member_id)
+        end
+      end
+
+      def orm_member_ids
+        orm_object.ordered_member_proxies.map do |member|
+          ActiveFedora::Base.uri_to_id(member.target_uri)
         end
       end
 
