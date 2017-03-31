@@ -10,8 +10,8 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindByIdQuery.new(id).run
       end
 
-      def find_members(book)
-        Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(book).run
+      def find_members(model)
+        Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(model).run
       end
     end
   end
