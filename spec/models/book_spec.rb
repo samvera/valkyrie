@@ -29,10 +29,10 @@ RSpec.describe Book do
       subject.member_ids = ["123", "456", "789"]
     end
     it "can be set to the IDs created for other books" do
-      member = Persister.save(described_class.new)
+      member = Persister.save(model: described_class.new)
       parent = described_class.new
       parent.member_ids = member.id
-      parent = QueryService.find_by_id(id: Persister.save(parent).id)
+      parent = QueryService.find_by_id(id: Persister.save(model: parent).id)
 
       expect(parent.member_ids).to eq [member.id]
     end

@@ -13,7 +13,7 @@ module Valkyrie::Processors
       return unless append_id.present?
       parent = query_service.find_by_id(id: append_id)
       parent.member_ids = parent.member_ids + [model.id]
-      persister.save(parent)
+      persister.save(model: parent)
     end
 
     def append_id

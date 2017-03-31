@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class NullPersister
   class << self
-    def save(model)
+    def save(model:)
       model
     end
   end

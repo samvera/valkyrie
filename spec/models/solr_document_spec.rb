@@ -9,7 +9,7 @@ RSpec.describe SolrDocument do
 
   describe "#members" do
     context "when the book has members" do
-      let(:book) { Persister.save(Book.new(member_ids: Persister.save(Book.new).id)) }
+      let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
       it "returns them" do
         expect(subject.members.first.id).not_to eq book.id
       end
@@ -18,7 +18,7 @@ RSpec.describe SolrDocument do
 
   describe "#member_ids" do
     context "when the book has members" do
-      let(:book) { Persister.save(Book.new(member_ids: Persister.save(Book.new).id)) }
+      let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
       it "returns them" do
         expect(subject.member_ids).to eq book.member_ids
       end
