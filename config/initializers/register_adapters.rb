@@ -22,10 +22,12 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    AppendingPersister.new(
-      CompositePersister.new(
-        Valkyrie.config.adapter.persister,
-        Valkyrie::Adapter.find(:index_solr).persister
+    ParentCleanupPersister.new(
+      AppendingPersister.new(
+        CompositePersister.new(
+          Valkyrie.config.adapter.persister,
+          Valkyrie::Adapter.find(:index_solr).persister
+        )
       )
     ),
     :indexing_persister
