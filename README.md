@@ -1,7 +1,7 @@
 # Valkyrie
 
-This is just Trey's experiments on how we might look towards separating the
-Hydra/Curation Concerns stack from Fedora.
+A proof of concept "breakable toy" for enabling multiple backends for storage of
+  files and metadata in Hydra.
 
 ### Installing a Dev environment
 
@@ -16,3 +16,8 @@ Hydra/Curation Concerns stack from Fedora.
 1. `rake db:migrate`
 1. Start a dev server via `rake server:development`
 1. Bring up a Rails server via `rails s` or a console via `rails c`
+
+
+# License
+
+Valkyrie is available under [the Apache 2.0 license](LICENSE).
