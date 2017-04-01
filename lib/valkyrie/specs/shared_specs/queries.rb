@@ -18,14 +18,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
   end
 
-  describe ".find_by_id" do
+  describe ".find_by" do
     it "returns a resource by id" do
       resource = persister.save(model: resource_class.new)
 
-      expect(query_service.find_by_id(id: resource.id).id).to eq resource.id
+      expect(query_service.find_by(id: resource.id).id).to eq resource.id
     end
     it "returns a ::Persister::ObjectNotFoundError for a non-found ID" do
-      expect { query_service.find_by_id(id: "123123123") }.to raise_error ::Persister::ObjectNotFoundError
+      expect { query_service.find_by(id: "123123123") }.to raise_error ::Persister::ObjectNotFoundError
     end
   end
 

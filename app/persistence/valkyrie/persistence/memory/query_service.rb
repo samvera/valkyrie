@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Memory
       @adapter = adapter
     end
 
-    def find_by_id(id:)
+    def find_by(id:)
       cache[id] || raise(::Persister::ObjectNotFoundError)
     end
 
@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Memory
 
     def find_members(model:)
       model.member_ids.map do |id|
-        find_by_id(id: id)
+        find_by(id: id)
       end
     end
   end

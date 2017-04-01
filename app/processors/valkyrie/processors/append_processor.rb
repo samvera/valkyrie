@@ -11,7 +11,7 @@ module Valkyrie::Processors
 
     def run(model:)
       return unless append_id.present?
-      parent = query_service.find_by_id(id: append_id)
+      parent = query_service.find_by(id: append_id)
       parent.member_ids = parent.member_ids + [model.id]
       persister.save(model: parent)
     end

@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new.run
       end
 
-      def find_by_id(id:)
+      def find_by(id:)
         Valkyrie::Persistence::Postgres::Queries::FindByIdQuery.new(id).run
       end
 

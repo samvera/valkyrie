@@ -3,7 +3,7 @@ class QueryService
   class_attribute :adapter
   self.adapter = Valkyrie.config.adapter
   class << self
-    delegate :find_all, :find_by_id, :find_members, to: :default_adapter
+    delegate :find_all, :find_by, :find_members, to: :default_adapter
 
     def default_adapter
       new(adapter: adapter)
@@ -11,7 +11,7 @@ class QueryService
   end
 
   attr_reader :adapter
-  delegate :find_all, :find_by_id, :find_members, to: :adapter_query_service
+  delegate :find_all, :find_by, :find_members, to: :adapter_query_service
   def initialize(adapter:)
     @adapter = adapter
   end

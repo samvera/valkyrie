@@ -18,7 +18,7 @@ Valkyrie::Adapter.adapters.to_a[0..-2].each do |adapter_name, adapter|
       parent = adapter.persister.save(model: parent)
     end
     bench.report("#{adapter_name} reload parent with #{num_children} children") do
-      parent = adapter.query_service.find_by_id(id: parent.id)
+      parent = adapter.query_service.find_by(id: parent.id)
     end
     last_page = Page.new
     adapter.persister.save(model: last_page)
