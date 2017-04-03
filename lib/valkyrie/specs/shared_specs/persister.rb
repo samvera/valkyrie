@@ -60,7 +60,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect(persister.adapter.query_service.find_by(id: id)).to be_kind_of resource_class
   end
 
-  xit "can delete objects" do
+  it "can delete objects" do
     persisted = persister.save(model: resource)
     query_service = persister.adapter.query_service
     persister.delete(model: persisted)
