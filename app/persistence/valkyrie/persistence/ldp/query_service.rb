@@ -7,11 +7,9 @@ module Valkyrie::Persistence::LDP
     end
 
     def find_by(id:)
-      begin
-        adapter.resource_factory.to_model(::Ldp::Resource::RdfSource.new(client, "/#{id}"))
-      rescue ::Ldp::Gone
-        raise ::Persister::ObjectNotFoundError
-      end
+      adapter.resource_factory.to_model(::Ldp::Resource::RdfSource.new(client, "/#{id}"))
+    rescue ::Ldp::Gone
+      raise ::Persister::ObjectNotFoundError
     end
 
     def client
