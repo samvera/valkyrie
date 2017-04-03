@@ -8,6 +8,7 @@ module Valkyrie::Persistence::LDP
     end
 
     def save(model:)
+      initialize_repository
       orm = resource_factory.from_model(model)
       orm.save
       resource_factory.to_model(orm)
@@ -16,6 +17,18 @@ module Valkyrie::Persistence::LDP
     def delete(model:)
       orm = resource_factory.from_model(model)
       orm.delete
+    end
+
+    def initialize_repository
+      @initialized ||=
+        begin
+          resource = ::Ldp::Resource.new(adapter.connection, '/')
+          if resource.new?
+            resource.save
+          else
+            true
+          end
+        end
     end
   end
 end
