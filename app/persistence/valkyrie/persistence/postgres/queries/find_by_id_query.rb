@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Postgres::Queries
     end
 
     def run
-      ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Postgres).to_model(relation)
+      ::Valkyrie::Persistence::Postgres::ResourceFactory.to_model(relation)
     rescue ActiveRecord::RecordNotFound
       raise ::Persister::ObjectNotFoundError
     end

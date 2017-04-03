@@ -2,10 +2,6 @@
 module Valkyrie::Persistence::Fedora
   class ResourceFactory
     class << self
-      def adapter
-        Valkyrie::Persistence::Fedora
-      end
-
       def to_model(orm_obj)
         return solr_to_model(orm_obj) if orm_obj.is_a?(ActiveFedora::SolrHit)
         ::Valkyrie::Persistence::Fedora::DynamicKlass.new(orm_obj)
@@ -39,25 +35,13 @@ module Valkyrie::Persistence::Fedora
             attribute_hash.merge("id" => id)
           end
 
-          def member_ids
-            solr_hit.fetch("member_ids_ssim", [])
-          end
-
           def ordered_member_ids
             solr_hit.fetch("member_ids_ssim", [])
           end
 
           def method_missing(meth_name, *args)
             return super if args.present?
-            if solr_hit["#{meth_name}_ssim"]
-              solr_hit["#{meth_name}_ssim"]
-            else
-              super
-            end
-          end
-
-          def respond_to_missing?(meth_name)
-            solr_hit["#{meth_name}_ssim"]
+            solr_hit["#{meth_name}_ssim"] || super
           end
 
           private

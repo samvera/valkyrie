@@ -69,11 +69,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: Valkyrie::Persistence::Fedora)
-      end
-
-      def query_service
-        ::QueryService.new(adapter: Valkyrie::Persistence::Fedora)
+        ::Valkyrie::Persistence::Fedora::ResourceFactory
       end
   end
 end

@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def resource_factory
-        ::ResourceFactory.new(adapter: Valkyrie::Persistence::Postgres)
+        Valkyrie::Persistence::Postgres::ResourceFactory
       end
   end
 end

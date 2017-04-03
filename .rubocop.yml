@@ -113,6 +113,10 @@ Style/SingleLineBlockParams:
 Style/SignalException:
   Enabled: false
 
+Style/MethodMissing:
+  Exclude:
+    - 'app/persistence/valkyrie/persistence/fedora/resource_factory.rb'
+
 Rails/Date:
   Enabled: false
 
