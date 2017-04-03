@@ -12,5 +12,10 @@ module Valkyrie::Persistence::LDP
       orm.save
       resource_factory.to_model(orm)
     end
+
+    def delete(model:)
+      orm = resource_factory.from_model(model)
+      orm.delete
+    end
   end
 end
