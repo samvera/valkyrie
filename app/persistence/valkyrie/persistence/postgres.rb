@@ -9,10 +9,6 @@ module Valkyrie::Persistence
       Valkyrie::Persistence::Postgres::QueryService
     end
 
-    def resource_factory
-      Valkyrie::Persistence::Postgres::ResourceFactory
-    end
-
-    module_function :persister, :query_service, :resource_factory
+    module_function :persister, :query_service
   end
 end

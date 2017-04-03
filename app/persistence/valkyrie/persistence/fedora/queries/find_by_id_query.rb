@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Fedora::Queries
     end
 
     def run
-      ::ResourceFactory.new(adapter: ::Valkyrie::Persistence::Fedora).to_model(relation)
+      ::Valkyrie::Persistence::Fedora::ResourceFactory.to_model(relation)
     rescue ActiveFedora::ObjectNotFoundError, ::Ldp::Gone
       raise ::Persister::ObjectNotFoundError
     end

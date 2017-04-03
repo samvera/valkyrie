@@ -33,7 +33,9 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     book = persister.save(model: resource_class.new)
     book2 = persister.save(model: resource_class.new)
     book3 = persister.save(model: resource_class.new)
-    parent = persister.save(model: resource_class.new(member_ids: [book2.id, book.id, book3.id]))
+    parent = persister.save(model: resource_class.new(member_ids: [book2.id, book.id]))
+    parent.member_ids = parent.member_ids + [book3.id]
+    parent = persister.save(model: parent)
 
     reloaded = query_service.find_by(id: parent.id)
     expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
