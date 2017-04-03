@@ -5,6 +5,7 @@ development:
 
 test:
   <<: *defaults
+  adapter: memory
 
 production:
   <<: *defaults
