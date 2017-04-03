@@ -41,6 +41,14 @@ RSpec.describe "Book Management" do
       expect(response).to redirect_to root_path
       expect { QueryService.find_by(id: book.id) }.to raise_error ::Persister::ObjectNotFoundError
     end
+    it "cleans up associations in parents" do
+      child = Persister.save(model: Book.new)
+      parent = Persister.save(model: Book.new(member_ids: [child.id]))
+      delete "/books/#{child.id}"
+
+      reloaded = QueryService.find_by(id: parent.id)
+      expect(reloaded.member_ids).to eq []
+    end
   end
 
   describe "edit" do

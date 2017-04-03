@@ -13,6 +13,10 @@ module Valkyrie::Persistence::Fedora
       def find_members(model:)
         Valkyrie::Persistence::Fedora::Queries::FindMembersQuery.new(model).run
       end
+
+      def find_parents(model:)
+        Valkyrie::Persistence::Fedora::Queries::FindParentsQuery.new(model).run
+      end
     end
   end
 end

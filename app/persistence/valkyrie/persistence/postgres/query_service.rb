@@ -13,6 +13,10 @@ module Valkyrie::Persistence::Postgres
       def find_members(model:)
         Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(model).run
       end
+
+      def find_parents(model:)
+        Valkyrie::Persistence::Postgres::Queries::FindParentsQuery.new(model).run
+      end
     end
   end
 end

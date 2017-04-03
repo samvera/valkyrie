@@ -6,8 +6,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     raise 'resource_class must be set with `let(:resource_class)`' unless
       defined? resource_class
   end
-  let(:query_service) { QueryService.new(adapter: adapter) }
-  let(:persister) { Persister.new(adapter: adapter) }
+  let(:query_service) { adapter.query_service }
+  let(:persister) { adapter.persister }
 
   describe ".find_all" do
     it "returns all created resources" do
@@ -36,6 +36,17 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       parent = persister.save(model: resource_class.new(member_ids: [child2.id, child1.id]))
 
       expect(query_service.find_members(model: parent).map(&:id).to_a).to eq [child2.id, child1.id]
+    end
+  end
+
+  describe ".find_parents" do
+    it "returns all parent resources" do
+      child1 = persister.save(model: resource_class.new)
+      child2 = persister.save(model: resource_class.new)
+      parent = persister.save(model: resource_class.new(member_ids: [child1.id, child2.id]))
+      parent2 = persister.save(model: resource_class.new(member_ids: [child1.id]))
+
+      expect(query_service.find_parents(model: child1).map(&:id).to_a).to contain_exactly parent.id, parent2.id
     end
   end
 end
