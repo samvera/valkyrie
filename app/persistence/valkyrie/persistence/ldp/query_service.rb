@@ -20,6 +20,18 @@ module Valkyrie::Persistence::LDP
       end
     end
 
+    def find_all
+      ::Ldp::Container::Basic.new(client, adapter.base_container, nil, adapter.base_container).graph.query(predicate: RDF::Vocab::LDP.contains).lazy.map do |s|
+        find_by(id: adapter.uri_to_id(s.object))
+      end
+    end
+
+    def find_parents(model:)
+      find_all.select do |potential_parent|
+        potential_parent.member_ids.include?(model.id)
+      end
+    end
+
     def client
       adapter.connection
     end

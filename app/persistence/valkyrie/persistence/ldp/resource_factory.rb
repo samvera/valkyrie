@@ -7,7 +7,7 @@ module Valkyrie::Persistence::LDP
     end
 
     def from_model(model)
-      FromModel.new(model: model, client: client).resource
+      FromModel.new(model: model, client: client, adapter: adapter).resource
     end
 
     def to_model(orm_obj)
@@ -80,14 +80,15 @@ module Valkyrie::Persistence::LDP
       end
 
       class FromModel
-        attr_reader :model, :client
-        def initialize(model:, client:)
+        attr_reader :model, :client, :adapter
+        def initialize(model:, client:, adapter:)
           @model = model
           @client = client
+          @adapter = adapter
         end
 
         def resource
-          @resource ||= ::Ldp::Resource::RdfSource.new(client, subject_uri).tap do |o|
+          @resource ||= ::Ldp::Resource::RdfSource.new(client, subject_uri, nil, adapter.base_container).tap do |o|
             o.graph.delete([nil, nil, nil])
             model.attributes.each do |property, values|
               if property.to_sym == :member_ids && values.present?

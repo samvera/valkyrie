@@ -22,7 +22,7 @@ module Valkyrie::Persistence::LDP
     def initialize_repository
       @initialized ||=
         begin
-          resource = ::Ldp::Resource.new(adapter.connection, '/')
+          resource = ::Ldp::Container::Basic.new(adapter.connection, adapter.base_container, nil, adapter.base_container)
           if resource.new?
             resource.save
           else
