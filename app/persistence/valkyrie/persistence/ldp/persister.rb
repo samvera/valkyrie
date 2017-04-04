@@ -23,11 +23,8 @@ module Valkyrie::Persistence::LDP
       @initialized ||=
         begin
           resource = ::Ldp::Container::Basic.new(adapter.connection, adapter.base_container, nil, adapter.base_container)
-          if resource.new?
-            resource.save
-          else
-            true
-          end
+          resource.save if resource.new?
+          true
         end
     end
   end
