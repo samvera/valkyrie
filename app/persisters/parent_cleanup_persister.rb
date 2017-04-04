@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 class ParentCleanupPersister
-  attr_reader :persister
   delegate :adapter, :save, to: :persister
-  delegate :query_service, to: :adapter
   def initialize(persister)
     @persister = persister
   end
@@ -16,4 +14,9 @@ class ParentCleanupPersister
     end
     model
   end
+
+  private
+
+    attr_reader :persister
+    private(*delegate(:query_service, to: :adapter))
 end
