@@ -60,7 +60,7 @@ module ModelControllerBehavior
     end
 
     def persister
-      Valkyrie::Adapter.find(:indexing_persister)
+      Valkyrie::Adapter.find(:indexing_persister).persister
     end
 
     def solr_adapter
