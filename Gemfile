@@ -1,11 +1,13 @@
+# frozen_string_literal: true
 source "https://rubygems.org"
 
+gem 'activerecord-import'
 gem "autoprefixer-rails"
+gem 'devise'
 gem "jquery-rails"
 gem "normalize-rails", "~> 3.0.0"
 gem "pg"
 gem "puma"
-gem "sqlite3"
 gem "rack-canonical-host"
 gem "rails", "~> 5.0.0"
 gem "recipient_interceptor"
@@ -13,16 +15,15 @@ gem "sass-rails", "~> 5.0"
 gem "simple_form"
 gem "sprockets", ">= 3.0.0"
 gem "sprockets-es6"
+gem "sqlite3"
 gem "suspenders"
 gem "title"
 gem "uglifier"
-gem 'devise'
-gem 'activerecord-import'
 
 ## Fedora Adapter
 gem 'active-fedora'
-gem 'rdf'
 gem 'hydra-works'
+gem 'rdf'
 
 group :development do
   gem "listen"
@@ -35,15 +36,15 @@ group :development, :test do
   gem "awesome_print"
   gem "bullet"
   gem "bundler-audit", ">= 0.5.0", require: false
+  gem 'capybara'
   gem "dotenv-rails"
   gem "factory_girl_rails"
+  gem 'fcrepo_wrapper'
   gem "pry-byebug"
   gem "pry-rails"
   gem "rspec-rails"
-  gem 'capybara'
   gem 'rubocop'
   gem 'rubocop-rspec'
-  gem 'fcrepo_wrapper'
 end
 
 group :development, :staging do
@@ -69,17 +70,18 @@ end
 gem 'blacklight'
 
 group :development, :test do
-  gem 'solr_wrapper', '>= 0.3'
   gem 'rails-controller-testing'
+  gem 'solr_wrapper', '>= 0.3'
 end
 
 gem 'rsolr', '~> 1.0'
 
 gem 'devise-guests', '~> 0.5'
-gem 'virtus'
 gem 'reform'
 gem 'reform-rails'
+gem 'virtus'
 
 # Maybe extract just the stuff for multi-inputs..
+gem 'bixby'
 gem 'hydra-editor'
 gem 'jquery-ui-rails', '~> 6.0'

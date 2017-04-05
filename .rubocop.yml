@@ -1,34 +1,24 @@
 require: rubocop-rspec
-
-Rails:
-  Enabled: true
+inherit_gem:
+  bixby: bixby_default.yml
 AllCops:
   DisplayCopNames: true
   TargetRubyVersion: 2.3
-  Include:
-    - '**/Rakefile'
-    - '**/config.ru'
   Exclude:
-    - 'db/**/*'
-    - 'script/**/*'
-    - 'vendor/**/*'
     - 'bin/*'
     - 'config/deploy.rb'
-
-Lint/UnusedBlockArgument:
+Style/FileName:
+  Enabled: true
   Exclude:
-    - 'spec/**/*'
-
-Metrics/LineLength:
-  Enabled: false
-
-Metrics/AbcSize:
-  Enabled: false
-
-Metrics/ClassLength:
+    - 'Gemfile'
+    - '**/*.rake'
+Style/PredicateName:
   Exclude:
-    - 'app/controllers/catalog_controller.rb'
-
+    - "app/controllers/catalog_controller.rb"
+    - "lib/valkyrie/active_model.rb"
+Style/MethodMissing:
+  Exclude:
+    - "app/persistence/valkyrie/persistence/fedora/resource_factory.rb"
 Metrics/BlockLength:
   Exclude:
     - 'config/environments/**/*'
@@ -36,111 +26,18 @@ Metrics/BlockLength:
     - 'config/initializers/*'
     - 'config/routes.rb'
     - 'lib/valkyrie/specs/**/*'
-
+    - 'db/schema.rb'
+    - 'lib/tasks/dev.rake'
 Metrics/MethodLength:
-  Enabled: false
-
-Style/BlockDelimiters:
   Exclude:
-    - 'spec/**/*'
-
-Style/SymbolProc:
-  Exclude:
-    - 'spec/factories/**/*'
-
-Style/BlockComments:
-  Exclude:
-    - 'spec/spec_helper.rb'
-
-Style/BlockEndNewline:
-  Exclude:
-    - 'spec/**/*'
-
-Style/IndentHash:
-  Exclude:
-    - 'app/controllers/catalog_controller.rb'
-
-Style/LeadingCommentSpace:
-  Exclude:
-    - 'spec/**/*'
-
-Style/MultilineBlockLayout:
-  Exclude:
-    - 'spec/**/*'
-
-
-Style/IndentationConsistency:
-  EnforcedStyle: rails
-
-Style/CollectionMethods:
-  PreferredMethods:
-    collect: 'map'
-    collect!: 'map!'
-    inject: 'reduce'
-    detect: 'find'
-    find_all: 'select'
-
-Style/GlobalVars:
-  Exclude:
-    - 'config/initializers/redis_config.rb'
-
-Style/PredicateName:
-  Exclude:
-    - 'app/controllers/catalog_controller.rb'
-    - 'lib/valkyrie/active_model.rb'
-
-RSpec/NamedSubject:
-  Enabled: false
-
-Style/WordArray:
-  Enabled: false
-
-Style/RegexpLiteral:
-  Enabled: false
-
-Style/StringLiterals:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Style/SingleLineBlockParams:
-  Enabled: false
-
-Style/SignalException:
-  Enabled: false
-
-Style/MethodMissing:
-  Exclude:
-    - 'app/persistence/valkyrie/persistence/fedora/resource_factory.rb'
-
-Rails/Date:
-  Enabled: false
-
-Rails/TimeZone:
-  Enabled: false
-
-Rails/DynamicFindBy:
-  Enabled: false
-
-RSpec/ExampleWording:
-  CustomTransform:
-    be: is
-    have: has
-    not: does not
-    NOT: does NOT
-  IgnoredWords:
-    - only
-
+    - 'db/migrate/**/*'
 RSpec/FilePath:
+  Exclude:
+    - 'spec/adapters/registered_adapter_spec.rb'
+RSpec/MultipleExpectations:
   Enabled: false
-
-RSpec/InstanceVariable:
+RSpec/ExampleLength:
   Enabled: false
-
 RSpec/DescribeClass:
   Exclude:
     - 'spec/javascripts/jasmine_spec.rb'
@@ -152,9 +49,3 @@ RSpec/DescribeClass:
     - 'spec/routing/**/*'
     - 'spec/inputs/**/*'
     - 'spec/requests/**/*'
-RSpec/ExampleLength:
-  Exclude:
-    - 'spec/**/*'
-
-RSpec/MultipleExpectations:
-  Enabled: false

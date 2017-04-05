@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe SolrDocument do
-  subject { described_class.new(solr_hash) }
+  subject(:solr_document) { described_class.new(solr_hash) }
   let(:solr_adapter) { Valkyrie::Adapter.find(:index_solr) }
   let(:solr_hash) { solr_adapter.resource_factory.from_model(book).to_h }
   let(:book) { Book.new }
@@ -11,7 +11,7 @@ RSpec.describe SolrDocument do
     context "when the book has members" do
       let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
       it "returns them" do
-        expect(subject.members.first.id).not_to eq book.id
+        expect(solr_document.members.first.id).not_to eq book.id
       end
     end
   end
@@ -20,7 +20,7 @@ RSpec.describe SolrDocument do
     context "when the book has members" do
       let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
       it "returns them" do
-        expect(subject.member_ids).to eq book.member_ids
+        expect(solr_document.member_ids).to eq book.member_ids
       end
     end
   end

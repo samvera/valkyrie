@@ -1,12 +1,8 @@
-defaults: &defaults
-  adapter: postgres
 development:
-  <<: *defaults
+  adapter: postgres
 
 test:
-  <<: *defaults
   adapter: memory
 
 production:
-  <<: *defaults
-
+  adapter: postgres

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'benchmark'
 
 num_children = 100
@@ -8,7 +9,7 @@ Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
     parent = Book.new
     children = nil
     bench.report("#{adapter_name} create #{num_children} children") do
-      children = num_children.times.map do |page_num|
+      children = Array.new(num_children) do |_page_num|
         p = Page.new
         adapter.persister.save(model: p)
       end
