@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class ParentCleanupPersister
-  delegate :adapter, :save, to: :persister
+  delegate :adapter, to: :persister
   def initialize(persister)
     @persister = persister
   end
@@ -13,6 +13,10 @@ class ParentCleanupPersister
       persister.save(model: parent)
     end
     model
+  end
+
+  def save(model:)
+    persister.save(model: model)
   end
 
   private

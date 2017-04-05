@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class AppendingPersister
   attr_reader :persister
-  delegate :adapter, :delete, to: :persister
+  delegate :adapter, to: :persister
   def initialize(persister)
     @persister = persister
   end
@@ -10,6 +10,10 @@ class AppendingPersister
     persister.save(model: model).tap do |result|
       append_model(result, model.try(:append_id))
     end
+  end
+
+  def delete(model:)
+    persister.delete(model: model)
   end
 
   private
