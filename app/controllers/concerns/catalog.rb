@@ -4,7 +4,7 @@ module Catalog
   module ClassMethods
     def search_config
       {
-        'qf' => %w(title_ssim),
+        'qf' => %w[title_ssim],
         'qt' => 'search',
         'rows' => 10
       }

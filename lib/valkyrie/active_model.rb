@@ -2,7 +2,7 @@
 module Valkyrie
   def config
     Config.new(
-      YAML.load(ERB.new(File.read("#{Rails.root}/config/valkyrie.yml")).result)[Rails.env]
+      YAML.safe_load(ERB.new(File.read(Rails.root.join("config", "valkyrie.yml"))).result)[Rails.env]
     )
   end
 
