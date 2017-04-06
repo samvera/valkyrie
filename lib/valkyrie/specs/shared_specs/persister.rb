@@ -13,9 +13,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
   after do
     Object.send(:remove_const, :CustomResource)
   end
+  subject { persister }
   let(:resource) { CustomResource.new }
   let(:resource_class) { CustomResource }
   let(:query_service) { persister.adapter.query_service }
+
+  it { is_expected.to respond_to(:save).with_keywords(:model) }
+  it { is_expected.to respond_to(:delete).with_keywords(:model) }
 
   it "can save a resource" do
     expect(persister.save(model: resource).id).not_to be_blank

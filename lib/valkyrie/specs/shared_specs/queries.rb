@@ -8,6 +8,12 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   end
   let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
+  subject { adapter.query_service }
+
+  it { is_expected.to respond_to(:find_all).with(0).arguments }
+  it { is_expected.to respond_to(:find_by).with_keywords(:id) }
+  it { is_expected.to respond_to(:find_members).with_keywords(:model) }
+  it { is_expected.to respond_to(:find_parents).with_keywords(:model) }
 
   describe ".find_all" do
     it "returns all created resources" do
