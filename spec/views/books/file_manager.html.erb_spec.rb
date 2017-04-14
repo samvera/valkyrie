@@ -25,7 +25,7 @@ RSpec.describe "books/file_manager.html.erb", type: :view do
   end
 
   it "has a link back to parent" do
-    expect(rendered).to have_link "Test title", href: "/catalog/#{CGI.escape(parent.id)}"
+    expect(rendered).to have_link "Test title", href: "/catalog/#{CGI.escape(parent.id.to_s)}"
   end
 
   it "renders a form for each member" do

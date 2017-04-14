@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def from_model(resource)
-        ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(id: resource.id).tap do |orm_object|
+        ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(id: resource.id.to_s).tap do |orm_object|
           orm_object.model_type ||= resource.resource_class.to_s
           orm_object.metadata.merge!(resource.attributes.except(:id))
         end

@@ -26,11 +26,15 @@ module Valkyrie::Persistence::Fedora
     end
 
     def save
-      orm_object.attributes = model.attributes.except(:id, :member_ids)
+      orm_object.attributes = cast_attributes.except(:id, :member_ids)
       process_members if member_ids
       orm_object.save!
       @model = resource_factory.to_model(orm_object)
       model
+    end
+
+    def cast_attributes
+      model.attributes
     end
 
     def delete
@@ -65,7 +69,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def member_ids
-        model.attributes[:member_ids]
+        Array.wrap(model.attributes[:member_ids]).map(&:to_s)
       end
 
       def resource_factory

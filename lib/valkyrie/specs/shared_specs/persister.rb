@@ -5,7 +5,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
       defined? persister
     class CustomResource
       include Valkyrie::ActiveModel
-      attribute :id
+      attribute :id, Valkyrie::ID::Attribute
       attribute :title
       attribute :member_ids
     end
@@ -31,6 +31,16 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     reloaded = query_service.find_by(id: book.id)
 
     expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
+  end
+
+  it "can store Valkyrie::Ids" do
+    shared_title = persister.save(model: resource_class.new(id: "test"))
+    book = persister.save(model: resource_class.new(title: [shared_title.id, "test"]))
+
+    reloaded = query_service.find_by(id: book.id)
+
+    expect(reloaded.title).to contain_exactly shared_title.id, "test"
+    expect([shared_title.id, "test"]).to contain_exactly(*reloaded.title)
   end
 
   it "can order members" do

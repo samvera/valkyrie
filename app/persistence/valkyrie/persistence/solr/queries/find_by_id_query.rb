@@ -13,8 +13,12 @@ module Valkyrie::Persistence::Solr::Queries
       resource_factory.to_model(model)
     end
 
+    def id
+      "id-#{@id}"
+    end
+
     def model
-      connection.get("select", params: { q: "id:#{id}", fl: "*", rows: 1 })["response"]["docs"].first
+      connection.get("select", params: { q: "id:\"#{id}\"", fl: "*", rows: 1 })["response"]["docs"].first
     end
   end
 end

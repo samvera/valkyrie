@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_model.find_by_sql([query, "[\"#{obj.id}\"]"])
+        orm_model.find_by_sql([query, "[{\"id\": \"#{obj.id}\"}]"])
       end
 
       def query

@@ -7,10 +7,13 @@ module Valkyrie::Persistence::Solr
     end
 
     attr_reader :object
-    delegate :id, to: :object
 
     def initialize(object)
       @object = object
+    end
+
+    def id
+      "id-#{object.id}"
     end
 
     def to_h
@@ -105,6 +108,23 @@ module Valkyrie::Persistence::Solr
 
         def language_property
           "#{property}_lang".to_sym
+        end
+      end
+
+      class IDValue < Value
+        Value.register(self)
+        class << self
+          def handles?(_property, value)
+            value.is_a?(Valkyrie::ID)
+          end
+        end
+
+        def result
+          Hash[
+            suffixes.map do |suffix|
+              ["#{property}_#{suffix}".to_sym, Array.wrap("id-#{value}")]
+            end
+          ]
         end
       end
 

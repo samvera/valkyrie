@@ -8,7 +8,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   describe "#to_h" do
     it "maps all available properties to the solr record" do
       expect(mapper.to_h).to eq(
-        id: resource.id,
+        id: "id-#{resource.id}",
         title_ssim: ["Test"],
         title_tesim: ["Test"],
         author_ssim: ["Author"],

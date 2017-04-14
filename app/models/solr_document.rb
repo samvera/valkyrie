@@ -18,7 +18,13 @@ class SolrDocument
   use_extension(Blacklight::Document::DublinCore)
 
   def member_ids
-    fetch(:member_ids_ssim, [])
+    fetch(:member_ids_ssim, []).map do |id|
+      if id.start_with?("id-")
+        Valkyrie::ID.new(id.gsub(/^id-/, ''))
+      else
+        id
+      end
+    end
   end
 
   def members
@@ -26,10 +32,10 @@ class SolrDocument
   end
 
   def model_id
-    id.gsub(/^.*_/, "")
+    id.gsub(/^id-/, '')
   end
 
   def resource
-    @resource ||= QueryService.find_by(id: id)
+    @resource ||= QueryService.find_by(id: model_id)
   end
 end

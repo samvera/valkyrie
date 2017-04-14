@@ -10,7 +10,7 @@ module Valkyrie::Persistence::Fedora
       def from_model(model)
         resource =
           begin
-            ::Valkyrie::Persistence::Fedora::ORM::Resource.find(model.id)
+            ::Valkyrie::Persistence::Fedora::ORM::Resource.find(model.id.to_s)
           rescue
             ::Valkyrie::Persistence::Fedora::ORM::Resource.new
           end

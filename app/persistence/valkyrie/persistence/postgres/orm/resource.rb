@@ -31,6 +31,8 @@ module Valkyrie::Persistence::Postgres
             def for(value)
               if value.is_a?(Hash) && value["@value"]
                 HashValue.new(value)
+              elsif value.is_a?(Hash) && value["id"]
+                IDValue.new(value)
               elsif value.respond_to?(:each)
                 EnumeratorValue.new(value)
               else
@@ -46,6 +48,12 @@ module Valkyrie::Persistence::Postgres
 
           def result
             value
+          end
+        end
+
+        class IDValue < Value
+          def result
+            Valkyrie::ID.new(value["id"])
           end
         end
 
