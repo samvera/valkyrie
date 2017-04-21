@@ -21,52 +21,44 @@ module Valkyrie::Persistence::Postgres
         def result
           Hash[
             metadata.map do |key, value|
-              [key, Value.for(value).result]
+              [key, PostgresValue.for(value).result]
             end
           ]
         end
 
-        class Value
-          class << self
-            def for(value)
-              if value.is_a?(Hash) && value["@value"]
-                HashValue.new(value)
-              elsif value.is_a?(Hash) && value["id"]
-                IDValue.new(value)
-              elsif value.respond_to?(:each)
-                EnumeratorValue.new(value)
-              else
-                Value.new(value)
-              end
-            end
-          end
-
-          attr_reader :value
-          def initialize(value)
-            @value = value
-          end
-
-          def result
-            value
-          end
+        class PostgresValue < ValueMapper
         end
-
-        class IDValue < Value
-          def result
-            Valkyrie::ID.new(value["id"])
+        class HashValue < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.is_a?(Hash) && value["@value"]
           end
-        end
 
-        class HashValue < Value
           def result
             RDF::Literal.new(value["@value"], language: value["@language"])
           end
         end
 
-        class EnumeratorValue < Value
+        class IDValue < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.is_a?(Hash) && value["id"]
+          end
+
+          def result
+            Valkyrie::ID.new(value["id"])
+          end
+        end
+
+        class EnumeratorValue < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.respond_to?(:each)
+          end
+
           def result
             value.map do |value|
-              Value.for(value).result
+              calling_mapper.for(value).result
             end
           end
         end
