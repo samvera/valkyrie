@@ -37,7 +37,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def id
-        solr_document["id"]
+        solr_document["id"].gsub(/^id-/, '')
       end
 
       def attribute_hash
@@ -60,8 +60,61 @@ module Valkyrie::Persistence::Solr
           output[key] = if hsh["#{key}_lang"]
                           literal_values(key, hsh)
                         else
-                          value
+                          Value.for(value).result
                         end
+        end
+      end
+
+      class Value
+        class_attribute :value_processors
+        self.value_processors = []
+        class << self
+          def register(klass)
+            value_processors << klass
+          end
+
+          def for(value)
+            (value_processors + [Value]).find do |value_processor|
+              value_processor.handles?(value)
+            end.new(value)
+          end
+
+          def handles?(_value)
+            true
+          end
+        end
+
+        attr_reader :value
+        def initialize(value)
+          @value = value
+        end
+
+        def result
+          value
+        end
+      end
+
+      class EnumerableValue < Value
+        Value.register(self)
+        def self.handles?(value)
+          value.respond_to?(:each)
+        end
+
+        def result
+          value.map do |element|
+            Value.for(element).result
+          end
+        end
+      end
+
+      class IDValue < Value
+        Value.register(self)
+        def self.handles?(value)
+          value.to_s.start_with?("id-")
+        end
+
+        def result
+          Valkyrie::ID.new(value.gsub(/^id-/, ''))
         end
       end
 

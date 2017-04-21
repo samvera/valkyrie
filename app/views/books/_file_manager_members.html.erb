@@ -1,4 +1,4 @@
-<ul id="sortable" data-id="<%= CGI.escape(@record.id) %>" data-class-name="<%= @record.model_name.plural %>" data-singular-class-name="<%= @record.model_name.singular %>" class="list-unstyled grid clearfix">
+<ul id="sortable" data-id="<%= CGI.escape(@record.id.to_s) %>" data-class-name="<%= @record.model_name.plural %>" data-singular-class-name="<%= @record.model_name.singular %>" class="list-unstyled grid clearfix">
  <% @children.each do |member| %>
    <%= render "file_manager_member", node: member %>
  <% end %>

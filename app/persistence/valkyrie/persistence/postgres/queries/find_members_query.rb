@@ -15,14 +15,14 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_model.find_by_sql([query, obj.id])
+        orm_model.find_by_sql([query, obj.id.to_s])
       end
 
       def query
         <<-SQL
         SELECT member.* FROM orm_resources a,
-        jsonb_array_elements_text(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
-        JOIN orm_resources member ON b.member::uuid = member.id WHERE a.id = ?
+        jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
         ORDER BY b.member_pos
       SQL
       end

@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Memory
     end
 
     def find_by(id:)
-      cache[id] || raise(::Persister::ObjectNotFoundError)
+      cache[Valkyrie::ID.new(id.to_s)] || raise(::Persister::ObjectNotFoundError)
     end
 
     def find_all

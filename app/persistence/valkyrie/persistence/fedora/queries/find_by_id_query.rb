@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Fedora::Queries
     private
 
       def relation
-        orm_model.find(id)
+        orm_model.find(id.to_s)
       end
 
       def orm_model

@@ -41,7 +41,7 @@ RSpec.describe Book do
   describe "#id" do
     it "can be set to a string" do
       book.id = "test"
-      expect(book.id).to eq "test"
+      expect(book.id).to eq Valkyrie::ID.new("test")
     end
   end
 end

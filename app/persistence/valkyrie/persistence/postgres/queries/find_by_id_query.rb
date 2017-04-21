@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Postgres::Queries
   class FindByIdQuery
     attr_reader :id
     def initialize(id)
-      @id = id
+      @id = id.to_s
     end
 
     def run

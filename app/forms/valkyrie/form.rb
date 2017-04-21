@@ -3,6 +3,13 @@ module Valkyrie
   class Form < Reform::Form
     class_attribute :fields
     self.fields = []
+
+    property :append_id, virtual: true
+
+    def append_id=(append_id)
+      super(Valkyrie::ID.new(append_id))
+    end
+
     def self.fields=(fields)
       singleton_class.class_eval do
         remove_possible_method(:fields)

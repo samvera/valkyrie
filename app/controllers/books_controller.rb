@@ -4,7 +4,8 @@ class BooksController < ApplicationController
   self.resource_class = Book
 
   def append
-    @form = form_class.new(resource_class.new, append_id: params[:id])
+    @form = form_class.new(resource_class.new)
+    @form.append_id = params[:id]
   end
 
   def file_manager

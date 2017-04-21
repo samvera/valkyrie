@@ -14,4 +14,11 @@ RSpec.describe BookForm do
       expect(form).not_to be_valid
     end
   end
+
+  describe "#append_id" do
+    it "coerces it to a Valkyrie::ID" do
+      form.validate(append_id: "Test")
+      expect(form.append_id).to be_kind_of Valkyrie::ID
+    end
+  end
 end

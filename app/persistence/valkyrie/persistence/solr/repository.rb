@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def delete
-      connection.delete_by_id model.id, params: { softCommit: true }
+      connection.delete_by_id "id-#{model.id}", params: { softCommit: true }
       model
     end
 

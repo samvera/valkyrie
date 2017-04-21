@@ -11,6 +11,6 @@ class CatalogController < ApplicationController
 
   def parent_document
     return unless params[:parent_id]
-    _, @parent_document = fetch(params[:parent_id])
+    _, @parent_document = fetch("id-#{params[:parent_id]}")
   end
 end

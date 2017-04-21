@@ -3,8 +3,6 @@ class PageForm < Valkyrie::Form
   validate :title_not_empty
   self.fields = Page.fields - [:id]
 
-  property :append_id, virtual: true
-
   def viewing_hint
     Array(model.viewing_hint).first
   end
