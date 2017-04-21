@@ -54,78 +54,75 @@ module Valkyrie::Persistence::Solr
         ]
       end
 
+      class Property
+        attr_reader :key, :value, :document
+        def initialize(key, value, document)
+          @key = key
+          @value = value
+          @document = document
+        end
+      end
+
       def build_literals(hsh)
         hsh.each_with_object({}) do |(key, value), output|
           next if key.end_with?("_lang")
-          output[key] = if hsh["#{key}_lang"]
-                          literal_values(key, hsh)
-                        else
-                          Value.for(value).result
-                        end
+          output[key] = SolrValue.for(Property.new(key, value, hsh)).result
         end
       end
 
-      class Value
-        class_attribute :value_processors
-        self.value_processors = []
-        class << self
-          def register(klass)
-            value_processors << klass
-          end
-
-          def for(value)
-            (value_processors + [Value]).find do |value_processor|
-              value_processor.handles?(value)
-            end.new(value)
-          end
-
-          def handles?(_value)
-            true
-          end
-        end
-
-        attr_reader :value
-        def initialize(value)
-          @value = value
+      class SolrValue < ValueMapper
+      end
+      class LanguagePropertyValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.document["#{value.key}_lang"]
         end
 
         def result
-          value
+          value.value.zip(languages).map do |literal, language|
+            if language == "eng"
+              literal
+            else
+              RDF::Literal.new(literal, language: language)
+            end
+          end
+        end
+
+        def languages
+          value.document["#{value.key}_lang"]
         end
       end
+      class PropertyValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property)
+        end
 
-      class EnumerableValue < Value
-        Value.register(self)
+        def result
+          calling_mapper.for(value.value).result
+        end
+      end
+      class EnumerableValue < ValueMapper
+        SolrValue.register(self)
         def self.handles?(value)
           value.respond_to?(:each)
         end
 
         def result
           value.map do |element|
-            Value.for(element).result
+            calling_mapper.for(element).result
           end
         end
       end
 
-      class IDValue < Value
-        Value.register(self)
+      class IDValue < ValueMapper
+        SolrValue.register(self)
         def self.handles?(value)
           value.to_s.start_with?("id-")
         end
 
         def result
           Valkyrie::ID.new(value.gsub(/^id-/, ''))
-        end
-      end
-
-      def literal_values(key, hsh)
-        Array.wrap(hsh[key]).each_with_index.map do |value, index|
-          language = Array.wrap(hsh["#{key}_lang"])[index]
-          if language == "eng"
-            value
-          else
-            RDF::Literal.new(value, language: language)
-          end
         end
       end
     end

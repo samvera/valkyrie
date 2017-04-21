@@ -24,11 +24,50 @@ module Valkyrie::Persistence::Solr
 
     private
 
+      class Property
+        attr_reader :key, :value, :scope
+        def initialize(key, value, scope = [])
+          @key = key
+          @value = value
+          @scope = scope
+        end
+      end
+
+      class SolrRow
+        attr_reader :key, :fields, :values
+        def initialize(key:, fields:, values:)
+          @key = key
+          @fields = Array.wrap(fields)
+          @values = Array.wrap(values)
+        end
+
+        def apply_to(hsh)
+          return hsh if values.blank?
+          fields.each do |field|
+            hsh["#{key}_#{field}".to_sym] ||= []
+            hsh["#{key}_#{field}".to_sym] += values
+          end
+          hsh
+        end
+      end
+
+      class CompositeSolrRow
+        attr_reader :solr_rows
+        def initialize(solr_rows)
+          @solr_rows = solr_rows
+        end
+
+        def apply_to(hsh)
+          solr_rows.each do |solr_row|
+            solr_row.apply_to(hsh)
+          end
+          hsh
+        end
+      end
+
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
-          Value.for(property, object.__send__(property)).result.each do |key, values|
-            hsh[key] = values
-          end
+          SolrMapperValue.for(Property.new(property, object.__send__(property))).result.apply_to(hsh)
         end
       end
 
@@ -36,110 +75,86 @@ module Valkyrie::Persistence::Solr
         object.attributes.keys - [:id]
       end
 
-      class Value
-        class_attribute :value_processors
-        self.value_processors = []
-        class << self
-          def register(klass)
-            value_processors << klass
-          end
+      class SolrMapperValue < ValueMapper
+      end
 
-          def for(property, value)
-            (value_processors + [Value]).find do |value_processor|
-              value_processor.handles?(property, value)
-            end.new(property, value)
-          end
-
-          def handles?(_property, _value)
-            true
-          end
-        end
-
-        attr_reader :property, :value
-        def initialize(property, value)
-          @property = property
-          @value = value
+      class EnumerableValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.respond_to?(:each)
         end
 
         def result
-          Hash[
-            suffixes.map do |suffix|
-              ["#{property}_#{suffix}".to_sym, Array.wrap(value)]
+          CompositeSolrRow.new(
+            value.value.map do |val|
+              calling_mapper.for(Property.new(value.key, val, value.value)).result
             end
-          ]
-        end
-
-        def suffixes
-          [
-            :ssim,
-            :tesim
-          ]
-        end
-
-        def combine_hashes(values)
-          values.inject do |first_hsh, second_hsh|
-            first_hsh.merge(second_hsh) do |_key, second_value, third_value|
-              Array.wrap(second_value) + Array.wrap(third_value)
-            end
-          end
+          )
         end
       end
 
-      class RDFLiteralValue < Value
-        Value.register(self)
-        class << self
-          def handles?(_property, value)
-            Array.wrap(value).find { |x| x.try(:term?) }
-          end
-        end
-        def result
-          combine_hashes(Array.wrap(value).map do |val|
-            if val.try(:term?)
-              Value.for(property, val.to_s).result.merge(
-                Value.for(language_property, val.language.to_s).result
-              )
-            else
-              Value.for(property, val).result.merge(
-                Value.for(language_property, "eng").result
-              )
-            end
-          end)
+      class NilPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.nil?
         end
 
-        def language_property
-          "#{property}_lang".to_sym
+        def result
+          SolrRow.new(key: value.key, fields: [], values: nil)
         end
       end
 
-      class IDValue < Value
-        Value.register(self)
-        class << self
-          def handles?(_property, value)
-            value.is_a?(Valkyrie::ID)
-          end
+      class IDPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(::Valkyrie::ID)
         end
 
         def result
-          Hash[
-            suffixes.map do |suffix|
-              ["#{property}_#{suffix}".to_sym, Array.wrap("id-#{value}")]
-            end
-          ]
+          calling_mapper.for(Property.new(value.key, "id-#{value.value.id}")).result
         end
       end
 
-      class EnumeratorValue < Value
-        Value.register(self)
-        class << self
-          def handles?(_property, value)
-            value.is_a?(Enumerable)
-          end
+      class SharedStringPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(String) && value.scope.find { |x| x.is_a?(::RDF::Literal) }.present?
         end
 
         def result
-          combine_hashes(value.map do |v|
-            Value.for(property, v).result
-          end) || {}
+          CompositeSolrRow.new(
+            [
+              calling_mapper.for(Property.new(value.key, value.value)).result,
+              calling_mapper.for(Property.new("#{value.key}_lang", "eng")).result
+            ]
+          )
+        end
+      end
+
+      class StringPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(String)
+        end
+
+        def result
+          SolrRow.new(key: value.key, fields: [:ssim, :tesim], values: value.value)
+        end
+      end
+
+      class LiteralPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(::RDF::Literal)
+        end
+
+        def result
+          CompositeSolrRow.new(
+            [
+              calling_mapper.for(Property.new(value.key, value.value.to_s)).result,
+              calling_mapper.for(Property.new("#{value.key}_lang", value.value.language.to_s)).result
+            ]
+          )
         end
       end
   end
