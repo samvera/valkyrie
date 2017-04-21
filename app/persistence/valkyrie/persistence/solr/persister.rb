@@ -8,21 +8,19 @@ module Valkyrie::Persistence::Solr
     end
 
     def save(model:)
-      repository(model).persist
+      repository(model).persist.first
     end
 
     def save_all(models:)
-      models.map do |model|
-        save(model: model)
-      end
+      repository(models).persist
     end
 
     def delete(model:)
-      repository(model).delete
+      repository(model).delete.first
     end
 
     def repository(model)
-      Valkyrie::Persistence::Solr::Repository.new(model: model, connection: connection, resource_factory: resource_factory)
+      Valkyrie::Persistence::Solr::Repository.new(models: Array.wrap(model), connection: connection, resource_factory: resource_factory)
     end
   end
 end
