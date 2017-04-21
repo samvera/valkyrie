@@ -7,6 +7,12 @@ module Valkyrie::Persistence::Fedora
         instance(model).save
       end
 
+      def save_all(models:)
+        models.map do |model|
+          save(model: model)
+        end
+      end
+
       def delete(model:)
         instance(model).delete
       end

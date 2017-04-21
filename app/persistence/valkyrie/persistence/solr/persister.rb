@@ -11,6 +11,12 @@ module Valkyrie::Persistence::Solr
       repository(model).persist
     end
 
+    def save_all(models:)
+      models.map do |model|
+        save(model: model)
+      end
+    end
+
     def delete(model:)
       repository(model).delete
     end

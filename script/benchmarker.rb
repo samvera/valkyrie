@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'benchmark'
 
-num_children = 100
+num_children = 1000
 
 # Pop off the indexing_persister  so we don't test it
 Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
@@ -10,9 +10,9 @@ Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
     children = nil
     bench.report("#{adapter_name} create #{num_children} children") do
       children = Array.new(num_children) do |_page_num|
-        p = Page.new
-        adapter.persister.save(model: p)
+        Page.new
       end
+      children = adapter.persister.save_all(models: children)
     end
     parent.member_ids = children.map(&:id)
     bench.report("#{adapter_name} save parent with #{num_children} children") do

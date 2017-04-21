@@ -12,6 +12,12 @@ module Valkyrie::Persistence::Memory
       cache[model.id] = inner_model(model)
     end
 
+    def save_all(models:)
+      models.map do |model|
+        save(model: model)
+      end
+    end
+
     def delete(model:)
       cache.delete(model.id)
     end

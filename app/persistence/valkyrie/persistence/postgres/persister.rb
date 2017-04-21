@@ -6,6 +6,10 @@ module Valkyrie::Persistence::Postgres
         instance(model).persist
       end
 
+      def save_all(models:)
+        ::Valkyrie::Persistence::Postgres::BulkSyncer.new(models: models).save_all
+      end
+
       def delete(model:)
         instance(model).delete
       end

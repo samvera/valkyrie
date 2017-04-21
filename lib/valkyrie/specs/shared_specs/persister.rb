@@ -25,6 +25,17 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect(persister.save(model: resource).id).not_to be_blank
   end
 
+  it "can save multiple resources" do
+    book1 = persister.save(model: resource_class.new)
+    book1.title = ["Test"]
+    books = [book1, resource_class.new]
+    result = persister.save_all(models: books)
+
+    expect(result.map(&:id).length).to eq 2
+    expect(result.map(&:id).compact).not_to be_blank
+    expect(query_service.find_by(id: book1.id).title).to eq ["Test"]
+  end
+
   it "can handle language-typed RDF properties" do
     book = persister.save(model: resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 
