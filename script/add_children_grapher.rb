@@ -28,6 +28,7 @@ Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
   g.data("Reload Parent & Add Page (#{clean_name})", add_page_times.map(&:real))
   i.data("Create Page", create_page_times.map(&:real))
   i.data("Reload Parent & Add Page", add_page_times.map(&:real))
+  i.title = "#{clean_name}: #{num_children} items"
   i.write("tmp/graph-#{clean_name}.png")
   puts "Wrote graph to tmp/graph-#{clean_name}.png"
   puts "Finished running benchmarks for #{clean_name}"
