@@ -8,11 +8,11 @@ num_children = 1000
 g = Gruff::Line.new
 Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
   i = Gruff::Line.new
-  clean_name = adapter_name.to_s.gsub(" ", "_")
+  clean_name = adapter_name.to_s.tr(" ", "_")
   parent = adapter.persister.save(model: Book.new)
   create_page_times = []
   add_page_times = []
-  num_children.times do |child_number|
+  num_children.times do |_child_number|
     page = nil
     create_page_times << Benchmark.measure do
       page = Page.new

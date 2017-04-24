@@ -83,7 +83,7 @@ gem 'virtus'
 
 gem 'bixby'
 # Maybe extract just the stuff for multi-inputs..
+gem 'gruff'
 gem 'hydra-editor'
 gem 'jquery-ui-rails', '~> 6.0'
 gem 'ruby-prof'
-gem 'gruff'
