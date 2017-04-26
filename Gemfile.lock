@@ -71,6 +71,7 @@ GEM
       babel-source (>= 4.0, < 6)
       execjs (~> 2.0)
     bcrypt (3.1.11)
+    benchmark-ips (2.7.2)
     bitters (1.5.0)
       bourbon (~> 5.0.0.beta.7)
       sass (~> 3.4)
@@ -473,6 +474,7 @@ DEPENDENCIES
   activerecord-import
   autoprefixer-rails
   awesome_print
+  benchmark-ips
   bixby
   blacklight
   bullet
