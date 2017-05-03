@@ -126,6 +126,17 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      class IntegerPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Integer)
+        end
+
+        def result
+          calling_mapper.for(Property.new(value.key, "integer-#{value.value}")).result
+        end
+      end
+
       class SharedStringPropertyValue < ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
