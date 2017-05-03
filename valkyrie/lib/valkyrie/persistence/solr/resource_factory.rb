@@ -189,6 +189,20 @@ module Valkyrie::Persistence::Solr
           value.gsub(/^integer-/, '').to_i
         end
       end
+
+      # Converts a datetime in Solr into a {DateTime}
+      class DateTimeValue < ::Valkyrie::ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+        rescue
+          false
+        end
+
+        def result
+          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+        end
+      end
     end
   end
 end
