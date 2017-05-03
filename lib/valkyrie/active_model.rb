@@ -13,7 +13,7 @@ module Valkyrie
   end
 
   module_function :config
-  module ActiveModel
+  module Model
     def self.included(base)
       base.include Virtus.model
       base.extend ClassMethods
