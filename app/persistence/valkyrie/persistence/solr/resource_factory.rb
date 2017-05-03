@@ -125,6 +125,19 @@ module Valkyrie::Persistence::Solr
           Valkyrie::ID.new(value.gsub(/^id-/, ''))
         end
       end
+
+      class DateTimeValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+        rescue
+          false
+        end
+
+        def result
+          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+        end
+      end
     end
   end
 end

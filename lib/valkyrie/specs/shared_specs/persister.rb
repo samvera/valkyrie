@@ -43,6 +43,15 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect([shared_title.id, "test"]).to contain_exactly(*reloaded.title)
   end
 
+  it "can store datetimes" do
+    time = DateTime.current
+    book = persister.save(model: resource_class.new(title: [time]))
+
+    reloaded = query_service.find_by(id: book.id)
+
+    expect(reloaded.title).to contain_exactly time
+  end
+
   it "can order members" do
     book = persister.save(model: resource_class.new)
     book2 = persister.save(model: resource_class.new)
