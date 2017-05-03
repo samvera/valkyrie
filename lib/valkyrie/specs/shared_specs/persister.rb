@@ -43,6 +43,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect([shared_title.id, "test"]).to contain_exactly(*reloaded.title)
   end
 
+  it "can store ::RDF::URIs" do
+    book = persister.save(model: resource_class.new(title: [::RDF::URI("http://test.com")]))
+
+    reloaded = query_service.find_by(id: book.id)
+
+    expect(reloaded.title).to contain_exactly RDF::URI("http://test.com")
+  end
+
   it "can order members" do
     book = persister.save(model: resource_class.new)
     book2 = persister.save(model: resource_class.new)
