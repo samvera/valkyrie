@@ -56,7 +56,7 @@ module ModelControllerBehavior
     end
 
     def find_book(id)
-      QueryService.find_by(id: id)
+      QueryService.find_by(id: Valkyrie::ID.new(id.to_s))
     end
 
     def persister

@@ -9,5 +9,6 @@
   <% if @form.append_id.present? %>
     <%= f.input :append_id, as: :hidden %>
   <% end %>
+  <%= f.input :files, as: :file, input_html: { multiple: true }%>
   <%= f.button :submit %>
 <% end %>

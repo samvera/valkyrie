@@ -8,10 +8,12 @@
     </thead>
     <tbody>
       <% document.members.each do |member| %>
-      <tr>
-        <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id).show %> </td>
-      </tr>
-      <% end %>
+        <% if member.respond_to?(:title) %>
+          <tr>
+            <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id).show %> </td>
+          </tr>
+        <% end %>
+    <% end %>
     </tbody>
   </table>
 <% end %>

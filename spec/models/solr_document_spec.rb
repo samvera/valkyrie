@@ -23,5 +23,11 @@ RSpec.describe SolrDocument do
         expect(solr_document.member_ids).to eq book.member_ids
       end
     end
+    context "when the book has non-ID members" do
+      let(:book) { Book.new(id: "test", member_ids: [Persister.save(model: Book.new).id, "1"]) }
+      it "returns them" do
+        expect(solr_document.member_ids).to eq book.member_ids
+      end
+    end
   end
 end

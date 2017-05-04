@@ -48,4 +48,5 @@ Rails.application.routes.draw do
   end
 
   resources :pages, only: [:new, :create, :edit, :update, :destroy]
+  resources :file_sets, only: [:update, :destroy]
 end

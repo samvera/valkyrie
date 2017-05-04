@@ -1,8 +1,10 @@
 development:
   adapter: postgres
+  storage_adapter: disk
 
 test:
   adapter: memory
+  storage_adapter: memory
 
 production:
   adapter: postgres

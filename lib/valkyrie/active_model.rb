@@ -10,6 +10,10 @@ module Valkyrie
     def adapter
       Valkyrie::Adapter.find(super.to_sym)
     end
+
+    def storage_adapter
+      Valkyrie::FileRepository.find(super.to_sym)
+    end
   end
 
   module_function :config

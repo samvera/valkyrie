@@ -50,21 +50,11 @@ module Valkyrie::Persistence::Fedora
 
       def process_members
         member_predicate = orm_object.association(:members).reflection.options[:has_member_relation]
-        new_member_ids.each do |member|
-          # orm_object.members_will_change!
+        orm_object.ordered_members = []
+        member_ids.each do |member|
           orm_object.resource << [orm_object.resource.rdf_subject, member_predicate, ActiveFedora::Base.id_to_uri(member)]
           length = orm_object.ordered_member_proxies.to_a.length
           orm_object.ordered_member_proxies.insert_target_id_at(length, member)
-        end
-      end
-
-      def new_member_ids
-        member_ids - orm_member_ids
-      end
-
-      def orm_member_ids
-        orm_object.ordered_member_proxies.map do |member|
-          ActiveFedora::Base.uri_to_id(member.target_uri)
         end
       end
 
