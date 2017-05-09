@@ -15,7 +15,7 @@ RSpec.describe "Book Management" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
       expect(response.location).to start_with "http://www.example.com/catalog/"
-      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/")
+      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/").gsub(/^id-/, "")
       expect(find_book(id).title).to contain_exactly "One", "Two"
     end
     it "renders the form if it doesn't create a book" do
@@ -24,19 +24,19 @@ RSpec.describe "Book Management" do
     end
     it "can create a book as a child of another" do
       post "/books", params: { book: { title: ["One", "Two"] } }
-      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/")
+      id = response.location.gsub("http://www.example.com/catalog/", "").gsub("%2F", "/").gsub(/^id-/, "")
       post "/books", params: { book: { title: ["Child"], append_id: id } }
       parent_book = find_book(id)
       expect(parent_book.member_ids).not_to be_blank
 
-      expect(request).to redirect_to parent_solr_document_path(parent_id: id, id: parent_book.member_ids.first)
+      expect(request).to redirect_to parent_solr_document_path(parent_id: id, id: "id-#{parent_book.member_ids.first}")
     end
   end
 
   describe "destroy" do
     it "can delete a book" do
       book = Persister.save(model: Book.new(title: "Test"))
-      delete "/books/#{book.id}"
+      delete book_path(id: book.id)
 
       expect(response).to redirect_to root_path
       expect { QueryService.find_by(id: book.id) }.to raise_error ::Persister::ObjectNotFoundError
@@ -44,7 +44,7 @@ RSpec.describe "Book Management" do
     it "cleans up associations in parents" do
       child = Persister.save(model: Book.new)
       parent = Persister.save(model: Book.new(member_ids: [child.id]))
-      delete "/books/#{child.id}"
+      delete book_path(id: child.id)
 
       reloaded = QueryService.find_by(id: parent.id)
       expect(reloaded.member_ids).to eq []
@@ -91,6 +91,6 @@ RSpec.describe "Book Management" do
   end
 
   def find_book(id)
-    QueryService.find_by(id: id)
+    QueryService.find_by(id: Valkyrie::ID.new(id.to_s))
   end
 end

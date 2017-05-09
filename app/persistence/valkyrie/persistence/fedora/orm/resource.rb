@@ -10,6 +10,8 @@ module Valkyrie::Persistence::Fedora::ORM
     property :representative_id, predicate: ::RDF::URI("http://test.com/representative_id")
     property :start_canvas, predicate: ::RDF::URI("http://test.com/start_canvas")
     property :internal_model, predicate: ::RDF::URI("http://test.com/internal_model")
+    property :file_identifiers, predicate: ::RDF::URI("http://test.com/file_identifiers")
+    property :label, predicate: ::RDF::URI("http://test.com/label")
   end
   class Resource < ActiveFedora::Base
     include Hydra::Works::WorkBehavior

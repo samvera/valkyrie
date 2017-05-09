@@ -55,6 +55,16 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect(reloaded.member_ids).to eq [book2.id, book.id, book3.id]
   end
 
+  it "can remove members" do
+    book = persister.save(model: resource_class.new)
+    book2 = persister.save(model: resource_class.new)
+    parent = persister.save(model: resource_class.new(member_ids: [book2.id, book.id]))
+    parent.member_ids = parent.member_ids - [book2.id]
+    parent = persister.save(model: parent)
+
+    expect(parent.member_ids).to eq [book.id]
+  end
+
   it "doesn't override a resource that already has an ID" do
     book = persister.save(model: resource_class.new)
     id = book.id

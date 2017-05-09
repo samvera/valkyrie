@@ -32,7 +32,7 @@ class SolrDocument
   end
 
   def model_id
-    id.gsub(/^id-/, '')
+    Valkyrie::ID.new(id.gsub(/^id-/, ''))
   end
 
   def resource

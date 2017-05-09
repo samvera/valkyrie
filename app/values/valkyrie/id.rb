@@ -12,7 +12,7 @@ module Valkyrie
     attr_reader :id
     delegate :empty?, to: :id
     def initialize(id)
-      @id = id
+      @id = id.to_s
     end
 
     def to_s
@@ -27,6 +27,7 @@ module Valkyrie
     alias == eql?
 
     def to_uri
+      return RDF::Literal.new(id.to_s) if id.to_s.include?("://")
       ::RDF::URI(ActiveFedora::Base.id_to_uri(id))
     end
 

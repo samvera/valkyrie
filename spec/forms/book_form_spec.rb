@@ -21,4 +21,18 @@ RSpec.describe BookForm do
       expect(form.append_id).to be_kind_of Valkyrie::ID
     end
   end
+
+  describe "#thumbnail_id" do
+    it "coerces it to a Valkyrie::ID" do
+      form.validate(thumbnail_id: "Test")
+      expect(form.thumbnail_id).to be_kind_of Valkyrie::ID
+    end
+  end
+
+  describe "#start_canvas" do
+    it "coerces it to a Valkyrie::ID" do
+      form.validate(start_canvas: "Test")
+      expect(form.start_canvas).to be_kind_of Valkyrie::ID
+    end
+  end
 end

@@ -10,9 +10,9 @@ class ContextualPath
 
   def show
     if parent_document
-      polymorphic_path([:parent, :solr_document], parent_id: parent_document, id: solr_document)
+      polymorphic_path([:parent, :solr_document], parent_id: parent_document, id: "id-#{solr_document}")
     else
-      polymorphic_path([:solr_document], id: solr_document)
+      polymorphic_path([:solr_document], id: "id-#{solr_document.id}")
     end
   end
 
