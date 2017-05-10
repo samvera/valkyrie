@@ -3,6 +3,9 @@
 A proof of concept "breakable toy" for enabling multiple backends for storage of
   files and metadata in Hydra.
 
+[![CircleCI](https://circleci.com/gh/projecthydra-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/projecthydra-labs/valkyrie) [![Coverage Status](https://coveralls.io/repos/github/projecthydra-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/projecthydra-labs/valkyrie?branch=master)
+
+
 ### Installing a Dev environment
 
 1. Install Postgres on your machine.  If you have homebrew on OS X you can run the following steps:
