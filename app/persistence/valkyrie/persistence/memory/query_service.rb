@@ -16,15 +16,19 @@ module Valkyrie::Persistence::Memory
     end
 
     def find_members(model:)
-      model.member_ids.map do |id|
+      member_ids(model: model).map do |id|
         find_by(id: id)
       end
     end
 
     def find_parents(model:)
       cache.values.select do |record|
-        (record.member_ids || []).include?(model.id)
+        member_ids(model: record).include?(model.id)
       end
+    end
+
+    def member_ids(model:)
+      model.member_ids || []
     end
   end
 end

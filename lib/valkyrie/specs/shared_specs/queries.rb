@@ -3,9 +3,17 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter
-    raise 'resource_class must be set with `let(:resource_class)`' unless
-      defined? resource_class
+    class CustomResource
+      include Valkyrie::Model
+      attribute :id, Valkyrie::ID::Attribute
+      attribute :title
+      attribute :member_ids
+    end
   end
+  after do
+    Object.send(:remove_const, :CustomResource)
+  end
+  let(:resource_class) { CustomResource }
   let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
   subject { adapter.query_service }

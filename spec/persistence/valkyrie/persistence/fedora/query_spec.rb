@@ -4,7 +4,6 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Fedora do
   let(:adapter) { described_class }
-  let(:resource_class) { Book }
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   it_behaves_like "a Valkyrie query provider"
