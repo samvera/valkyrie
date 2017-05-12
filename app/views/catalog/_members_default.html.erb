@@ -10,7 +10,7 @@
       <% document.members.each do |member| %>
         <% if member.respond_to?(:title) %>
           <tr>
-            <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id).show %> </td>
+            <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub(/^id-/,'')).show %> </td>
           </tr>
         <% end %>
     <% end %>
