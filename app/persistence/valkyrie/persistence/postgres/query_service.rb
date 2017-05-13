@@ -17,6 +17,10 @@ module Valkyrie::Persistence::Postgres
       def find_parents(model:)
         Valkyrie::Persistence::Postgres::Queries::FindParentsQuery.new(model).run
       end
+
+      def find_references_by(model:, property:)
+        Valkyrie::Persistence::Postgres::Queries::FindReferencesQuery.new(model, property).run
+      end
     end
   end
 end

@@ -8,6 +8,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :id, Valkyrie::ID::Attribute
       attribute :title
       attribute :member_ids
+      attribute :a_member_of
     end
   end
   after do
@@ -21,6 +22,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:find_members).with_keywords(:model) }
+  it { is_expected.to respond_to(:find_references_by).with_keywords(:model, :property) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:model) }
 
   describe ".find_all" do
@@ -55,6 +57,16 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     it "doesn't error when there's no model ID" do
       parent = resource_class.new
       expect(query_service.find_members(model: parent).to_a).to eq []
+    end
+  end
+
+  describe ".find_references_by" do
+    it "returns all references given in a property" do
+      parent = persister.save(model: resource_class.new)
+      child = persister.save(model: resource_class.new(a_member_of: [parent.id]))
+      persister.save(model: resource_class.new)
+
+      expect(query_service.find_references_by(model: child, property: :a_member_of).map(&:id).to_a).to eq [parent.id]
     end
   end
 

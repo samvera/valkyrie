@@ -4,6 +4,7 @@ module Valkyrie::Persistence::Fedora::ORM
     property :title, predicate: ::RDF::Vocab::DC.title
     property :author, predicate: ::RDF::Vocab::DC.creator
     property :testing, predicate: ::RDF::URI("http://test.com/testing")
+    property :a_member_of, predicate: ::RDF::URI("http://test.com/member_of")
     property :viewing_hint, predicate: ::RDF::Vocab::IIIF.viewingHint
     property :viewing_direction, predicate: ::RDF::Vocab::IIIF.viewingDirection
     property :thumbnail_id, predicate: ::RDF::URI("http://test.com/thumbnail_id")
@@ -18,5 +19,10 @@ module Valkyrie::Persistence::Fedora::ORM
     apply_schema Schema, ActiveFedora::SchemaIndexingStrategy.new(
       ActiveFedora::Indexers::GlobalIndexer.new([:symbol, :stored_searchable, :facetable])
     )
+    def to_solr(doc = {})
+      super.merge(
+        uri_ssi: uri
+      )
+    end
   end
 end

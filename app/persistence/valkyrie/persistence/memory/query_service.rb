@@ -21,6 +21,12 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    def find_references_by(model:, property:)
+      Array.wrap(model[property]).map do |id|
+        find_by(id: id)
+      end
+    end
+
     def find_parents(model:)
       cache.values.select do |record|
         member_ids(model: record).include?(model.id)

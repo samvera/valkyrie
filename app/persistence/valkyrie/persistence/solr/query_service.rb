@@ -22,5 +22,9 @@ module Valkyrie::Persistence::Solr
     def find_members(model:)
       Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(model: model, connection: connection, resource_factory: resource_factory).run
     end
+
+    def find_references_by(model:, property:)
+      Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(model: model, property: property, connection: connection, resource_factory: resource_factory).run
+    end
   end
 end

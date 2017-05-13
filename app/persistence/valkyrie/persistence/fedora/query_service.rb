@@ -17,6 +17,10 @@ module Valkyrie::Persistence::Fedora
       def find_parents(model:)
         Valkyrie::Persistence::Fedora::Queries::FindParentsQuery.new(model).run
       end
+
+      def find_references_by(model:, property:)
+        Valkyrie::Persistence::Fedora::Queries::FindReferencesQuery.new(model, property).run
+      end
     end
   end
 end
