@@ -22,6 +22,24 @@ RSpec.describe BookForm do
     end
   end
 
+  describe "#member_ids" do
+    it "coerces an array into Valkyrie::IDs" do
+      form.validate(member_ids: ["1", "2"])
+      form.member_ids.each do |id|
+        expect(id).to be_kind_of Valkyrie::ID
+      end
+    end
+  end
+
+  describe "#a_member_of" do
+    it "coerces an array into Valkyrie::IDs" do
+      form.validate(a_member_of: ["1", "2"])
+      form.a_member_of.each do |id|
+        expect(id).to be_kind_of Valkyrie::ID
+      end
+    end
+  end
+
   describe "#thumbnail_id" do
     it "coerces it to a Valkyrie::ID" do
       form.validate(thumbnail_id: "Test")

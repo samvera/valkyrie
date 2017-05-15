@@ -1,14 +1,11 @@
 <%= simple_form_for @form do |f| %>
   <% (@form.class.fields - [:member_ids]).each do |field| %>
-    <% if f.object.send(field).respond_to?(:each) %>
-      <%= f.input field, as: :multi_value %>
-    <% else %>
-      <%= f.input field %>
-    <% end %>
+    <%= render_edit_field_partial(field, f: f) %>
   <% end %>
   <% if @form.append_id.present? %>
     <%= f.input :append_id, as: :hidden %>
   <% end %>
+  <%# <%= f.input :a_member_of, collection: @collections, label_method: :title, value_method: :id, input_html: { multiple: true }, include_blank: true%>
   <%= f.input :files, as: :file, input_html: { multiple: true }%>
   <%= f.button :submit %>
 <% end %>

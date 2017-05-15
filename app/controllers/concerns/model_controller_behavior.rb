@@ -6,7 +6,8 @@ module ModelControllerBehavior
   end
 
   def new
-    @form = form_class.new(resource_class.new)
+    @form = form_class.new(resource_class.new).prepopulate!
+    @collections = query_service.find_all_of_model(model: Collection)
   end
 
   def create
@@ -21,7 +22,8 @@ module ModelControllerBehavior
   end
 
   def edit
-    @form = form_class.new(find_book(params[:id]))
+    @form = form_class.new(find_book(params[:id])).prepopulate!
+    @collections = query_service.find_all_of_model(model: Collection)
     render :edit
   end
 
@@ -61,6 +63,10 @@ module ModelControllerBehavior
 
     def persister
       Valkyrie::Adapter.find(:indexing_persister).persister
+    end
+
+    def query_service
+      Valkyrie::Adapter.find(:indexing_persister).query_service
     end
 
     def solr_adapter
