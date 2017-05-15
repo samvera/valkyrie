@@ -15,6 +15,12 @@ module Valkyrie::Persistence::Memory
       cache.values
     end
 
+    def find_all_of_model(model:)
+      cache.values.select do |obj|
+        obj.is_a?(model)
+      end
+    end
+
     def find_members(model:)
       member_ids(model: model).map do |id|
         find_by(id: id)

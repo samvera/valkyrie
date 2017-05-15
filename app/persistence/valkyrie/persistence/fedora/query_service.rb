@@ -6,6 +6,10 @@ module Valkyrie::Persistence::Fedora
         Valkyrie::Persistence::Fedora::Queries::FindAllQuery.new.run
       end
 
+      def find_all_of_model(model:)
+        Valkyrie::Persistence::Fedora::Queries::FindAllQuery.new(model: model).run
+      end
+
       def find_by(id:)
         Valkyrie::Persistence::Fedora::Queries::FindByIdQuery.new(id).run
       end

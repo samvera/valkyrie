@@ -6,6 +6,10 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new.run
       end
 
+      def find_all_of_model(model:)
+        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(model: model).run
+      end
+
       def find_by(id:)
         Valkyrie::Persistence::Postgres::Queries::FindByIdQuery.new(id).run
       end

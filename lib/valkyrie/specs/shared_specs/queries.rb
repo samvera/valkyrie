@@ -10,9 +10,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :member_ids
       attribute :a_member_of
     end
+    class SecondResource
+      include Valkyrie::Model
+      attribute :id, Valkyrie::ID::Attribute
+    end
   end
   after do
     Object.send(:remove_const, :CustomResource)
+    Object.send(:remove_const, :SecondResource)
   end
   let(:resource_class) { CustomResource }
   let(:query_service) { adapter.query_service }
@@ -20,6 +25,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   subject { adapter.query_service }
 
   it { is_expected.to respond_to(:find_all).with(0).arguments }
+  it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:find_members).with_keywords(:model) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:model, :property) }
@@ -31,6 +37,15 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       resource2 = persister.save(model: resource_class.new)
 
       expect(query_service.find_all.map(&:id)).to contain_exactly resource1.id, resource2.id
+    end
+  end
+
+  describe ".find_all_of_model" do
+    it "returns all of that model" do
+      persister.save(model: resource_class.new)
+      resource2 = persister.save(model: SecondResource.new)
+
+      expect(query_service.find_all_of_model(model: SecondResource).map(&:id)).to contain_exactly resource2.id
     end
   end
 

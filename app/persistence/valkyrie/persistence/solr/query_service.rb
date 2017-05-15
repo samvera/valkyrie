@@ -15,6 +15,10 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
     end
 
+    def find_all_of_model(model:)
+      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
+    end
+
     def find_parents(model:)
       Valkyrie::Persistence::Solr::Queries::FindParentQuery.new(model: model, connection: connection, resource_factory: resource_factory).run
     end

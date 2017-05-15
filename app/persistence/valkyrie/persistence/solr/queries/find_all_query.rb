@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindAllQuery
-    attr_reader :connection, :resource_factory
-    def initialize(connection:, resource_factory:)
+    attr_reader :connection, :resource_factory, :model
+    def initialize(connection:, resource_factory:, model: nil)
       @connection = connection
       @resource_factory = resource_factory
+      @model = model
     end
 
     def run
@@ -14,10 +15,18 @@ module Valkyrie::Persistence::Solr::Queries
     def each
       docs = DefaultPaginator.new
       while docs.has_next?
-        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: "*:*" })["response"]["docs"]
+        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
         docs.each do |doc|
           yield resource_factory.to_model(doc)
         end
+      end
+    end
+
+    def query
+      if !model
+        "*:*"
+      else
+        "inner_model_ssim:#{model}"
       end
     end
   end
