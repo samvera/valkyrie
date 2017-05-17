@@ -18,9 +18,19 @@ RSpec.describe CatalogController do
     it "finds all documents" do
       persister.save(model: Book.new)
 
-      get :index, params: { search_field: "all_fields" }
+      get :index, params: { q: "" }
 
       expect(assigns(:document_list).length).to eq 1
+    end
+  end
+
+  describe "#has_search_parameters?" do
+    context "when only a q is passed" do
+      it "returns true" do
+        get :index, params: { q: "" }
+
+        expect(controller).to have_search_parameters
+      end
     end
   end
 end

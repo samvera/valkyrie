@@ -9,4 +9,8 @@ class CatalogController < ApplicationController
     return unless params[:parent_id]
     _, @parent_document = fetch("id-#{params[:parent_id]}")
   end
+
+  def has_search_parameters?
+    !params[:q].nil? || !params[:f].blank? || !params[:search_field].blank?
+  end
 end

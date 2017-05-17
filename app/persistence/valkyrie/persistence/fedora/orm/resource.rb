@@ -21,7 +21,7 @@ module Valkyrie::Persistence::Fedora::ORM
     )
     def to_solr(doc = {})
       super.merge(
-        uri_ssi: uri
+        uri_ssi: uri.to_s
       )
     end
   end

@@ -19,7 +19,7 @@ module Valkyrie::Persistence::Fedora::Queries
 
       def docs
         @docs ||= begin
-                            ActiveFedora::SolrService.query("{!join from=#{property}_ssim to=uri_ssi}id:#{id}", rows: 100_000)
+                            ActiveFedora::SolrService.query("{!join from=#{property}_ssim to=uri_ssi}id:#{id}", rows: 100_000, fl: "*")
                           end
       end
 
