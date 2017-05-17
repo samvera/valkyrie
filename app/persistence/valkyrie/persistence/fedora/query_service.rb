@@ -25,6 +25,10 @@ module Valkyrie::Persistence::Fedora
       def find_references_by(model:, property:)
         Valkyrie::Persistence::Fedora::Queries::FindReferencesQuery.new(model, property).run
       end
+
+      def find_inverse_references_by(model:, property:)
+        Valkyrie::Persistence::Fedora::Queries::FindInverseReferencesQuery.new(model, property).run
+      end
     end
   end
 end

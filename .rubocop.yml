@@ -18,6 +18,7 @@ Style/PredicateName:
     - "app/controllers/catalog_controller.rb"
     - "lib/valkyrie/active_model.rb"
     - "app/persistence/valkyrie/persistence/solr/queries/default_paginator.rb"
+    - "app/persistence/valkyrie/persistence/fedora/queries/default_paginator.rb"
 Style/MethodMissing:
   Exclude:
     - "app/persistence/valkyrie/persistence/fedora/resource_factory.rb"

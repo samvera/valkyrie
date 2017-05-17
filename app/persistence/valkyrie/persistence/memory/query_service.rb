@@ -33,6 +33,12 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    def find_inverse_references_by(model:, property:)
+      find_all.select do |obj|
+        Array.wrap(obj[property]).include?(model.id)
+      end
+    end
+
     def find_parents(model:)
       cache.values.select do |record|
         member_ids(model: record).include?(model.id)

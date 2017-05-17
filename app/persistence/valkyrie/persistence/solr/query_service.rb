@@ -20,7 +20,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def find_parents(model:)
-      Valkyrie::Persistence::Solr::Queries::FindParentQuery.new(model: model, connection: connection, resource_factory: resource_factory).run
+      find_inverse_references_by(model: model, property: :member_ids)
     end
 
     def find_members(model:)
@@ -29,6 +29,10 @@ module Valkyrie::Persistence::Solr
 
     def find_references_by(model:, property:)
       Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(model: model, property: property, connection: connection, resource_factory: resource_factory).run
+    end
+
+    def find_inverse_references_by(model:, property:)
+      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(model: model, property: property, connection: connection, resource_factory: resource_factory).run
     end
   end
 end

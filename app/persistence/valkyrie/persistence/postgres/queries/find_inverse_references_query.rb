@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres::Queries
-  class FindParentsQuery
-    attr_reader :obj
-    def initialize(obj)
+  class FindInverseReferencesQuery
+    attr_reader :obj, :property
+    def initialize(obj, property)
       @obj = obj
+      @property = property
     end
 
     def run
@@ -15,13 +16,13 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_model.find_by_sql([query, "[{\"id\": \"#{obj.id}\"}]"])
+        orm_model.find_by_sql([query, property, "[{\"id\": \"#{obj.id}\"}]"])
       end
 
       def query
         <<-SQL
         SELECT * FROM orm_resources WHERE
-        metadata->'member_ids' @> ?
+        metadata->? @> ?
       SQL
       end
 
