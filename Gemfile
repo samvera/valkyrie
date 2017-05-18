@@ -9,7 +9,7 @@ gem "normalize-rails", "~> 3.0.0"
 gem "pg"
 gem "puma"
 gem "rack-canonical-host"
-gem "rails", "~> 5.0.0"
+gem "rails", "~> 5.1.0"
 gem "recipient_interceptor"
 gem "sass-rails", "~> 5.0"
 gem "simple_form"
@@ -74,7 +74,7 @@ group :development, :test do
   gem 'solr_wrapper', '>= 0.3'
 end
 
-gem 'rsolr', '~> 1.0'
+gem 'rsolr', '~> 2.0'
 
 gem 'devise-guests', '~> 0.5'
 gem 'reform'
