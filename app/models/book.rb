@@ -1,6 +1,5 @@
 # frozen_string_literal: true
-class Book
-  include Valkyrie::Model
+class Book < Valkyrie::Model
   attribute :id, Valkyrie::ID::Attribute
   attribute :title, UniqueNonBlankArray
   attribute :author, UniqueNonBlankArray

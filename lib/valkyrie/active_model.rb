@@ -17,11 +17,12 @@ module Valkyrie
   end
 
   module_function :config
-  module Model
-    def self.included(base)
-      base.include Virtus.model
-      base.include Draper::Decoratable
-      base.extend ClassMethods
+  class Model
+    include Virtus.model
+    include Draper::Decoratable
+
+    def self.fields
+      attribute_set.map(&:name)
     end
 
     def has_attribute?(name)
@@ -58,12 +59,6 @@ module Valkyrie
 
     def to_s
       "#{resource_class}: #{id}"
-    end
-
-    module ClassMethods
-      def fields
-        attribute_set.map(&:name)
-      end
     end
   end
 end
