@@ -20,6 +20,7 @@ module Valkyrie
   module Model
     def self.included(base)
       base.include Virtus.model
+      base.include Draper::Decoratable
       base.extend ClassMethods
     end
 

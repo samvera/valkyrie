@@ -2,10 +2,10 @@
 require 'rails_helper'
 
 RSpec.describe "catalog/_children_collection.html.erb" do
-  let(:document) { instance_double(SolrDocument, resource: resource) }
+  let(:document) { instance_double(SolrDocument, resource: resource, members: [child]) }
   let(:resource) { persister.save(model: Book.new(title: "Title")) }
   let(:persister) { Valkyrie.config.adapter.persister }
-  let(:child) { persister.save(model: Book.new(title: "Child", a_member_of: resource.id)) }
+  let(:child) { persister.save(model: Book.new(title: "Child", a_member_of: resource.id)).decorate }
 
   before do
     assign(:document, document)
@@ -15,5 +15,6 @@ RSpec.describe "catalog/_children_collection.html.erb" do
 
   it "displays all members of the resource" do
     expect(response).to have_link "Child"
+    expect(response).not_to have_link "[\"Child\"]"
   end
 end

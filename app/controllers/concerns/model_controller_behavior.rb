@@ -7,7 +7,7 @@ module ModelControllerBehavior
 
   def new
     @form = form_class.new(resource_class.new).prepopulate!
-    @collections = query_service.find_all_of_model(model: Collection)
+    @collections = ::Draper::CollectionDecorator.decorate(query_service.find_all_of_model(model: Collection))
   end
 
   def create
