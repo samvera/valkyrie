@@ -5,7 +5,6 @@
   <% if @form.append_id.present? %>
     <%= f.input :append_id, as: :hidden %>
   <% end %>
-  <%# <%= f.input :a_member_of, collection: @collections, label_method: :title, value_method: :id, input_html: { multiple: true }, include_blank: true%>
   <%= f.input :files, as: :file, input_html: { multiple: true }%>
   <%= f.button :submit %>
 <% end %>
