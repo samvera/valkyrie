@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie
   class ID
-    # Dry::Types.register_class(self)
-    Attribute = Valkyrie::Types::ID.optional
-
     attr_reader :id
     delegate :empty?, to: :id
     def initialize(id)

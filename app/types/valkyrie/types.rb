@@ -5,10 +5,11 @@ module Valkyrie
     ID = Dry::Types::Definition
          .new(Valkyrie::ID)
          .constructor do |input|
-      Valkyrie::ID.new(input)
-    end
+           Valkyrie::ID.new(input)
+         end
     Set = Valkyrie::Types::Coercible::Array.constructor do |value|
       value.select(&:present?).uniq
-    end
+    end.default([])
+    Array = Dry::Types['coercible.array'].default([])
   end
 end

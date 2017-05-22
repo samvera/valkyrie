@@ -30,6 +30,13 @@ RSpec.describe Book do
   it "creates defaults" do
     b = described_class.new
     expect(b.title).to eq []
+    expect(b.member_ids).to eq []
+  end
+
+  it "casts member_ids" do
+    b = described_class.new
+    b.member_ids = 1
+    expect(b.member_ids).to eq [1]
   end
 
   describe "#member_ids" do

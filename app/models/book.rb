@@ -4,7 +4,7 @@ class Book < Valkyrie::Model
   attribute :title, Valkyrie::Types::Set
   attribute :author, Valkyrie::Types::Set
   attribute :testing, Valkyrie::Types::Set
-  attribute :member_ids, Valkyrie::Types::Coercible::Array
+  attribute :member_ids, Valkyrie::Types::Array
   attribute :a_member_of, Valkyrie::Types::Set
   attribute :viewing_hint, Valkyrie::Types::Set
   attribute :viewing_direction, Valkyrie::Types::Set

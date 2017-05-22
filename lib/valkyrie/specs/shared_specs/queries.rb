@@ -4,13 +4,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter
     class CustomResource < Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
       attribute :a_member_of
     end
     class SecondResource < Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+      attribute :id, Valkyrie::Types::ID.optional
     end
   end
   after do

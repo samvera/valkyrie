@@ -4,7 +4,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     raise 'persister must be set with `let(:persister)`' unless
       defined? persister
     class CustomResource < Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
     end

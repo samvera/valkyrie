@@ -6,7 +6,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     raise 'file must be set with `let(:file)`' unless
       defined? file
     class CustomResource < Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+      attribute :id, Valkyrie::Types::ID.optional
     end
   end
   after do

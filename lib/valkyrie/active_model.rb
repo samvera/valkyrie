@@ -32,12 +32,6 @@ module Valkyrie
       super
     end
 
-    def self.new(hsh = {})
-      super(
-        Hash[fields.map { |x| [x, nil] }].merge(hsh)
-      )
-    end
-
     def attributes
       to_h
     end

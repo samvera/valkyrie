@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class FileNode < Valkyrie::Model
-  attribute :id, Valkyrie::ID::Attribute
-  attribute :label, UniqueNonBlankArray
-  attribute :file_identifiers, UniqueNonBlankArray
+  attribute :id, Valkyrie::Types::ID.optional
+  attribute :label, Valkyrie::Types::Set
+  attribute :file_identifiers, Valkyrie::Types::Set
 end

@@ -24,8 +24,8 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       end
       class Resource < Valkyrie::Model
         attribute :id, String
-        attribute :title, UniqueNonBlankArray
-        attribute :other_title, UniqueNonBlankArray
+        attribute :title, Valkyrie::Types::Set
+        attribute :other_title, Valkyrie::Types::Set
       end
     end
     after do
