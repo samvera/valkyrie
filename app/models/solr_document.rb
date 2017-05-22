@@ -28,7 +28,7 @@ class SolrDocument
   end
 
   def members
-    QueryService.find_members(model: Book.new(id: model_id, member_ids: member_ids))
+    QueryService.find_members(model: Book.new(id: model_id, member_ids: member_ids)).map(&:decorate)
   end
 
   def model_id

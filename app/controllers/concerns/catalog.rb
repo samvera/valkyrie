@@ -79,12 +79,15 @@ module Catalog
       # Have BL send all facet field names to Solr, which has been the default
       # previously. Simply remove these lines if you'd rather use Solr request
       # handler defaults, or have no facets.
+      config.index.display_type_field = "inner_model_ssim"
+      config.add_facet_field('inner_model_ssim', label: 'Type of Work')
       config.add_facet_fields_to_solr_request!
       config.add_search_field('all_fields', label: 'All Fields', include_in_advanced_search: false)
       config.add_show_field('author_tesim', label: 'Author')
       config.show.partials += [:members]
       config.add_show_field('member_ids_tesim', label: 'Member IDs')
       config.show.partials = config.show.partials.insert(1, :parent_breadcrumb)
+      config.show.partials = config.show.partials.insert(2, :children)
       config.add_facet_field 'author_ssim', label: 'Author'
     end
   end

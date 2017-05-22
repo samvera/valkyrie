@@ -15,16 +15,38 @@ module Valkyrie::Persistence::Memory
       cache.values
     end
 
+    def find_all_of_model(model:)
+      cache.values.select do |obj|
+        obj.is_a?(model)
+      end
+    end
+
     def find_members(model:)
-      model.member_ids.map do |id|
+      member_ids(model: model).map do |id|
         find_by(id: id)
+      end
+    end
+
+    def find_references_by(model:, property:)
+      Array.wrap(model[property]).map do |id|
+        find_by(id: id)
+      end
+    end
+
+    def find_inverse_references_by(model:, property:)
+      find_all.select do |obj|
+        Array.wrap(obj[property]).include?(model.id)
       end
     end
 
     def find_parents(model:)
       cache.values.select do |record|
-        (record.member_ids || []).include?(model.id)
+        member_ids(model: record).include?(model.id)
       end
+    end
+
+    def member_ids(model:)
+      model.member_ids || []
     end
   end
 end

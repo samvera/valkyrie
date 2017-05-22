@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe PageForm do
-  subject(:form) { described_class.new(book) }
+  subject(:form) { described_class.new(book).prepopulate! }
   let(:book) { Page.new(title: "Test") }
 
   describe "#title" do

@@ -3,16 +3,33 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter
-    raise 'resource_class must be set with `let(:resource_class)`' unless
-      defined? resource_class
+    class CustomResource
+      include Valkyrie::Model
+      attribute :id, Valkyrie::ID::Attribute
+      attribute :title
+      attribute :member_ids
+      attribute :a_member_of
+    end
+    class SecondResource
+      include Valkyrie::Model
+      attribute :id, Valkyrie::ID::Attribute
+    end
   end
+  after do
+    Object.send(:remove_const, :CustomResource)
+    Object.send(:remove_const, :SecondResource)
+  end
+  let(:resource_class) { CustomResource }
   let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
   subject { adapter.query_service }
 
   it { is_expected.to respond_to(:find_all).with(0).arguments }
+  it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:find_members).with_keywords(:model) }
+  it { is_expected.to respond_to(:find_references_by).with_keywords(:model, :property) }
+  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:model, :property) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:model) }
 
   describe ".find_all" do
@@ -21,6 +38,15 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       resource2 = persister.save(model: resource_class.new)
 
       expect(query_service.find_all.map(&:id)).to contain_exactly resource1.id, resource2.id
+    end
+  end
+
+  describe ".find_all_of_model" do
+    it "returns all of that model" do
+      persister.save(model: resource_class.new)
+      resource2 = persister.save(model: SecondResource.new)
+
+      expect(query_service.find_all_of_model(model: SecondResource).map(&:id)).to contain_exactly resource2.id
     end
   end
 
@@ -47,6 +73,26 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     it "doesn't error when there's no model ID" do
       parent = resource_class.new
       expect(query_service.find_members(model: parent).to_a).to eq []
+    end
+  end
+
+  describe ".find_references_by" do
+    it "returns all references given in a property" do
+      parent = persister.save(model: resource_class.new)
+      child = persister.save(model: resource_class.new(a_member_of: [parent.id]))
+      persister.save(model: resource_class.new)
+
+      expect(query_service.find_references_by(model: child, property: :a_member_of).map(&:id).to_a).to eq [parent.id]
+    end
+  end
+
+  describe ".find_inverse_references_by" do
+    it "returns everything which references the given model by the given property" do
+      parent = persister.save(model: resource_class.new)
+      child = persister.save(model: resource_class.new(a_member_of: [parent.id]))
+      persister.save(model: resource_class.new)
+
+      expect(query_service.find_inverse_references_by(model: parent, property: :a_member_of).map(&:id).to_a).to eq [child.id]
     end
   end
 

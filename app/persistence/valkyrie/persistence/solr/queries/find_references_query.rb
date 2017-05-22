@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
-  class FindAllQuery
-    attr_reader :connection, :resource_factory, :model
-    def initialize(connection:, resource_factory:, model: nil)
+  class FindReferencesQuery
+    attr_reader :model, :property, :connection, :resource_factory
+    def initialize(model:, property:, connection:, resource_factory:)
+      @model = model
+      @property = property
       @connection = connection
       @resource_factory = resource_factory
-      @model = model
     end
 
     def run
@@ -23,11 +24,11 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      if !model
-        "*:*"
-      else
-        "inner_model_ssim:#{model}"
-      end
+      "{!join from=#{property}_ssim to=id}id:#{id}"
+    end
+
+    def id
+      "id-#{model.id}"
     end
   end
 end

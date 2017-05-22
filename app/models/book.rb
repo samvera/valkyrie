@@ -6,6 +6,7 @@ class Book
   attribute :author, UniqueNonBlankArray
   attribute :testing, UniqueNonBlankArray
   attribute :member_ids, NonBlankArray
+  attribute :a_member_of, UniqueNonBlankArray
   attribute :viewing_hint, UniqueNonBlankArray
   attribute :viewing_direction, UniqueNonBlankArray
   attribute :thumbnail_id, UniqueNonBlankArray

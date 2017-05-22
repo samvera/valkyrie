@@ -6,6 +6,10 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new.run
       end
 
+      def find_all_of_model(model:)
+        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(model: model).run
+      end
+
       def find_by(id:)
         Valkyrie::Persistence::Postgres::Queries::FindByIdQuery.new(id).run
       end
@@ -15,7 +19,15 @@ module Valkyrie::Persistence::Postgres
       end
 
       def find_parents(model:)
-        Valkyrie::Persistence::Postgres::Queries::FindParentsQuery.new(model).run
+        find_inverse_references_by(model: model, property: :member_ids)
+      end
+
+      def find_references_by(model:, property:)
+        Valkyrie::Persistence::Postgres::Queries::FindReferencesQuery.new(model, property).run
+      end
+
+      def find_inverse_references_by(model:, property:)
+        Valkyrie::Persistence::Postgres::Queries::FindInverseReferencesQuery.new(model, property).run
       end
     end
   end

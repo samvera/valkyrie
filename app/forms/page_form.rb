@@ -2,10 +2,8 @@
 class PageForm < Valkyrie::Form
   validate :title_not_empty
   self.fields = Page.fields - [:id]
-
-  def viewing_hint
-    Array(model.viewing_hint).first
-  end
+  property :viewing_hint, multiple: false
+  property :title, required: true
 
   private
 

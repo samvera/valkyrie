@@ -4,9 +4,11 @@ require 'rails_helper'
 RSpec.describe "Book Management" do
   describe "new" do
     it "has a form for creating books" do
+      Persister.save(model: Collection.new(title: ["Test Collection"]))
       get "/books/new"
       expect(response.body).to have_field "Title"
       expect(response.body).to have_button "Create Book"
+      expect(response.body).to have_select 'A member of', options: ['', 'Test Collection']
     end
   end
 

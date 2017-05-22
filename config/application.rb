@@ -15,7 +15,6 @@ module Valkyrie
       generate.view_specs false
     end
     config.action_controller.action_on_unpermitted_parameters = :raise
-    config.active_job.queue_adapter = :delayed_job
     config.autoload_paths << Rails.root.join('lib')
   end
 end

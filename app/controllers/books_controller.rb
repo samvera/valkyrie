@@ -9,9 +9,9 @@ class BooksController < ApplicationController
   end
 
   def file_manager
-    @record = form_class.new(find_book(params[:id]))
+    @record = form_class.new(find_book(params[:id])).prepopulate!
     @children = QueryService.find_members(model: @record).map do |x|
-      form_class.new(x)
+      form_class.new(x).prepopulate!
     end.to_a
   end
 

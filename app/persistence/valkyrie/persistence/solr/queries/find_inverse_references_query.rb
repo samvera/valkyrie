@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
-  class FindParentQuery
-    attr_reader :model, :connection, :resource_factory
-    def initialize(model:, connection:, resource_factory:)
+  class FindInverseReferencesQuery
+    attr_reader :model, :property, :connection, :resource_factory
+    def initialize(model:, property:, connection:, resource_factory:)
       @model = model
+      @property = property
       @connection = connection
       @resource_factory = resource_factory
     end
@@ -23,7 +24,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      "member_ids_ssim:id-#{model.id}"
+      "#{property}_ssim:id-#{model.id}"
     end
   end
 end

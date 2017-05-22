@@ -1,10 +1,6 @@
 <%= simple_form_for @form do |f| %>
   <% (@form.class.fields - [:member_ids]).each do |field| %>
-    <% if f.object.send(field).respond_to?(:each) %>
-      <%= f.input field, as: :multi_value %>
-    <% else %>
-      <%= f.input field %>
-    <% end %>
+    <%= render_edit_field_partial(field, f: f) %>
   <% end %>
   <% if @form.append_id.present? %>
     <%= f.input :append_id, as: :hidden %>

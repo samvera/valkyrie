@@ -1,3 +1,11 @@
+GIT
+  remote: git://github.com/cbeer/devise-guests.git
+  revision: 0999e0bf31841640ad52331e8db14c3f0e1c9765
+  branch: master
+  specs:
+    devise-guests (0.6.0)
+      devise
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -42,6 +50,11 @@ GEM
       globalid (>= 0.3.6)
     activemodel (5.1.1)
       activesupport (= 5.1.1)
+    activemodel-serializers-xml (1.0.1)
+      activemodel (> 5.x)
+      activerecord (> 5.x)
+      activesupport (> 5.x)
+      builder (~> 3.1)
     activerecord (5.1.1)
       activemodel (= 5.1.1)
       activesupport (= 5.1.1)
@@ -55,7 +68,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
-    almond-rails (0.0.3)
+    almond-rails (0.1.0)
       rails (>= 4.2, < 6)
     arel (8.0.0)
     ast (2.3.0)
@@ -92,7 +105,7 @@ GEM
       bundler (~> 1.2)
       thor (~> 0.18)
     byebug (9.0.6)
-    cancancan (1.15.0)
+    cancancan (1.16.0)
     capybara (2.11.0)
       addressable
       mime-types (>= 1.16)
@@ -129,8 +142,6 @@ GEM
       railties (>= 4.1.0, < 5.2)
       responders
       warden (~> 1.2.3)
-    devise-guests (0.5.0)
-      devise
     diff-lcs (1.2.5)
     disposable (0.4.2)
       declarative (>= 0.0.9, < 1.0.0)
@@ -143,6 +154,32 @@ GEM
     dotenv-rails (2.2.1)
       dotenv (= 2.2.1)
       railties (>= 3.2, < 5.2)
+    draper (3.0.0)
+      actionpack (~> 5.0)
+      activemodel (~> 5.0)
+      activemodel-serializers-xml (~> 1.0)
+      activesupport (~> 5.0)
+      request_store (~> 1.0)
+    dry-configurable (0.6.2)
+      concurrent-ruby (~> 1.0)
+    dry-container (0.6.0)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 0.1, >= 0.1.3)
+    dry-core (0.2.4)
+      concurrent-ruby (~> 1.0)
+    dry-equalizer (0.2.0)
+    dry-logic (0.4.1)
+      dry-container (~> 0.2, >= 0.2.6)
+      dry-core (~> 0.2)
+      dry-equalizer (~> 0.2)
+    dry-types (0.9.4)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 0.1)
+      dry-container (~> 0.3)
+      dry-core (~> 0.2, >= 0.2.1)
+      dry-equalizer (~> 0.2)
+      dry-logic (~> 0.4, >= 0.4.0)
+      inflecto (~> 0.0.0, >= 0.0.2)
     ebnf (1.1.0)
       rdf (~> 2.0)
       sxp (~> 1.0)
@@ -175,9 +212,9 @@ GEM
       deprecation
       mime-types (> 2.0, < 4.0)
       mini_magick (>= 3.2, < 5)
-    hydra-editor (3.1.2)
+    hydra-editor (3.3.1)
       active-fedora (>= 9.0.0)
-      almond-rails (~> 0.0.3)
+      almond-rails (~> 0.1)
       cancancan (~> 1.8)
       rails (>= 4.2.0, < 6)
       simple_form (~> 3.2)
@@ -194,6 +231,7 @@ GEM
       om (~> 3.1)
     i18n (0.8.1)
     ice_nine (0.11.2)
+    inflecto (0.0.2)
     jquery-rails (4.2.2)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -335,6 +373,7 @@ GEM
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
+    request_store (1.3.2)
     responders (2.4.0)
       actionpack (>= 4.2.0, < 5.3)
       railties (>= 4.2.0, < 5.3)
@@ -482,8 +521,10 @@ DEPENDENCIES
   coveralls
   database_cleaner
   devise
-  devise-guests (~> 0.5)
+  devise-guests (~> 0.5)!
   dotenv-rails
+  draper
+  dry-types
   factory_girl_rails
   fcrepo_wrapper
   formulaic
