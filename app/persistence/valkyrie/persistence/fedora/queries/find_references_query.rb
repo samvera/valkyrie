@@ -9,18 +9,27 @@ module Valkyrie::Persistence::Fedora::Queries
     end
 
     def run
-      return [] unless obj.id.present?
-      docs.map do |solr_document|
-        resource_factory.to_model(solr_document)
+      enum_for(:each)
+    end
+
+    def each
+      docs = DefaultPaginator.new
+      while docs.has_next?
+        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
+        docs.each do |doc|
+          yield resource_factory.to_model(ActiveFedora::Base.find(doc["id"]))
+        end
       end
     end
 
     private
 
-      def docs
-        @docs ||= begin
-                            ActiveFedora::SolrService.query("{!join from=#{property}_ssim to=uri_ssi}id:#{id}", rows: 100_000, fl: "*")
-                          end
+      def query
+        "{!join from=#{property}_ssim to=uri_ssi}id:#{id}"
+      end
+
+      def connection
+        ActiveFedora.solr.conn
       end
 
       def resource_factory
