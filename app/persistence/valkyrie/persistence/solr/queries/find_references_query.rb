@@ -14,19 +14,13 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def each
-      unordered_result.each do |member|
-        yield member
+      docs = DefaultPaginator.new
+      while docs.has_next?
+        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
+        docs.each do |doc|
+          yield resource_factory.to_model(doc)
+        end
       end
-    end
-
-    def unordered_result
-      docs.map do |doc|
-        resource_factory.to_model(doc)
-      end
-    end
-
-    def docs
-      connection.get("select", params: { q: query, rows: 1_000_000_000 })["response"]["docs"]
     end
 
     def query
