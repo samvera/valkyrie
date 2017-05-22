@@ -85,7 +85,7 @@ gem 'bixby'
 # Maybe extract just the stuff for multi-inputs..
 gem 'coveralls', require: false
 gem 'draper'
+gem 'dry-struct', '~> 0.3.0'
 gem 'dry-types'
 gem 'hydra-editor'
 gem 'jquery-ui-rails', '~> 6.0'
-gem 'dry-struct'

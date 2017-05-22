@@ -35,5 +35,12 @@ RSpec.shared_examples 'a Valkyrie::Model' do
         expect(model_klass.fields).to include(:id)
       end
     end
+
+    describe "#attributes" do
+      it "returns a list of all set attributes" do
+        resource = model_klass.new(id: "test")
+        expect(resource.attributes[:id].to_s).to eq "test"
+      end
+    end
   end
 end

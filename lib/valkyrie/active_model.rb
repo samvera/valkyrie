@@ -17,12 +17,29 @@ module Valkyrie
   end
 
   module_function :config
-  class Model
-    include Virtus.model
+  class Model < Dry::Struct
     include Draper::Decoratable
+    constructor_type :schema
 
     def self.fields
-      attribute_set.map(&:name)
+      schema.keys
+    end
+
+    def self.attribute(name, type = Valkyrie::Types::Set.optional)
+      define_method("#{name}=") do |value|
+        instance_variable_set("@#{name}", self.class.schema[name].call(value))
+      end
+      super
+    end
+
+    def self.new(hsh = {})
+      super(
+        Hash[fields.map { |x| [x, nil] }].merge(hsh)
+      )
+    end
+
+    def attributes
+      to_h
     end
 
     def has_attribute?(name)

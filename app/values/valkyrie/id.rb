@@ -2,12 +2,7 @@
 module Valkyrie
   class ID
     # Dry::Types.register_class(self)
-    class Attribute < Virtus::Attribute
-      def coerce(value)
-        return value if value.nil?
-        Valkyrie::ID.new(value.to_s)
-      end
-    end
+    Attribute = Valkyrie::Types::ID.optional
 
     attr_reader :id
     delegate :empty?, to: :id
