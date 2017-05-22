@@ -50,6 +50,19 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        class DateValue < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            DateTime.parse(value).in_time_zone
+          rescue
+            false
+          end
+
+          def result
+            DateTime.parse(value).in_time_zone
+          end
+        end
+
         class EnumeratorValue < ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
