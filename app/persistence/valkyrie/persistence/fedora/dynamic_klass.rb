@@ -7,10 +7,17 @@ module Valkyrie::Persistence::Fedora
 
     def self.cast_attributes(orm_object)
       Hash[
-        orm_object.attributes.map do |k, v|
+        attributes(orm_object).map do |k, v|
           [k.to_sym, FedoraMapper.for(v).result]
         end
       ]
+    end
+
+    def self.attributes(orm_object)
+      orm_object.attributes.merge(
+        "read_groups" => orm_object.read_groups,
+        "read_users" => orm_object.read_users
+      )
     end
 
     class FedoraMapper < ValueMapper

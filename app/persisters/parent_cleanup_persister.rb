@@ -6,7 +6,7 @@ class ParentCleanupPersister
   end
 
   def delete(model:)
-    parents = query_service.find_parents(model: model)
+    parents = query_service.find_parents(model: model).to_a
     persister.delete(model: model)
     parents.each do |parent|
       parent.member_ids -= [model.id]

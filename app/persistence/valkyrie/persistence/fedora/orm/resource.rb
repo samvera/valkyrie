@@ -15,10 +15,12 @@ module Valkyrie::Persistence::Fedora::ORM
     property :label, predicate: ::RDF::URI("http://test.com/label")
   end
   class Resource < ActiveFedora::Base
+    include Hydra::AccessControls::Permissions
     include Hydra::Works::WorkBehavior
     apply_schema Schema, ActiveFedora::SchemaIndexingStrategy.new(
       ActiveFedora::Indexers::GlobalIndexer.new([:symbol, :stored_searchable, :facetable])
     )
+
     def to_solr(doc = {})
       super.merge(
         uri_ssi: uri.to_s

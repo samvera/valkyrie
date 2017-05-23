@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class CatalogController < ApplicationController
-  include Blacklight::Catalog
+  include ::Hydra::Catalog
   include Catalog
   before_action :parent_document, only: :show
   layout "valkyrie"

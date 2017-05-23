@@ -5,8 +5,8 @@ RSpec.describe CatalogController do
   let(:persister) { Valkyrie::Adapter.find(:indexing_persister).persister }
   describe "nested catalog paths" do
     it "loads the parent document when given an ID" do
-      child = persister.save(model: Book.new)
-      parent = persister.save(model: Book.new(member_ids: child.id))
+      child = persister.save(model: FactoryGirl.build(:book))
+      parent = persister.save(model: FactoryGirl.build(:book, member_ids: child.id))
 
       get :show, params: { parent_id: parent.id, id: child.id }
 
@@ -15,8 +15,8 @@ RSpec.describe CatalogController do
   end
 
   describe "#index" do
-    it "finds all documents" do
-      persister.save(model: Book.new)
+    it "finds all public documents" do
+      persister.save(model: FactoryGirl.build(:book))
 
       get :index, params: { q: "" }
 
@@ -30,6 +30,28 @@ RSpec.describe CatalogController do
         get :index, params: { q: "" }
 
         expect(controller).to have_search_parameters
+      end
+    end
+
+    context "when not logged in" do
+      it "does not display resources without the `public` read_groups" do
+        persister.save(model: FactoryGirl.build(:book, read_groups: nil))
+
+        get :index, params: { q: "" }
+
+        expect(assigns(:document_list)).to be_empty
+      end
+    end
+
+    context "when logged in" do
+      it "displays resources which are explicitly given permission to that user" do
+        user = FactoryGirl.create(:user)
+        persister.save(model: FactoryGirl.build(:book, read_groups: nil, read_users: user.user_key))
+
+        sign_in user
+        get :index, params: { q: "" }
+
+        expect(assigns(:document_list)).not_to be_empty
       end
     end
   end

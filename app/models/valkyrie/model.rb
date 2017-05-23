@@ -3,7 +3,6 @@ module Valkyrie
   class Model < Dry::Struct
     include Draper::Decoratable
     constructor_type :schema
-
     def self.fields
       schema.keys
     end

@@ -12,13 +12,15 @@ RSpec.describe Valkyrie::Persistence::Fedora do
     context "when they come from solr" do
       it "can find properties and member_ids of sub-resources" do
         nested_child = persister.save(model: Book.new)
-        middle_child = persister.save(model: Book.new(member_ids: nested_child.id, title: "Test"))
+        middle_child = persister.save(model: Book.new(member_ids: nested_child.id, title: "Test", read_groups: ["public"], read_users: ["tpend"]))
         parent = persister.save(model: Book.new(member_ids: middle_child.id))
 
         child = query_service.find_members(model: parent).first
 
         expect(child.member_ids).to eq [nested_child.id]
         expect(child.title).to eq ["Test"]
+        expect(child.read_groups).to eq ["public"]
+        expect(child.read_users).to eq ["tpend"]
       end
     end
   end
