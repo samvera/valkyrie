@@ -125,6 +125,7 @@ module Valkyrie::Persistence::Solr
           Valkyrie::ID.new(value.gsub(/^id-/, ''))
         end
       end
+
       class URIValue < ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
@@ -133,6 +134,17 @@ module Valkyrie::Persistence::Solr
 
         def result
           ::RDF::URI.new(value.gsub(/^uri-/, ''))
+        end
+      end
+
+      class IntegerValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          value.to_s.start_with?("integer-")
+        end
+
+        def result
+          value.gsub(/^integer-/, '').to_i
         end
       end
     end
