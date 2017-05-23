@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 class Book < Valkyrie::Model
+  include Valkyrie::Model::AccessControls
   attribute :id, Valkyrie::Types::ID.optional
   attribute :title, Valkyrie::Types::Set
   attribute :author, Valkyrie::Types::Set
@@ -11,8 +12,4 @@ class Book < Valkyrie::Model
   attribute :thumbnail_id, Valkyrie::Types::Set
   attribute :representative_id, Valkyrie::Types::Set
   attribute :start_canvas, Valkyrie::Types::Set
-  attribute :read_groups, Valkyrie::Types::Set
-  attribute :read_users, Valkyrie::Types::Set
-  attribute :edit_users, Valkyrie::Types::Set
-  attribute :edit_groups, Valkyrie::Types::Set
 end
