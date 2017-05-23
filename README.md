@@ -17,8 +17,10 @@ A proof of concept "breakable toy" for enabling multiple backends for storage of
 1. `bundle install`
 1. `rake db:create:all`
 1. `rake db:migrate`
+1. Start a test server via `rake server:test`
 1. Start a dev server via `rake server:development`
 1. Bring up a Rails server via `rails s` or a console via `rails c`
+1. Run specs via `rspec spec`
 
 
 # License
