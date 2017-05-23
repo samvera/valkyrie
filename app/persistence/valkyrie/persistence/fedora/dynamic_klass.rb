@@ -16,7 +16,9 @@ module Valkyrie::Persistence::Fedora
     def self.attributes(orm_object)
       orm_object.attributes.merge(
         "read_groups" => orm_object.read_groups,
-        "read_users" => orm_object.read_users
+        "read_users" => orm_object.read_users,
+        "edit_users" => orm_object.edit_users,
+        "edit_groups" => orm_object.edit_groups
       )
     end
 

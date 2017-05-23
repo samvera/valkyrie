@@ -2,6 +2,10 @@
 require 'rails_helper'
 
 RSpec.describe BooksController do
+  let(:user) { FactoryGirl.create(:admin) }
+  before do
+    sign_in user if user
+  end
   describe "GET /books/new" do
     it "renders a form with a new book" do
       get :new
@@ -28,6 +32,13 @@ RSpec.describe BooksController do
   end
 
   describe "GET /books/:id/append/book" do
+    context "when not signed in" do
+      let(:user) { nil }
+      it "raises CanCan::AccessDenied" do
+        parent = Persister.save(model: Book.new)
+        expect { get :append, params: { id: parent.id, model: Book } }.to raise_error CanCan::AccessDenied
+      end
+    end
     it "renders a form to append a child book" do
       parent = Persister.save(model: Book.new)
       get :append, params: { id: parent.id, model: Book }

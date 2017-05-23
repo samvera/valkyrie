@@ -13,4 +13,6 @@ class Book < Valkyrie::Model
   attribute :start_canvas, Valkyrie::Types::Set
   attribute :read_groups, Valkyrie::Types::Set
   attribute :read_users, Valkyrie::Types::Set
+  attribute :edit_users, Valkyrie::Types::Set
+  attribute :edit_groups, Valkyrie::Types::Set
 end

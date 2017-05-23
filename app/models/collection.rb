@@ -4,4 +4,6 @@ class Collection < Valkyrie::Model
   attribute :title, Valkyrie::Types::Set
   attribute :read_groups, Valkyrie::Types::Set
   attribute :read_users, Valkyrie::Types::Set
+  attribute :edit_users, Valkyrie::Types::Set
+  attribute :edit_groups, Valkyrie::Types::Set
 end

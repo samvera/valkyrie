@@ -6,4 +6,6 @@ class FileSet < Valkyrie::Model
   attribute :member_ids, Valkyrie::Types::Array
   attribute :read_groups, Valkyrie::Types::Set
   attribute :read_users, Valkyrie::Types::Set
+  attribute :edit_users, Valkyrie::Types::Set
+  attribute :edit_groups, Valkyrie::Types::Set
 end

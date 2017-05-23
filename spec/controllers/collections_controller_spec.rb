@@ -2,6 +2,10 @@
 require 'rails_helper'
 
 RSpec.describe CollectionsController do
+  let(:user) { FactoryGirl.create(:admin) }
+  before do
+    sign_in user if user
+  end
   describe "GET /collections/new" do
     it "renders a form with a new book" do
       get :new

@@ -6,10 +6,6 @@ FactoryGirl.define do
     password_confirmation 'a password'
   end
   factory :admin, parent: :user do
-    after(:build) do |user|
-      def user.groups
-        ['admin']
-      end
-    end
+    email "admin@example.com"
   end
 end

@@ -43,7 +43,27 @@ RSpec.describe CatalogController do
       end
     end
 
+    context "when logged in as an admin" do
+      it "displays all resources" do
+        user = FactoryGirl.create(:admin)
+        persister.save(model: FactoryGirl.build(:book, read_groups: nil, edit_users: nil))
+
+        sign_in user
+        get :index, params: { q: "" }
+
+        expect(assigns(:document_list)).not_to be_empty
+      end
+    end
     context "when logged in" do
+      it "displays resources which the user can edit" do
+        user = FactoryGirl.create(:user)
+        persister.save(model: FactoryGirl.build(:book, read_groups: nil, edit_users: user.user_key))
+
+        sign_in user
+        get :index, params: { q: "" }
+
+        expect(assigns(:document_list)).not_to be_empty
+      end
       it "displays resources which are explicitly given permission to that user" do
         user = FactoryGirl.create(:user)
         persister.save(model: FactoryGirl.build(:book, read_groups: nil, read_users: user.user_key))

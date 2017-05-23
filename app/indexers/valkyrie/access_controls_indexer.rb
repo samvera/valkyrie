@@ -9,7 +9,9 @@ module Valkyrie
     def to_solr
       {
         Hydra.config[:permissions][:read].group => resource.read_groups,
-        Hydra.config[:permissions][:read].individual => resource.read_users
+        Hydra.config[:permissions][:read].individual => resource.read_users,
+        Hydra.config[:permissions][:edit].individual => resource.edit_users,
+        Hydra.config[:permissions][:edit].group => resource.edit_groups
       }
     end
   end

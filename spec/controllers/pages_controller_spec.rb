@@ -2,6 +2,10 @@
 require 'rails_helper'
 
 RSpec.describe PagesController do
+  let(:user) { FactoryGirl.create(:admin) }
+  before do
+    sign_in user if user
+  end
   describe "GET /pages/new" do
     it "renders a form with a new page" do
       get :new

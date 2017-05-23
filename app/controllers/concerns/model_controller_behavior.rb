@@ -7,11 +7,13 @@ module ModelControllerBehavior
 
   def new
     @form = form_class.new(resource_class.new).prepopulate!
+    authorize! :create, resource_class
     @collections = ::Draper::CollectionDecorator.decorate(query_service.find_all_of_model(model: Collection))
   end
 
   def create
     @form = form_class.new(resource_class.new)
+    authorize! params[:action], @form.model
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(model: @form)
@@ -23,12 +25,14 @@ module ModelControllerBehavior
 
   def edit
     @form = form_class.new(find_book(params[:id])).prepopulate!
+    authorize! :update, @form.model
     @collections = query_service.find_all_of_model(model: Collection)
     render :edit
   end
 
   def update
     @form = form_class.new(find_book(params[:id]))
+    authorize! params[:action], @form.model
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(model: @form)
@@ -39,9 +43,10 @@ module ModelControllerBehavior
   end
 
   def destroy
-    @book = find_book(params[:id])
-    persister.delete(model: @book)
-    flash[:alert] = "Deleted #{@book}"
+    @resource = find_book(params[:id])
+    authorize! params[:action], @resource
+    persister.delete(model: @resource)
+    flash[:alert] = "Deleted #{@resource}"
     redirect_to root_path
   end
 

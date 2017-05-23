@@ -47,6 +47,14 @@ module Valkyrie::Persistence::Fedora
             solr_hit.fetch("read_access_person_ssim", [])
           end
 
+          def edit_groups
+            solr_hit.fetch("edit_access_group_ssim", [])
+          end
+
+          def edit_users
+            solr_hit.fetch("edit_access_person_ssim", [])
+          end
+
           def method_missing(meth_name, *args)
             return super if args.present?
             solr_hit["#{meth_name}_ssim"] || super
