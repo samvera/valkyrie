@@ -115,6 +115,17 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      class URIPropertyValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(::RDF::URI)
+        end
+
+        def result
+          calling_mapper.for(Property.new(value.key, "uri-#{value.value}")).result
+        end
+      end
+
       class SharedStringPropertyValue < ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)

@@ -125,6 +125,16 @@ module Valkyrie::Persistence::Solr
           Valkyrie::ID.new(value.gsub(/^id-/, ''))
         end
       end
+      class URIValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          value.to_s.start_with?("uri-")
+        end
+
+        def result
+          ::RDF::URI.new(value.gsub(/^uri-/, ''))
+        end
+      end
     end
   end
 end

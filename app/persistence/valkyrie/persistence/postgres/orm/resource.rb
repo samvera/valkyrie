@@ -50,6 +50,17 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        class URIValue < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.is_a?(Hash) && value["@id"]
+          end
+
+          def result
+            ::RDF::URI.new(value["@id"])
+          end
+        end
+
         class EnumeratorValue < ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
