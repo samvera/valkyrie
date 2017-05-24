@@ -16,7 +16,7 @@ Style/FileName:
 Style/PredicateName:
   Exclude:
     - "app/controllers/catalog_controller.rb"
-    - "lib/valkyrie/active_model.rb"
+    - "app/models/valkyrie/model.rb"
     - "app/persistence/valkyrie/persistence/solr/queries/default_paginator.rb"
     - "app/persistence/valkyrie/persistence/fedora/queries/default_paginator.rb"
 Style/MethodMissing:
