@@ -72,7 +72,7 @@ GEM
       rails (>= 4.2, < 6)
     arel (8.0.0)
     ast (2.3.0)
-    autoprefixer-rails (6.6.1)
+    autoprefixer-rails (7.1.1)
       execjs
     awesome_print (1.7.0)
     babel-source (5.8.35)
@@ -81,7 +81,7 @@ GEM
       execjs (~> 2.0)
     bcrypt (3.1.11)
     bixby (0.1.0)
-    blacklight (6.7.3)
+    blacklight (6.10.0)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
@@ -188,7 +188,7 @@ GEM
     factory_girl_rails (4.8.0)
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
-    faraday (0.11.0)
+    faraday (0.12.1)
       multipart-post (>= 1.2, < 3)
     fcrepo_wrapper (0.8.0)
       ruby-progressbar
@@ -229,7 +229,7 @@ GEM
     i18n (0.8.1)
     ice_nine (0.11.2)
     inflecto (0.0.2)
-    jquery-rails (4.2.2)
+    jquery-rails (4.3.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
       thor (>= 0.14, < 2.0)
@@ -239,18 +239,18 @@ GEM
     json-ld (2.1.2)
       multi_json (~> 1.12)
       rdf (~> 2.1)
-    kaminari (1.0.0)
+    kaminari (1.0.1)
       activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.0.0)
-      kaminari-activerecord (= 1.0.0)
-      kaminari-core (= 1.0.0)
-    kaminari-actionview (1.0.0)
+      kaminari-actionview (= 1.0.1)
+      kaminari-activerecord (= 1.0.1)
+      kaminari-core (= 1.0.1)
+    kaminari-actionview (1.0.1)
       actionview
-      kaminari-core (= 1.0.0)
-    kaminari-activerecord (1.0.0)
+      kaminari-core (= 1.0.1)
+    kaminari-activerecord (1.0.1)
       activerecord
-      kaminari-core (= 1.0.0)
-    kaminari-core (1.0.0)
+      kaminari-core (= 1.0.1)
+    kaminari-core (1.0.1)
     launchy (2.4.3)
       addressable (~> 2.3)
     ldp (0.6.3)
@@ -406,7 +406,7 @@ GEM
     ruby_dep (1.5.0)
     rubyzip (1.2.1)
     safe_yaml (1.0.4)
-    sass (3.4.23)
+    sass (3.4.24)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
       sass (~> 3.1)
@@ -506,7 +506,7 @@ DEPENDENCIES
   autoprefixer-rails
   awesome_print
   bixby
-  blacklight
+  blacklight (>= 6.10)
   bullet
   bundler-audit (>= 0.5.0)
   capybara
