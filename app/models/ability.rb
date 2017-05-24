@@ -22,10 +22,26 @@ class Ability
   end
 
   def valkyrie_test_read(obj)
-    !(user_groups & obj.read_groups).empty? || obj.read_users.include?(current_user.user_key)
+    group_readable?(obj) || user_readable?(obj)
+  end
+
+  def group_readable?(obj)
+    (user_groups & obj.read_groups).any?
+  end
+
+  def user_readable?(obj)
+    obj.read_users.include?(current_user.user_key)
   end
 
   def valkyrie_test_edit(obj)
-    !(user_groups & obj.edit_groups).empty? || obj.edit_users.include?(current_user.user_key)
+    group_editable?(obj) || user_editable?(obj)
+  end
+
+  def group_editable?(obj)
+    (user_groups & obj.edit_groups).any?
+  end
+
+  def user_editable?(obj)
+    obj.edit_users.include?(current_user.user_key)
   end
 end
