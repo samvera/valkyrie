@@ -3,16 +3,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter
-    class CustomResource
-      include Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+    class CustomResource < Valkyrie::Model
+      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
       attribute :a_member_of
     end
-    class SecondResource
-      include Valkyrie::Model
-      attribute :id, Valkyrie::ID::Attribute
+    class SecondResource < Valkyrie::Model
+      attribute :id, Valkyrie::Types::ID.optional
     end
   end
   after do

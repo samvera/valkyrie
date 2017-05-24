@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def model
-        model_klass.new(attributes)
+        model_klass.new(attributes.symbolize_keys)
       end
 
       def model_klass

@@ -1,14 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie
   class ID
-    # Dry::Types.register_class(self)
-    class Attribute < Virtus::Attribute
-      def coerce(value)
-        return value if value.nil?
-        Valkyrie::ID.new(value.to_s)
-      end
-    end
-
     attr_reader :id
     delegate :empty?, to: :id
     def initialize(id)

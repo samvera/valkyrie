@@ -1,7 +1,6 @@
 # frozen_string_literal: true
-class Page
-  include Valkyrie::Model
-  attribute :id, Valkyrie::ID::Attribute
-  attribute :title, UniqueNonBlankArray
-  attribute :viewing_hint, UniqueNonBlankArray
+class Page < Valkyrie::Model
+  attribute :id, Valkyrie::Types::ID.optional
+  attribute :title, Valkyrie::Types::Set
+  attribute :viewing_hint, Valkyrie::Types::Set
 end

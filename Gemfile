@@ -79,12 +79,12 @@ gem 'rsolr', '~> 2.0'
 gem 'devise-guests', '~> 0.5', github: 'cbeer/devise-guests', branch: 'master'
 gem 'reform'
 gem 'reform-rails'
-gem 'virtus'
 
 gem 'bixby'
 # Maybe extract just the stuff for multi-inputs..
 gem 'coveralls', require: false
 gem 'draper'
+gem 'dry-struct', '~> 0.3.0'
 gem 'dry-types'
 gem 'hydra-editor'
 gem 'jquery-ui-rails', '~> 6.0'

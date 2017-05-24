@@ -2,10 +2,10 @@
 module Valkyrie::Persistence::Postgres
   module ORM
     class Resource < ActiveRecord::Base
-      store_accessor :metadata, *(::Book.attribute_set.map(&:name) - [:id])
+      store_accessor :metadata, *(::Book.fields - [:id])
 
       def all_attributes
-        attributes.merge(rdf_metadata)
+        attributes.merge(rdf_metadata).symbolize_keys
       end
 
       def rdf_metadata
