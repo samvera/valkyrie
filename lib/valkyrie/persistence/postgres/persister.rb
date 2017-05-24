@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def adapter
-        Valkyrie::Persistence::Postgres
+        Valkyrie::Persistence::Postgres::Adapter
       end
 
       def instance(model)

@@ -6,7 +6,7 @@ RSpec.describe CompositePersister do
   let(:persister) do
     described_class.new(
       Persister.new(
-        adapter: Valkyrie::Persistence::Postgres
+        adapter: Valkyrie::Persistence::Memory::Adapter.new
       ),
       Persister.new(
         adapter: Valkyrie::Persistence::Solr::Adapter.new(
