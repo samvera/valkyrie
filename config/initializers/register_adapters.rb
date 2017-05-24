@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'valkyrie'
 Rails.application.config.to_prepare do
   Valkyrie::Adapter.register(
     Valkyrie::Persistence::Postgres,
@@ -7,7 +6,7 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::Persistence::ActiveFedora,
+    Valkyrie::Persistence::ActiveFedora::Adapter,
     :fedora
   )
 

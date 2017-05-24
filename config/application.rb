@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require_relative 'boot'
 require 'rails/all'
+require 'valkyrie'
 Bundler.require(*Rails.groups)
 module Valkyrie
   class Application < Rails::Application
