@@ -1,5 +1,7 @@
 <% if current_user %>
-  <%= render 'shared/add_content' %>
+  <% if can?(:create, Book) %>
+    <%= render 'shared/add_content' %>
+  <% end %>
   <%= render 'shared/my_actions' %>
 <% else %>
   <ul class="nav navbar-nav">
