@@ -2,6 +2,7 @@
 class User < ActiveRecord::Base
   # Connects this user object to Blacklights Bookmarks.
   include Blacklight::User
+  include Hydra::User
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -12,5 +13,9 @@ class User < ActiveRecord::Base
   # the account.
   def to_s
     email
+  end
+
+  def admin?
+    groups.include?('admin')
   end
 end

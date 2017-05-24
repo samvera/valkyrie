@@ -4,6 +4,10 @@ require 'rails_helper'
 RSpec.describe FileSetsController do
   let(:persister) { Valkyrie.config.adapter.persister }
   let(:query_service) { Valkyrie.config.adapter.query_service }
+  let(:user) { FactoryGirl.create(:admin) }
+  before do
+    sign_in user if user
+  end
   describe "PATCH /file_sets/id" do
     it "can update a file set" do
       file_set = persister.save(model: FileSet.new(title: ["First"]))

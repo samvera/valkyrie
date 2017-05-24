@@ -5,11 +5,13 @@ class BooksController < ApplicationController
 
   def append
     @form = form_class.new(resource_class.new)
+    authorize! :update, @form.model
     @form.append_id = params[:id]
   end
 
   def file_manager
     @record = form_class.new(find_book(params[:id])).prepopulate!
+    authorize! :file_manager, @record.model
     @children = QueryService.find_members(model: @record).map do |x|
       form_class.new(x).prepopulate!
     end.to_a

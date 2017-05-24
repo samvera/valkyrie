@@ -2,7 +2,17 @@
 require 'rails_helper'
 
 RSpec.describe "Book Management" do
+  let(:user) { FactoryGirl.create(:admin) }
+  before do
+    sign_in user if user
+  end
   describe "new" do
+    context "when not logged in" do
+      let(:user) { nil }
+      it "throws a CanCan::AccessDenied error" do
+        expect { get "/books/new" }.to raise_error CanCan::AccessDenied
+      end
+    end
     it "has a form for creating books" do
       Persister.save(model: Collection.new(title: ["Test Collection"]))
       get "/books/new"
@@ -13,6 +23,12 @@ RSpec.describe "Book Management" do
   end
 
   describe "create" do
+    context "when not logged in" do
+      let(:user) { nil }
+      it "throws a CanCan::AccessDenied error" do
+        expect { post "/books", params: { book: { title: ["One", "Two"] } } }.to raise_error CanCan::AccessDenied
+      end
+    end
     it "can create a book with two titles" do
       post "/books", params: { book: { title: ["One", "Two"] } }
       expect(response).to be_redirect
@@ -36,6 +52,14 @@ RSpec.describe "Book Management" do
   end
 
   describe "destroy" do
+    context "when not logged in" do
+      let(:user) { nil }
+      it "throws a CanCan::AccessDenied error" do
+        book = Persister.save(model: Book.new(title: "Test"))
+
+        expect { delete book_path(id: book.id) }.to raise_error CanCan::AccessDenied
+      end
+    end
     it "can delete a book" do
       book = Persister.save(model: Book.new(title: "Test"))
       delete book_path(id: book.id)
@@ -53,7 +77,24 @@ RSpec.describe "Book Management" do
     end
   end
 
+  describe "#file_manager" do
+    context "when not logged in" do
+      let(:user) { nil }
+      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      it "throws a CanCan::AccessDenied error" do
+        expect { get file_manager_book_path(id: book.id) }.to raise_error CanCan::AccessDenied
+      end
+    end
+  end
+
   describe "edit" do
+    context "when not logged in" do
+      let(:user) { nil }
+      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      it "throws a CanCan::AccessDenied error" do
+        expect { get edit_book_path(id: book.id) }.to raise_error CanCan::AccessDenied
+      end
+    end
     context "when a book doesn't exist" do
       it "raises an error" do
         expect { get edit_book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)
@@ -70,6 +111,13 @@ RSpec.describe "Book Management" do
   end
 
   describe "update" do
+    context "when not logged in" do
+      let(:user) { nil }
+      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      it "throws a CanCan::AccessDenied error" do
+        expect { patch book_path(id: book.id), params: { book: { title: ["Two"] } } }.to raise_error CanCan::AccessDenied
+      end
+    end
     context "when a bookd oesn't exist" do
       it "raises an error" do
         expect { patch book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)

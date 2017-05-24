@@ -17,7 +17,8 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection),
+    Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection,
+                                             resource_indexer: Valkyrie::AccessControlsIndexer),
     :index_solr
   )
 

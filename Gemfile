@@ -82,9 +82,12 @@ gem 'reform-rails'
 
 gem 'bixby'
 # Maybe extract just the stuff for multi-inputs..
+gem 'cancancan'
 gem 'coveralls', require: false
 gem 'draper'
 gem 'dry-struct', '~> 0.3.0'
 gem 'dry-types'
+gem 'hydra-access-controls'
 gem 'hydra-editor'
+gem 'hydra-head'
 gem 'jquery-ui-rails', '~> 6.0'
