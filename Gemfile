@@ -67,7 +67,7 @@ group :staging, :production do
 end
 
 ## Enter Hydra Stuff
-gem 'blacklight'
+gem 'blacklight', '>= 6.10'
 
 group :development, :test do
   gem 'rails-controller-testing'
