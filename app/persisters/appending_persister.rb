@@ -12,6 +12,14 @@ class AppendingPersister
     end
   end
 
+  def save_all(models:)
+    persister.save_all(models: models).tap do |result|
+      result.each do |model|
+        append_model(result, model.try(:append_id))
+      end
+    end
+  end
+
   def delete(model:)
     persister.delete(model: model)
   end

@@ -19,6 +19,10 @@ class ParentCleanupPersister
     persister.save(model: model)
   end
 
+  def save_all(models:)
+    persister.save_all(models: models)
+  end
+
   private
 
     attr_reader :persister

@@ -14,6 +14,10 @@ class CompositePersister
     persisters.inject(model) { |m, persister| persister.save(model: m) }
   end
 
+  def save_all(models:)
+    persisters.inject(models) { |m, persister| persister.save_all(models: m) }
+  end
+
   def delete(model:)
     persisters.inject(model) { |m, persister| persister.delete(model: m) }
   end
