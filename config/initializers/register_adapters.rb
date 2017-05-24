@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'valkyrie'
 Rails.application.config.to_prepare do
   Valkyrie::Adapter.register(
     Valkyrie::Persistence::Postgres::Adapter,
