@@ -17,7 +17,7 @@ Style/PredicateName:
   Exclude:
     - "app/controllers/catalog_controller.rb"
     - "lib/valkyrie/model.rb"
-    - "app/persistence/valkyrie/persistence/solr/queries/default_paginator.rb"
+    - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
     - "lib/valkyrie/persistence/active_fedora/queries/default_paginator.rb"
 Style/MethodMissing:
   Exclude:

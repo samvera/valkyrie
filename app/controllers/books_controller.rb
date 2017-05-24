@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 class BooksController < ApplicationController
-  include ModelControllerBehavior
+  include Valkyrie::ControllerConcerns::ModelControllerBehavior
   self.resource_class = Book
 
   def append
