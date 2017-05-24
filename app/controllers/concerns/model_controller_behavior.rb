@@ -13,7 +13,7 @@ module ModelControllerBehavior
 
   def create
     @form = form_class.new(resource_class.new)
-    authorize! params[:action], @form.model
+    authorize! :create, @form.model
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(model: @form)
@@ -32,7 +32,7 @@ module ModelControllerBehavior
 
   def update
     @form = form_class.new(find_book(params[:id]))
-    authorize! params[:action], @form.model
+    authorize! :update, @form.model
     if @form.validate(model_params)
       @form.sync
       obj = persister.save(model: @form)
@@ -44,7 +44,7 @@ module ModelControllerBehavior
 
   def destroy
     @resource = find_book(params[:id])
-    authorize! params[:action], @resource
+    authorize! :destroy, @resource
     persister.delete(model: @resource)
     flash[:alert] = "Deleted #{@resource}"
     redirect_to root_path

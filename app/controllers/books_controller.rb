@@ -11,7 +11,7 @@ class BooksController < ApplicationController
 
   def file_manager
     @record = form_class.new(find_book(params[:id])).prepopulate!
-    authorize! params[:action], @record.model
+    authorize! :file_manager, @record.model
     @children = QueryService.find_members(model: @record).map do |x|
       form_class.new(x).prepopulate!
     end.to_a
