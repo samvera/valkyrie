@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora::Queries
+module Valkyrie::Persistence::ActiveFedora::Queries
   class DefaultPaginator
     def next_page
       1

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora::Queries
+module Valkyrie::Persistence::ActiveFedora::Queries
   class FindByIdQuery
     attr_reader :id
     def initialize(id)
@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Fedora::Queries
     end
 
     def run
-      ::Valkyrie::Persistence::Fedora::ResourceFactory.to_model(relation)
+      ::Valkyrie::Persistence::ActiveFedora::ResourceFactory.to_model(relation)
     rescue ActiveFedora::ObjectNotFoundError, ::Ldp::Gone
       raise ::Persister::ObjectNotFoundError
     end
@@ -19,7 +19,7 @@ module Valkyrie::Persistence::Fedora::Queries
       end
 
       def orm_model
-        ::Valkyrie::Persistence::Fedora::ORM::Resource
+        ::Valkyrie::Persistence::ActiveFedora::ORM::Resource
       end
   end
 end

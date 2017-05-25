@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora::Queries
+module Valkyrie::Persistence::ActiveFedora::Queries
   class FindAllQuery
     attr_reader :model
     def initialize(model: nil)
@@ -23,11 +23,11 @@ module Valkyrie::Persistence::Fedora::Queries
       end
 
       def orm_model
-        Valkyrie::Persistence::Fedora::ORM::Resource
+        Valkyrie::Persistence::ActiveFedora::ORM::Resource
       end
 
       def resource_factory
-        ::Valkyrie::Persistence::Fedora::ResourceFactory
+        ::Valkyrie::Persistence::ActiveFedora::ResourceFactory
       end
   end
 end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence
-  module Fedora
+  module ActiveFedora
     def persister
-      Valkyrie::Persistence::Fedora::Persister
+      Valkyrie::Persistence::ActiveFedora::Persister
     end
 
     def query_service
-      Valkyrie::Persistence::Fedora::QueryService
+      Valkyrie::Persistence::ActiveFedora::QueryService
     end
 
     module_function :persister, :query_service

@@ -1,18 +1,18 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora
+module Valkyrie::Persistence::ActiveFedora
   class ResourceFactory
     class << self
       def to_model(orm_obj)
         return solr_to_model(orm_obj) if orm_obj.is_a?(ActiveFedora::SolrHit)
-        ::Valkyrie::Persistence::Fedora::DynamicKlass.new(orm_obj)
+        ::Valkyrie::Persistence::ActiveFedora::DynamicKlass.new(orm_obj)
       end
 
       def from_model(model)
         resource =
           begin
-            ::Valkyrie::Persistence::Fedora::ORM::Resource.find(model.id.to_s)
+            ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.find(model.id.to_s)
           rescue
-            ::Valkyrie::Persistence::Fedora::ORM::Resource.new
+            ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.new
           end
         resource.internal_model = [model.resource_class.to_s]
         resource
@@ -21,7 +21,7 @@ module Valkyrie::Persistence::Fedora
       private
 
         def solr_to_model(orm_obj)
-          ::Valkyrie::Persistence::Fedora::DynamicKlass.new(SolrFaker.new(orm_obj))
+          ::Valkyrie::Persistence::ActiveFedora::DynamicKlass.new(SolrFaker.new(orm_obj))
         end
 
         class SolrFaker

@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora
+module Valkyrie::Persistence::ActiveFedora
   class Persister
     class << self
       delegate :save, :delete, to: :instance
@@ -12,7 +12,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def adapter
-        Valkyrie::Persistence::Fedora
+        Valkyrie::Persistence::ActiveFedora
       end
 
       def instance(model)
@@ -63,7 +63,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def resource_factory
-        ::Valkyrie::Persistence::Fedora::ResourceFactory
+        ::Valkyrie::Persistence::ActiveFedora::ResourceFactory
       end
   end
 end
