@@ -4,6 +4,14 @@ module Valkyrie
     include Draper::Decoratable
     constructor_type :schema
 
+    def self.inherited(subclass)
+      ::Dry::Struct.inherited(subclass)
+      subclass.constructor_type :schema
+      subclass.attribute :internal_model, Valkyrie::Types::Any.default(subclass.to_s)
+      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
+      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
+    end
+
     def self.fields
       schema.keys
     end
@@ -13,14 +21,6 @@ module Valkyrie
         instance_variable_set("@#{name}", self.class.schema[name].call(value))
       end
       super
-    end
-
-    def self.inherited(subclass)
-      ::Dry::Struct.inherited(subclass)
-      subclass.constructor_type :schema
-      subclass.attribute :internal_model, Valkyrie::Types::Any.default(subclass.to_s)
-      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
-      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
     end
 
     def attributes

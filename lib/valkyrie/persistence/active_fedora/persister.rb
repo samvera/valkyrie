@@ -34,7 +34,7 @@ module Valkyrie::Persistence::ActiveFedora
     end
 
     def cast_attributes
-      model.attributes.except(:created_at, :updated_at)
+      FedoraAttributes.new(model.attributes.except(:created_at, :updated_at)).result
     end
 
     def delete
@@ -65,5 +65,78 @@ module Valkyrie::Persistence::ActiveFedora
       def resource_factory
         ::Valkyrie::Persistence::ActiveFedora::ResourceFactory
       end
+  end
+
+  class FedoraAttributes
+    attr_reader :attributes
+    def initialize(attributes)
+      @attributes = attributes
+    end
+
+    def result
+      Hash[
+        attributes.map do |value|
+          Value.for(value).result
+        end.select(&:present?)
+      ]
+    end
+    class Value < ::ValueMapper
+    end
+
+    class EmptyHash < ValueMapper
+      Value.register(self)
+      def self.handles?(value)
+        value.last.nil?
+      end
+
+      def result
+        []
+      end
+    end
+
+    class NestedResourceArrayValue < ValueMapper
+      Value.register(self)
+      def self.handles?(value)
+        value.last.is_a?(Array) && value.last.map { |x| x.try(:class) }.include?(Hash)
+      end
+
+      def result
+        ["#{value.first}_attributes".to_sym, values]
+      end
+
+      def values
+        value.last.map do |val|
+          calling_mapper.for([value.first, val]).result
+        end.flat_map(&:last)
+      end
+    end
+
+    class NestedResourceValue < ValueMapper
+      Value.register(self)
+      def self.handles?(value)
+        value.last.is_a?(Hash)
+      end
+
+      def result
+        [value.first, FedoraAttributes.new(value.last).result]
+      end
+    end
+
+    class EnumeratorValue < ValueMapper
+      Value.register(self)
+      def self.handles?(value)
+        value.last.is_a?(Array)
+      end
+
+      def result
+        [value.first, values]
+      end
+
+      def values
+        value.last.map do |val|
+          calling_mapper.for([value.first, val]).result
+        end.flat_map(&:last)
+      end
+    end
   end
 end

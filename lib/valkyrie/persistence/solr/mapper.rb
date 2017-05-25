@@ -72,7 +72,7 @@ module Valkyrie::Persistence::Solr
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
-          SolrMapperValue.for(Property.new(property, object.__send__(property))).result.apply_to(hsh)
+          SolrMapperValue.for(Property.new(property, object.attributes[property])).result.apply_to(hsh)
         end
       end
 
@@ -83,10 +83,21 @@ module Valkyrie::Persistence::Solr
       class SolrMapperValue < ValueMapper
       end
 
+      class NestedObjectValue < ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.value.is_a?(Hash)
+        end
+
+        def result
+          SolrRow.new(key: value.key, fields: ["tsim"], values: "serialized-#{value.value.to_json}")
+        end
+      end
+
       class EnumerableValue < ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
-          value.is_a?(Property) && value.value.respond_to?(:each)
+          value.is_a?(Property) && value.value.is_a?(Array)
         end
 
         def result

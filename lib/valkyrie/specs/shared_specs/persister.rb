@@ -1,11 +1,12 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie::Persister' do
+RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   before do
     raise 'persister must be set with `let(:persister)`' unless defined? persister
     class CustomResource < Valkyrie::Model
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
+      attribute :nested_resource
     end
   end
   after do
@@ -22,6 +23,35 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
 
   it "can save a resource" do
     expect(persister.save(model: resource).id).not_to be_blank
+  end
+
+  it "can save nested resources" do
+    book2 = resource_class.new(title: "Nested")
+    book3 = persister.save(model: resource_class.new(nested_resource: book2))
+
+    reloaded = query_service.find_by(id: book3.id)
+    expect(reloaded.nested_resource.first.title).to eq ["Nested"]
+  end
+
+  it "can mix properties with nested resources" do
+    pending "No support for mixed nesting." if flags.include?(:no_mixed_nesting)
+    book2 = resource_class.new(title: "Nested")
+    book3 = persister.save(model: resource_class.new(nested_resource: [book2, "Alabama"]))
+
+    reloaded = query_service.find_by(id: book3.id)
+    expect(reloaded.nested_resource.map { |x| x.try(:title) }).to include ["Nested"]
+    expect(reloaded.nested_resource).to include "Alabama"
+  end
+
+  it "can support deep nesting of resources" do
+    pending "No support for deep nesting." if flags.include?(:no_deep_nesting)
+    book = resource_class.new(title: "Sub-nested")
+    book2 = resource_class.new(title: "Nested", nested_resource: book)
+    book3 = persister.save(model: resource_class.new(nested_resource: book2))
+
+    reloaded = query_service.find_by(id: book3.id)
+    expect(reloaded.nested_resource.first.title).to eq ["Nested"]
+    expect(reloaded.nested_resource.first.nested_resource.first.title).to eq ["Sub-nested"]
   end
 
   it "stores created_at/updated_at" do
