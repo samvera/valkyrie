@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora::ORM
+module Valkyrie::Persistence::ActiveFedora::ORM
   class Schema < ActiveTriples::Schema
     property :title, predicate: ::RDF::Vocab::DC.title
     property :author, predicate: ::RDF::Vocab::DC.creator

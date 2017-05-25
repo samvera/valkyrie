@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie::Persistence::Fedora
+module Valkyrie::Persistence::ActiveFedora
   class DynamicKlass
     def self.new(orm_object)
       orm_object.internal_model.first.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Fedora
     def self.cast_attributes(orm_object)
       Hash[
         attributes(orm_object).map do |k, v|
-          [k.to_sym, FedoraMapper.for(v).result]
+          [k.to_sym, ActiveFedoraMapper.for(v).result]
         end
       ]
     end
@@ -22,11 +22,11 @@ module Valkyrie::Persistence::Fedora
       )
     end
 
-    class FedoraMapper < ValueMapper
+    class ActiveFedoraMapper < ValueMapper
     end
 
     class ActiveTriplesRelationValue < ValueMapper
-      FedoraMapper.register(self)
+      ActiveFedoraMapper.register(self)
       def self.handles?(value)
         value.is_a?(ActiveTriples::Relation)
       end
@@ -38,7 +38,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     class EnumerableValue < ValueMapper
-      FedoraMapper.register(self)
+      ActiveFedoraMapper.register(self)
 
       def self.handles?(value)
         value.respond_to?(:each)
@@ -52,7 +52,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     class LocalIDValue < ValueMapper
-      FedoraMapper.register(self)
+      ActiveFedoraMapper.register(self)
 
       def self.handles?(value)
         value.is_a?(::RDF::URI) && !ActiveFedora::Base.uri_to_id(value).start_with?("http")

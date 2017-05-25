@@ -7,7 +7,7 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Fedora,
+    Valkyrie::Persistence::ActiveFedora,
     :fedora
   )
 

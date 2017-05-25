@@ -2,7 +2,7 @@
 require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
-RSpec.describe Valkyrie::Persistence::Fedora do
+RSpec.describe Valkyrie::Persistence::ActiveFedora do
   let(:adapter) { described_class }
   it_behaves_like "a Valkyrie::Adapter"
 end
