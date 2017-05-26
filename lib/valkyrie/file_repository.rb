@@ -31,16 +31,20 @@ module Valkyrie
         new_path = base_path.join(model.try(:id).to_s, file.original_filename)
         FileUtils.mkdir_p(new_path.parent)
         FileUtils.mv(file.tempfile.path, new_path)
-        File.new(id: Valkyrie::ID.new("diskrepository://#{new_path}"), repository: self)
+        find_by(id: Valkyrie::ID.new("diskrepository://#{new_path}"))
       end
 
       def handles?(id:)
         id.to_s.start_with?("diskrepository://")
       end
 
+      def file_path(id)
+        id.to_s.gsub(/^diskrepository:\/\//, '')
+      end
+
       def find_by(id:)
         return unless handles?(id: id)
-        File.new(id: Valkyrie::ID.new(id.to_s), repository: self)
+        File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id)))
       end
     end
 
@@ -51,15 +55,13 @@ module Valkyrie
       end
 
       def upload(file:, model: nil)
-        io = StringIO.new(file.read)
         identifier = Valkyrie::ID.new("memory://#{model.id}")
-        cache[identifier] = io
-        File.new(id: identifier, repository: self)
+        cache[identifier] = File.new(id: identifier, io: file)
       end
 
       def find_by(id:)
         return unless handles?(id: id) && cache[id]
-        File.new(id: id, repository: self)
+        cache[id]
       end
 
       def handles?(id:)
@@ -67,14 +69,13 @@ module Valkyrie
       end
     end
 
-    class File
-      attr_reader :id, :repository
-      def initialize(id:, repository:)
-        @id = id
-        @repository = repository
+    class File < Dry::Struct
+      attribute :id, Valkyrie::Types::Any
+      attribute :io, Valkyrie::Types::Any
+      delegate :size, :read, :rewind, to: :io
+      def stream
+        io
       end
-
-      def read; end
     end
   end
 end

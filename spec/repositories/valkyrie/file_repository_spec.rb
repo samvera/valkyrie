@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe Valkyrie::FileRepository do
-  let(:repository) { instance_double(Valkyrie::FileRepository::Memory) }
+  let(:repository) { Valkyrie::FileRepository::Memory.new }
   before do
     described_class.register(repository, :example)
   end

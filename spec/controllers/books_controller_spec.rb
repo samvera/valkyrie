@@ -28,6 +28,8 @@ RSpec.describe BooksController do
 
       expect(file.file_identifiers).not_to be_empty
       expect(file.label).to contain_exactly "example.tif"
+      expect(file.original_filename).to contain_exactly "example.tif"
+      expect(file.mime_type).to contain_exactly "image/tiff"
     end
   end
 

@@ -11,8 +11,8 @@ class FileSetAppendingPersister
 
   def save(model:)
     files(model).each do |file|
-      file_node = persister.save(model: node_factory.new(label: file.original_filename))
-      file_set = persister.save(model: file_container_factory.new(title: file.original_filename, member_ids: file_node.id))
+      file_node = create_node(file)
+      file_set = create_file_set(file_node)
       file_identifier = repository.upload(file: file, model: file_node)
       file_node.file_identifiers = file_node.file_identifiers + [file_identifier.id]
       persister.save(model: file_node)
@@ -20,6 +20,14 @@ class FileSetAppendingPersister
     end
     model.try(:sync)
     persister.save(model: model)
+  end
+
+  def create_node(file)
+    persister.save(model: node_factory.new(label: file.original_filename, original_filename: file.original_filename, mime_type: file.content_type))
+  end
+
+  def create_file_set(file_node)
+    persister.save(model: file_container_factory.new(title: file_node.original_filename, member_ids: file_node.id))
   end
 
   def files(model)

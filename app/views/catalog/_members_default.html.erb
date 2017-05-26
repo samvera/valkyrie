@@ -4,6 +4,7 @@
     <thead>
       <tr>
         <th>Title</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -11,6 +12,9 @@
         <% if member.respond_to?(:title) %>
           <tr>
             <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub(/^id-/,'')).show %> </td>
+            <% if member.try(:download_id) %>
+              <td> <%= link_to "Download", download_path(id: member.download_id) %> </td>
+            <% end %>
           </tr>
         <% end %>
     <% end %>

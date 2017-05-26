@@ -19,7 +19,7 @@ module Valkyrie
     alias == eql?
 
     def to_uri
-      return RDF::Literal.new(id.to_s) if id.to_s.include?("://")
+      return RDF::Literal.new(id.to_s, datatype: RDF::URI("http://example.com/valkyrie_id")) if id.to_s.include?("://")
       ::RDF::URI(ActiveFedora::Base.id_to_uri(id))
     end
 
