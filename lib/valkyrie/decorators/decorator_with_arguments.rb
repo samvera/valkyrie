@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie
+module Valkyrie::Decorators
   class DecoratorWithArguments
     attr_reader :decorator, :args
     def initialize(decorator, *args)

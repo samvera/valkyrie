@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module Valkyrie
+module Valkyrie::Indexers
   class AccessControlsIndexer
     attr_reader :resource
     def initialize(resource:)

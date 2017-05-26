@@ -12,7 +12,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
 
       def adapter
-        Valkyrie::Persistence::ActiveFedora
+        Valkyrie::Persistence::ActiveFedora::Adapter
       end
 
       def instance(model)
