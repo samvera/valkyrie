@@ -10,7 +10,7 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :thumbnail_id, predicate: ::RDF::URI("http://test.com/thumbnail_id")
     property :representative_id, predicate: ::RDF::URI("http://test.com/representative_id")
     property :start_canvas, predicate: ::RDF::URI("http://test.com/start_canvas")
-    property :internal_model, predicate: ::RDF::URI("http://test.com/internal_model")
+    property :internal_model, predicate: ::RDF::URI("http://test.com/internal_model"), multiple: false
     property :file_identifiers, predicate: ::RDF::URI("http://test.com/file_identifiers")
     property :label, predicate: ::RDF::URI("http://test.com/label")
     property :mime_type, predicate: ::RDF::URI("http://test.com/mime_type")

@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def from_model(model)
-      ::SolrDocument.new(::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(inner_model_ssim: model.resource_class.to_s).merge(indexer_solr(model)))
+      ::SolrDocument.new(::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(internal_model_ssim: model.internal_model).merge(indexer_solr(model)))
     end
 
     def indexer_solr(model)
@@ -29,11 +29,15 @@ module Valkyrie::Persistence::Solr
       end
 
       def model_klass
-        solr_document["inner_model_ssim"].first.constantize
+        internal_model.constantize
       end
 
       def attributes
-        attribute_hash.merge("id" => id)
+        attribute_hash.merge("id" => id, internal_model: internal_model)
+      end
+
+      def internal_model
+        solr_document["internal_model_ssim"].first
       end
 
       def id
