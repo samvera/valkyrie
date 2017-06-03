@@ -24,12 +24,18 @@ RSpec.describe BooksController do
       book = query_service.find_by(id: Valkyrie::ID.new(id))
       expect(book.member_ids).not_to be_blank
       file_set = query_service.find_members(model: book).first
-      file = query_service.find_members(model: file_set).first
+      files = query_service.find_members(model: file_set)
+      file = files.find { |x| x.use.include?("original") }
 
       expect(file.file_identifiers).not_to be_empty
       expect(file.label).to contain_exactly "example.tif"
       expect(file.original_filename).to contain_exactly "example.tif"
       expect(file.mime_type).to contain_exactly "image/tiff"
+      expect(file.use).to contain_exactly "original"
+
+      # Generate derivatives
+      derivative = files.find { |x| x.use.include?("derivative") }
+      expect(derivative).to be_present
     end
   end
 

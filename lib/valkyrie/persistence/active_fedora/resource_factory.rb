@@ -32,7 +32,7 @@ module Valkyrie::Persistence::ActiveFedora
           end
 
           def attributes
-            attribute_hash.merge("id" => id)
+            attribute_hash.merge("id" => id, "file_identifiers" => file_identifiers)
           end
 
           def ordered_member_ids
@@ -57,6 +57,10 @@ module Valkyrie::Persistence::ActiveFedora
 
           def internal_model
             Array.wrap(solr_hit.fetch("internal_model_ssim")).first
+          end
+
+          def file_identifiers
+            solr_hit.fetch("file_identifiers_ssim", []).map { |x| Valkyrie::ID.new(x) }
           end
 
           def method_missing(meth_name, *args)

@@ -51,4 +51,6 @@ Rails.application.config.to_prepare do
                                    query_service: Valkyrie.config.adapter.query_service),
     :indexing_persister
   )
+
+  Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(Valkyrie::Adapter.find(:indexing_persister), Valkyrie.config.storage_adapter)
 end

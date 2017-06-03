@@ -30,7 +30,7 @@ module Valkyrie
       def upload(file:, model: nil)
         new_path = base_path.join(model.try(:id).to_s, file.original_filename)
         FileUtils.mkdir_p(new_path.parent)
-        FileUtils.mv(file.tempfile.path, new_path)
+        FileUtils.mv(file.path, new_path)
         find_by(id: Valkyrie::ID.new("diskrepository://#{new_path}"))
       end
 
