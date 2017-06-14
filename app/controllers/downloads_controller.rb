@@ -38,7 +38,7 @@ class DownloadsController < ApplicationController
   def modified_date
     return unless asset.respond_to?(:modified_date)
     # Copied/pasted from Hydra-Head.
-    # asset.modified_date.utc.strftime("%a, %d %b %Y %T GMT")
+    asset.modified_date.utc.strftime("%a, %d %b %Y %T GMT")
   end
 
   def file_identifier
