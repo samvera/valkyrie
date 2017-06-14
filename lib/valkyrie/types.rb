@@ -11,5 +11,8 @@ module Valkyrie
       value.select(&:present?).uniq
     end.default([])
     Array = Dry::Types['coercible.array'].default([])
+    SingleValuedString = Valkyrie::Types::String.constructor do |value|
+      ::Array.wrap(value).first.to_s
+    end
   end
 end

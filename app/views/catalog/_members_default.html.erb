@@ -4,16 +4,22 @@
     <thead>
       <tr>
         <th>Title</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <% document.members.each do |member| %>
-        <% if member.respond_to?(:title) %>
-          <tr>
-            <td> <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub(/^id-/,'')).show %> </td>
-          </tr>
-        <% end %>
-    <% end %>
+        <tr>
+          <% if member.respond_to?(:title) %>
+            <td>
+              <%= link_to member.title.to_sentence, ContextualPath.new(member.id, document.id.gsub(/^id-/,'')).show %>
+            </td>
+            <% if member.try(:download_id) %>
+              <td> <%= link_to "Download", download_path(id: member.download_id) %> </td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
     </tbody>
   </table>
 <% end %>

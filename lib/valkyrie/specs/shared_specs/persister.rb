@@ -34,12 +34,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
 
   it "can store Valkyrie::Ids" do
     shared_title = persister.save(model: resource_class.new(id: "test"))
-    book = persister.save(model: resource_class.new(title: [shared_title.id, "test"]))
+    book = persister.save(model: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]))
 
     reloaded = query_service.find_by(id: book.id)
 
-    expect(reloaded.title).to contain_exactly shared_title.id, "test"
-    expect([shared_title.id, "test"]).to contain_exactly(*reloaded.title)
+    expect(reloaded.title).to contain_exactly shared_title.id, Valkyrie::ID.new("adapter://1"), "test"
+    expect([shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]).to contain_exactly(*reloaded.title)
   end
 
   it "can store ::RDF::URIs" do

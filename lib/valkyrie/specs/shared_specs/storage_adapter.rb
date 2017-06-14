@@ -22,6 +22,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     uploaded_file = storage_adapter.upload(file: file, model: model)
 
     expect(storage_adapter.handles?(id: uploaded_file.id)).to eq true
-    expect(storage_adapter.find_by(id: uploaded_file.id).id).to eq uploaded_file.id
+    file = storage_adapter.find_by(id: uploaded_file.id)
+    expect(file.id).to eq uploaded_file.id
+    expect(file).to respond_to(:stream).with(0).arguments
+    expect(file).to respond_to(:read).with(0).arguments
+    expect(file).to respond_to(:rewind).with(0).arguments
   end
 end

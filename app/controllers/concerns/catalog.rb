@@ -86,6 +86,7 @@ module Catalog
       config.add_show_field('author_tesim', label: 'Author')
       config.show.partials += [:members]
       config.add_show_field('member_ids_tesim', label: 'Member IDs')
+      config.add_show_field('file_identifiers_tesim', label: 'File Identifiers')
       config.show.partials = config.show.partials.insert(1, :parent_breadcrumb)
       config.show.partials = config.show.partials.insert(2, :children)
       config.add_facet_field 'author_ssim', label: 'Author'

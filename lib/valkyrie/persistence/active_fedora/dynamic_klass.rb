@@ -62,5 +62,17 @@ module Valkyrie::Persistence::ActiveFedora
         Valkyrie::ID.new(ActiveFedora::Base.uri_to_id(value))
       end
     end
+
+    class ExternalIDValue < ValueMapper
+      ActiveFedoraMapper.register(self)
+
+      def self.handles?(value)
+        value.is_a?(::RDF::Literal) && value.datatype == RDF::URI("http://example.com/valkyrie_id")
+      end
+
+      def result
+        Valkyrie::ID.new(value.to_s)
+      end
+    end
   end
 end
