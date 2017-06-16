@@ -41,15 +41,15 @@ module Valkyrie::Persistence::Solr
       end
 
       def attribute_hash
-        build_literals(strip_ssim(solr_document.select do |k, _v|
-          k.end_with?("ssim")
+        build_literals(strip_tsim(solr_document.select do |k, _v|
+          k.end_with?("tsim")
         end))
       end
 
-      def strip_ssim(hsh)
+      def strip_tsim(hsh)
         Hash[
           hsh.map do |k, v|
-            [k.gsub("_ssim", ""), v]
+            [k.gsub("_tsim", ""), v]
           end
         ]
       end

@@ -37,4 +37,12 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       expect(adapter.resource_factory.from_model(b)["combined_title_ssim"]).to eq ["Test", "Author"]
     end
   end
+
+  context "when told to index a really long string" do
+    let(:adapter) { Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection) }
+    it "works" do
+      b = Book.new(title: "a" * 100_000)
+      expect { adapter.persister.save(model: b) }.not_to raise_error
+    end
+  end
 end
