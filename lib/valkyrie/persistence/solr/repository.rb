@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Solr
     def persist
       generate_id if model.id.blank?
       connection.add solr_document, params: { softCommit: true }
-      model
+      resource_factory.to_model(find_document(model.id))
     end
 
     def delete
@@ -21,6 +21,10 @@ module Valkyrie::Persistence::Solr
 
     def solr_document
       resource_factory.from_model(model).to_h
+    end
+
+    def find_document(id)
+      connection.get("select", params: { rows: 1, q: "id:\"id-#{id}\"" })["response"]["docs"].first
     end
 
     def inner_model

@@ -9,6 +9,7 @@ module Valkyrie::Persistence::Memory
 
     def save(model:)
       generate_id(model) if model.id.blank?
+      inner_model(model).updated_at = Time.current
       cache[model.id] = inner_model(model)
     end
 
@@ -28,6 +29,7 @@ module Valkyrie::Persistence::Memory
 
       def generate_id(model)
         inner_model(model).id = SecureRandom.uuid
+        inner_model(model).created_at = Time.current
       end
   end
 end

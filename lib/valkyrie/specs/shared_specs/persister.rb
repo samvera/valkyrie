@@ -24,6 +24,17 @@ RSpec.shared_examples 'a Valkyrie::Persister' do
     expect(persister.save(model: resource).id).not_to be_blank
   end
 
+  it "stores created_at/updated_at" do
+    book = persister.save(model: resource_class.new)
+    book.title = "test"
+    book = persister.save(model: book)
+
+    expect(book.created_at).not_to be_blank
+    expect(book.updated_at).not_to be_blank
+    expect(book.created_at).not_to be_kind_of Array
+    expect(book.updated_at).not_to be_kind_of Array
+  end
+
   it "can handle language-typed RDF properties" do
     book = persister.save(model: resource_class.new(title: ["Test1", RDF::Literal.new("Test", language: :fr)]))
 

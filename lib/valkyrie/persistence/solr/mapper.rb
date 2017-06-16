@@ -16,9 +16,14 @@ module Valkyrie::Persistence::Solr
       "id-#{object.id}"
     end
 
+    def created_at
+      object.created_at || Time.current.iso8601
+    end
+
     def to_h
       {
-        "id": id
+        "id": id,
+        "created_at_dtsi": created_at
       }.merge(attribute_hash)
     end
 
@@ -72,7 +77,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def properties
-        object.attributes.keys - [:id]
+        object.attributes.keys - [:id, :created_at, :updated_at]
       end
 
       class SolrMapperValue < ValueMapper

@@ -19,7 +19,9 @@ module Valkyrie::Persistence::ActiveFedora
         "read_users" => orm_object.read_users,
         "edit_users" => orm_object.edit_users,
         "edit_groups" => orm_object.edit_groups,
-        "internal_model" => Array(orm_object.internal_model).first
+        "internal_model" => Array(orm_object.internal_model).first,
+        "created_at" => orm_object.create_date,
+        "updated_at" => orm_object.modified_date
       )
     end
 
