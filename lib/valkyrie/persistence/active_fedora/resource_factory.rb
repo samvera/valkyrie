@@ -67,11 +67,6 @@ module Valkyrie::Persistence::ActiveFedora
             DateTime.parse(solr_hit["system_modified_dtsi"]).in_time_zone
           end
 
-          def method_missing(meth_name, *args)
-            return super if args.present?
-            solr_hit["#{meth_name}_ssim"] || super
-          end
-
           private
 
             def attribute_hash
