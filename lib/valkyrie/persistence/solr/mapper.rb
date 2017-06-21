@@ -160,7 +160,15 @@ module Valkyrie::Persistence::Solr
         end
 
         def result
-          SolrRow.new(key: value.key, fields: [:ssim, :tesim], values: value.value)
+          SolrRow.new(key: value.key, fields: fields, values: value.value)
+        end
+
+        def fields
+          if value.value.length > 1000
+            [:tsim]
+          else
+            [:tsim, :ssim, :tesim]
+          end
         end
       end
 

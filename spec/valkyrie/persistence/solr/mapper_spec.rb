@@ -11,10 +11,13 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
         id: "id-#{resource.id}",
         title_ssim: ["Test", "French"],
         title_tesim: ["Test", "French"],
+        title_tsim: ["Test", "French"],
         title_lang_ssim: ["eng", "fr"],
         title_lang_tesim: ["eng", "fr"],
+        title_lang_tsim: ["eng", "fr"],
         author_ssim: ["Author"],
-        author_tesim: ["Author"]
+        author_tesim: ["Author"],
+        author_tsim: ["Author"]
       )
     end
   end
