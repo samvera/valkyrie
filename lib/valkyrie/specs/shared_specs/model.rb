@@ -43,4 +43,11 @@ RSpec.shared_examples 'a Valkyrie::Model' do
       end
     end
   end
+
+  describe "#internal_model" do
+    it "is set to the model's class on instantiation" do
+      resource = model_klass.new
+      expect(resource.internal_model).to eq model_klass.to_s
+    end
+  end
 end

@@ -2,7 +2,7 @@
 module Valkyrie::Persistence::ActiveFedora
   class DynamicKlass
     def self.new(orm_object)
-      orm_object.internal_model.first.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
+      orm_object.internal_model.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
     end
 
     def self.cast_attributes(orm_object)
@@ -18,7 +18,8 @@ module Valkyrie::Persistence::ActiveFedora
         "read_groups" => orm_object.read_groups,
         "read_users" => orm_object.read_users,
         "edit_users" => orm_object.edit_users,
-        "edit_groups" => orm_object.edit_groups
+        "edit_groups" => orm_object.edit_groups,
+        "internal_model" => Array(orm_object.internal_model).first
       )
     end
 

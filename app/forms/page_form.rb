@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class PageForm < Valkyrie::Form
   validate :title_not_empty
-  self.fields = Page.fields - [:id]
+  self.fields = Page.fields - [:id, :internal_model]
   property :viewing_hint, multiple: false
   property :title, required: true
 

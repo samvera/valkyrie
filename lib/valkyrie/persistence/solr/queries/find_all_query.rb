@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Solr::Queries
       if !model
         "*:*"
       else
-        "inner_model_ssim:#{model}"
+        "internal_model_ssim:#{model}"
       end
     end
   end

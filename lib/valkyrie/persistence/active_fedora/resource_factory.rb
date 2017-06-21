@@ -14,7 +14,7 @@ module Valkyrie::Persistence::ActiveFedora
           rescue
             ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.new
           end
-        resource.internal_model = [model.resource_class.to_s]
+        resource.internal_model = model.internal_model
         resource
       end
 
@@ -53,6 +53,10 @@ module Valkyrie::Persistence::ActiveFedora
 
           def edit_users
             solr_hit.fetch("edit_access_person_ssim", [])
+          end
+
+          def internal_model
+            Array.wrap(solr_hit.fetch("internal_model_ssim")).first
           end
 
           def method_missing(meth_name, *args)

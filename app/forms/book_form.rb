@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class BookForm < Valkyrie::Form
   validate :title_not_empty
-  self.fields = Book.fields - [:id]
+  self.fields = Book.fields - [:id, :internal_model]
   property :title, required: true
   property :files, virtual: true, multiple: true
   property :viewing_hint, multiple: false

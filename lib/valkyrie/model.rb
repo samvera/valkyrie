@@ -15,6 +15,12 @@ module Valkyrie
       super
     end
 
+    def self.inherited(subclass)
+      ::Dry::Struct.inherited(subclass)
+      subclass.constructor_type :schema
+      subclass.attribute :internal_model, Valkyrie::Types::Any.default(subclass.to_s)
+    end
+
     def attributes
       to_h
     end

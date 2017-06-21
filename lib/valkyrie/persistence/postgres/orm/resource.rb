@@ -2,7 +2,7 @@
 module Valkyrie::Persistence::Postgres
   module ORM
     class Resource < ActiveRecord::Base
-      store_accessor :metadata, *(::Book.fields - [:id])
+      store_accessor :metadata, *(::Book.fields - [:id, :internal_model])
 
       def all_attributes
         attributes.merge(rdf_metadata).symbolize_keys

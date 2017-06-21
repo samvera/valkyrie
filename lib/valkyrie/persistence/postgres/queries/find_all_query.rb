@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Postgres::Queries
         if !model
           orm_model.all
         else
-          orm_model.where(model_type: model.to_s)
+          orm_model.where(internal_model: model.to_s)
         end
       end
 
