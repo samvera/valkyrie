@@ -24,7 +24,7 @@ class FileSetAppendingPersister
   end
 
   def create_node(file)
-    persister.save(model: node_factory.new(label: file.original_filename, original_filename: file.original_filename, mime_type: file.content_type, use: "original"))
+    persister.save(model: node_factory.new(label: file.original_filename, original_filename: file.original_filename, mime_type: file.content_type, use: Valkyrie::Vocab::PCDMUse.OriginalFile))
   end
 
   def create_file_set(file_node)

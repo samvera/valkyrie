@@ -5,7 +5,7 @@ include ActionDispatch::TestProcess
 
 RSpec.describe ImageDerivativeService do
   it_behaves_like "a Valkyrie::DerivativeService"
-  let(:derivative_service) { ImageDerivativeService::Factory.new(adapter: adapter, repository: repository) }
+  let(:derivative_service) { ImageDerivativeService::Factory.new(adapter: adapter, storage_adapter: repository, use: [Valkyrie::Vocab::PCDMUse.ThumbnailImage, Valkyrie::Vocab::PCDMUse.ServiceFile]) }
   let(:adapter) { Valkyrie::Adapter.find(:indexing_persister) }
   let(:repository) { Valkyrie.config.storage_adapter }
   let(:persister) { adapter.persister }
@@ -27,7 +27,7 @@ RSpec.describe ImageDerivativeService do
 
     reloaded = query_service.find_by(id: valid_file_set.id)
     members = query_service.find_members(model: reloaded)
-    derivative = members.find { |x| x.use.include?("derivative") }
+    derivative = members.find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.ServiceFile) }
 
     expect(derivative).to be_present
     derivative_file = Valkyrie::FileRepository.find_by(id: derivative.file_identifiers.first)
