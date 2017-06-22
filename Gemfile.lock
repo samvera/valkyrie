@@ -541,6 +541,7 @@ DEPENDENCIES
   fcrepo_wrapper
   formulaic
   hydra-access-controls
+  hydra-derivatives
   hydra-editor
   hydra-head
   hydra-works

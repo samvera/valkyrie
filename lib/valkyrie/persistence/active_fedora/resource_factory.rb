@@ -32,7 +32,7 @@ module Valkyrie::Persistence::ActiveFedora
           end
 
           def attributes
-            attribute_hash.merge("id" => id)
+            attribute_hash.merge("id" => id, "file_identifiers" => file_identifiers)
           end
 
           def ordered_member_ids
@@ -65,6 +65,15 @@ module Valkyrie::Persistence::ActiveFedora
 
           def modified_date
             DateTime.parse(solr_hit["system_modified_dtsi"]).in_time_zone
+          end
+
+          def file_identifiers
+            solr_hit.fetch("file_identifiers_ssim", []).map { |x| Valkyrie::ID.new(x) }
+          end
+
+          def method_missing(meth_name, *args)
+            return super if args.present?
+            solr_hit["#{meth_name}_ssim"] || super
           end
 
           private
