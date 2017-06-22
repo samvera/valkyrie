@@ -52,5 +52,5 @@ Rails.application.config.to_prepare do
     :indexing_persister
   )
 
-  Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(Valkyrie::Adapter.find(:indexing_persister), Valkyrie.config.storage_adapter)
+  Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(adapter: Valkyrie::Adapter.find(:indexing_persister), repository: Valkyrie.config.storage_adapter)
 end

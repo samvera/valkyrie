@@ -5,7 +5,7 @@ include ActionDispatch::TestProcess
 
 RSpec.describe ImageDerivativeService do
   it_behaves_like "a Valkyrie::DerivativeService"
-  let(:derivative_service) { ImageDerivativeService::Factory.new(adapter, repository) }
+  let(:derivative_service) { ImageDerivativeService::Factory.new(adapter: adapter, repository: repository) }
   let(:adapter) { Valkyrie::Adapter.find(:indexing_persister) }
   let(:repository) { Valkyrie.config.storage_adapter }
   let(:persister) { adapter.persister }
