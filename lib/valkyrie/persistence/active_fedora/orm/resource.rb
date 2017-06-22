@@ -15,6 +15,7 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :label, predicate: ::RDF::URI("http://test.com/label")
     property :mime_type, predicate: ::RDF::URI("http://test.com/mime_type")
     property :original_filename, predicate: ::RDF::URI("http://test.com/original_filename")
+    property :use, predicate: ::RDF::URI("http://test.com/use")
   end
   class Resource < ActiveFedora::Base
     include Hydra::AccessControls::Permissions
