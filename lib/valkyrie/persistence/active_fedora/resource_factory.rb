@@ -63,11 +63,6 @@ module Valkyrie::Persistence::ActiveFedora
             solr_hit.fetch("file_identifiers_ssim", []).map { |x| Valkyrie::ID.new(x) }
           end
 
-          def method_missing(meth_name, *args)
-            return super if args.present?
-            solr_hit["#{meth_name}_ssim"] || super
-          end
-
           private
 
             def attribute_hash
