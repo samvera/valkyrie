@@ -34,7 +34,7 @@ module Valkyrie::Persistence::ActiveFedora
     end
 
     def cast_attributes
-      model.attributes
+      model.attributes.except(:created_at, :updated_at)
     end
 
     def delete

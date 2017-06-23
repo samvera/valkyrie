@@ -32,12 +32,20 @@ module Valkyrie::Persistence::Solr
         internal_model.constantize
       end
 
-      def attributes
-        attribute_hash.merge("id" => id, internal_model: internal_model)
-      end
-
       def internal_model
         solr_document["internal_model_ssim"].first
+      end
+
+      def attributes
+        attribute_hash.merge("id" => id, internal_model: internal_model, created_at: created_at, updated_at: updated_at)
+      end
+
+      def created_at
+        DateTime.parse(solr_document["created_at_dtsi"]).in_time_zone
+      end
+
+      def updated_at
+        DateTime.parse(solr_document["timestamp"]).in_time_zone
       end
 
       def id

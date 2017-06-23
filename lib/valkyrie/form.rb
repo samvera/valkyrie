@@ -38,7 +38,7 @@ module Valkyrie
 
     delegate :attributes, to: :model
 
-    delegate :internal_model, to: :model
+    delegate :internal_model, :created_at, :updated_at, to: :model
 
     def prepopulate!(_options = {})
       self.class.definitions.select { |_field, definition| definition[:multiple] == false }.each do |field, _definition|

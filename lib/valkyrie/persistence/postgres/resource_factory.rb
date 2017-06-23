@@ -9,7 +9,7 @@ module Valkyrie::Persistence::Postgres
       def from_model(resource)
         ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(id: resource.id.to_s).tap do |orm_object|
           orm_object.internal_model = resource.internal_model
-          orm_object.metadata.merge!(resource.attributes.except(:id, :internal_model))
+          orm_object.metadata.merge!(resource.attributes.except(:id, :internal_model, :created_at, :updated_at))
         end
       end
     end

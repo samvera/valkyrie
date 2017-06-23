@@ -59,6 +59,14 @@ module Valkyrie::Persistence::ActiveFedora
             Array.wrap(solr_hit.fetch("internal_model_ssim")).first
           end
 
+          def create_date
+            DateTime.parse(solr_hit["system_create_dtsi"]).in_time_zone
+          end
+
+          def modified_date
+            DateTime.parse(solr_hit["system_modified_dtsi"]).in_time_zone
+          end
+
           def file_identifiers
             solr_hit.fetch("file_identifiers_ssim", []).map { |x| Valkyrie::ID.new(x) }
           end
