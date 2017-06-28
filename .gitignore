@@ -11,6 +11,7 @@
 /public/assets
 /tags
 /tmp/*
+!/tmp/.keep
 /rethinkdb_data/
 /fcrepo4-test-data
 /fcrepo4-dev-data

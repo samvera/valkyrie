@@ -6,6 +6,7 @@ AllCops:
   TargetRubyVersion: 2.3
   Exclude:
     - 'bin/*'
+    - 'db/schema.rb'
     - 'config/deploy.rb'
     - 'vendor/**/*'
 Style/FileName:
