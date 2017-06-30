@@ -37,7 +37,7 @@ module Valkyrie::ControllerConcerns
       if @form.validate(model_params)
         @form.sync
         obj = persister.save(model: @form)
-        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj).id)
+        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else
         render :edit
       end

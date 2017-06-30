@@ -6,9 +6,10 @@ AllCops:
   TargetRubyVersion: 2.3
   Exclude:
     - 'bin/*'
-    - 'db/schema.rb'
     - 'config/deploy.rb'
     - 'vendor/**/*'
+    - 'valkyrie/**/*'
+    - 'db/schema.rb'
 Style/FileName:
   Enabled: true
   Exclude:

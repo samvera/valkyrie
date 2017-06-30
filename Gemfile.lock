@@ -6,6 +6,26 @@ GIT
     devise-guests (0.6.0)
       devise
 
+PATH
+  remote: valkyrie
+  specs:
+    valkyrie (0.1.0)
+      active-fedora
+      active-triples
+      activemodel
+      activerecord
+      activesupport
+      draper
+      dry-struct
+      dry-types
+      hydra-access-controls
+      hydra-derivatives
+      json-ld
+      pg
+      rdf
+      reform
+      reform-rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -582,8 +602,9 @@ DEPENDENCIES
   timecop
   title
   uglifier
+  valkyrie!
   web-console
   webmock
 
 BUNDLED WITH
-   1.14.6
+   1.15.1

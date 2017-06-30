@@ -80,10 +80,10 @@ module Valkyrie::Persistence::ActiveFedora
         end.select(&:present?)
       ]
     end
-    class Value < ::ValueMapper
+    class Value < ::Valkyrie::ValueMapper
     end
 
-    class EmptyHash < ValueMapper
+    class EmptyHash < ::Valkyrie::ValueMapper
       Value.register(self)
       def self.handles?(value)
         value.last.nil?
@@ -94,7 +94,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class NestedResourceArrayValue < ValueMapper
+    class NestedResourceArrayValue < ::Valkyrie::ValueMapper
       Value.register(self)
       def self.handles?(value)
         value.last.is_a?(Array) && value.last.map { |x| x.try(:class) }.include?(Hash)
@@ -111,7 +111,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class NestedResourceValue < ValueMapper
+    class NestedResourceValue < ::Valkyrie::ValueMapper
       Value.register(self)
       def self.handles?(value)
         value.last.is_a?(Hash)
@@ -122,7 +122,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class EnumeratorValue < ValueMapper
+    class EnumeratorValue < ::Valkyrie::ValueMapper
       Value.register(self)
       def self.handles?(value)
         value.last.is_a?(Array)

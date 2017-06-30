@@ -1,0 +1,8 @@
+---
+test:
+  adapter: test
+  storage_adapter: test
+development:
+  adapter: test
+  storage_adapter: test
+production:

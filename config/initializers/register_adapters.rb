@@ -43,7 +43,7 @@ Rails.application.config.to_prepare do
 
   Valkyrie::Adapter.register(
     Valkyrie::AdapterContainer.new(persister: persister_list.new(
-      CompositePersister.new(
+      Valkyrie::Persistence::CompositePersister.new(
         Valkyrie.config.adapter.persister,
         Valkyrie::Adapter.find(:index_solr).persister
       )

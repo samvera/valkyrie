@@ -65,7 +65,7 @@ RSpec.describe "Book Management" do
       delete book_path(id: book.id)
 
       expect(response).to redirect_to root_path
-      expect { QueryService.find_by(id: book.id) }.to raise_error ::Persister::ObjectNotFoundError
+      expect { QueryService.find_by(id: book.id) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
     it "cleans up associations in parents" do
       child = Persister.save(model: Book.new)
@@ -97,7 +97,7 @@ RSpec.describe "Book Management" do
     end
     context "when a book doesn't exist" do
       it "raises an error" do
-        expect { get edit_book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)
+        expect { get edit_book_path(id: "test") }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
       end
     end
     context "when it does exist" do
@@ -120,7 +120,7 @@ RSpec.describe "Book Management" do
     end
     context "when a bookd oesn't exist" do
       it "raises an error" do
-        expect { patch book_path(id: "test") }.to raise_error(Persister::ObjectNotFoundError)
+        expect { patch book_path(id: "test") }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
       end
     end
     context "when it does exist" do
@@ -129,7 +129,7 @@ RSpec.describe "Book Management" do
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
-        expect(response.location).to eq solr_document_url(id: solr_adapter.resource_factory.from_model(book).id)
+        expect(response.location).to eq solr_document_url(id: solr_adapter.resource_factory.from_model(book)[:id])
         get response.location
         expect(response.body).to have_content "Two"
       end
