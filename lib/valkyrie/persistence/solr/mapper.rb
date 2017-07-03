@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def created_at
-      object.created_at || Time.current.iso8601
+      object.attributes[:created_at] || Time.current.iso8601
     end
 
     def to_h

@@ -6,7 +6,6 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   let(:resource) do
     instance_double(Book,
                     id: "1",
-                    created_at: Time.zone.at(0),
                     attributes:
                     {
                       created_at: Time.zone.at(0),
