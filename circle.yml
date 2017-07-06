@@ -9,6 +9,9 @@ general:
 dependencies:
   post:
     - bundle exec rake rubocop
+    - gem install derby
+    - derby-ldp:
+        background: true
     - bundle exec rake server:test:
         background: true
     - bin/jetty_wait
