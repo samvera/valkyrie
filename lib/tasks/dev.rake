@@ -12,7 +12,7 @@ if Rails.env.development? || Rails.env.test?
   end
 
   namespace :server do
-    desc "Start a development solr server"
+    desc "Start solr and fedora servers for testing"
     task :test do
       SolrWrapper.wrap(managed: true, verbose: true, port: 8984, instance_dir: 'tmp/blacklight-core-test', persist: false) do |solr|
         solr.with_collection(name: "blacklight-core-test", dir: Rails.root.join("solr", "config").to_s) do
@@ -29,6 +29,7 @@ if Rails.env.development? || Rails.env.test?
         end
       end
     end
+    desc "Start solr and fedora servers for development"
     task :development do
       SolrWrapper.wrap(managed: true, verbose: true, port: 8983, instance_dir: 'tmp/blacklight-core', persist: false) do |solr|
         solr.with_collection(name: "blacklight-core", dir: Rails.root.join("solr", "config").to_s) do
