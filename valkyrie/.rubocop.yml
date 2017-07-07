@@ -1,0 +1,28 @@
+inherit_gem:
+  bixby: bixby_default.yml
+AllCops:
+  DisplayCopNames: true
+  TargetRubyVersion: 2.3
+  Exclude:
+    - 'bin/*'
+    - 'db/schema.rb'
+    - 'vendor/**/*'
+RSpec/ScatteredSetup:
+  Enabled: false
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/valkyrie/specs/**/*'
+    - 'db/schema.rb'
+    - 'Rakefile'
+    - '*.gemspec'
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
+Style/PredicateName:
+  Exclude:
+    - "lib/valkyrie/model.rb"
+    - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"

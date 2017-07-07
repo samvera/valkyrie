@@ -18,7 +18,4 @@ class Persister
   def adapted_persister
     adapter.persister
   end
-
-  class ObjectNotFoundError < StandardError
-  end
 end

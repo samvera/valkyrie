@@ -25,10 +25,10 @@ module Valkyrie::Persistence::ActiveFedora
       )
     end
 
-    class ActiveFedoraMapper < ValueMapper
+    class ActiveFedoraMapper < ::Valkyrie::ValueMapper
     end
 
-    class NestedResourceValue < ValueMapper
+    class NestedResourceValue < ::Valkyrie::ValueMapper
       ActiveFedoraMapper.register(self)
       def self.handles?(value)
         value.is_a?(ActiveTriples::Relation) && value.first.is_a?(ActiveTriples::Resource) && !value.first.empty?
@@ -41,7 +41,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class ActiveTriplesRelationValue < ValueMapper
+    class ActiveTriplesRelationValue < ::Valkyrie::ValueMapper
       ActiveFedoraMapper.register(self)
       def self.handles?(value)
         value.is_a?(ActiveTriples::Relation)
@@ -53,7 +53,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class EnumerableValue < ValueMapper
+    class EnumerableValue < ::Valkyrie::ValueMapper
       ActiveFedoraMapper.register(self)
 
       def self.handles?(value)
@@ -67,7 +67,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class LocalIDValue < ValueMapper
+    class LocalIDValue < ::Valkyrie::ValueMapper
       ActiveFedoraMapper.register(self)
 
       def self.handles?(value)
@@ -79,7 +79,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
     end
 
-    class ExternalIDValue < ValueMapper
+    class ExternalIDValue < ::Valkyrie::ValueMapper
       ActiveFedoraMapper.register(self)
 
       def self.handles?(value)

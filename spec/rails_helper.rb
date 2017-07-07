@@ -9,7 +9,9 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
     Coveralls::SimpleCov::Formatter
   ]
 )
-SimpleCov.start "rails"
+SimpleCov.start "rails" do
+  add_filter '/valkyrie/'
+end
 
 require File.expand_path("../../config/environment", __FILE__)
 abort("DATABASE_URL environment variable is set") if ENV["DATABASE_URL"]

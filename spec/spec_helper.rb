@@ -12,7 +12,9 @@ if ENV.fetch("COVERAGE", false)
     SimpleCov::Formatter::HTMLFormatter,
     Coveralls::SimpleCov::Formatter
   ]
-  SimpleCov.start "rails"
+  SimpleCov.start "rails" do
+    add_filter '/valkyrie/'
+  end
 end
 
 require "webmock/rspec"
