@@ -16,6 +16,24 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :mime_type, predicate: ::RDF::URI("http://test.com/mime_type")
     property :original_filename, predicate: ::RDF::URI("http://test.com/original_filename")
     property :use, predicate: ::RDF::URI("http://test.com/use")
+    property :nested_resource, predicate: ::RDF::URI("http://test.com/nested_resource")
+  end
+  class NestedResource < ActiveTriples::Resource
+    def initialize(uri = RDF::Node.new, _parent = ActiveTriples::Resource.new)
+      uri = if uri.try(:node?)
+              RDF::URI("#nested_resource_#{uri.to_s.gsub('_:', '')}")
+            elsif uri.to_s.include?('#')
+              RDF::URI(uri)
+            end
+      super
+    end
+
+    # configure type: ::RDF::URI("http://test.com/nested_resource_type")
+    apply_schema Schema
+    property :read_groups, predicate: ::RDF::URI("http://test.com/read_groups")
+    property :read_users, predicate: ::RDF::URI("http://test.com/read_users")
+    property :edit_groups, predicate: ::RDF::URI("http://test.com/edit_groups")
+    property :edit_users, predicate: ::RDF::URI("http://test.com/edit_users")
   end
   class Resource < ActiveFedora::Base
     include Hydra::AccessControls::Permissions
@@ -23,6 +41,8 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     apply_schema Schema, ActiveFedora::SchemaIndexingStrategy.new(
       ActiveFedora::Indexers::GlobalIndexer.new([:symbol, :stored_searchable, :facetable])
     )
+    property :nested_resource, predicate: ::RDF::URI("http://test.com/nested_resource"), class_name: "Valkyrie::Persistence::ActiveFedora::ORM::NestedResource"
+    accepts_nested_attributes_for :nested_resource
 
     def to_solr(doc = {})
       super.merge(

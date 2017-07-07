@@ -149,6 +149,21 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      class NestedResourceValue < ValueMapper
+        SolrValue.register(self)
+        def self.handles?(value)
+          value.to_s.start_with?("serialized-")
+        end
+
+        def result
+          JSON.parse(json, symbolize_names: true)
+        end
+
+        def json
+          value.gsub(/^serialized-/, '')
+        end
+      end
+
       class IntegerValue < ValueMapper
         SolrValue.register(self)
         def self.handles?(value)

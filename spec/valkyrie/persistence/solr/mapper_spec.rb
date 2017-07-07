@@ -6,10 +6,12 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   let(:resource) do
     instance_double(Book,
                     id: "1",
-                    created_at: Time.zone.at(0),
-                    title: ["Test", RDF::Literal.new("French", language: :fr)],
-                    author: ["Author"],
-                    attributes: { title: nil, author: nil, id: nil })
+                    attributes:
+                    {
+                      created_at: Time.zone.at(0),
+                      title: ["Test", RDF::Literal.new("French", language: :fr)],
+                      author: ["Author"]
+                    })
   end
 
   describe "#to_h" do

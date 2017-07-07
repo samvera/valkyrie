@@ -19,13 +19,26 @@ module Valkyrie::Persistence::ActiveFedora
         "read_users" => orm_object.read_users,
         "edit_users" => orm_object.edit_users,
         "edit_groups" => orm_object.edit_groups,
-        "internal_model" => Array(orm_object.internal_model).first,
-        "created_at" => orm_object.create_date,
-        "updated_at" => orm_object.modified_date
+        "created_at" => orm_object.try(:create_date),
+        "updated_at" => orm_object.try(:modified_date),
+        "internal_model" => Array(orm_object.internal_model).first
       )
     end
 
     class ActiveFedoraMapper < ValueMapper
+    end
+
+    class NestedResourceValue < ValueMapper
+      ActiveFedoraMapper.register(self)
+      def self.handles?(value)
+        value.is_a?(ActiveTriples::Relation) && value.first.is_a?(ActiveTriples::Resource) && !value.first.empty?
+      end
+
+      def result
+        value.map do |value|
+          DynamicKlass.cast_attributes(value)
+        end
+      end
     end
 
     class ActiveTriplesRelationValue < ValueMapper

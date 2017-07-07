@@ -61,6 +61,17 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        class NestedRecord < ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.is_a?(Hash) && value.keys.length > 1
+          end
+
+          def result
+            RDFMetadata.new(value).result.symbolize_keys
+          end
+        end
+
         class EnumeratorValue < ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
