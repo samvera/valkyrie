@@ -8,7 +8,7 @@ RSpec.describe User, type: :model do
 
   describe "#to_s" do
     it "returns the email" do
-      expect(User.new(email: "test@test.com").to_s).to eq "test@test.com"
+      expect(User.new(email: "test@example.com").to_s).to eq "test@example.com"
     end
   end
 end

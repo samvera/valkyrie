@@ -79,9 +79,9 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   it "can store ::RDF::URIs" do
-    book = persister.save(model: resource_class.new(title: [::RDF::URI("http://test.com")]))
+    book = persister.save(model: resource_class.new(title: [::RDF::URI("http://example.com")]))
     reloaded = query_service.find_by(id: book.id)
-    expect(reloaded.title).to contain_exactly RDF::URI("http://test.com")
+    expect(reloaded.title).to contain_exactly RDF::URI("http://example.com")
   end
 
   it "can store integers" do
