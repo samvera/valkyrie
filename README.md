@@ -1,9 +1,9 @@
 # Valkyrie
 
 A proof of concept "breakable toy" for enabling multiple backends for storage of
-  files and metadata in Hydra.
+  files and metadata in Samvera.
 
-[![CircleCI](https://circleci.com/gh/projecthydra-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/projecthydra-labs/valkyrie) [![Coverage Status](https://coveralls.io/repos/github/projecthydra-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/projecthydra-labs/valkyrie?branch=master)
+[![CircleCI](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie) [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
 
 ## Configure Valkyrie
 
