@@ -7,10 +7,15 @@ module Valkyrie::Persistence::Solr
       @resource_indexer = resource_indexer
     end
 
+    # @param solr_document [Hash] The solr document in a hash to convert to a
+    #   model.
+    # @return [Valkyrie::Model]
     def to_model(solr_document)
       ModelBuilder.new(solr_document).model
     end
 
+    # @param model [Valkyrie::Model] The model to convert to a solr hash.
+    # @return [Hash] The solr document represented as a hash.
     def from_model(model)
       Hash[::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(internal_model_ssim: model.internal_model).merge(indexer_solr(model))]
     end
@@ -19,6 +24,8 @@ module Valkyrie::Persistence::Solr
       resource_indexer.new(resource: model).to_solr
     end
 
+    ##
+    # Converts a solr hash to a {Valkyrie::Model}
     class ModelBuilder
       attr_reader :solr_document
       def initialize(solr_document)
@@ -85,6 +92,9 @@ module Valkyrie::Persistence::Solr
 
       class SolrValue < ::Valkyrie::ValueMapper
       end
+
+      # Converts a stored language typed literal from two fields into one
+      #   {RDF::Literal}
       class LanguagePropertyValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
@@ -128,6 +138,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Converts a stored ID value in solr into a {Valkyrie::ID}
       class IDValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
@@ -139,6 +150,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Converts a stored URI value in solr into a {RDF::URI}
       class URIValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
@@ -150,6 +162,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Converts a nested resource in solr into a {Valkyrie::Model}
       class NestedResourceValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
@@ -165,6 +178,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Converts an integer in solr into an {Integer}
       class IntegerValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)

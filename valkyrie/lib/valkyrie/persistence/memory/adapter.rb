@@ -2,12 +2,15 @@
 module Valkyrie::Persistence::Memory
   class Adapter
     attr_writer :cache
-    def resource_factory; end
 
+    # @return [Valkyrie::Persistence::Memory::Persister] A memory persister for
+    #   this adapter.
     def persister
       Valkyrie::Persistence::Memory::Persister.new(self)
     end
 
+    # @return [Valkyrie::Persistence::Memory::QueryService] A query service for
+    #   this adapter.
     def query_service
       Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
     end

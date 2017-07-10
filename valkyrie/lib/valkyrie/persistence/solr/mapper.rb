@@ -1,25 +1,32 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class Mapper
-    ## Find a mapper for a given object
+    # @param obj [Valkyrie::Model]
+    # @return [Valkyrie::Persistence::Solr::Mapper] Returns a mapper for a given
+    #   object.
     def self.find(obj)
       new(obj)
     end
 
     attr_reader :object
 
+    # @param object [Valkyrie::Model]
     def initialize(object)
       @object = object
     end
 
+    # @return [String] The solr document ID
     def id
       "id-#{object.id}"
     end
 
+    # @return [String] ISO-8601 timestamp in UTC of the created_at for this solr
+    #   document.
     def created_at
       object.attributes[:created_at] || Time.current.utc.iso8601
     end
 
+    # @return [Hash] Solr document to index.
     def to_h
       {
         "id": id,
@@ -28,47 +35,6 @@ module Valkyrie::Persistence::Solr
     end
 
     private
-
-      class Property
-        attr_reader :key, :value, :scope
-        def initialize(key, value, scope = [])
-          @key = key
-          @value = value
-          @scope = scope
-        end
-      end
-
-      class SolrRow
-        attr_reader :key, :fields, :values
-        def initialize(key:, fields:, values:)
-          @key = key
-          @fields = Array.wrap(fields)
-          @values = Array.wrap(values)
-        end
-
-        def apply_to(hsh)
-          return hsh if values.blank?
-          fields.each do |field|
-            hsh["#{key}_#{field}".to_sym] ||= []
-            hsh["#{key}_#{field}".to_sym] += values
-          end
-          hsh
-        end
-      end
-
-      class CompositeSolrRow
-        attr_reader :solr_rows
-        def initialize(solr_rows)
-          @solr_rows = solr_rows
-        end
-
-        def apply_to(hsh)
-          solr_rows.each do |solr_row|
-            solr_row.apply_to(hsh)
-          end
-          hsh
-        end
-      end
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
@@ -80,9 +46,72 @@ module Valkyrie::Persistence::Solr
         object.attributes.keys - [:id, :created_at, :updated_at]
       end
 
+      ##
+      # A container object for holding a `key`, `value, and `scope` of a value
+      #   in a model together for casting.
+      class Property
+        attr_reader :key, :value, :scope
+        # @param key [Symbol] Property identifier.
+        # @param value [Object] Value or list of values which are underneath the
+        #   key.
+        # @param scope [Object] The object or point where the key and values
+        #   came from.
+        def initialize(key, value, scope = [])
+          @key = key
+          @value = value
+          @scope = scope
+        end
+      end
+
+      ##
+      # Represents a key/value combination in the solr document, used for isolating logic around
+      #   how to apply a value to a hash.
+      class SolrRow
+        attr_reader :key, :fields, :values
+        # @param key [Symbol] Solr key.
+        # @param fields [Array<Symbol>] Field suffixes to index into.
+        # @param values [Array] Values to index into the given fields.
+        def initialize(key:, fields:, values:)
+          @key = key
+          @fields = Array.wrap(fields)
+          @values = Array.wrap(values)
+        end
+
+        # @param hsh [Hash] The solr hash to apply to.
+        # @return [Hash] The updated solr hash.
+        def apply_to(hsh)
+          return hsh if values.blank?
+          fields.each do |field|
+            hsh["#{key}_#{field}".to_sym] ||= []
+            hsh["#{key}_#{field}".to_sym] += values
+          end
+          hsh
+        end
+      end
+
+      ##
+      # Wraps up multiple SolrRows to apply them all at once, while looking like
+      #   just one.
+      class CompositeSolrRow
+        attr_reader :solr_rows
+        def initialize(solr_rows)
+          @solr_rows = solr_rows
+        end
+
+        # @see Valkyrie::Persistence::Solr::Mapper::SolrRow#apply_to
+        def apply_to(hsh)
+          solr_rows.each do |solr_row|
+            solr_row.apply_to(hsh)
+          end
+          hsh
+        end
+      end
+
+      # Container for casting mappers.
       class SolrMapperValue < ::Valkyrie::ValueMapper
       end
 
+      # Casts nested objects into a JSON string in solr.
       class NestedObjectValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -94,6 +123,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts enumerable values one by one.
       class EnumerableValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -109,6 +139,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Skips nil values.
       class NilPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -120,6 +151,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts {Valkyrie::ID} values into a recognizable string in solr.
       class IDPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -131,6 +163,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts {RDF::URI} values into a recognizable string in solr.
       class URIPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -142,6 +175,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts {Integer} values into a recognizable string in Solr.
       class IntegerPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -153,6 +187,9 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Handles casting language-tagged strings when there are both
+      #   language-tagged and non-language-tagged strings in Solr. Assumes english
+      #   for non-language-tagged strings.
       class SharedStringPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -169,6 +206,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Handles casting strings.
       class StringPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
@@ -188,6 +226,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Handles casting language-typed {RDF::Literal}s
       class LiteralPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
