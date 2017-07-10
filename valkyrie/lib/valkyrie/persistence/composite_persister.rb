@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence
+  ##
+  # Wrap up multiple persisters under a common interface, to transparently
+  #   persist to multiple places at once.
   class CompositePersister
     attr_reader :persisters
     def initialize(*persisters)
@@ -10,6 +13,7 @@ module Valkyrie::Persistence
       persisters.first.adapter
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(model:)
       persisters.inject(model) { |m, persister| persister.save(model: m) }
     end
@@ -21,6 +25,7 @@ module Valkyrie::Persistence
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#delete)
     def delete(model:)
       persisters.inject(model) { |m, persister| persister.delete(model: m) }
     end

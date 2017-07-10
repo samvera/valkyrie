@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Postgres
       Valkyrie::Persistence::Postgres::Persister
     end
 
-    # @return [Class] {Valkyrie::Persistence::Postgres::Persister}
+    # @return [Class] {Valkyrie::Persistence::Postgres::QueryService}
     def self.query_service
       Valkyrie::Persistence::Postgres::QueryService
     end
