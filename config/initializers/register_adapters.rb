@@ -22,19 +22,19 @@ Rails.application.config.to_prepare do
     :index_solr
   )
 
-  Valkyrie::FileRepository.register(
-    Valkyrie::FileRepository::DiskRepository.new(base_path: Rails.root.join("tmp", "repo")),
+  Valkyrie::StorageAdapter.register(
+    Valkyrie::StorageAdapter::Disk.new(base_path: Rails.root.join("tmp", "files")),
     :disk
   )
 
-  Valkyrie::FileRepository.register(
-    Valkyrie::FileRepository::Memory.new,
+  Valkyrie::StorageAdapter.register(
+    Valkyrie::StorageAdapter::Memory.new,
     :memory
   )
 
   persister_list = Valkyrie::Decorators::DecoratorList.new(
     Valkyrie::Decorators::DecoratorWithArguments.new(FileSetAppendingPersister,
-                                                     repository: Valkyrie.config.storage_adapter,
+                                                     storage_adapter: Valkyrie.config.storage_adapter,
                                                      node_factory: FileNode,
                                                      file_container_factory: FileSet),
     ParentCleanupPersister,

@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 module Valkyrie
-  class FileRepository
-    class_attribute :repositories
-    self.repositories = {}
-    def self.register(repository, short_name)
-      repositories[short_name] = repository
+  class StorageAdapter
+    class_attribute :storage_adapters
+    self.storage_adapters = {}
+    def self.register(storage_adapter, short_name)
+      storage_adapters[short_name] = storage_adapter
     end
 
     def self.unregister(short_name)
-      repositories.delete(short_name)
+      storage_adapters.delete(short_name)
     end
 
     def self.find(short_name)
-      repositories[short_name]
+      storage_adapters[short_name]
     end
 
     def self.find_by(id:)
-      repositories.values.find do |repository|
-        repository.handles?(id: id)
+      storage_adapters.values.find do |storage_adapter|
+        storage_adapter.handles?(id: id)
       end.find_by(id: id)
     end
 
-    class DiskRepository
+    class Disk
       attr_reader :base_path
       def initialize(base_path:)
         @base_path = Pathname.new(base_path.to_s)
@@ -31,15 +31,15 @@ module Valkyrie
         new_path = base_path.join(model.try(:id).to_s, file.original_filename)
         FileUtils.mkdir_p(new_path.parent)
         FileUtils.mv(file.path, new_path)
-        find_by(id: Valkyrie::ID.new("diskrepository://#{new_path}"))
+        find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
       end
 
       def handles?(id:)
-        id.to_s.start_with?("diskrepository://")
+        id.to_s.start_with?("disk://")
       end
 
       def file_path(id)
-        id.to_s.gsub(/^diskrepository:\/\//, '')
+        id.to_s.gsub(/^disk:\/\//, '')
       end
 
       def find_by(id:)
