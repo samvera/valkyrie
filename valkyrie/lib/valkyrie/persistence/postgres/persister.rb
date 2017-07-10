@@ -9,6 +9,13 @@ module Valkyrie::Persistence::Postgres
         instance(model).persist
       end
 
+      # (see Valkyrie::Persistence::Memory::Persister#save_all)
+      def save_all(models:)
+        models.map do |model|
+          save(model: model)
+        end
+      end
+
       def delete(model:)
         instance(model).delete
       end

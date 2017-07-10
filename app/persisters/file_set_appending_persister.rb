@@ -23,6 +23,17 @@ class FileSetAppendingPersister
     persister.save(model: model)
   end
 
+  # (see Valkyrie::Persistence::Memory::Persister#save_all)
+  def save_all(models:)
+    models.map do |model|
+      save(model: model)
+    end
+  end
+
+  def delete(model:)
+    persister.delete(model: model)
+  end
+
   def create_node(file)
     persister.save(model: node_factory.new(label: file.original_filename, original_filename: file.original_filename, mime_type: file.content_type, use: Valkyrie::Vocab::PCDMUse.OriginalFile))
   end
