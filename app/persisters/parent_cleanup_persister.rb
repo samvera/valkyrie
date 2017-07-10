@@ -19,6 +19,13 @@ class ParentCleanupPersister
     persister.save(model: model)
   end
 
+  # (see Valkyrie::Persistence::Memory::Persister#save_all)
+  def save_all(models:)
+    models.map do |model|
+      save(model: model)
+    end
+  end
+
   private
 
     attr_reader :persister

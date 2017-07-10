@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Solr
     # @param model [Valkyrie::Model] The model to convert to a solr hash.
     # @return [Hash] The solr document represented as a hash.
     def from_model(model)
-      Hash[::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(internal_model_ssim: model.internal_model).merge(indexer_solr(model))]
+      Hash[::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(internal_model_ssim: [model.internal_model]).merge(indexer_solr(model))]
     end
 
     def indexer_solr(model)
@@ -49,11 +49,11 @@ module Valkyrie::Persistence::Solr
       end
 
       def created_at
-        DateTime.parse(solr_document["created_at_dtsi"]).in_time_zone
+        DateTime.parse(solr_document["created_at_dtsi"].to_s).in_time_zone
       end
 
       def updated_at
-        DateTime.parse(solr_document["timestamp"]).in_time_zone
+        DateTime.parse(solr_document["timestamp"] || solr_document["created_at_dtsi"].to_s).in_time_zone
       end
 
       def id

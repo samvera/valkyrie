@@ -19,10 +19,18 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   let(:query_service) { persister.adapter.query_service }
 
   it { is_expected.to respond_to(:save).with_keywords(:model) }
+  it { is_expected.to respond_to(:save_all).with_keywords(:models) }
   it { is_expected.to respond_to(:delete).with_keywords(:model) }
 
   it "can save a resource" do
     expect(persister.save(model: resource).id).not_to be_blank
+  end
+
+  it "can save multiple resources at once" do
+    resource2 = resource_class.new
+    results = persister.save_all(models: [resource, resource2])
+
+    expect(results.map(&:id).uniq.length).to eq 2
   end
 
   it "can save nested resources" do
