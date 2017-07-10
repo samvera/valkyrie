@@ -2,6 +2,7 @@
 module Valkyrie::Persistence::Postgres
   module ORM
     class Resource < ActiveRecord::Base
+      # @return [Hash] Valkyrie-style hash of attributes.
       def all_attributes
         attributes.merge(rdf_metadata).symbolize_keys
       end
@@ -26,6 +27,8 @@ module Valkyrie::Persistence::Postgres
 
         class PostgresValue < ::Valkyrie::ValueMapper
         end
+        # Converts {RDF::Literal} typed-literals from JSON-LD stored into an
+        #   {RDF::Literal}
         class HashValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
@@ -37,6 +40,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Converts stored IDs into {Valkyrie::ID}s
         class IDValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
@@ -48,6 +52,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Converts stored URIs into {RDF::URI}s
         class URIValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
@@ -59,6 +64,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Converts nested records into {Valkyrie::Model}s
         class NestedRecord < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
