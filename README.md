@@ -5,8 +5,23 @@ A proof of concept "breakable toy" for enabling multiple backends for storage of
 
 [![CircleCI](https://circleci.com/gh/projecthydra-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/projecthydra-labs/valkyrie) [![Coverage Status](https://coveralls.io/repos/github/projecthydra-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/projecthydra-labs/valkyrie?branch=master)
 
+## Configure Valkyrie
 
-### Installing a Dev environment
+Valkyrie is configured in `config/valkyrie.yml`.  For each environment you must set
+two values.  The first, `adapter`, is the store where Valkyrie will put the metadata.
+The valid values for `adapter` are `:postgres` (default), `:fedora`(actually ActiveFedora),
+`:memory` (should only be used for running tests, because it's not persistent).  
+You can register your own adapters in `config/initializers/register_adapter.rb`.
+
+Valkyrie will automatically persist to the metadata store you have chosen and write
+to Solr synchronously (using the `:indexing_persister`).
+
+The second configuration value `storage_adapter` is where the binaries are stored.
+The valid values for `storage_adapter` are `:disk` and `:memory`. `:memory` should
+only be used for testing as it's not a persistent store.
+
+
+## Installing a Development environment
 
 1. Install Postgres on your machine.  If you have homebrew on OS X you can run the following steps:
    1. `brew install postgres`
@@ -23,6 +38,6 @@ A proof of concept "breakable toy" for enabling multiple backends for storage of
 1. Run specs via `rspec spec`
 
 
-# License
+## License
 
 Valkyrie is available under [the Apache 2.0 license](LICENSE).
