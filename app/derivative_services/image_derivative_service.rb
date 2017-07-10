@@ -94,7 +94,7 @@ class ImageDerivativeService
   end
 
   def file_object
-    @file_object ||= Valkyrie::FileRepository.find_by(id: original_file.file_identifiers[0])
+    @file_object ||= Valkyrie::StorageAdapter.find_by(id: original_file.file_identifiers[0])
   end
 
   def temporary_output

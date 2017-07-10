@@ -54,6 +54,6 @@ class DownloadsController < ApplicationController
   end
 
   def storage_adapter
-    Valkyrie::FileRepository
+    Valkyrie::StorageAdapter
   end
 end

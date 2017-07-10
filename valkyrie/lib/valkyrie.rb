@@ -27,7 +27,7 @@ module Valkyrie
   require 'valkyrie/types'
   require 'valkyrie/model'
   require 'valkyrie/derivative_service'
-  require 'valkyrie/file_repository'
+  require 'valkyrie/storage_adapter'
   require 'valkyrie/adapter'
   require 'valkyrie/adapter_container'
   require 'valkyrie/decorators/decorator_list'
@@ -68,7 +68,7 @@ module Valkyrie
     end
 
     def storage_adapter
-      Valkyrie::FileRepository.find(super.to_sym)
+      Valkyrie::StorageAdapter.find(super.to_sym)
     end
   end
 

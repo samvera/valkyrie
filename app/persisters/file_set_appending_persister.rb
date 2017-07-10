@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 class FileSetAppendingPersister
-  attr_reader :persister, :repository, :node_factory, :file_container_factory
+  attr_reader :persister, :storage_adapter, :node_factory, :file_container_factory
   delegate :adapter, :delete, to: :persister
-  def initialize(persister, repository:, node_factory:, file_container_factory:)
+  def initialize(persister, storage_adapter:, node_factory:, file_container_factory:)
     @persister = persister
-    @repository = repository
+    @storage_adapter = storage_adapter
     @node_factory = node_factory
     @file_container_factory = file_container_factory
   end
@@ -13,7 +13,7 @@ class FileSetAppendingPersister
     files(model).each do |file|
       file_node = create_node(file)
       file_set = create_file_set(file_node)
-      file = repository.upload(file: file, model: file_node)
+      file = storage_adapter.upload(file: file, model: file_node)
       file_node.file_identifiers = file_node.file_identifiers + [file.id]
       persister.save(model: file_node)
       Valkyrie::DerivativeService.for(file_set).create_derivatives

@@ -26,12 +26,12 @@ describe Valkyrie do
   end
 
   it "can have a configured storage adapter, which it looks up" do
-    storage_adapter = Valkyrie::FileRepository::Memory.new
-    Valkyrie::FileRepository.register(storage_adapter, :test)
+    storage_adapter = Valkyrie::StorageAdapter::Memory.new
+    Valkyrie::StorageAdapter.register(storage_adapter, :test)
 
     expect(described_class.config.storage_adapter).to eq storage_adapter
 
-    Valkyrie::FileRepository.repositories = {}
+    Valkyrie::StorageAdapter.storage_adapters = {}
   end
   context "when Rails is defined and configured" do
     it "uses that path" do
