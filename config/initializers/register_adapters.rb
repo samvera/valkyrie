@@ -42,13 +42,14 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::AdapterContainer.new(persister: persister_list.new(
-      Valkyrie::Persistence::CompositePersister.new(
-        Valkyrie.config.adapter.persister,
-        Valkyrie::Adapter.find(:index_solr).persister
-      )
+    Valkyrie::AdapterContainer.new(
+      persister: Valkyrie::Persistence::IndexingPersister.new(
+        persister: Valkyrie.config.adapter.persister,
+        index_persister: Valkyrie::Adapter.find(:index_solr).persister,
+        workflow_decorator: persister_list
+      ),
+      query_service: Valkyrie.config.adapter.query_service
     ),
-                                   query_service: Valkyrie.config.adapter.query_service),
     :indexing_persister
   )
 
