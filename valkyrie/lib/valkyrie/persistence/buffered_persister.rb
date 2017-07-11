@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence
   class BufferedPersister
-    attr_reader :persister
+    attr_reader :persister, :buffer_class
     delegate :adapter, to: :persister
-    def initialize(persister)
+    def initialize(persister, buffer_class: Valkyrie::Persistence::DeleteTrackingBuffer)
       @persister = persister
+      @buffer_class = buffer_class
     end
 
     def save(model:)
@@ -20,7 +21,7 @@ module Valkyrie::Persistence
     end
 
     def with_buffer
-      memory_buffer = Valkyrie::Persistence::Memory::Adapter.new
+      memory_buffer = buffer_class.new
       yield [Valkyrie::Persistence::CompositePersister.new(self, memory_buffer.persister), memory_buffer]
     end
   end
