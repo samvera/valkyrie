@@ -27,12 +27,12 @@ RSpec.describe ImageDerivativeService do
     end
   end
   let(:book_members) { query_service.find_members(model: book) }
-  let(:valid_file_set) { book_members.first }
+  let(:valid_model) { book_members.first }
 
   it "creates a thumbnail and attaches it to the fileset" do
-    derivative_service.new(valid_file_set).create_derivatives
+    derivative_service.new(valid_model).create_derivatives
 
-    reloaded = query_service.find_by(id: valid_file_set.id)
+    reloaded = query_service.find_by(id: valid_model.id)
     members = query_service.find_members(model: reloaded)
     derivative = members.find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.ServiceFile) }
 

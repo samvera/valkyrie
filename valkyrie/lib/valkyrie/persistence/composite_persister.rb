@@ -2,7 +2,7 @@
 module Valkyrie::Persistence
   ##
   # Wrap up multiple persisters under a common interface, to transparently
-  #   persist to multiple places at once.
+  # persist to multiple places at once.
   class CompositePersister
     attr_reader :persisters
     def initialize(*persisters)

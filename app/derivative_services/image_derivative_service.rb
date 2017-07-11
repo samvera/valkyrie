@@ -13,16 +13,16 @@ class ImageDerivativeService
       @use = Array(use) + [Valkyrie::Vocab::PCDMUse.ServiceFile]
     end
 
-    def new(file_set)
-      ::ImageDerivativeService.new(file_set: file_set, original_file: original_file(file_set), storage_solution: storage_solution, image_config: image_config, use: use)
+    def new(model)
+      ::ImageDerivativeService.new(model: model, original_file: original_file(model), storage_solution: storage_solution, image_config: image_config, use: use)
     end
 
-    def original_file(file_set)
-      members(file_set).find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile) }
+    def original_file(model)
+      members(model).find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile) }
     end
 
-    def members(file_set)
-      adapter.query_service.find_members(model: file_set)
+    def members(model)
+      adapter.query_service.find_members(model: model)
     end
 
     def storage_solution
@@ -45,13 +45,13 @@ class ImageDerivativeService
       end
     end
   end
-  attr_reader :file_set, :original_file, :image_config, :use, :storage_solution
+  attr_reader :model, :original_file, :image_config, :use, :storage_solution
   delegate :adapter, :storage_adapter, to: :storage_solution
   delegate :width, :height, :format, :output_name, to: :image_config
   delegate :mime_type, to: :original_file
   delegate :persister, to: :adapter
-  def initialize(file_set:, original_file:, storage_solution:, image_config:, use:)
-    @file_set = file_set
+  def initialize(model:, original_file:, storage_solution:, image_config:, use:)
+    @model = model
     @original_file = original_file
     @storage_solution = storage_solution
     @image_config = image_config
@@ -69,9 +69,9 @@ class ImageDerivativeService
     file = build_file(file_node)
     file_node.file_identifiers = file.id
     persister.save(model: file_node)
-    file_set.member_ids = file_set.member_ids + [file_node.id]
-    persister.save(model: file_set)
-    file_set
+    model.member_ids = model.member_ids + [file_node.id]
+    persister.save(model: model)
+    model
   end
 
   class IoDecorator < SimpleDelegator

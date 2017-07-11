@@ -4,7 +4,7 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::DerivativeService do
   it_behaves_like "a Valkyrie::DerivativeService"
-  let(:valid_file_set) { FileSet.new }
+  let(:valid_model) { FileSet.new }
   let(:derivative_service) { described_class }
   before do
     class FileSet < Valkyrie::Model
@@ -22,6 +22,6 @@ RSpec.describe Valkyrie::DerivativeService do
     new_service = instance_double(described_class, valid?: true)
     service_class = class_double(described_class, new: new_service)
     described_class.services << service_class
-    expect(described_class.for(valid_file_set)).to eq new_service
+    expect(described_class.for(valid_model)).to eq new_service
   end
 end
