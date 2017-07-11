@@ -48,7 +48,7 @@ module Valkyrie::Persistence::Solr
 
       ##
       # A container object for holding a `key`, `value, and `scope` of a value
-      #   in a model together for casting.
+      # in a model together for casting.
       class Property
         attr_reader :key, :value, :scope
         # @param key [Symbol] Property identifier.
@@ -65,7 +65,7 @@ module Valkyrie::Persistence::Solr
 
       ##
       # Represents a key/value combination in the solr document, used for isolating logic around
-      #   how to apply a value to a hash.
+      # how to apply a value to a hash.
       class SolrRow
         attr_reader :key, :fields, :values
         # @param key [Symbol] Solr key.
@@ -91,7 +91,7 @@ module Valkyrie::Persistence::Solr
 
       ##
       # Wraps up multiple SolrRows to apply them all at once, while looking like
-      #   just one.
+      # just one.
       class CompositeSolrRow
         attr_reader :solr_rows
         def initialize(solr_rows)
@@ -188,8 +188,8 @@ module Valkyrie::Persistence::Solr
       end
 
       # Handles casting language-tagged strings when there are both
-      #   language-tagged and non-language-tagged strings in Solr. Assumes english
-      #   for non-language-tagged strings.
+      # language-tagged and non-language-tagged strings in Solr. Assumes English
+      # for non-language-tagged strings.
       class SharedStringPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
