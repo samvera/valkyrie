@@ -33,6 +33,7 @@ Metrics/BlockLength:
     - 'lib/valkyrie/specs/**/*'
     - 'db/schema.rb'
     - 'lib/tasks/dev.rake'
+    - 'script/benchmarker.rb'
 Metrics/MethodLength:
   Exclude:
     - 'db/migrate/**/*'

@@ -4,14 +4,25 @@ require 'benchmark'
 num_children = 100
 
 # Pop off the indexing_persister  so we don't test it
+Valkyrie.logger.level = :error
 Valkyrie::Adapter.adapters.to_a.each do |adapter_name, adapter|
   Benchmark.bm do |bench|
     parent = Book.new
     children = nil
     bench.report("#{adapter_name} create #{num_children} children") do
-      children = Array.new(num_children) do |_page_num|
-        p = Page.new
-        adapter.persister.save(model: p)
+      children = []
+      if adapter.persister.respond_to?(:buffer_into_index)
+        adapter.persister.buffer_into_index do |persist|
+          children = Array.new(num_children) do |_page_num|
+            p = Page.new
+            persist.save(model: p)
+          end
+        end
+      else
+        children = Array.new(num_children) do |_page_num|
+          p = Page.new
+          adapter.persister.save(model: p)
+        end
       end
     end
     parent.member_ids = children.map(&:id)

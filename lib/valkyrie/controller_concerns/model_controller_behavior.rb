@@ -17,7 +17,10 @@ module Valkyrie::ControllerConcerns
       authorize! :create, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = persister.save(model: @form)
+        obj = nil
+        persister.buffer_into_index do |persist|
+          obj = persist.save(model: @form)
+        end
         redirect_to contextual_path(obj, @form).show
       else
         render :new
@@ -36,7 +39,10 @@ module Valkyrie::ControllerConcerns
       authorize! :update, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = persister.save(model: @form)
+        obj = nil
+        persister.buffer_into_index do |persist|
+          obj = persist.save(model: @form)
+        end
         redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else
         render :edit
