@@ -35,6 +35,7 @@ module Valkyrie
   require 'valkyrie/model/access_controls'
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/vocab/pcdm_use'
+  require 'generators/valkyrie/model_generator'
   require 'valkyrie/engine' if defined?(Rails)
   def config
     Config.new(
