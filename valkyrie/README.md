@@ -24,6 +24,21 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+### Custom Work Types
+
+To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to 
+generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
+
+```
+rails generate valkyrie:model FooBar title member_ids:array
+```
+
+You can namespace your model class by including a slash in the model name:
+
+```
+rails generate valkyrie:model Foo/Bar title member_ids:array
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
