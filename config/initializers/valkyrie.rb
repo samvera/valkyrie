@@ -32,13 +32,6 @@ Rails.application.config.to_prepare do
     :memory
   )
 
-  persister_list = Valkyrie::Decorators::DecoratorList.new(
-    Valkyrie::Decorators::DecoratorWithArguments.new(FileSetAppendingPersister,
-                                                     storage_adapter: Valkyrie.config.storage_adapter,
-                                                     node_factory: FileNode,
-                                                     file_container_factory: FileSet)
-  )
-
   Valkyrie::Adapter.register(
     Valkyrie::AdapterContainer.new(
       persister: Valkyrie::Persistence::IndexingPersister.new(
