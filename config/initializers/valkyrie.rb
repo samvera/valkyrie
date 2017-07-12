@@ -36,8 +36,7 @@ Rails.application.config.to_prepare do
     Valkyrie::Decorators::DecoratorWithArguments.new(FileSetAppendingPersister,
                                                      storage_adapter: Valkyrie.config.storage_adapter,
                                                      node_factory: FileNode,
-                                                     file_container_factory: FileSet),
-    ParentCleanupPersister
+                                                     file_container_factory: FileSet)
   )
 
   Valkyrie::Adapter.register(

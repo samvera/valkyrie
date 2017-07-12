@@ -57,7 +57,14 @@ module Valkyrie::ControllerConcerns
     def destroy
       @resource = find_book(params[:id])
       authorize! :destroy, @resource
-      persister.delete(model: @resource)
+      persister.buffer_into_index do |persist|
+        parents = query_service.find_parents(model: @resource)
+        parents.each do |parent|
+          parent.member_ids -= [@resource.id]
+          persist.save(model: parent)
+        end
+        persist.delete(model: @resource)
+      end
       flash[:alert] = "Deleted #{@resource}"
       redirect_to root_path
     end
