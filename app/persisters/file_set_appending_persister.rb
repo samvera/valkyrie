@@ -10,10 +10,10 @@ class FileSetAppendingPersister
   end
 
   def save(model:)
-    files(model).each do |file|
-      file_node = create_node(file)
+    files(model).each do |uploaded_file|
+      file_node = create_node(uploaded_file)
       file_set = create_file_set(file_node)
-      file = storage_adapter.upload(file: file, model: file_node)
+      file = storage_adapter.upload(file: uploaded_file, model: file_node)
       file_node.file_identifiers = file_node.file_identifiers + [file.id]
       persister.save(model: file_node)
       Valkyrie::DerivativeService.for(file_set).create_derivatives
@@ -34,8 +34,12 @@ class FileSetAppendingPersister
     persister.delete(model: model)
   end
 
-  def create_node(file)
-    persister.save(model: node_factory.new(label: file.original_filename, original_filename: file.original_filename, mime_type: file.content_type, use: Valkyrie::Vocab::PCDMUse.OriginalFile))
+  # @param uploaded_file [ActionDispatch::Http::UploadedFile]
+  def create_node(uploaded_file)
+    persister.save(model: node_factory.new(label: uploaded_file.original_filename,
+                                           original_filename: uploaded_file.original_filename,
+                                           mime_type: uploaded_file.content_type,
+                                           use: Valkyrie::Vocab::PCDMUse.OriginalFile))
   end
 
   def create_file_set(file_node)
