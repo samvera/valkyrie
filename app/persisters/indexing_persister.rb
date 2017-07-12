@@ -7,16 +7,14 @@
 # efficient when the `index_persister` is significantly faster for `save_all`
 # than individual `saves` (such as with Solr).
 class IndexingPersister
-  attr_reader :persister, :index_persister, :workflow_decorator
+  attr_reader :persister, :index_persister
   delegate :adapter, to: :composite_persister
   # @param persister [Valkyrie::Persistence::Persister]
   # @param index_persister [Valkyrie::Persistence::Persister]
-  # @param workflow_decorator [SimpleDelegator] Decorator for adding workflow
   #   actions during save (such as minting IDs, creating FileSets, etc)
-  def initialize(persister:, index_persister:, workflow_decorator: SimpleDelegator)
+  def initialize(persister:, index_persister:)
     @persister = persister
     @index_persister = index_persister
-    @workflow_decorator = workflow_decorator
   end
 
   # (see Valkyrie::Persistence::Memory::Persister#save)
@@ -40,8 +38,7 @@ class IndexingPersister
     composite_persister.delete(model: model)
   end
 
-  # Yields the primary persister which is decorated with the
-  # `workflow_decorator.` At the end of the block, this will use changes tracked
+  # Yields the primary persister. At the end of the block, this will use changes tracked
   # by an in-memory persister to replicate new and deleted objects into the
   # `index_persister` in bulk.
   #
@@ -55,7 +52,6 @@ class IndexingPersister
   #   solr_index.query_service.find_all # => [book1, book2]
   def buffer_into_index
     buffered_persister.with_buffer do |persist, buffer|
-      persist = workflow_decorator.new(persist)
       yield persist
       buffer.persister.deletes.uniq(&:id).each do |delete|
         index_persister.delete(model: delete)
@@ -65,7 +61,7 @@ class IndexingPersister
   end
 
   def composite_persister
-    @composite_persister ||= Valkyrie::Persistence::CompositePersister.new(workflow_decorator.new(persister), index_persister)
+    @composite_persister ||= Valkyrie::Persistence::CompositePersister.new(persister, index_persister)
   end
 
   def buffered_persister
