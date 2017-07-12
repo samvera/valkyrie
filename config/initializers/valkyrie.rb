@@ -43,8 +43,7 @@ Rails.application.config.to_prepare do
     Valkyrie::AdapterContainer.new(
       persister: Valkyrie::Persistence::IndexingPersister.new(
         persister: Valkyrie.config.adapter.persister,
-        index_persister: Valkyrie::Adapter.find(:index_solr).persister,
-        workflow_decorator: persister_list
+        index_persister: Valkyrie::Adapter.find(:index_solr).persister
       ),
       query_service: Valkyrie.config.adapter.query_service
     ),
