@@ -187,6 +187,25 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts {DateTime} values into a recognizable string in Solr.
+      class DateTimePropertyValue < ::Valkyrie::ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && (value.value.is_a?(Time) || value.value.is_a?(DateTime))
+        end
+
+        def result
+          calling_mapper.for(Property.new(value.key, "datetime-#{JSON.parse(to_datetime(value.value).to_json)}")).result
+        end
+
+        private
+
+          def to_datetime(value)
+            return value.utc if value.is_a?(DateTime)
+            return value.to_datetime.utc if value.respond_to?(:to_datetime)
+          end
+      end
+
       # Handles casting language-tagged strings when there are both
       # language-tagged and non-language-tagged strings in Solr. Assumes English
       # for non-language-tagged strings.

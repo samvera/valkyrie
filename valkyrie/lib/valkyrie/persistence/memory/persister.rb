@@ -15,6 +15,7 @@ module Valkyrie::Persistence::Memory
     def save(model:)
       generate_id(model) if model.id.blank?
       inner_model(model).updated_at = Time.current
+      normalize_dates!(inner_model(model))
       cache[model.id] = inner_model(model)
     end
 
@@ -46,6 +47,23 @@ module Valkyrie::Persistence::Memory
       def generate_id(model)
         inner_model(model).id = SecureRandom.uuid
         inner_model(model).created_at = Time.current
+      end
+
+      def normalize_dates!(model)
+        model.attributes.each { |k, v| model.send("#{k}=", normalize_date_values(v)) }
+      end
+
+      def normalize_date_values(v)
+        return v.map { |val| normalize_date_value(val) } if v.is_a?(Array)
+        normalize_date_value(v)
+      end
+
+      def normalize_date_value(value)
+        return value.utc if value.is_a?(DateTime)
+        return value.to_datetime.utc if value.is_a?(Time)
+        value
+      rescue
+        value
       end
   end
 end

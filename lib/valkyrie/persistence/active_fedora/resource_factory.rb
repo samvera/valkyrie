@@ -60,11 +60,11 @@ module Valkyrie::Persistence::ActiveFedora
           end
 
           def create_date
-            DateTime.parse(solr_hit["system_create_dtsi"]).in_time_zone
+            DateTime.parse(solr_hit["system_create_dtsi"]).utc
           end
 
           def modified_date
-            DateTime.parse(solr_hit["system_modified_dtsi"]).in_time_zone
+            DateTime.parse(solr_hit["system_modified_dtsi"]).utc
           end
 
           def file_identifiers
