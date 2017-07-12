@@ -17,21 +17,18 @@ module Valkyrie::ControllerConcerns
       authorize! :create, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = @form.model
-        persister.buffer_into_index do |persist|
-          appender = FileAppender.new(storage_adapter: Valkyrie.config.storage_adapter, persister: persist, files: @form.try(:files) || [])
-          obj = appender.append_to(obj)
-          obj = persist.save(model: obj)
-          if @form.append_id
-            parent_obj = query_service.find_by(id: @form.append_id)
-            parent_obj.member_ids = parent_obj.member_ids + [obj.id]
-            persist.save(model: parent_obj)
-          end
+        obj = nil
+        persister.buffer_into_index do |buffered_adapter|
+          obj = form_persister(buffered_adapter).save(form: @form)
         end
         redirect_to contextual_path(obj, @form).show
       else
         render :new
       end
+    end
+
+    def form_persister(adapter)
+      FormPersister.new(adapter: adapter, storage_adapter: Valkyrie.config.storage_adapter)
     end
 
     def edit
@@ -46,16 +43,9 @@ module Valkyrie::ControllerConcerns
       authorize! :update, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = @form.model
-        persister.buffer_into_index do |persist|
-          appender = FileAppender.new(storage_adapter: Valkyrie.config.storage_adapter, persister: persist, files: @form.try(:files) || [])
-          obj = appender.append_to(obj)
-          obj = persist.save(model: obj)
-          if @form.append_id
-            parent_obj = query_service.find_by(id: @form.append_id)
-            parent_obj.member_ids = parent_obj.member_ids + [obj.id]
-            persist.save(model: parent_obj)
-          end
+        obj = nil
+        persister.buffer_into_index do |buffered_adapter|
+          obj = form_persister(buffered_adapter).save(form: @form)
         end
         redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else
@@ -64,17 +54,12 @@ module Valkyrie::ControllerConcerns
     end
 
     def destroy
-      @resource = find_book(params[:id])
-      authorize! :destroy, @resource
-      persister.buffer_into_index do |persist|
-        parents = query_service.find_parents(model: @resource)
-        parents.each do |parent|
-          parent.member_ids -= [@resource.id]
-          persist.save(model: parent)
-        end
-        persist.delete(model: @resource)
+      @form = form_class.new(find_book(params[:id]))
+      authorize! :destroy, @form.model
+      persister.buffer_into_index do |buffered_adapter|
+        form_persister(buffered_adapter).delete(form: @form)
       end
-      flash[:alert] = "Deleted #{@resource}"
+      flash[:alert] = "Deleted #{@form.model}"
       redirect_to root_path
     end
 
@@ -96,6 +81,10 @@ module Valkyrie::ControllerConcerns
 
       def persister
         Valkyrie::Adapter.find(:indexing_persister).persister
+      end
+
+      def adapter
+        Valkyrie::Adapter.find(:indexing_persister)
       end
 
       def query_service

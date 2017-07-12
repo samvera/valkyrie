@@ -33,12 +33,9 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::AdapterContainer.new(
-      persister: Valkyrie::Persistence::IndexingPersister.new(
-        persister: Valkyrie.config.adapter.persister,
-        index_persister: Valkyrie::Adapter.find(:index_solr).persister
-      ),
-      query_service: Valkyrie.config.adapter.query_service
+    Valkyrie::Persistence::IndexingAdapter.new(
+      adapter: Valkyrie.config.adapter,
+      index_adapter: Valkyrie::Adapter.find(:index_solr)
     ),
     :indexing_persister
   )

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class FileAppender
   attr_reader :storage_adapter, :persister, :files
   def initialize(storage_adapter:, persister:, files:)
