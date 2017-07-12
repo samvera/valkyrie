@@ -2,12 +2,12 @@
 require 'valkyrie'
 Rails.application.config.to_prepare do
   Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Postgres::Adapter,
+    Valkyrie::Persistence::Postgres::Adapter.new,
     :postgres
   )
 
   Valkyrie::Adapter.register(
-    Valkyrie::Persistence::ActiveFedora::Adapter,
+    Valkyrie::Persistence::ActiveFedora::Adapter.new,
     :fedora
   )
 
