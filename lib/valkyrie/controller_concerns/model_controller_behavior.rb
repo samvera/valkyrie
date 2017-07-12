@@ -17,9 +17,11 @@ module Valkyrie::ControllerConcerns
       authorize! :create, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = nil
+        obj = @form.model
         persister.buffer_into_index do |persist|
-          obj = persist.save(model: @form)
+          appender = FileAppender.new(storage_adapter: Valkyrie.config.storage_adapter, persister: persist, files: @form.try(:files) || [])
+          obj = appender.append_to(obj)
+          obj = persist.save(model: obj)
           if @form.append_id
             parent_obj = query_service.find_by(id: @form.append_id)
             parent_obj.member_ids = parent_obj.member_ids + [obj.id]
@@ -44,9 +46,16 @@ module Valkyrie::ControllerConcerns
       authorize! :update, @form.model
       if @form.validate(model_params)
         @form.sync
-        obj = nil
+        obj = @form.model
         persister.buffer_into_index do |persist|
-          obj = persist.save(model: @form)
+          appender = FileAppender.new(storage_adapter: Valkyrie.config.storage_adapter, persister: persist, files: @form.try(:files) || [])
+          obj = appender.append_to(obj)
+          obj = persist.save(model: obj)
+          if @form.append_id
+            parent_obj = query_service.find_by(id: @form.append_id)
+            parent_obj.member_ids = parent_obj.member_ids + [obj.id]
+            persist.save(model: parent_obj)
+          end
         end
         redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else

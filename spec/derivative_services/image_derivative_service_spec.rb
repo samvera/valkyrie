@@ -19,12 +19,8 @@ RSpec.describe ImageDerivativeService do
   let(:query_service) { adapter.query_service }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
   let(:book) do
-    persister.save(model: book_form)
-  end
-  let(:book_form) do
-    BookForm.new(Book.new).tap do |form|
-      form.files = [file]
-    end
+    book = FileAppender.new(storage_adapter: storage_adapter, persister: persister, files: [file]).append_to(Book.new)
+    persister.save(model: book)
   end
   let(:book_members) { query_service.find_members(model: book) }
   let(:valid_model) { book_members.first }
