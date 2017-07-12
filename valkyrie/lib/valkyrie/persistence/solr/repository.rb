@@ -28,17 +28,9 @@ module Valkyrie::Persistence::Solr
       resource_factory.from_model(model).to_h
     end
 
-    def inner_model(model)
-      if model.respond_to?(:model)
-        model.model
-      else
-        model
-      end
-    end
-
     def generate_id(model)
       Valkyrie.logger.warn "The Solr adapter is not meant to persist new resources, but is now generating an ID."
-      inner_model(model).id = SecureRandom.uuid
+      model.id = SecureRandom.uuid
     end
   end
 end

@@ -146,18 +146,4 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     persister.delete(model: persisted)
     expect { query_service.find_by(id: persisted.id) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
   end
-
-  context "when wrapped with a form object" do
-    let(:myclass) { Class.new(Valkyrie::Form) { self.fields = [:title, :member_ids] } }
-    let(:form) { myclass.new(resource_class.new) }
-
-    it "works" do
-      expect(persister.save(model: form).id).not_to be_blank
-    end
-    it "doesn't return a form object" do
-      persisted = persister.save(model: form)
-      reloaded = query_service.find_by(id: persisted.id)
-      expect(reloaded).to be_kind_of(resource_class)
-    end
-  end
 end

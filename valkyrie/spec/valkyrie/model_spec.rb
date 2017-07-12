@@ -60,12 +60,6 @@ RSpec.describe Valkyrie::Model do
     end
   end
 
-  describe "#resource_class" do
-    it "returns its class" do
-      expect(resource.resource_class).to eq Resource
-    end
-  end
-
   describe "#to_s" do
     it "returns a good serialization" do
       resource.id = "test"

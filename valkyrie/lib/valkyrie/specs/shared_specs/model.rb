@@ -19,7 +19,6 @@ RSpec.shared_examples 'a Valkyrie::Model' do
     it { is_expected.to respond_to(:to_param).with(0).arguments }
     it { is_expected.to respond_to(:to_model).with(0).arguments }
     it { is_expected.to respond_to(:model_name).with(0).arguments }
-    it { is_expected.to respond_to(:resource_class).with(0).arguments }
     it { is_expected.to respond_to(:column_for_attribute).with(1).arguments }
 
     describe "#has_attribute?" do
