@@ -3,6 +3,6 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Postgres::Adapter do
-  let(:adapter) { described_class }
+  let(:adapter) { described_class.new }
   it_behaves_like "a Valkyrie::Adapter"
 end

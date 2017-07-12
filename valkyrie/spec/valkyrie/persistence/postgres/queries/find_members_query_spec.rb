@@ -34,7 +34,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Queries::FindMembersQuery do
     end
 
     def persister
-      Valkyrie::Persistence::Postgres::Adapter.persister
+      Valkyrie::Persistence::Postgres::Adapter.new.persister
     end
   end
 end

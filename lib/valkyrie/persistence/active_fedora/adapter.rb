@@ -2,11 +2,13 @@
 module Valkyrie::Persistence
   module ActiveFedora
     class Adapter
-      def self.persister
+      # @return [Class] {Valkyrie::Persistence::ActiveFedora::Persister}
+      def persister
         Valkyrie::Persistence::ActiveFedora::Persister
       end
 
-      def self.query_service
+      # @return [Class] {Valkyrie::Persistence::ActiveFedora::QueryService}
+      def query_service
         Valkyrie::Persistence::ActiveFedora::QueryService
       end
     end

@@ -28,9 +28,9 @@ module Valkyrie::Persistence::Postgres
         ::Valkyrie::Persistence::Postgres::ORMSyncer.new(model: model)
       end
 
-      # @return [Class] {Valkyrie::Persistence::Postgres::Adapter}
+      # @return [Valkyrie::Persistence::Postgres::Adapter]
       def adapter
-        Valkyrie::Persistence::Postgres::Adapter
+        Valkyrie::Persistence::Postgres::Adapter.new
       end
     end
 
