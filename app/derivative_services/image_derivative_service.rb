@@ -65,15 +65,20 @@ class ImageDerivativeService
   def create_derivatives
     Hydra::Derivatives::ImageDerivatives.create(filename,
                                                 outputs: [{ label: :thumbnail, format: format, size: "#{width}x#{height}>", url: URI("file://#{temporary_output.path}") }])
-    persister.buffer_into_index do |persist|
-      file_node = persist.save(model: FileNode.new(use: use, label: output_name, mime_type: image_mime_type))
-      file = build_file(file_node)
-      file_node.file_identifiers = file.id
-      persist.save(model: file_node)
-      model.member_ids = model.member_ids + [file_node.id]
-      persist.save(model: model)
+    persister.buffer_into_index do |buffered_adapter|
+      store_file(buffered_adapter)
     end
     model
+  end
+
+  # @TODO Refactor to use a FormPersister that knows how to attach files.
+  def store_file(buffered_adapter)
+    file_node = buffered_adapter.persister.save(model: FileNode.new(use: use, label: output_name, mime_type: image_mime_type))
+    file = build_file(file_node)
+    file_node.file_identifiers = file.id
+    buffered_adapter.persister.save(model: file_node)
+    model.member_ids = model.member_ids + [file_node.id]
+    buffered_adapter.persister.save(model: model)
   end
 
   class IoDecorator < SimpleDelegator
