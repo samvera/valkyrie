@@ -5,7 +5,7 @@ module Valkyrie
     self.adapters = {}
     class << self
       # Register an adapter by a short name.
-      # @param adapter [Valkyrie::Adapter] Adapter to register.
+      # @param adapter [#persister,#query_service] Adapter to register.
       # @param short_name [Symbol] Name to register it under.
       def register(adapter, short_name)
         adapters[short_name.to_sym] = adapter
@@ -13,7 +13,7 @@ module Valkyrie
 
       # Find an adapter by its short name.
       # @param short_name [Symbol]
-      # @return [Valkyrie::Adapter]
+      # @return [#persister,#query_service]
       def find(short_name)
         adapters[short_name.to_sym]
       end
