@@ -195,8 +195,15 @@ module Valkyrie::Persistence::Solr
         end
 
         def result
-          calling_mapper.for(Property.new(value.key, "datetime-#{JSON.parse(value.value.to_json)}")).result
+          calling_mapper.for(Property.new(value.key, "datetime-#{JSON.parse(to_datetime(value.value).to_json)}")).result
         end
+
+        private
+
+          def to_datetime(value)
+            return value.utc if value.is_a?(DateTime)
+            return value.to_datetime.utc if value.respond_to?(:to_datetime)
+          end
       end
 
       # Handles casting language-tagged strings when there are both

@@ -49,11 +49,11 @@ module Valkyrie::Persistence::Solr
       end
 
       def created_at
-        DateTime.parse(solr_document["created_at_dtsi"].to_s).in_time_zone
+        DateTime.parse(solr_document["created_at_dtsi"].to_s).utc
       end
 
       def updated_at
-        DateTime.parse(solr_document["timestamp"] || solr_document["created_at_dtsi"].to_s).in_time_zone
+        DateTime.parse(solr_document["timestamp"] || solr_document["created_at_dtsi"].to_s).utc
       end
 
       def id
@@ -194,13 +194,13 @@ module Valkyrie::Persistence::Solr
       class DateTimeValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
-          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+          DateTime.parse(value.gsub(/^datetime-/, '')).utc
         rescue
           false
         end
 
         def result
-          DateTime.parse(value.gsub(/^datetime-/, '')).in_time_zone
+          DateTime.parse(value.gsub(/^datetime-/, '')).utc
         end
       end
     end

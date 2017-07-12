@@ -79,13 +79,13 @@ module Valkyrie::Persistence::Postgres
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
-            DateTime.parse(value).in_time_zone
+            DateTime.parse(value).utc
           rescue
             false
           end
 
           def result
-            DateTime.parse(value).in_time_zone
+            DateTime.parse(value).utc
           end
         end
 

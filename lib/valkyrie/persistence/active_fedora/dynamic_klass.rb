@@ -90,5 +90,17 @@ module Valkyrie::Persistence::ActiveFedora
         Valkyrie::ID.new(value.to_s)
       end
     end
+
+    class DateTimeValue < ::Valkyrie::ValueMapper
+      ActiveFedoraMapper.register(self)
+
+      def self.handles?(value)
+        value.is_a?(Time) || value.is_a?(DateTime)
+      end
+
+      def result
+        value.is_a?(DateTime) ? value.utc : value.to_datetime.utc
+      end
+    end
   end
 end

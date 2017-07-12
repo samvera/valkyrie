@@ -105,7 +105,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
     reloaded = query_service.find_by(id: book.id)
 
-    expect(reloaded.title).to contain_exactly time
+    expect(reloaded.title.first.to_i).to eq(time.to_i)
+    expect(reloaded.title.first.zone).to eq('UTC')
   end
 
   context "parent tests" do
