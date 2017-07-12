@@ -20,6 +20,11 @@ module Valkyrie::ControllerConcerns
         obj = nil
         persister.buffer_into_index do |persist|
           obj = persist.save(model: @form)
+          if @form.append_id
+            parent_obj = query_service.find_by(id: @form.append_id)
+            parent_obj.member_ids = parent_obj.member_ids + [obj.id]
+            persist.save(model: parent_obj)
+          end
         end
         redirect_to contextual_path(obj, @form).show
       else

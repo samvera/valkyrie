@@ -37,8 +37,7 @@ Rails.application.config.to_prepare do
                                                      storage_adapter: Valkyrie.config.storage_adapter,
                                                      node_factory: FileNode,
                                                      file_container_factory: FileSet),
-    ParentCleanupPersister,
-    AppendingPersister
+    ParentCleanupPersister
   )
 
   Valkyrie::Adapter.register(
