@@ -3,7 +3,9 @@ require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe IndexingPersister do
-  let(:persister) { described_class.new(persister: Valkyrie::Persistence::Memory::Adapter.new.persister, index_persister: index_solr.persister) }
+  let(:adapter) { Valkyrie::Persistence::Memory::Adapter.new }
+  let(:query_service) { adapter.query_service }
+  let(:persister) { described_class.new(persister: adapter.persister, index_persister: index_solr.persister) }
   let(:index_solr) { Valkyrie::Adapter.find(:index_solr) }
   it_behaves_like "a Valkyrie::Persister"
 

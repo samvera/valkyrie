@@ -3,7 +3,9 @@ require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe ParentCleanupPersister do
-  let(:persister) { described_class.new(Persister.new(adapter: Valkyrie::Persistence::Memory::Adapter.new)) }
+  let(:adapter) { Valkyrie::Persistence::Memory::Adapter.new }
+  let(:query_service) { adapter.query_service }
+  let(:persister) { described_class.new(adapter.persister) }
   it_behaves_like "a Valkyrie::Persister"
 
   it "cleans up children's parents on delete" do

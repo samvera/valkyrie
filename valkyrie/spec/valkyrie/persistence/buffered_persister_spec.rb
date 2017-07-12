@@ -3,9 +3,11 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::BufferedPersister do
+  let(:adapter) { Valkyrie::Persistence::Memory::Adapter.new }
+  let(:query_service) { adapter.query_service }
   let(:persister) do
     described_class.new(
-      Valkyrie::Persistence::Memory::Adapter.new.persister
+      adapter.persister
     )
   end
   before do

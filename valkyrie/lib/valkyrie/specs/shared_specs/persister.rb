@@ -17,7 +17,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   subject { persister }
   let(:resource_class) { CustomResource }
   let(:resource) { resource_class.new }
-  let(:query_service) { persister.adapter.query_service }
 
   it { is_expected.to respond_to(:save).with_keywords(:model) }
   it { is_expected.to respond_to(:save_all).with_keywords(:models) }
@@ -127,18 +126,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(output.id).to eq id
   end
 
-  it "responds to .adapter" do
-    expect(persister.adapter).not_to be_blank
-  end
-
   it "can find that resource again" do
     id = persister.save(model: resource).id
-    expect(persister.adapter.query_service.find_by(id: id)).to be_kind_of resource_class
+    expect(query_service.find_by(id: id)).to be_kind_of resource_class
   end
 
   it "can delete objects" do
     persisted = persister.save(model: resource)
-    query_service = persister.adapter.query_service
     persister.delete(model: persisted)
     expect { query_service.find_by(id: persisted.id) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
   end

@@ -4,6 +4,7 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::DeleteTrackingBuffer do
   let(:adapter) { described_class.new }
+  let(:query_service) { adapter.query_service }
   let(:persister) do
     adapter.persister
   end
