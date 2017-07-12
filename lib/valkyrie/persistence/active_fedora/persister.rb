@@ -18,11 +18,6 @@ module Valkyrie::Persistence::ActiveFedora
         instance(model).delete
       end
 
-      # @return [Valkyrie::Persistence::ActiveFedora::Adapter]
-      def adapter
-        Valkyrie::Persistence::ActiveFedora::Adapter.new
-      end
-
       def instance(model)
         new(model: model)
       end

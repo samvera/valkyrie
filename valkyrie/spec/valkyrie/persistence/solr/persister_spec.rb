@@ -3,6 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Solr::Persister do
+  let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
   let(:adapter) { Valkyrie::Persistence::Solr::Adapter.new(connection: client) }
   let(:client) { RSolr.connect(url: SOLR_TEST_URL) }

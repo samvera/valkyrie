@@ -27,11 +27,6 @@ module Valkyrie::Persistence::Postgres
       def sync_object(model)
         ::Valkyrie::Persistence::Postgres::ORMSyncer.new(model: model)
       end
-
-      # @return [Valkyrie::Persistence::Postgres::Adapter]
-      def adapter
-        Valkyrie::Persistence::Postgres::Adapter.new
-      end
     end
 
     attr_reader :sync_object
