@@ -4,8 +4,10 @@
 *.swp
 /.bundle
 /.env.local
+/.yardoc
 /coverage/*
 /db/*.sqlite3
+/doc
 /log/*
 /public/system
 /public/assets
