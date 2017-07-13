@@ -46,6 +46,10 @@ class FileSetAppendingPersister
     persister.save(model: file_container_factory.new(title: file_node.original_filename, member_ids: file_node.id))
   end
 
+  # If the passed model is a Valkyrie::Form, then return the upload files, if it's
+  # a model return an empty array.
+  # @param model [Valkyrie::Form, Valkyrie::Model]
+  # @return [Array<ActionDispatch::Http::UploadedFile>]
   def files(model)
     model.try(:files) || []
   end
