@@ -26,7 +26,7 @@ describe Valkyrie do
   end
 
   it "can have a configured storage adapter, which it looks up" do
-    storage_adapter = Valkyrie::StorageAdapter::Memory.new
+    storage_adapter = Valkyrie::Storage::Memory.new
     Valkyrie::StorageAdapter.register(storage_adapter, :test)
 
     expect(described_class.config.storage_adapter).to eq storage_adapter
