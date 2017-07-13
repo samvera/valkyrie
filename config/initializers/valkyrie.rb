@@ -41,8 +41,10 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(
-    adapter: Valkyrie::Adapter.find(:indexing_persister),
-    storage_adapter: Valkyrie.config.storage_adapter,
+    form_persister: FormPersister.new(
+      adapter: Valkyrie::Adapter.find(:indexing_persister),
+      storage_adapter: Valkyrie.config.storage_adapter
+    ),
     use: [Valkyrie::Vocab::PCDMUse.ThumbnailImage]
   )
 end
