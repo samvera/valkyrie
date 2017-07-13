@@ -52,4 +52,6 @@ Rails.application.config.to_prepare do
     ),
     use: [Valkyrie::Vocab::PCDMUse.ThumbnailImage]
   )
+
+  Valkyrie::FileCharacterizationService.services << TikaFileCharacterizationService
 end

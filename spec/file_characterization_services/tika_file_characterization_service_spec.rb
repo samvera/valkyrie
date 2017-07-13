@@ -1,0 +1,64 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+require 'valkyrie/specs/shared_specs'
+include ActionDispatch::TestProcess
+
+RSpec.describe TikaFileCharacterizationService do
+  it_behaves_like 'a Valkyrie::FileCharacterizationService'
+  let(:file_characterization_service) { described_class }
+  let(:adapter) { Valkyrie::Adapter.find(:indexing_persister) }
+  let(:storage_adapter) { Valkyrie.config.storage_adapter }
+  let(:persister) { adapter.persister }
+  let(:query_service) { adapter.query_service }
+  let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+  let(:form_persister) { FormPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
+  let(:book) do
+    form_persister.save(form: BookForm.new(Book.new, files: [file]))
+  end
+  let(:book_form) do
+    BookForm.new(Book.new).tap do |form|
+      form.files = [file]
+    end
+  end
+  let(:book_members) { query_service.find_members(model: book) }
+  let(:valid_file_set) { book_members.first }
+  let(:valid_file_node) { adapter.query_service.find_members(model: valid_file_set).first }
+
+  it 'characterizes a sample file' do
+    Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize
+  end
+
+  it 'sets the height attribute for a file_node on characterize ' do
+    t_file_node = valid_file_node
+    t_file_node.height = nil
+    new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
+    expect(new_file_node.height).not_to be_empty
+  end
+
+  it 'sets the width attribute for a file_node on characterize' do
+    t_file_node = valid_file_node
+    t_file_node.width = nil
+    new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
+    expect(new_file_node.width).not_to be_empty
+  end
+
+  it 'saves to the persister by default on characterize' do
+    allow(persister).to receive(:save).and_return(valid_file_node)
+    Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize
+    expect(persister).to have_received(:save).with(model: valid_file_node).once
+  end
+
+  it 'does not save to the persister when characterize is called with save false' do
+    allow(persister).to receive(:save).and_return(valid_file_node)
+    Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize(save: false)
+    expect(persister).not_to have_received(:save).with(model: valid_file_node)
+  end
+
+  it 'sets the mime_type for a file_node on characterize' do
+    t_file_node = valid_file_node
+    t_file_node.mime_type = nil
+    new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
+    expect(new_file_node.mime_type).not_to be_empty
+  end
+end

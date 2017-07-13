@@ -17,6 +17,7 @@ require 'active_triples'
 require 'rdf/vocab'
 require 'active_fedora'
 require 'hydra-access-controls'
+require 'ruby_tika_app'
 
 # frozen_string_literal: true
 module Valkyrie
@@ -30,6 +31,7 @@ module Valkyrie
   require 'valkyrie/storage_adapter'
   require 'valkyrie/adapter'
   require 'valkyrie/adapter_container'
+  require 'valkyrie/file_characterization_service'
   require 'valkyrie/decorators/decorator_list'
   require 'valkyrie/decorators/decorator_with_arguments'
   require 'valkyrie/model/access_controls'
