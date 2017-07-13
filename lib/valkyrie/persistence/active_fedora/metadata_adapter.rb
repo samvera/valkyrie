@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence
   module ActiveFedora
-    class Adapter
+    class MetadataAdapter
       # @return [Class] {Valkyrie::Persistence::ActiveFedora::Persister}
       def persister
         Valkyrie::Persistence::ActiveFedora::Persister

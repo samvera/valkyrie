@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie
-  class Adapter
+  class MetadataAdapter
     class_attribute :adapters
     self.adapters = {}
     class << self

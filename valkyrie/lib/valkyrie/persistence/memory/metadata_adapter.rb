@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Memory
-  class Adapter
+  class MetadataAdapter
     attr_writer :cache
 
     # @return [Valkyrie::Persistence::Memory::Persister] A memory persister for

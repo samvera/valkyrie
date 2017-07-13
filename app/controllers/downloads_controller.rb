@@ -50,7 +50,7 @@ class DownloadsController < ApplicationController
   end
 
   def query_service
-    Valkyrie.config.adapter.query_service
+    Valkyrie.config.metadata_adapter.query_service
   end
 
   def storage_adapter

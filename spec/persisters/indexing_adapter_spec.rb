@@ -3,10 +3,13 @@ require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe IndexingAdapter do
-  let(:adapter) { described_class.new(adapter: Valkyrie::Persistence::Memory::Adapter.new, index_adapter: index_solr) }
+  let(:adapter) do
+    described_class.new(metadata_adapter: Valkyrie::Persistence::Memory::MetadataAdapter.new,
+                        index_adapter: index_solr)
+  end
   let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
-  let(:index_solr) { Valkyrie::Adapter.find(:index_solr) }
+  let(:index_solr) { Valkyrie::MetadataAdapter.find(:index_solr) }
   it_behaves_like "a Valkyrie::Persister"
 
   it "can buffer into an index" do

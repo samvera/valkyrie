@@ -4,7 +4,7 @@ module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/persister'
   require 'valkyrie/persistence/solr/query_service'
   require 'valkyrie/persistence/solr/resource_factory'
-  class Adapter
+  class MetadataAdapter
     attr_reader :connection, :resource_indexer
     # @param connection [RSolr::Client] The RSolr connection to index to.
     # @param resource_indexer [Class, #to_solr] An indexer which is able to

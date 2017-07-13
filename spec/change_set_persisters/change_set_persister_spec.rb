@@ -4,8 +4,10 @@ require 'specs/shared_specs/change_set_persister'
 include ActionDispatch::TestProcess
 
 RSpec.describe ChangeSetPersister do
-  subject(:change_set_persister) { described_class.new(adapter: adapter, storage_adapter: storage_adapter) }
-  let(:adapter) { Valkyrie.config.adapter }
+  subject(:change_set_persister) do
+    described_class.new(metadata_adapter: adapter, storage_adapter: storage_adapter)
+  end
+  let(:adapter) { Valkyrie.config.metadata_adapter }
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   let(:storage_adapter) { Valkyrie.config.storage_adapter }

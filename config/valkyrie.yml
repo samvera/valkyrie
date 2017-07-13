@@ -1,10 +1,10 @@
 development:
-  adapter: postgres
+  metadata_adapter: postgres
   storage_adapter: disk
 
 test:
-  adapter: memory
+  metadata_adapter: memory
   storage_adapter: memory
 
 production:
-  adapter: postgres
+  metadata_adapter: postgres

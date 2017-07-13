@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe CatalogController do
-  let(:persister) { Valkyrie::Adapter.find(:indexing_persister).persister }
+  let(:persister) { Valkyrie::MetadataAdapter.find(:indexing_persister).persister }
   describe "nested catalog paths" do
     it "loads the parent document when given an ID" do
       child = persister.save(model: FactoryGirl.build(:book))

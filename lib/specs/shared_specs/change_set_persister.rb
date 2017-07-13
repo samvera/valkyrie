@@ -26,7 +26,7 @@ RSpec.shared_examples 'a ChangeSetPersister' do |*_flags|
   it { is_expected.to respond_to(:save).with_keywords(:change_set) }
   it { is_expected.to respond_to(:save_all).with_keywords(:change_sets) }
   it { is_expected.to respond_to(:delete).with_keywords(:change_set) }
-  it { is_expected.to respond_to(:adapter) }
+  it { is_expected.to respond_to(:metadata_adapter) }
   it { is_expected.to respond_to(:storage_adapter) }
 
   describe "#save" do
@@ -43,7 +43,9 @@ RSpec.shared_examples 'a ChangeSetPersister' do |*_flags|
       output = subject.save(change_set: change_set)
       subject.delete(change_set: CustomChangeSet.new(output))
 
-      expect { subject.adapter.query_service.find_by(id: output.id) }.to raise_error Valkyrie::Persistence::ObjectNotFoundError
+      expect do
+        subject.metadata_adapter.query_service.find_by(id: output.id)
+      end.to raise_error Valkyrie::Persistence::ObjectNotFoundError
     end
   end
 

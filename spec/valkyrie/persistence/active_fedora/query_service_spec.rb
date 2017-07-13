@@ -3,7 +3,7 @@ require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::ActiveFedora::QueryService do
-  let(:adapter) { Valkyrie::Persistence::ActiveFedora::Adapter.new }
+  let(:adapter) { Valkyrie::Persistence::ActiveFedora::MetadataAdapter.new }
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   it_behaves_like "a Valkyrie query provider"

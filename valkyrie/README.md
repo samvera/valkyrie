@@ -35,13 +35,13 @@ instance with a short name that can be used to refer to it in your application:
 # frozen_string_literal: true
 require 'valkyrie'
 Rails.application.config.to_prepare do
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Postgres::Adapter,
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Postgres::MetadataAdapter,
     :postgres
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Memory::Adapter.new,
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Memory::MetadataAdapter.new,
     :memory
   )
 
@@ -63,7 +63,7 @@ Rails.application.config.to_prepare do
 end
 ```
 
-The initializer registers two `Valkyrie::Adapter` instances for storing metadata:
+The initializer registers two `Valkyrie::MetadataAdapter` instances for storing metadata:
 * `:postgres` which stores metadata in a PostgreSQL database
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
   appropriate for testing)
@@ -148,7 +148,7 @@ object2 = QueryService.find_by(id: object1.id)
 objects = QueryService.find_all
 
 # load all MyModel objects
-Valkyrie.config.adapter.query_service.find_all_of_model(model: MyModel)
+Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
 

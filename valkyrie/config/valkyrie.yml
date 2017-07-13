@@ -1,8 +1,8 @@
 ---
 test:
-  adapter: test
+  metadata_adapter: test
   storage_adapter: test
 development:
-  adapter: test
+  metadata_adapter: test
   storage_adapter: test
 production:

@@ -7,30 +7,30 @@
 # efficient when the `index_adapter` is significantly faster for `save_all`
 # than individual `saves` (such as with Solr).
 class IndexingAdapter
-  attr_reader :adapter, :index_adapter
-  # @param adapter [Valkyrie::Persistence::Adapter]
-  # @param index_adapter [Valkyrie::Persistence::Adapter]
-  def initialize(adapter:, index_adapter:)
-    @adapter = adapter
+  attr_reader :metadata_adapter, :index_adapter
+  # @param metadata_adapter [#persister,#query_service]
+  # @param index_adapter [#persister,#query_service]
+  def initialize(metadata_adapter:, index_adapter:)
+    @metadata_adapter = metadata_adapter
     @index_adapter = index_adapter
   end
 
   def persister
-    IndexingAdapter::Persister.new(adapter: self)
+    IndexingAdapter::Persister.new(metadata_adapter: self)
   end
 
-  delegate :query_service, to: :adapter
+  delegate :query_service, to: :metadata_adapter
 
   class Persister
-    attr_reader :adapter
-    delegate :index_adapter, to: :adapter
+    attr_reader :metadata_adapter
+    delegate :index_adapter, to: :metadata_adapter
     delegate :persister, to: :primary_adapter
-    def initialize(adapter:)
-      @adapter = adapter
+    def initialize(metadata_adapter:)
+      @metadata_adapter = metadata_adapter
     end
 
     def primary_adapter
-      adapter.adapter
+      metadata_adapter.metadata_adapter
     end
 
     def index_persister
@@ -72,7 +72,7 @@ class IndexingAdapter
     #   solr_index.query_service.find_all # => [book1, book2]
     def buffer_into_index
       buffered_persister.with_buffer do |persist, buffer|
-        yield Valkyrie::AdapterContainer.new(persister: persist, query_service: adapter.query_service)
+        yield Valkyrie::AdapterContainer.new(persister: persist, query_service: metadata_adapter.query_service)
         buffer.persister.deletes.uniq(&:id).each do |delete|
           index_persister.delete(model: delete)
         end

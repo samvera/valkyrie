@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Memory
   class QueryService
     attr_reader :adapter
     delegate :cache, to: :adapter
-    # @param adapter [Valkyrie::Persistence::Memory::Adapter] The adapter which
+    # @param adapter [Valkyrie::Persistence::Memory::MetadataAdapter] The adapter which
     #   has the cache to query.
     def initialize(adapter:)
       @adapter = adapter

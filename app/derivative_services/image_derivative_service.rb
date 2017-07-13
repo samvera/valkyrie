@@ -3,7 +3,7 @@
 class ImageDerivativeService
   class Factory
     attr_reader :change_set_persister, :image_config, :use
-    delegate :adapter, :storage_adapter, to: :change_set_persister
+    delegate :metadata_adapter, :storage_adapter, to: :change_set_persister
     def initialize(change_set_persister:, image_config: ImageConfig.new(width: 200, height: 150, format: 'jpg', mime_type: 'image/jpeg', output_name: 'thumbnail'), use: [])
       @change_set_persister = change_set_persister
       @image_config = image_config
@@ -23,7 +23,7 @@ class ImageDerivativeService
     end
 
     def members(model)
-      adapter.query_service.find_members(model: model)
+      metadata_adapter.query_service.find_members(model: model)
     end
 
     class ImageConfig < Dry::Struct
@@ -35,10 +35,10 @@ class ImageDerivativeService
     end
   end
   attr_reader :change_set, :original_file, :image_config, :use, :change_set_persister
-  delegate :adapter, :storage_adapter, to: :change_set_persister
+  delegate :metadata_adapter, :storage_adapter, to: :change_set_persister
   delegate :width, :height, :format, :output_name, to: :image_config
   delegate :mime_type, to: :original_file
-  delegate :persister, to: :adapter
+  delegate :persister, to: :metadata_adapter
   def initialize(change_set:, original_file:, change_set_persister:, image_config:, use:)
     @change_set = change_set
     @original_file = original_file

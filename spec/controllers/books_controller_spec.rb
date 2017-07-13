@@ -20,7 +20,7 @@ RSpec.describe BooksController do
       post :create, params: { book: { title: ["Test"], files: [file] } }
 
       id = response.location.gsub("http://test.host/catalog/", "").gsub("%2F", "/").gsub(/^id-/, "")
-      query_service = Valkyrie.config.adapter.query_service
+      query_service = Valkyrie.config.metadata_adapter.query_service
       book = query_service.find_by(id: Valkyrie::ID.new(id))
       expect(book.member_ids).not_to be_blank
       file_set = query_service.find_members(model: book).first

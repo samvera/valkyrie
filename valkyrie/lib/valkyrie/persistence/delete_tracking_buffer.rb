@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence
-  class DeleteTrackingBuffer < Valkyrie::Persistence::Memory::Adapter
+  class DeleteTrackingBuffer < Valkyrie::Persistence::Memory::MetadataAdapter
     def persister
       @persister ||= DeleteTrackingBuffer::Persister.new(self)
     end

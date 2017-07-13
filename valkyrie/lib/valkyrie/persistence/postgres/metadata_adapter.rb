@@ -2,7 +2,7 @@
 require 'valkyrie/persistence/postgres/persister'
 require 'valkyrie/persistence/postgres/query_service'
 module Valkyrie::Persistence::Postgres
-  class Adapter
+  class MetadataAdapter
     # @return [Class] {Valkyrie::Persistence::Postgres::Persister}
     def persister
       Valkyrie::Persistence::Postgres::Persister

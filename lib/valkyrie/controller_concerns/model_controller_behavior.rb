@@ -27,8 +27,8 @@ module Valkyrie::ControllerConcerns
       end
     end
 
-    def change_set_persister(adapter)
-      ChangeSetPersister.new(adapter: adapter, storage_adapter: Valkyrie.config.storage_adapter)
+    def change_set_persister(metadata_adapter)
+      ChangeSetPersister.new(metadata_adapter: metadata_adapter, storage_adapter: Valkyrie.config.storage_adapter)
     end
 
     def edit
@@ -80,19 +80,19 @@ module Valkyrie::ControllerConcerns
       end
 
       def persister
-        Valkyrie::Adapter.find(:indexing_persister).persister
+        Valkyrie::MetadataAdapter.find(:indexing_persister).persister
       end
 
       def adapter
-        Valkyrie::Adapter.find(:indexing_persister)
+        Valkyrie::MetadataAdapter.find(:indexing_persister)
       end
 
       def query_service
-        Valkyrie::Adapter.find(:indexing_persister).query_service
+        Valkyrie::MetadataAdapter.find(:indexing_persister).query_service
       end
 
       def solr_adapter
-        Valkyrie::Adapter.find(:index_solr)
+        Valkyrie::MetadataAdapter.find(:index_solr)
       end
   end
 end
