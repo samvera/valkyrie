@@ -7,26 +7,25 @@ RSpec.describe ImageDerivativeService do
   it_behaves_like "a Valkyrie::DerivativeService"
 
   let(:thumbnail) { Valkyrie::Vocab::PCDMUse.ThumbnailImage }
-  let(:service) { Valkyrie::Vocab::PCDMUse.ServiceFile }
   let(:derivative_service) do
-    ImageDerivativeService::Factory.new(adapter: adapter,
-                                        storage_adapter: storage_adapter,
-                                        use: [thumbnail, service])
+    ImageDerivativeService::Factory.new(form_persister: form_persister,
+                                        use: [thumbnail])
   end
   let(:adapter) { Valkyrie::Adapter.find(:indexing_persister) }
   let(:storage_adapter) { Valkyrie.config.storage_adapter }
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+  let(:form_persister) { FormPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
   let(:book) do
-    book = FileAppender.new(storage_adapter: storage_adapter, persister: persister, files: [file]).append_to(Book.new)
-    persister.save(model: book)
+    form_persister.save(form: BookForm.new(Book.new, files: [file]))
   end
   let(:book_members) { query_service.find_members(model: book) }
   let(:valid_model) { book_members.first }
+  let(:valid_form) { DynamicFormClass.new.new(valid_model) }
 
   it "creates a thumbnail and attaches it to the fileset" do
-    derivative_service.new(valid_model).create_derivatives
+    derivative_service.new(valid_form).create_derivatives
 
     reloaded = query_service.find_by(id: valid_model.id)
     members = query_service.find_members(model: reloaded)

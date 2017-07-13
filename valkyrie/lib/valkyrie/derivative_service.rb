@@ -16,15 +16,15 @@ module Valkyrie
     # Returns a derivative service for an object.
     # @param model [Valkyrie::Model]
     # @return [Valkyrie::DerivativeService]
-    def self.for(model)
-      services.map { |service| service.new(model) }.find(&:valid?) ||
-        new(model)
+    def self.for(form)
+      services.map { |service| service.new(form) }.find(&:valid?) ||
+        new(form)
     end
-    attr_reader :model
-    delegate :mime_type, :uri, to: :model
+    attr_reader :form
+    delegate :mime_type, :uri, to: :form
     # @param model [Valkyrie::Model]
-    def initialize(model)
-      @model = model
+    def initialize(form)
+      @form = form
     end
 
     # Deletes any derivatives generated.
