@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 class ImageDerivativeService
   class Factory
     attr_reader :form_persister, :image_config, :use
@@ -85,7 +86,15 @@ class ImageDerivativeService
     @temporary_file ||= Tempfile.new
   end
 
+  ALLOWABLE_FORMATS = [
+    'image/bmp',
+    'image/gif',
+    'image/jpeg',
+    'image/png',
+    'image/tiff'
+  ].freeze
+
   def valid?
-    mime_type.include?("image/tiff")
+    ALLOWABLE_FORMATS.include?(mime_type.first)
   end
 end
