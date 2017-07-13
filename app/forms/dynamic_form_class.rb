@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class DynamicFormClass
   attr_reader :model_param
-  def initialize(model_param)
+  def initialize(model_param = nil)
     @model_param = model_param
   end
 

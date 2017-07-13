@@ -31,6 +31,7 @@ Metrics/BlockLength:
     - 'config/initializers/*'
     - 'config/routes.rb'
     - 'lib/valkyrie/specs/**/*'
+    - 'lib/specs/**/*'
     - 'db/schema.rb'
     - 'lib/tasks/dev.rake'
     - 'script/benchmarker.rb'

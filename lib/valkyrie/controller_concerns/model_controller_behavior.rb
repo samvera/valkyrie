@@ -18,13 +18,17 @@ module Valkyrie::ControllerConcerns
       if @form.validate(model_params)
         @form.sync
         obj = nil
-        persister.buffer_into_index do |persist|
-          obj = persist.save(model: @form)
+        persister.buffer_into_index do |buffered_adapter|
+          obj = form_persister(buffered_adapter).save(form: @form)
         end
         redirect_to contextual_path(obj, @form).show
       else
         render :new
       end
+    end
+
+    def form_persister(adapter)
+      FormPersister.new(adapter: adapter, storage_adapter: Valkyrie.config.storage_adapter)
     end
 
     def edit
@@ -40,8 +44,8 @@ module Valkyrie::ControllerConcerns
       if @form.validate(model_params)
         @form.sync
         obj = nil
-        persister.buffer_into_index do |persist|
-          obj = persist.save(model: @form)
+        persister.buffer_into_index do |buffered_adapter|
+          obj = form_persister(buffered_adapter).save(form: @form)
         end
         redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else
@@ -50,10 +54,12 @@ module Valkyrie::ControllerConcerns
     end
 
     def destroy
-      @resource = find_book(params[:id])
-      authorize! :destroy, @resource
-      persister.delete(model: @resource)
-      flash[:alert] = "Deleted #{@resource}"
+      @form = form_class.new(find_book(params[:id]))
+      authorize! :destroy, @form.model
+      persister.buffer_into_index do |buffered_adapter|
+        form_persister(buffered_adapter).delete(form: @form)
+      end
+      flash[:alert] = "Deleted #{@form.model}"
       redirect_to root_path
     end
 
@@ -75,6 +81,10 @@ module Valkyrie::ControllerConcerns
 
       def persister
         Valkyrie::Adapter.find(:indexing_persister).persister
+      end
+
+      def adapter
+        Valkyrie::Adapter.find(:indexing_persister)
       end
 
       def query_service

@@ -14,9 +14,9 @@ module Valkyrie::Persistence::Memory
     #   persistence backend.
     def save(model:)
       generate_id(model) if model.id.blank?
-      inner_model(model).updated_at = Time.current
-      normalize_dates!(inner_model(model))
-      cache[model.id] = inner_model(model)
+      model.updated_at = Time.current
+      normalize_dates!(model)
+      cache[model.id] = model
     end
 
     # @param models [Array<Valkyrie::Model>] List of models to save.
@@ -36,17 +36,9 @@ module Valkyrie::Persistence::Memory
 
     private
 
-      def inner_model(model)
-        if model.respond_to?(:model)
-          model.model
-        else
-          model
-        end
-      end
-
       def generate_id(model)
-        inner_model(model).id = SecureRandom.uuid
-        inner_model(model).created_at = Time.current
+        model.id = SecureRandom.uuid
+        model.created_at = Time.current
       end
 
       def normalize_dates!(model)

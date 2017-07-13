@@ -81,17 +81,9 @@ module Valkyrie
       ::ActiveModel::Name.new(self.class)
     end
 
-    # Returns the class for this resource.
-    # @return [Class]
-    # @note This exists as a standard interface so you can get to the parent
-    #   class even if a form is passed into a persister.
-    def resource_class
-      self.class
-    end
-
     # @return [String]
     def to_s
-      "#{resource_class}: #{id}"
+      "#{self.class}: #{id}"
     end
   end
 end
