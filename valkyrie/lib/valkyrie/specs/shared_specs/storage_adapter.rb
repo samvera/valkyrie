@@ -19,8 +19,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "can upload and re-fetch a file" do
     model = CustomResource.new(id: "test")
-    uploaded_file = storage_adapter.upload(file: file, model: model)
-
+    expect(uploaded_file = storage_adapter.upload(file: file, model: model)).to be_kind_of Valkyrie::StorageAdapter::File
     expect(storage_adapter.handles?(id: uploaded_file.id)).to eq true
     file = storage_adapter.find_by(id: uploaded_file.id)
     expect(file.id).to eq uploaded_file.id
