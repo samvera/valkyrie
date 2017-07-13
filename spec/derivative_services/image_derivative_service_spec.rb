@@ -24,6 +24,23 @@ RSpec.describe ImageDerivativeService do
   let(:valid_model) { book_members.first }
   let(:valid_form) { DynamicFormClass.new.new(valid_model) }
 
+  describe '#valid?' do
+    subject(:valid_file) { derivative_service.new(valid_form) }
+
+    context 'when given a valid mime_type' do
+      it { is_expected.to be_valid }
+    end
+
+    context 'when given an invalid mime_type' do
+      it 'does not validate' do
+        # rubocop:disable RSpec/SubjectStub
+        allow(valid_file).to receive(:mime_type).and_return('image/invalid')
+        # rubocop:enable RSpec/SubjectStub
+        is_expected.not_to be_valid
+      end
+    end
+  end
+
   it "creates a thumbnail and attaches it to the fileset" do
     derivative_service.new(valid_form).create_derivatives
 
