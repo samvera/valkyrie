@@ -25,6 +25,9 @@ gem 'active-fedora'
 gem 'hydra-works'
 gem 'rdf'
 
+## File Characterization
+gem 'ruby_tika_app'
+
 group :development do
   gem "listen"
   gem "spring"
