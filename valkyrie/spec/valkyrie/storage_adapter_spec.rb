@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe Valkyrie::StorageAdapter do
-  let(:storage_adapter) { Valkyrie::StorageAdapter::Memory.new }
+  let(:storage_adapter) { Valkyrie::Storage::Memory.new }
   before do
     described_class.register(storage_adapter, :example)
   end

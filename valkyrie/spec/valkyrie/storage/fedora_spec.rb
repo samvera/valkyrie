@@ -4,7 +4,7 @@ require 'valkyrie/specs/shared_specs'
 require 'active_fedora/cleaner'
 include ActionDispatch::TestProcess
 
-RSpec.describe Valkyrie::StorageAdapter::Fedora do
+RSpec.describe Valkyrie::Storage::Fedora do
   before(:all) do
     # Start from a clean fedora
     ActiveFedora::Cleaner.clean!

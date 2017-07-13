@@ -46,18 +46,18 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::StorageAdapter.register(
-    Valkyrie::StorageAdapter::Disk.new(base_path: Rails.root.join("tmp", "files")),
+    Valkyrie::Storage::Disk.new(base_path: Rails.root.join("tmp", "files")),
     :disk
   )
 
   Valkyrie::StorageAdapter.register(
-    Valkyrie::StorageAdapter::Fedora.new(connection: ActiveFedora.fedora.connection),
+    Valkyrie::Storage::Fedora.new(connection: ActiveFedora.fedora.connection),
     :fedora
   )
 
 
   Valkyrie::StorageAdapter.register(
-    Valkyrie::StorageAdapter::Memory.new,
+    Valkyrie::Storage::Memory.new,
     :memory
   )
 end
