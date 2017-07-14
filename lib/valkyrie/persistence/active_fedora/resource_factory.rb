@@ -1,12 +1,20 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::ActiveFedora
+  # Convert Valkrie::Model to an ActiveFedora::Base and vice versa
   class ResourceFactory
     class << self
+      # Convert an ActiveFedora::Base or ActiveFedora::SolrHit to Valkrie::Model
+      # @param orm_object [Valkyrie::Persistence::ActiveFedora::ORM::Resource, ActiveFedora::SolrHit]
+      # @return [Valkrie::Model]
       def to_model(orm_obj)
         return solr_to_model(orm_obj) if orm_obj.is_a?(ActiveFedora::SolrHit)
         ::Valkyrie::Persistence::ActiveFedora::DynamicKlass.new(orm_obj)
       end
 
+      # Find or create an ActiveFedora::Base that corresponds to the identifier
+      # of the Valkyrie model and encode the type of the Valkyrie model on it.
+      # @param [Valkrie::Model]
+      # @return [Valkyrie::Persistence::ActiveFedora::ORM::Resource]
       def from_model(model)
         resource =
           begin
