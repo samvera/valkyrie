@@ -2,10 +2,10 @@
 
 class ImageDerivativeService
   class Factory
-    attr_reader :form_persister, :image_config, :use
-    delegate :adapter, :storage_adapter, to: :form_persister
-    def initialize(form_persister:, image_config: ImageConfig.new(width: 200, height: 150, format: 'jpg', mime_type: 'image/jpeg', output_name: 'thumbnail'), use: [])
-      @form_persister = form_persister
+    attr_reader :change_set_persister, :image_config, :use
+    delegate :adapter, :storage_adapter, to: :change_set_persister
+    def initialize(change_set_persister:, image_config: ImageConfig.new(width: 200, height: 150, format: 'jpg', mime_type: 'image/jpeg', output_name: 'thumbnail'), use: [])
+      @change_set_persister = change_set_persister
       @image_config = image_config
       self.use = use
     end
@@ -14,8 +14,8 @@ class ImageDerivativeService
       @use = Array(use) + [Valkyrie::Vocab::PCDMUse.ServiceFile]
     end
 
-    def new(form)
-      ::ImageDerivativeService.new(form: form, original_file: original_file(form), form_persister: form_persister, image_config: image_config, use: use)
+    def new(change_set)
+      ::ImageDerivativeService.new(change_set: change_set, original_file: original_file(change_set), change_set_persister: change_set_persister, image_config: image_config, use: use)
     end
 
     def original_file(model)
@@ -34,15 +34,15 @@ class ImageDerivativeService
       attribute :output_name, Valkyrie::Types::String
     end
   end
-  attr_reader :form, :original_file, :image_config, :use, :form_persister
-  delegate :adapter, :storage_adapter, to: :form_persister
+  attr_reader :change_set, :original_file, :image_config, :use, :change_set_persister
+  delegate :adapter, :storage_adapter, to: :change_set_persister
   delegate :width, :height, :format, :output_name, to: :image_config
   delegate :mime_type, to: :original_file
   delegate :persister, to: :adapter
-  def initialize(form:, original_file:, form_persister:, image_config:, use:)
-    @form = DynamicFormClass.new.new(form.try(:model) || form)
+  def initialize(change_set:, original_file:, change_set_persister:, image_config:, use:)
+    @change_set = change_set
     @original_file = original_file
-    @form_persister = form_persister
+    @change_set_persister = change_set_persister
     @image_config = image_config
     @use = use
   end
@@ -54,8 +54,8 @@ class ImageDerivativeService
   def create_derivatives
     Hydra::Derivatives::ImageDerivatives.create(filename,
                                                 outputs: [{ label: :thumbnail, format: format, size: "#{width}x#{height}>", url: URI("file://#{temporary_output.path}") }])
-    form.files = [build_file]
-    form_persister.save(form: form)
+    change_set.files = [build_file]
+    change_set_persister.save(change_set: change_set)
   end
 
   class IoDecorator < SimpleDelegator

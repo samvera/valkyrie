@@ -3,14 +3,17 @@ require 'reform/form/coercion'
 require 'reform/form/active_model/validations'
 module Valkyrie
   ##
-  # Standard form object for Valkyrie.
-  # @example Define a form object
-  #   class BookForm < Valkyrie::Form
+  # Standard change set object for Valkyrie.
+  # ChangeSets are a way to group together properties that should be applied to
+  # an underlying resource. They are often used for powering HTML Forms or
+  # storing virtual attributes for special synchronization with a resource.
+  # @example Define a change set
+  #   class BookChangeSet < Valkyrie::ChangeSet
   #     self.fields = [:title, :author]
   #     validates :title, presence: true
   #     property :title, multiple: false, required: true
   #   end
-  class Form < Reform::Form
+  class ChangeSet < Reform::Form
     include Reform::Form::ActiveModel::Validations
     feature Coercion
     class_attribute :fields
@@ -38,7 +41,7 @@ module Valkyrie
       self.class.definitions[field.to_s][:required]
     end
 
-    # Quick setter for fields that should be in a form. Defaults to multiple,
+    # Quick setter for fields that should be in a changeset. Defaults to multiple,
     # not required, with an empty array default.
     # @param fields [Array<Symbol>]
     def self.fields=(fields)
@@ -61,9 +64,9 @@ module Valkyrie
 
     delegate :attributes, to: :model
 
-    delegate :internal_model, :created_at, :updated_at, to: :model
+    delegate :internal_model, :created_at, :updated_at, :model_name, to: :model
 
-    # Prepopulates all fields with defaults defined in the form. This is an
+    # Prepopulates all fields with defaults defined in the changeset. This is an
     # override of Reform::Form's method to allow for single-valued fields to
     # prepopulate appropriately.
     def prepopulate!(_options = {})

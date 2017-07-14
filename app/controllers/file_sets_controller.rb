@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class FileSetsController < ApplicationController
   include Valkyrie::ControllerConcerns::ModelControllerBehavior
-  self.form_class = FileSetForm
+  self.change_set_class = FileSetChangeSet
   self.resource_class = FileSet
 
   def model_params

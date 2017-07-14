@@ -1,11 +1,11 @@
-<%= simple_form_for @form do |f| %>
-  <% (@form.class.fields - [:member_ids]).each do |field| %>
+<%= simple_form_for @change_set do |f| %>
+  <% (@change_set.class.fields - [:member_ids]).each do |field| %>
     <%= render_edit_field_partial(field, f: f) %>
   <% end %>
-  <% if @form.append_id.present? %>
+  <% if @change_set.append_id.present? %>
     <%= f.input :append_id, as: :hidden %>
   <% end %>
-  <% if @form.respond_to?(:files) %>
+  <% if @change_set.respond_to?(:files) %>
     <%= f.input :files, as: :file, input_html: { multiple: true }%>
   <% end %>
   <%= f.button :submit %>

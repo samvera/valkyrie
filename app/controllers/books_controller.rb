@@ -4,23 +4,23 @@ class BooksController < ApplicationController
   self.resource_class = Book
 
   def append
-    @form = form_class.new(resource_class.new)
-    authorize! :update, @form.model
-    @form.append_id = params[:id]
+    @change_set = change_set_class.new(resource_class.new)
+    authorize! :update, @change_set.model
+    @change_set.append_id = params[:id]
   end
 
   def file_manager
-    @record = form_class.new(find_book(params[:id])).prepopulate!
+    @record = change_set_class.new(find_book(params[:id])).prepopulate!
     authorize! :file_manager, @record.model
     @children = QueryService.find_members(model: @record).map do |x|
-      form_class.new(x).prepopulate!
+      change_set_class.new(x).prepopulate!
     end.to_a
   end
 
   private
 
-    def form_class
-      DynamicFormClass.new(params[:model])
+    def change_set_class
+      DynamicChangeSetClass.new(params[:model])
     end
 
     def resource_class

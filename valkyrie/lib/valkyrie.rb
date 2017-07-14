@@ -22,7 +22,7 @@ require 'ruby_tika_app'
 # frozen_string_literal: true
 module Valkyrie
   require 'valkyrie/id'
-  require 'valkyrie/form'
+  require 'valkyrie/change_set'
   require 'valkyrie/value_mapper'
   require 'valkyrie/persistence'
   require 'valkyrie/types'
