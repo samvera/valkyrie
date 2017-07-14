@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class BookForm < Valkyrie::Form
+class BookChangeSet < Valkyrie::ChangeSet
   validate :title_not_empty
   self.fields = Book.fields - [:id, :internal_model, :created_at, :updated_at]
   property :title, required: true

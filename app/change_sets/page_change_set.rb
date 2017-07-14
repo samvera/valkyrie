@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-class PageForm < Valkyrie::Form
+class PageChangeSet < Valkyrie::ChangeSet
   validate :title_not_empty
   self.fields = Page.fields - [:id, :internal_model, :created_at, :updated_at]
   property :viewing_hint, multiple: false

@@ -13,18 +13,18 @@ module Valkyrie
     Hydra::Derivatives.output_file_service = Valkyrie::PersistDerivatives
     class_attribute :services
     self.services = []
-    # Returns a derivative service for an object.
-    # @param model [Valkyrie::Model]
+    # Returns a derivative service for a change_set.
+    # @param model [Valkyrie::ChangeSet]
     # @return [Valkyrie::DerivativeService]
-    def self.for(form)
-      services.map { |service| service.new(form) }.find(&:valid?) ||
-        new(form)
+    def self.for(change_set)
+      services.map { |service| service.new(change_set) }.find(&:valid?) ||
+        new(change_set)
     end
-    attr_reader :form
-    delegate :mime_type, :uri, to: :form
+    attr_reader :change_set
+    delegate :mime_type, :uri, to: :change_set
     # @param model [Valkyrie::Model]
-    def initialize(form)
-      @form = form
+    def initialize(change_set)
+      @change_set = change_set
     end
 
     # Deletes any derivatives generated.

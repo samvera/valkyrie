@@ -52,7 +52,7 @@ RSpec.describe BooksController do
       parent = Persister.save(model: Book.new)
       get :append, params: { id: parent.id, model: Book }
 
-      expect(assigns(:form).append_id).to eq parent.id
+      expect(assigns(:change_set).append_id).to eq parent.id
     end
   end
 
@@ -73,8 +73,8 @@ RSpec.describe BooksController do
       parent = Persister.save(model: Page.new)
       get :append, params: { id: parent.id, model: Page }
 
-      expect(assigns(:form).class).to eq PageForm
-      expect(assigns(:form).append_id).to eq parent.id
+      expect(assigns(:change_set).class).to eq PageChangeSet
+      expect(assigns(:change_set).append_id).to eq parent.id
     end
   end
 

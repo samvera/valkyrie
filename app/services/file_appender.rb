@@ -18,7 +18,7 @@ class FileAppender
     return if processing_derivatives?
     file_nodes.map do |node|
       file_set = create_file_set(node)
-      Valkyrie::DerivativeService.for(file_set).create_derivatives if node.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile)
+      Valkyrie::DerivativeService.for(FileSetChangeSet.new(file_set)).create_derivatives if node.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile)
       file_set
     end
   end

@@ -12,13 +12,13 @@ RSpec.describe TikaFileCharacterizationService do
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
-  let(:form_persister) { FormPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
+  let(:change_set_persister) { ChangeSetPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
   let(:book) do
-    form_persister.save(form: BookForm.new(Book.new, files: [file]))
+    change_set_persister.save(change_set: BookChangeSet.new(Book.new, files: [file]))
   end
-  let(:book_form) do
-    BookForm.new(Book.new).tap do |form|
-      form.files = [file]
+  let(:book_change_set) do
+    BookChangeSet.new(Book.new).tap do |change_set|
+      change_set.files = [file]
     end
   end
   let(:book_members) { query_service.find_members(model: book) }

@@ -3,49 +3,49 @@ module Valkyrie::ControllerConcerns
   module ModelControllerBehavior
     extend ActiveSupport::Concern
     included do
-      class_attribute :form_class, :resource_class
+      class_attribute :change_set_class, :resource_class
     end
 
     def new
-      @form = form_class.new(resource_class.new).prepopulate!
+      @change_set = change_set_class.new(resource_class.new).prepopulate!
       authorize! :create, resource_class
       @collections = ::Draper::CollectionDecorator.decorate(query_service.find_all_of_model(model: Collection))
     end
 
     def create
-      @form = form_class.new(resource_class.new)
-      authorize! :create, @form.model
-      if @form.validate(model_params)
-        @form.sync
+      @change_set = change_set_class.new(resource_class.new)
+      authorize! :create, @change_set.model
+      if @change_set.validate(model_params)
+        @change_set.sync
         obj = nil
         persister.buffer_into_index do |buffered_adapter|
-          obj = form_persister(buffered_adapter).save(form: @form)
+          obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
-        redirect_to contextual_path(obj, @form).show
+        redirect_to contextual_path(obj, @change_set).show
       else
         render :new
       end
     end
 
-    def form_persister(adapter)
-      FormPersister.new(adapter: adapter, storage_adapter: Valkyrie.config.storage_adapter)
+    def change_set_persister(adapter)
+      ChangeSetPersister.new(adapter: adapter, storage_adapter: Valkyrie.config.storage_adapter)
     end
 
     def edit
-      @form = form_class.new(find_book(params[:id])).prepopulate!
-      authorize! :update, @form.model
+      @change_set = change_set_class.new(find_book(params[:id])).prepopulate!
+      authorize! :update, @change_set.model
       @collections = query_service.find_all_of_model(model: Collection)
       render :edit
     end
 
     def update
-      @form = form_class.new(find_book(params[:id]))
-      authorize! :update, @form.model
-      if @form.validate(model_params)
-        @form.sync
+      @change_set = change_set_class.new(find_book(params[:id]))
+      authorize! :update, @change_set.model
+      if @change_set.validate(model_params)
+        @change_set.sync
         obj = nil
         persister.buffer_into_index do |buffered_adapter|
-          obj = form_persister(buffered_adapter).save(form: @form)
+          obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
         redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
       else
@@ -54,12 +54,12 @@ module Valkyrie::ControllerConcerns
     end
 
     def destroy
-      @form = form_class.new(find_book(params[:id]))
-      authorize! :destroy, @form.model
+      @change_set = change_set_class.new(find_book(params[:id]))
+      authorize! :destroy, @change_set.model
       persister.buffer_into_index do |buffered_adapter|
-        form_persister(buffered_adapter).delete(form: @form)
+        change_set_persister(buffered_adapter).delete(change_set: @change_set)
       end
-      flash[:alert] = "Deleted #{@form.model}"
+      flash[:alert] = "Deleted #{@change_set.model}"
       redirect_to root_path
     end
 
@@ -71,8 +71,8 @@ module Valkyrie::ControllerConcerns
         @_prefixes ||= super + ['books']
       end
 
-      def contextual_path(obj, form)
-        ContextualPath.new(obj.id, form.append_id)
+      def contextual_path(obj, change_set)
+        ContextualPath.new(obj.id, change_set.append_id)
       end
 
       def find_book(id)

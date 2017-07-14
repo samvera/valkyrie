@@ -8,7 +8,7 @@ RSpec.describe ImageDerivativeService do
 
   let(:thumbnail) { Valkyrie::Vocab::PCDMUse.ThumbnailImage }
   let(:derivative_service) do
-    ImageDerivativeService::Factory.new(form_persister: form_persister,
+    ImageDerivativeService::Factory.new(change_set_persister: change_set_persister,
                                         use: [thumbnail])
   end
   let(:adapter) { Valkyrie::Adapter.find(:indexing_persister) }
@@ -16,16 +16,16 @@ RSpec.describe ImageDerivativeService do
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
-  let(:form_persister) { FormPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
+  let(:change_set_persister) { ChangeSetPersister.new(adapter: adapter, storage_adapter: storage_adapter) }
   let(:book) do
-    form_persister.save(form: BookForm.new(Book.new, files: [file]))
+    change_set_persister.save(change_set: BookChangeSet.new(Book.new, files: [file]))
   end
   let(:book_members) { query_service.find_members(model: book) }
   let(:valid_model) { book_members.first }
-  let(:valid_form) { DynamicFormClass.new.new(valid_model) }
+  let(:valid_change_set) { DynamicChangeSetClass.new.new(valid_model) }
 
   describe '#valid?' do
-    subject(:valid_file) { derivative_service.new(valid_form) }
+    subject(:valid_file) { derivative_service.new(valid_change_set) }
 
     context 'when given a valid mime_type' do
       it { is_expected.to be_valid }
@@ -42,7 +42,7 @@ RSpec.describe ImageDerivativeService do
   end
 
   it "creates a thumbnail and attaches it to the fileset" do
-    derivative_service.new(valid_form).create_derivatives
+    derivative_service.new(valid_change_set).create_derivatives
 
     reloaded = query_service.find_by(id: valid_model.id)
     members = query_service.find_members(model: reloaded)

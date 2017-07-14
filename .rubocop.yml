@@ -38,6 +38,9 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Exclude:
     - 'db/migrate/**/*'
+Metrics/LineLength:
+  Exclude:
+    - 'spec/support/stub_tika.rb'
 RSpec/FilePath:
   Exclude:
     - 'spec/adapters/registered_adapter_spec.rb'
