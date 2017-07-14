@@ -9,8 +9,8 @@ class ChangeSetPersister
 
   def save(change_set:)
     before_save(change_set: change_set)
-    persister.save(model: change_set.model).tap do |_output|
-      after_save(change_set: change_set)
+    persister.save(model: change_set.model).tap do |output|
+      after_save(change_set: change_set, updated_model: output)
     end
   end
 
@@ -31,14 +31,13 @@ class ChangeSetPersister
       create_files(change_set: change_set)
     end
 
-    def after_save(change_set:)
-      append(change_set: change_set) if change_set.append_id
+    def after_save(change_set:, updated_model:)
+      append(append_id: change_set.append_id, updated_model: updated_model) if change_set.append_id
     end
 
-    def append(change_set:)
-      return unless change_set.append_id
-      parent_obj = query_service.find_by(id: change_set.append_id)
-      parent_obj.member_ids = parent_obj.member_ids + [change_set.id]
+    def append(append_id:, updated_model:)
+      parent_obj = query_service.find_by(id: append_id)
+      parent_obj.member_ids = parent_obj.member_ids + [updated_model.id]
       persister.save(model: parent_obj)
     end
 

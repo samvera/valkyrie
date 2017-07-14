@@ -46,7 +46,7 @@ RSpec.describe TikaFileCharacterizationService do
   it 'saves to the persister by default on characterize' do
     allow(persister).to receive(:save).and_return(valid_file_node)
     Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize
-    expect(persister).to have_received(:save).with(model: valid_file_node).once
+    expect(persister).to have_received(:save).once
   end
 
   it 'does not save to the persister when characterize is called with save false' do
