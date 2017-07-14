@@ -1,10 +1,12 @@
 # frozen_string_literal: true
+# Append a collection of files to a model
 class FileAppender
-  attr_reader :storage_adapter, :persister, :files
-  def initialize(storage_adapter:, persister:, files:)
+  attr_reader :storage_adapter, :persister, :files, :file_node_persister
+  def initialize(storage_adapter:, persister:, files:, file_node_persister: FileNodePersister)
     @storage_adapter = storage_adapter
     @persister = persister
     @files = files
+    @file_node_persister = file_node_persister
   end
 
   def append_to(model)
@@ -31,17 +33,9 @@ class FileAppender
     @file_nodes ||=
       begin
         files.map do |file|
-          create_node(file)
+          file_node_persister.create_node(file, persister: persister, storage_adapter: storage_adapter)
         end
       end
-  end
-
-  def create_node(file)
-    node = persister.save(model: FileNode.for(file: file))
-    file = storage_adapter.upload(file: file, model: node)
-    node.file_identifiers = node.file_identifiers + [file.id]
-    node = Valkyrie::FileCharacterizationService.for(file_node: node, persister: persister).characterize(save: false)
-    persister.save(model: node)
   end
 
   def create_file_set(file_node)

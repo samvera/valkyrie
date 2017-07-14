@@ -12,5 +12,9 @@ module Valkyrie::Persistence::Postgres
     def query_service
       Valkyrie::Persistence::Postgres::QueryService
     end
+
+    def file_node_persister
+      FileNodePersister
+    end
   end
 end

@@ -11,6 +11,10 @@ module Valkyrie::Persistence
       def query_service
         Valkyrie::Persistence::ActiveFedora::QueryService
       end
+
+      def file_node_persister
+        FedoraFileNodePersister
+      end
     end
   end
 end
