@@ -18,7 +18,7 @@ module Valkyrie
         new(file_node: file_node, persister: persister)
     end
     attr_reader :file_node, :persister
-    delegate :mime_type, :height, :width, to: :file_node
+    delegate :mime_type, :height, :width, :checksum, to: :file_node
     def initialize(file_node:, persister:)
       @file_node = file_node
       @persister = persister

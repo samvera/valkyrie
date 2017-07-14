@@ -25,6 +25,12 @@ RSpec.describe TikaFileCharacterizationService do
   let(:valid_file_set) { book_members.first }
   let(:valid_file_node) { adapter.query_service.find_members(model: valid_file_set).first }
 
+  before do
+    output = '547c81b080eb2d7c09e363a670c46960ac15a6821033263867dd59a31376509c'
+    ruby_mock = instance_double(Digest::SHA256, hexdigest: output)
+    allow(Digest::SHA256).to receive(:hexdigest).and_return(ruby_mock)
+  end
+
   it 'characterizes a sample file' do
     Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize
   end
@@ -52,7 +58,7 @@ RSpec.describe TikaFileCharacterizationService do
   it 'does not save to the persister when characterize is called with save false' do
     allow(persister).to receive(:save).and_return(valid_file_node)
     Valkyrie::FileCharacterizationService.for(file_node: valid_file_node, persister: persister).characterize(save: false)
-    expect(persister).not_to have_received(:save).with(model: valid_file_node)
+    expect(persister).not_to have_received(:save)
   end
 
   it 'sets the mime_type for a file_node on characterize' do
@@ -60,5 +66,12 @@ RSpec.describe TikaFileCharacterizationService do
     t_file_node.mime_type = nil
     new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
     expect(new_file_node.mime_type).not_to be_empty
+  end
+
+  it 'sets the checksum for a file_node on characterize' do
+    t_file_node = valid_file_node
+    t_file_node.checksum = nil
+    new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
+    expect(new_file_node.checksum).not_to be_empty
   end
 end

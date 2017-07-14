@@ -1,9 +1,10 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::FileCharacterizationService do
-  it_behaves_like "a Valkyrie::FileCharacterizationService"
+  it_behaves_like 'a Valkyrie::FileCharacterizationService'
   let(:valid_file_node) { FileNode.new }
   let(:file_characterization_service) { described_class }
   let(:persister) { Valkyrie::Persistence::Memory::MetadataAdapter.new.persister }
@@ -13,13 +14,14 @@ RSpec.describe Valkyrie::FileCharacterizationService do
       attribute :mime_type, Valkyrie::Types::Set
       attribute :height, Valkyrie::Types::Set
       attribute :width, Valkyrie::Types::Set
+      attribute :checksum, Valkyrie::Types::Set
     end
   end
   after do
     Object.send(:remove_const, :FileNode)
   end
 
-  it "can have a registered service" do
+  it 'can have a registered service' do
     new_service = instance_double(described_class, valid?: true)
     service_class = class_double(described_class, new: new_service)
     described_class.services << service_class

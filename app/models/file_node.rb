@@ -6,6 +6,7 @@ class FileNode < Valkyrie::Model
   attribute :mime_type, Valkyrie::Types::Set
   attribute :height, Valkyrie::Types::Set
   attribute :width, Valkyrie::Types::Set
+  attribute :checksum, Valkyrie::Types::Set
   attribute :original_filename, Valkyrie::Types::Set
   attribute :file_identifiers, Valkyrie::Types::Set
   attribute :use, Valkyrie::Types::Set
