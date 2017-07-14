@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::ActiveFedora
+  # A factory for Valkrie::Models given data from an ActiveFedora::Base
+  # Because we override `new`, no instances of DynamicKlass are actually created.
   class DynamicKlass
+    # Instantiate the appropriate subclass of Valkrie::Model given the data from
+    # the `internal_model` field on the Valkyrie::Persistence::ActiveFedora::ORM::Resource class
+    # @param [Valkyrie::Persistence::ActiveFedora::ORM::Resource]
+    # @return [Valkrie::Model]
     def self.new(orm_object)
       orm_object.internal_model.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
     end
