@@ -9,10 +9,6 @@ module Valkyrie::Persistence
       @persisters = persisters
     end
 
-    def adapter
-      persisters.first.adapter
-    end
-
     # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(model:)
       persisters.inject(model) { |m, persister| persister.save(model: m) }
