@@ -45,6 +45,8 @@ Rails.application.config.to_prepare do
     :indexing_persister
   )
 
+  # ImageDerivativeService needs its own change_set_persister because the
+  # derivatives may not be in the primary metadata/file storage.
   Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(
     change_set_persister: ChangeSetPersister.new(
       metadata_adapter: Valkyrie::MetadataAdapter.find(:indexing_persister),
