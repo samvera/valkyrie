@@ -29,7 +29,7 @@ module Valkyrie
   require 'valkyrie/model'
   require 'valkyrie/derivative_service'
   require 'valkyrie/storage_adapter'
-  require 'valkyrie/adapter'
+  require 'valkyrie/metadata_adapter'
   require 'valkyrie/adapter_container'
   require 'valkyrie/file_characterization_service'
   require 'valkyrie/decorators/decorator_list'
@@ -67,8 +67,8 @@ module Valkyrie
   end
 
   class Config < OpenStruct
-    def adapter
-      Valkyrie::Adapter.find(super.to_sym)
+    def metadata_adapter
+      Valkyrie::MetadataAdapter.find(super.to_sym)
     end
 
     def storage_adapter

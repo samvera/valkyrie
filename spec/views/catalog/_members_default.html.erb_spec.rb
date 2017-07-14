@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe "catalog/_members_default.html.erb" do
   let(:document) { instance_double(SolrDocument, id: "bla", members: [child], member_ids: [child.id]) }
-  let(:persister) { Valkyrie.config.adapter.persister }
+  let(:persister) { Valkyrie.config.metadata_adapter.persister }
   let(:child) { persister.save(model: FileSet.new(title: "Child", member_ids: [file_node.id])).decorate }
   let(:file_node) { persister.save(model: FileNode.new) }
 

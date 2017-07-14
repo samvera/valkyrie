@@ -4,7 +4,7 @@ module Valkyrie::Persistence::Solr
   class Persister
     attr_reader :adapter
     delegate :connection, :resource_factory, to: :adapter
-    # @param adapter [Valkyrie::Persistence::Solr::Adapter] The adapter with the
+    # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
     def initialize(adapter:)
       @adapter = adapter

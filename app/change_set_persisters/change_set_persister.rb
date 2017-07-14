@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 class ChangeSetPersister
-  attr_reader :adapter, :storage_adapter
-  delegate :persister, :query_service, to: :adapter
-  def initialize(adapter:, storage_adapter:)
-    @adapter = adapter
+  attr_reader :metadata_adapter, :storage_adapter
+  delegate :persister, :query_service, to: :metadata_adapter
+  def initialize(metadata_adapter:, storage_adapter:)
+    @metadata_adapter = metadata_adapter
     @storage_adapter = storage_adapter
   end
 

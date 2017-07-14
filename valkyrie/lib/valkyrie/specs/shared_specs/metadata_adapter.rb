@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie::Adapter' do |passed_adapter|
+RSpec.shared_examples 'a Valkyrie::MetadataAdapter' do |passed_adapter|
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter

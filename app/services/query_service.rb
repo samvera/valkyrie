@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 class QueryService
-  class_attribute :adapter
-  self.adapter = Valkyrie.config.adapter
+  class_attribute :metadata_adapter
+  self.metadata_adapter = Valkyrie.config.metadata_adapter
   class << self
     delegate :find_all, :find_by, :find_members, to: :default_adapter
 
     def default_adapter
-      new(adapter: adapter)
+      new(metadata_adapter: metadata_adapter)
     end
   end
 
-  attr_reader :adapter
-  delegate :find_all, :find_by, :find_members, to: :adapter_query_service
-  def initialize(adapter:)
-    @adapter = adapter
+  attr_reader :metadata_adapter
+  delegate :find_all, :find_by, :find_members, to: :metadata_adapter_query_service
+  def initialize(metadata_adapter:)
+    @metadata_adapter = metadata_adapter
   end
 
-  delegate :query_service, to: :adapter, prefix: true
+  delegate :query_service, to: :metadata_adapter, prefix: true
 end

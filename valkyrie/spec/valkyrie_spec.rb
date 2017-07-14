@@ -17,12 +17,12 @@ describe Valkyrie do
     expect { described_class.config }.not_to raise_error
   end
   it "can have a configured adapter, which it looks up" do
-    memory_adapter = Valkyrie::Persistence::Memory::Adapter.new
-    Valkyrie::Adapter.register(memory_adapter, :test)
+    memory_adapter = Valkyrie::Persistence::Memory::MetadataAdapter.new
+    Valkyrie::MetadataAdapter.register(memory_adapter, :test)
 
-    expect(described_class.config.adapter).to eq memory_adapter
+    expect(described_class.config.metadata_adapter).to eq memory_adapter
 
-    Valkyrie::Adapter.adapters = {}
+    Valkyrie::MetadataAdapter.adapters = {}
   end
 
   it "can have a configured storage adapter, which it looks up" do

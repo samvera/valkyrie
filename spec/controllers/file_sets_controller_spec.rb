@@ -2,8 +2,8 @@
 require 'rails_helper'
 
 RSpec.describe FileSetsController do
-  let(:persister) { Valkyrie.config.adapter.persister }
-  let(:query_service) { Valkyrie.config.adapter.query_service }
+  let(:persister) { Valkyrie.config.metadata_adapter.persister }
+  let(:query_service) { Valkyrie.config.metadata_adapter.query_service }
   let(:user) { FactoryGirl.create(:admin) }
   before do
     sign_in user if user

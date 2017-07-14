@@ -6,7 +6,7 @@ RSpec.describe Valkyrie::FileCharacterizationService do
   it_behaves_like "a Valkyrie::FileCharacterizationService"
   let(:valid_file_node) { FileNode.new }
   let(:file_characterization_service) { described_class }
-  let(:persister) { Valkyrie::Persistence::Memory::Adapter.new.persister }
+  let(:persister) { Valkyrie::Persistence::Memory::MetadataAdapter.new.persister }
   before do
     class FileNode < Valkyrie::Model
       attribute :id, Valkyrie::Types::ID.optional

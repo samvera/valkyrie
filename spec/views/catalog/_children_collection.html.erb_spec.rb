@@ -4,7 +4,7 @@ require 'rails_helper'
 RSpec.describe "catalog/_children_collection.html.erb" do
   let(:document) { instance_double(SolrDocument, resource: resource, members: [child]) }
   let(:resource) { persister.save(model: Book.new(title: "Title")) }
-  let(:persister) { Valkyrie.config.adapter.persister }
+  let(:persister) { Valkyrie.config.metadata_adapter.persister }
   let(:child) { persister.save(model: Book.new(title: "Child", a_member_of: resource.id)).decorate }
 
   before do

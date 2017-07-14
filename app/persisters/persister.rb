@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 class Persister
   class_attribute :adapter
-  self.adapter = Valkyrie.config.adapter
+  self.adapter = Valkyrie.config.metadata_adapter
   class << self
     delegate :save, :delete, :persister, to: :default_adapter
 

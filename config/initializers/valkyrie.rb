@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 require 'valkyrie'
 Rails.application.config.to_prepare do
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Postgres::Adapter.new,
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Postgres::MetadataAdapter.new,
     :postgres
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::ActiveFedora::Adapter.new,
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::ActiveFedora::MetadataAdapter.new,
     :fedora
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Memory::Adapter.new,
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Memory::MetadataAdapter.new,
     :memory
   )
 
-  Valkyrie::Adapter.register(
-    Valkyrie::Persistence::Solr::Adapter.new(connection: Blacklight.default_index.connection,
-                                             resource_indexer: Valkyrie::Indexers::AccessControlsIndexer),
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: Blacklight.default_index.connection,
+                                                     resource_indexer: Valkyrie::Indexers::AccessControlsIndexer),
     :index_solr
   )
 
@@ -37,17 +37,17 @@ Rails.application.config.to_prepare do
     :memory
   )
 
-  Valkyrie::Adapter.register(
+  Valkyrie::MetadataAdapter.register(
     Valkyrie::Persistence::IndexingAdapter.new(
-      adapter: Valkyrie.config.adapter,
-      index_adapter: Valkyrie::Adapter.find(:index_solr)
+      metadata_adapter: Valkyrie.config.metadata_adapter,
+      index_adapter: Valkyrie::MetadataAdapter.find(:index_solr)
     ),
     :indexing_persister
   )
 
   Valkyrie::DerivativeService.services << ImageDerivativeService::Factory.new(
     change_set_persister: ChangeSetPersister.new(
-      adapter: Valkyrie::Adapter.find(:indexing_persister),
+      metadata_adapter: Valkyrie::MetadataAdapter.find(:indexing_persister),
       storage_adapter: Valkyrie.config.storage_adapter
     ),
     use: [Valkyrie::Vocab::PCDMUse.ThumbnailImage]
