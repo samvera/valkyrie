@@ -41,6 +41,44 @@ only be used for testing as it's not a persistent store.
    1. Start Solr and Fedora servers for development with `rake server:development`
    1. Bring up a Rails server with `rails s` or a console with `rails c`
 
+### Shared Specs
+
+There are several shared example groups in
+[valkyrie/lib/valkyrie/specs/shared_specs](valkyrie/lib/valkyrie/specs/shared_specs), to help verify that all
+implementations of the various interfaces are fully-compliant.  You can also use these in your own code to
+make sure that any implementations you develop are compliant.
+
+The available example groups are:
+
+* 'a Valkyrie::DerivativeService'
+* 'a Valkyrie::FileCharacterizationService'
+* 'a Valkyrie::MetadataAdapter'
+* 'a Valkyrie::Model'
+* 'a Valkyrie::Persister'
+* 'a Valkyrie query provider'
+* 'a Valkyrie::StorageAdapter'
+
+To use these shared examples, include them in your test file:
+
+```
+require 'valkyrie/specs/shared_specs'
+```
+
+and then you can use the `it_behaves_like` command to invoke the shared examples:
+
+```
+it_behaves_like "a Valkyrie::Model"
+```
+
+Example groups typically require that the calling test define a variable, e.g., the 'a Valkyrie::Model' group
+requires defining the `model_klass` variable:
+
+```
+let(:model_klass) { described_class }
+```
+
+The share examples will raise an error if the variables they need aren't defined.
+
 
 ## License
 
