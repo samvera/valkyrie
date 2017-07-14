@@ -19,6 +19,8 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :original_filename, predicate: ::RDF::URI("http://example.com/original_filename")
     property :use, predicate: ::RDF::URI("http://example.com/use")
     property :nested_resource, predicate: ::RDF::URI("http://example.com/nested_resource")
+    property :height, predicate: ::RDF::URI("http://example.com/height")
+    property :width, predicate: ::RDF::URI("http://example.com/height")
   end
   class NestedResource < ActiveTriples::Resource
     def initialize(uri = RDF::Node.new, _parent = ActiveTriples::Resource.new)
