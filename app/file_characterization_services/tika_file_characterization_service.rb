@@ -21,10 +21,16 @@ class TikaFileCharacterizationService
   #   Valkyrie::FileCharacterizationService.for(file_node, persister).characterize(save: false)
   def characterize(save: true)
     result = JSON.parse(json_output).last
-    @file_characterization_attributes = FileCharacterizationAttributes.new(width: result['tiff:ImageWidth'], height: result['tiff:ImageLength'], mime_type: result['Content-Type'])
+    @file_characterization_attributes = FileCharacterizationAttributes.new(width: result['tiff:ImageWidth'], height: result['tiff:ImageLength'], mime_type: result['Content-Type'], checksum: checksum)
     @file_node = @file_node.new(@file_characterization_attributes.to_h)
     @persister.save(model: @file_node) if save
     @file_node
+  end
+
+  # Provides the SHA256 hexdigest string
+  # @return String
+  def checksum
+    Digest::SHA256.file(filename).hexdigest
   end
 
   def json_output
@@ -52,5 +58,6 @@ class TikaFileCharacterizationService
     attribute :width, Valkyrie::Types::Int
     attribute :height, Valkyrie::Types::Int
     attribute :mime_type, Valkyrie::Types::String
+    attribute :checksum, Valkyrie::Types::String
   end
 end
