@@ -6,6 +6,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       include Valkyrie::Model::AccessControls
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
+      attribute :author
       attribute :member_ids
       attribute :nested_resource
     end
@@ -99,13 +100,16 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   it "can store datetimes" do
-    time = DateTime.current
-    book = persister.save(model: resource_class.new(title: [time]))
+    time1 = DateTime.current
+    time2 = Time.current.in_time_zone
+    book = persister.save(model: resource_class.new(title: [time1], author: [time2]))
 
     reloaded = query_service.find_by(id: book.id)
 
-    expect(reloaded.title.first.to_i).to eq(time.to_i)
+    expect(reloaded.title.first.to_i).to eq(time1.to_i)
     expect(reloaded.title.first.zone).to eq('UTC')
+    expect(reloaded.author.first.to_i).to eq(time2.to_i)
+    expect(reloaded.author.first.zone).to eq('UTC')
   end
 
   context "parent tests" do

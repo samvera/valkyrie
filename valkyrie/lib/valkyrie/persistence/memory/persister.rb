@@ -54,8 +54,6 @@ module Valkyrie::Persistence::Memory
         return value.utc if value.is_a?(DateTime)
         return value.to_datetime.utc if value.is_a?(Time)
         value
-      rescue
-        value
       end
   end
 end
