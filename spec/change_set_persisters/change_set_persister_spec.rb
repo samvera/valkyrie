@@ -13,26 +13,54 @@ RSpec.describe ChangeSetPersister do
   it_behaves_like "a ChangeSetPersister"
   describe "#save" do
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
-    it "can handle appending to another record" do
-      parent_book = persister.save(model: Book.new)
-      change_set = change_set_class.new(Book.new)
-      change_set.append_id = parent_book.id
+    context "with the default adapter" do
+      it "can handle appending to another record" do
+        parent_book = persister.save(model: Book.new)
+        change_set = change_set_class.new(Book.new)
+        change_set.append_id = parent_book.id
 
-      output = change_set_persister.save(change_set: change_set)
-      reloaded_parent = query_service.find_by(id: parent_book.id)
+        output = change_set_persister.save(change_set: change_set)
+        reloaded_parent = query_service.find_by(id: parent_book.id)
 
-      expect(reloaded_parent.member_ids).to eq [output.id]
+        expect(reloaded_parent.member_ids).to eq [output.id]
+      end
+
+      it "can append files" do
+        change_set = change_set_class.new(Book.new)
+        change_set.files = [file]
+
+        output = change_set_persister.save(change_set: change_set)
+        members = query_service.find_members(model: output)
+
+        expect(members.length).to eq 1
+        expect(members[0]).to be_kind_of FileSet
+      end
     end
 
-    it "can append files" do
-      change_set = change_set_class.new(Book.new)
-      change_set.files = [file]
+    context "with the fedora adapter" do
+      let(:adapter) { Valkyrie::Persistence::ActiveFedora::Adapter.new }
 
-      output = change_set_persister.save(change_set: change_set)
-      members = query_service.find_members(model: output)
+      it "can handle appending to another record" do
+        parent_book = persister.save(model: Book.new)
+        change_set = change_set_class.new(Book.new)
+        change_set.append_id = parent_book.id
 
-      expect(members.length).to eq 1
-      expect(members[0]).to be_kind_of FileSet
+        output = change_set_persister.save(change_set: change_set)
+        reloaded_parent = query_service.find_by(id: parent_book.id)
+
+        expect(reloaded_parent.member_ids).to eq [output.id]
+      end
+
+      it "can append files" do
+        change_set = change_set_class.new(Book.new)
+        change_set.files = [file]
+
+        output = change_set_persister.save(change_set: change_set)
+        members = query_service.find_members(model: output)
+
+        expect(members.length).to eq 1
+        expect(members[0]).to be_kind_of FileSet
+      end
     end
   end
 
