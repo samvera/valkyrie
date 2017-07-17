@@ -24,7 +24,7 @@ module Valkyrie::Persistence::Postgres::Queries
         <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->?) AS b(member)
-        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        JOIN orm_resources member ON (b.member->>'id') = member.secondary_identifier WHERE a.secondary_identifier = ?
       SQL
       end
 

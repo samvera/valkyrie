@@ -16,11 +16,18 @@ module Valkyrie::Persistence::ActiveFedora
       # @param [Valkrie::Model]
       # @return [Valkyrie::Persistence::ActiveFedora::ORM::Resource]
       def from_model(model)
+        if model.created_at.blank? && model.id.present?
+          if ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.exists?(model.id.to_s)
+            raise Valkyrie::Persistence::IllegalOperation, "Attempting to recreate existing resource: `#{model.id}'"
+          end
+        end
+
         resource =
           begin
             ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.find(model.id.to_s)
           rescue
-            ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.new
+            attributes = model.id.present? ? { id: model.id.to_s } : {}
+            ::Valkyrie::Persistence::ActiveFedora::ORM::Resource.new(attributes)
           end
         resource.internal_model = model.internal_model
         resource
