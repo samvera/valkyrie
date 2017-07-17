@@ -15,7 +15,10 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_model.find(id)
+        resource = orm_model.find_by(secondary_identifier: id)
+        raise ActiveRecord::RecordNotFound unless resource
+
+        resource
       end
 
       def orm_model

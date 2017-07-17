@@ -14,8 +14,15 @@ module Valkyrie::Persistence::Postgres
       # @return [Valkyrie::Persistence::Postgres::ORM::Resource] ActiveRecord
       #   model for the Valkyrie model.
       def from_model(resource)
-        ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(id: resource.id.to_s).tap do |orm_object|
+        if resource.created_at.blank? && resource.id.present?
+          if ::Valkyrie::Persistence::Postgres::ORM::Resource.exists?(secondary_identifier: resource.id.to_s)
+            raise Valkyrie::Persistence::IllegalOperation, "Attempting to recreate existing resource: `#{resource.id}'"
+          end
+        end
+
+        ::Valkyrie::Persistence::Postgres::ORM::Resource.find_or_initialize_by(secondary_identifier: resource.id.to_s).tap do |orm_object|
           orm_object.internal_model = resource.internal_model
+          orm_object.secondary_identifier = resource.id.to_s unless resource.id.blank?
           orm_object.metadata.merge!(resource.attributes.except(:id, :internal_model, :created_at, :updated_at))
         end
       end

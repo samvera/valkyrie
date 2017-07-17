@@ -9,5 +9,7 @@ module Valkyrie
     require 'valkyrie/persistence/buffered_persister'
     class ObjectNotFoundError < StandardError
     end
+    class IllegalOperation < StandardError
+    end
   end
 end

@@ -18,6 +18,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   subject { persister }
   let(:resource_class) { CustomResource }
   let(:resource) { resource_class.new }
+  let(:resource_with_id) { resource_class.new(id: Valkyrie::ID.new('test')) }
 
   it { is_expected.to respond_to(:save).with_keywords(:model) }
   it { is_expected.to respond_to(:save_all).with_keywords(:models) }
@@ -25,6 +26,21 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
   it "can save a resource" do
     expect(persister.save(model: resource).id).not_to be_blank
+  end
+
+  it "can save a resource with an ID" do
+    expect(persister.save(model: resource_with_id).id).to eq resource_with_id.id
+  end
+
+  it "can store a configurable ID" do
+    persister.save(model: resource_with_id)
+    reloaded = query_service.find_by(id: resource_with_id.id)
+    expect(reloaded.id).to eq resource_with_id.id
+  end
+
+  it "returns a Valkyrie::Persistence::IllegalOperation if the ID exists" do
+    persister.save(model: resource_with_id)
+    expect { persister.save(model: resource_with_id) }.to raise_error ::Valkyrie::Persistence::IllegalOperation
   end
 
   it "can save multiple resources at once" do
