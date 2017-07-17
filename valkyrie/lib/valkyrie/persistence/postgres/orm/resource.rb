@@ -2,11 +2,11 @@
 module Valkyrie::Persistence::Postgres
   module ORM
     class Resource < ActiveRecord::Base
-      after_save :assign_secondary_identifier, if: ->(obj){ obj.secondary_identifier.blank? }
+      after_save :assign_secondary_identifier, if: ->(obj) { obj.secondary_identifier.blank? }
 
       # @return [Hash] Valkyrie-style hash of attributes.
       def all_attributes
-        attributes.merge(rdf_metadata).symbolize_keys.merge({id: secondary_identifier})
+        attributes.merge(rdf_metadata).symbolize_keys.merge(id: secondary_identifier)
       end
 
       def rdf_metadata
@@ -14,7 +14,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def assign_secondary_identifier
-        update_attribute(:secondary_identifier, id)
+        update_attributes(secondary_identifier: id)
       end
 
       class RDFMetadata

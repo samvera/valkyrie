@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Memory
       elsif model.created_at.blank? && model.id.present?
         raise Valkyrie::Persistence::IllegalOperation, "Attempting to recreate existing resource: `#{model.id}'" if cache.key?(model.id)
       end
-          
+
       model.updated_at = Time.current
       normalize_dates!(model)
       cache[model.id] = model

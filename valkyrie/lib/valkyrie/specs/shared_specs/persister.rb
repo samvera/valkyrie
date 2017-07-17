@@ -39,7 +39,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   it "returns a Valkyrie::Persistence::IllegalOperation if the ID exists" do
-    resource = persister.save(model: resource_with_id)
+    persister.save(model: resource_with_id)
     expect { persister.save(model: resource_with_id) }.to raise_error ::Valkyrie::Persistence::IllegalOperation
   end
 
