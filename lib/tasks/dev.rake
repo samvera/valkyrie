@@ -14,11 +14,16 @@ if Rails.env.development? || Rails.env.test?
   namespace :server do
     desc "Start solr and fedora servers for testing"
     task :test do
-      SolrWrapper.wrap(managed: true, verbose: true, port: 8984, instance_dir: 'tmp/blacklight-core-test', persist: false) do |solr|
+      fcrepo_opts = { managed: true, verbose: true, port: 8988, enable_jms: false, fcrepo_home_dir: "fcrepo4-test-data" }
+      fcrepo_opts[:version] = ENV['FCREPO_VERSION'] if ENV['FCREPO_VERSION']
+      shared_solr_opts = { managed: true, verbose: true, persist: false }
+      shared_solr_opts[:version] = ENV['SOLR_VERSION'] if ENV['SOLR_VERSION']
+
+      SolrWrapper.wrap(shared_solr_opts.merge(port: 8984, instance_dir: 'tmp/blacklight-core-test')) do |solr|
         solr.with_collection(name: "blacklight-core-test", dir: Rails.root.join("solr", "config").to_s) do
-          SolrWrapper.wrap(managed: true, verbose: true, port: 8985, instance_dir: 'tmp/hydra-test', persist: false) do |solr2|
+          SolrWrapper.wrap(shared_solr_opts.merge(port: 8985, instance_dir: 'tmp/hydra-test')) do |solr2|
             solr2.with_collection(name: "hydra-test", dir: Rails.root.join("solr", "config").to_s) do
-              FcrepoWrapper.wrap(managed: true, verbose: true, port: 8988, enable_jms: false, fcrepo_home_dir: "fcrepo4-test-data") do |_fcrepo|
+              FcrepoWrapper.wrap(fcrepo_opts) do |_fcrepo|
                 puts "Setup two solr servers & Fedora"
                 loop do
                   sleep(1)
