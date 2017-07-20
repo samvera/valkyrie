@@ -25,6 +25,10 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::QueryService.new(connection: connection, resource_factory: resource_factory)
     end
 
+    def file_node_persister
+      FileNodePersister
+    end
+
     # @return [Valkyrie::Persistence::Solr::ResourceFactory] A resource factory
     #   to convert a model to a solr document and back.
     def resource_factory

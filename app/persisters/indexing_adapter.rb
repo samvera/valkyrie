@@ -19,7 +19,7 @@ class IndexingAdapter
     IndexingAdapter::Persister.new(metadata_adapter: self)
   end
 
-  delegate :query_service, to: :metadata_adapter
+  delegate :query_service, :file_node_persister, to: :metadata_adapter
 
   class Persister
     attr_reader :metadata_adapter
@@ -72,7 +72,9 @@ class IndexingAdapter
     #   solr_index.query_service.find_all # => [book1, book2]
     def buffer_into_index
       buffered_persister.with_buffer do |persist, buffer|
-        yield Valkyrie::AdapterContainer.new(persister: persist, query_service: metadata_adapter.query_service)
+        yield Valkyrie::AdapterContainer.new(persister: persist,
+                                             query_service: metadata_adapter.query_service,
+                                             file_node_persister: metadata_adapter.file_node_persister)
         buffer.persister.deletes.uniq(&:id).each do |delete|
           index_persister.delete(model: delete)
         end

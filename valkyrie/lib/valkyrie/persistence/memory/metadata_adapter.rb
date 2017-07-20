@@ -15,6 +15,10 @@ module Valkyrie::Persistence::Memory
       Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
     end
 
+    def file_node_persister
+      FileNodePersister
+    end
+
     def cache
       @cache ||= {}
     end
