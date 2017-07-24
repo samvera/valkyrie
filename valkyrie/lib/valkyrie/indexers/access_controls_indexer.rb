@@ -7,6 +7,7 @@ module Valkyrie::Indexers
     end
 
     def to_solr
+      return {} unless resource.respond_to?(:read_users)
       {
         Hydra.config[:permissions][:read].group => resource.read_groups,
         Hydra.config[:permissions][:read].individual => resource.read_users,
