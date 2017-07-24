@@ -8,9 +8,9 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new.run
       end
 
-      # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_resource)
-      def find_all_of_resource(resource:)
-        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(resource: resource).run
+      # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
+      def find_all_of_model(model:)
+        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(model: model).run
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_by)

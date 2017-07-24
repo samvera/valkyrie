@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindAllQuery
-    attr_reader :connection, :resource_factory, :resource
-    def initialize(connection:, resource_factory:, resource: nil)
+    attr_reader :connection, :resource_factory, :model
+    def initialize(connection:, resource_factory:, model: nil)
       @connection = connection
       @resource_factory = resource_factory
-      @resource = resource
+      @model = model
     end
 
     def run
@@ -23,10 +23,10 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      if !resource
+      if !model
         "*:*"
       else
-        "internal_resource_ssim:#{resource}"
+        "internal_resource_ssim:#{model}"
       end
     end
   end

@@ -9,7 +9,7 @@ module Valkyrie::ControllerConcerns
     def new
       @change_set = change_set_class.new(resource_class.new).prepopulate!
       authorize! :create, resource_class
-      @collections = ::Draper::CollectionDecorator.decorate(query_service.find_all_of_resource(resource: Collection))
+      @collections = ::Draper::CollectionDecorator.decorate(query_service.find_all_of_model(model: Collection))
     end
 
     def create
@@ -34,7 +34,7 @@ module Valkyrie::ControllerConcerns
     def edit
       @change_set = change_set_class.new(find_book(params[:id])).prepopulate!
       authorize! :update, @change_set.resource
-      @collections = query_service.find_all_of_resource(resource: Collection)
+      @collections = query_service.find_all_of_model(model: Collection)
       render :edit
     end
 

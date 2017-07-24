@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres::Queries
   class FindAllQuery
-    attr_reader :resource
-    def initialize(resource: nil)
-      @resource = resource
+    attr_reader :model
+    def initialize(model: nil)
+      @model = model
     end
 
     def run
@@ -15,10 +15,10 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        if !resource
+        if !model
           orm_resource.all
         else
-          orm_resource.where(internal_resource: resource.to_s)
+          orm_resource.where(internal_resource: model.to_s)
         end
       end
 

@@ -20,9 +20,9 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_resource)
-    def find_all_of_resource(resource:)
-      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, resource: resource).run
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
+    def find_all_of_model(model:)
+      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)

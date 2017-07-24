@@ -6,8 +6,8 @@ module Valkyrie::Persistence::ActiveFedora
         Valkyrie::Persistence::ActiveFedora::Queries::FindAllQuery.new.run
       end
 
-      def find_all_of_resource(resource:)
-        Valkyrie::Persistence::ActiveFedora::Queries::FindAllQuery.new(resource: resource).run
+      def find_all_of_model(model:)
+        Valkyrie::Persistence::ActiveFedora::Queries::FindAllQuery.new(model: model).run
       end
 
       def find_by(id:)

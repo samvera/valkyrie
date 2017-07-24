@@ -23,7 +23,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   subject { adapter.query_service }
 
   it { is_expected.to respond_to(:find_all).with(0).arguments }
-  it { is_expected.to respond_to(:find_all_of_resource).with_keywords(:resource) }
+  it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:find_members).with_keywords(:resource) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
@@ -39,12 +39,12 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
   end
 
-  describe ".find_all_of_resource" do
-    it "returns all of that resource" do
+  describe ".find_all_of_model" do
+    it "returns all of that model" do
       persister.save(resource: resource_class.new)
       resource2 = persister.save(resource: SecondResource.new)
 
-      expect(query_service.find_all_of_resource(resource: SecondResource).map(&:id)).to contain_exactly resource2.id
+      expect(query_service.find_all_of_model(model: SecondResource).map(&:id)).to contain_exactly resource2.id
     end
   end
 

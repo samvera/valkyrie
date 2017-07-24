@@ -25,9 +25,9 @@ module Valkyrie::Persistence::Memory
     # @param resource [Class] Class to query for.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend
     #   with the given class.
-    def find_all_of_resource(resource:)
+    def find_all_of_model(model:)
       cache.values.select do |obj|
-        obj.is_a?(resource)
+        obj.is_a?(model)
       end
     end
 
