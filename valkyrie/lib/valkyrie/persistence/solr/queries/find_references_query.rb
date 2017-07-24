@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindReferencesQuery
-    attr_reader :model, :property, :connection, :resource_factory
-    def initialize(model:, property:, connection:, resource_factory:)
-      @model = model
+    attr_reader :resource, :property, :connection, :resource_factory
+    def initialize(resource:, property:, connection:, resource_factory:)
+      @resource = resource
       @property = property
       @connection = connection
       @resource_factory = resource_factory
@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Solr::Queries
       while docs.has_next?
         docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
         docs.each do |doc|
-          yield resource_factory.to_model(doc)
+          yield resource_factory.to_resource(doc)
         end
       end
     end
@@ -28,7 +28,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def id
-      "id-#{model.id}"
+      "id-#{resource.id}"
     end
   end
 end

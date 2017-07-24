@@ -17,7 +17,7 @@ module Valkyrie::Persistence::ActiveFedora::Queries
       while docs.has_next?
         docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
         docs.each do |doc|
-          yield resource_factory.to_model(ActiveFedora::SolrHit.for(doc))
+          yield resource_factory.to_resource(ActiveFedora::SolrHit.for(doc))
         end
       end
     end

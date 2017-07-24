@@ -18,13 +18,13 @@ RSpec.shared_examples 'a Valkyrie::DerivativeService' do
   it { is_expected.to respond_to(:mime_type) }
 
   describe "#valid?" do
-    context "when given a model it handles" do
+    context "when given a resource it handles" do
       it { is_expected.to be_valid }
     end
   end
 
   it "takes a change_set as an argument" do
     obj = derivative_service.new(valid_change_set)
-    expect(obj.change_set.model).to eq valid_change_set.model
+    expect(obj.change_set.resource).to eq valid_change_set.resource
   end
 end

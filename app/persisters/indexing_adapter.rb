@@ -40,22 +40,22 @@ class IndexingAdapter
     # (see Valkyrie::Persistence::Memory::Persister#save)
     # @note This saves into both the `persister` and `index_persister`
     #   concurrently.
-    def save(model:)
-      composite_persister.save(model: model)
+    def save(resource:)
+      composite_persister.save(resource: resource)
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
     # @note This saves into both the `persister` and `index_persister`
     #   concurrently.
-    def save_all(models:)
-      composite_persister.save_all(models: models)
+    def save_all(resources:)
+      composite_persister.save_all(resources: resources)
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
     # @note This deletes from both the `persister` and `index_persister`
     #   concurrently.
-    def delete(model:)
-      composite_persister.delete(model: model)
+    def delete(resource:)
+      composite_persister.delete(resource: resource)
     end
 
     # Yields the primary persister. At the end of the block, this will use changes tracked
@@ -64,8 +64,8 @@ class IndexingAdapter
     #
     # @example Creating two items
     #   indexing_persister.buffer_into_index do |persister|
-    #     persister.save(model: Book.new)
-    #     persister.save(model: Book.new)
+    #     persister.save(resource: Book.new)
+    #     persister.save(resource: Book.new)
     #     solr_index.query_service.find_all # => []
     #     persister.query_service.find_all # => [book1, book2]
     #   end
@@ -74,9 +74,9 @@ class IndexingAdapter
       buffered_persister.with_buffer do |persist, buffer|
         yield Valkyrie::AdapterContainer.new(persister: persist, query_service: metadata_adapter.query_service)
         buffer.persister.deletes.uniq(&:id).each do |delete|
-          index_persister.delete(model: delete)
+          index_persister.delete(resource: delete)
         end
-        index_persister.save_all(models: buffer.query_service.find_all)
+        index_persister.save_all(resources: buffer.query_service.find_all)
       end
     end
 

@@ -1,17 +1,17 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a Valkyrie::Model' do
+RSpec.shared_examples 'a Valkyrie::Resource' do
   before do
-    raise 'model_klass must be set with `let(:model_klass)`' unless
-      defined? model_klass
+    raise 'resource_klass must be set with `let(:resource_klass)`' unless
+      defined? resource_klass
   end
   describe "#id" do
     it "can be set via instantiation and casts to a Valkyrie::ID" do
-      resource = model_klass.new(id: "test")
+      resource = resource_klass.new(id: "test")
       expect(resource.id).to eq Valkyrie::ID.new("test")
     end
 
     it "is nil when not set" do
-      resource = model_klass.new
+      resource = resource_klass.new
       expect(resource.id).to be_nil
     end
 
@@ -23,30 +23,30 @@ RSpec.shared_examples 'a Valkyrie::Model' do
 
     describe "#has_attribute?" do
       it "returns true when it has a given attribute" do
-        resource = model_klass.new
+        resource = resource_klass.new
         expect(resource.has_attribute?(:id)).to eq true
       end
     end
 
     describe "#fields" do
       it "returns a set of fields" do
-        expect(model_klass).to respond_to(:fields).with(0).arguments
-        expect(model_klass.fields).to include(:id)
+        expect(resource_klass).to respond_to(:fields).with(0).arguments
+        expect(resource_klass.fields).to include(:id)
       end
     end
 
     describe "#attributes" do
       it "returns a list of all set attributes" do
-        resource = model_klass.new(id: "test")
+        resource = resource_klass.new(id: "test")
         expect(resource.attributes[:id].to_s).to eq "test"
       end
     end
   end
 
-  describe "#internal_model" do
-    it "is set to the model's class on instantiation" do
-      resource = model_klass.new
-      expect(resource.internal_model).to eq model_klass.to_s
+  describe "#internal_resource" do
+    it "is set to the resource's class on instantiation" do
+      resource = resource_klass.new
+      expect(resource.internal_resource).to eq resource_klass.to_s
     end
   end
 end

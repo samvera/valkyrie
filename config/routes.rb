@@ -41,8 +41,8 @@ Rails.application.routes.draw do
 
   resources :books, only: [:new, :create, :edit, :update, :destroy] do
     member do
-      get '/append/book', action: :append, model: Book, as: :book_append
-      get '/append/page', action: :append, model: Page, as: :page_append
+      get '/append/book', action: :append, resource: Book, as: :book_append
+      get '/append/page', action: :append, resource: Page, as: :page_append
       get :file_manager
     end
   end

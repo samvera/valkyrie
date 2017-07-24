@@ -2,7 +2,7 @@
 require 'rails/generators'
 require 'rails/generators/model_helpers'
 
-class Valkyrie::ModelGenerator < Rails::Generators::NamedBase
+class Valkyrie::ResourceGenerator < Rails::Generators::NamedBase
   # Include ModelHelpers to warn about pluralization when generating new models or scaffolds
   include Rails::Generators::ModelHelpers
 
@@ -11,12 +11,12 @@ class Valkyrie::ModelGenerator < Rails::Generators::NamedBase
   argument :attributes, type: :array, default: [], banner: 'field:type field:type'
 
   def create_model
-    template('model.rb.erb', File.join('app/models', class_path, "#{file_name}.rb"))
+    template('resource.rb.erb', File.join('app/models', class_path, "#{file_name}.rb"))
   end
 
   def create_model_spec
     return unless rspec_installed?
-    template('model_spec.rb.erb', File.join('spec/models', class_path, "#{file_name}_spec.rb"))
+    template('resource_spec.rb.erb', File.join('spec/models', class_path, "#{file_name}_spec.rb"))
   end
 
   private

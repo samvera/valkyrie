@@ -9,14 +9,14 @@ module Valkyrie::Persistence::Postgres::Queries
 
     def run
       relation.lazy.map do |orm_object|
-        resource_factory.to_model(orm_object)
+        resource_factory.to_resource(orm_object)
       end
     end
 
     private
 
       def relation
-        orm_model.find_by_sql([query, property, "[{\"id\": \"#{obj.id}\"}]"])
+        orm_resource.find_by_sql([query, property, "[{\"id\": \"#{obj.id}\"}]"])
       end
 
       def query
@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Postgres::Queries
       SQL
       end
 
-      def orm_model
+      def orm_resource
         ::Valkyrie::Persistence::Postgres::ORM::Resource
       end
 

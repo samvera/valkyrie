@@ -23,8 +23,8 @@ RSpec.describe BooksController do
       query_service = Valkyrie.config.metadata_adapter.query_service
       book = query_service.find_by(id: Valkyrie::ID.new(id))
       expect(book.member_ids).not_to be_blank
-      file_set = query_service.find_members(model: book).first
-      files = query_service.find_members(model: file_set)
+      file_set = query_service.find_members(resource: book).first
+      files = query_service.find_members(resource: file_set)
       file = files.find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile) }
 
       expect(file.file_identifiers).not_to be_empty
@@ -44,13 +44,13 @@ RSpec.describe BooksController do
     context "when not signed in" do
       let(:user) { nil }
       it "raises CanCan::AccessDenied" do
-        parent = Persister.save(model: Book.new)
-        expect { get :append, params: { id: parent.id, model: Book } }.to raise_error CanCan::AccessDenied
+        parent = Persister.save(resource: Book.new)
+        expect { get :append, params: { id: parent.id, resource: Book } }.to raise_error CanCan::AccessDenied
       end
     end
     it "renders a form to append a child book" do
-      parent = Persister.save(model: Book.new)
-      get :append, params: { id: parent.id, model: Book }
+      parent = Persister.save(resource: Book.new)
+      get :append, params: { id: parent.id, resource: Book }
 
       expect(assigns(:change_set).append_id).to eq parent.id
     end
@@ -58,20 +58,20 @@ RSpec.describe BooksController do
 
   describe "PUT /books" do
     it "can set member IDs" do
-      resource = Persister.save(model: Book.new(title: "Test"))
-      child = Persister.save(model: Book.new)
+      resource = Persister.save(resource: Book.new(title: "Test"))
+      child = Persister.save(resource: Book.new)
       put :update, params: { book: { member_ids: [child.id.to_s] }, id: resource.id }
 
       expect(response).to be_redirect
       reloaded = QueryService.find_by(id: resource.id)
-      expect(QueryService.find_members(model: reloaded)).not_to be_blank
+      expect(QueryService.find_members(resource: reloaded)).not_to be_blank
     end
   end
 
   describe "GET /books/:id/append/page" do
     it "renders a form to append a child page" do
-      parent = Persister.save(model: Page.new)
-      get :append, params: { id: parent.id, model: Page }
+      parent = Persister.save(resource: Page.new)
+      get :append, params: { id: parent.id, resource: Page }
 
       expect(assigns(:change_set).class).to eq PageChangeSet
       expect(assigns(:change_set).append_id).to eq parent.id
@@ -80,8 +80,8 @@ RSpec.describe BooksController do
 
   describe "GET /books/:id/file_manager" do
     it "sets the record and children variables" do
-      child = Persister.save(model: Book.new)
-      parent = Persister.save(model: Book.new(member_ids: child.id))
+      child = Persister.save(resource: Book.new)
+      parent = Persister.save(resource: Book.new(member_ids: child.id))
 
       get :file_manager, params: { id: parent.id }
 

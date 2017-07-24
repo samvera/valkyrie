@@ -11,22 +11,22 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(model:)
-      repository([model]).persist.first
+    def save(resource:)
+      repository([resource]).persist.first
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
-    def save_all(models:)
-      repository(models).persist
+    def save_all(resources:)
+      repository(resources).persist
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
-    def delete(model:)
-      repository([model]).delete.first
+    def delete(resource:)
+      repository([resource]).delete.first
     end
 
-    def repository(models)
-      Valkyrie::Persistence::Solr::Repository.new(models: models, connection: connection, resource_factory: resource_factory)
+    def repository(resources)
+      Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection, resource_factory: resource_factory)
     end
   end
 end

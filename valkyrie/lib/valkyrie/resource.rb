@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 module Valkyrie
   ##
-  # The base model class for all Valkyrie metadata objects.
-  # @example Define a model
-  #   class Book < Valkyrie::Model
+  # The base resource class for all Valkyrie metadata objects.
+  # @example Define a resource
+  #   class Book < Valkyrie::Resource
   #     attribute :id, Valkyrie::Types::ID.optional
   #     attribute :member_ids, Valkyrie::Types::Array
   #     attribute :author
   #   end
-  class Model < Dry::Struct
+  class Resource < Dry::Struct
     include Draper::Decoratable
     constructor_type :schema
 
@@ -17,7 +17,7 @@ module Valkyrie
     def self.inherited(subclass)
       ::Dry::Struct.inherited(subclass)
       subclass.constructor_type :schema
-      subclass.attribute :internal_model, Valkyrie::Types::Any.default(subclass.to_s)
+      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
       subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
     end

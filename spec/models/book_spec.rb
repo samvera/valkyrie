@@ -4,8 +4,8 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Book do
   subject(:book) { described_class.new }
-  let(:model_klass) { described_class }
-  it_behaves_like "a Valkyrie::Model"
+  let(:resource_klass) { described_class }
+  it_behaves_like "a Valkyrie::Resource"
 
   describe "#title" do
     it "is an accessor" do
@@ -44,10 +44,10 @@ RSpec.describe Book do
       book.member_ids = ["123", "456", "789"]
     end
     it "can be set to the IDs created for other books" do
-      member = Persister.save(model: described_class.new)
+      member = Persister.save(resource: described_class.new)
       parent = described_class.new
       parent.member_ids = member.id
-      parent = QueryService.find_by(id: Persister.save(model: parent).id)
+      parent = QueryService.find_by(id: Persister.save(resource: parent).id)
 
       expect(parent.member_ids).to eq [member.id]
     end

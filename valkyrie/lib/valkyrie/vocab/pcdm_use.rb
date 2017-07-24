@@ -23,27 +23,27 @@ module Valkyrie::Vocab
          comment: %(A textual representation of the Object appropriate for fulltext indexing,
            such as a plaintext version of a document, or OCR text.),
          label: "extracted text",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :IntermediateFile,
          comment: %(High quality representation of the Object, appropriate for generating
            derivatives or other additional processing.),
          label: "intermediate file",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :OriginalFile,
          comment: %(The original creation format of a file.),
          label: "original file",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :PreservationMasterFile,
          comment: %(Best quality representation of the Object appropriate for long-term
            preservation.),
          label: "preservation master file",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :ServiceFile,
@@ -51,14 +51,14 @@ module Valkyrie::Vocab
            users.  Similar to a FADGI "derivative file" but can also be used for born-digital content,
            and is not necessarily derived from another file.),
          label: "service file",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :ThumbnailImage,
          comment: %(A low resolution image representation of the Object appropriate for using
            as an icon.),
          label: "thumbnail image",
-         "rdf:subClassOf": %(http://pcdm.org/models#File),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
     term :Transcript,
@@ -66,7 +66,7 @@ module Valkyrie::Vocab
            such as subtitles or transcript of a video.  Can be used as a substitute or complement to other
            files for accessibility purposes.),
          label: "transcript",
-         "rdf:subClassOf": %(http://pcdm.org/models#ExtractedText),
+         "rdf:subClassOf": %(http://pcdm.org/resources#ExtractedText),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
   end

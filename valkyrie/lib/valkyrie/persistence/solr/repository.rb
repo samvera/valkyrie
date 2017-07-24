@@ -1,36 +1,36 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class Repository
-    attr_reader :models, :connection, :resource_factory
-    def initialize(models:, connection:, resource_factory:)
-      @models = models
+    attr_reader :resources, :connection, :resource_factory
+    def initialize(resources:, connection:, resource_factory:)
+      @resources = resources
       @connection = connection
       @resource_factory = resource_factory
     end
 
     def persist
-      documents = models.map do |model|
-        generate_id(model) if model.id.blank?
-        solr_document(model)
+      documents = resources.map do |resource|
+        generate_id(resource) if resource.id.blank?
+        solr_document(resource)
       end
       connection.add documents, params: { softCommit: true }
       documents.map do |document|
-        resource_factory.to_model(document.stringify_keys)
+        resource_factory.to_resource(document.stringify_keys)
       end
     end
 
     def delete
-      connection.delete_by_id models.map { |model| "id-#{model.id}" }, params: { softCommit: true }
-      models
+      connection.delete_by_id resources.map { |resource| "id-#{resource.id}" }, params: { softCommit: true }
+      resources
     end
 
-    def solr_document(model)
-      resource_factory.from_model(model).to_h
+    def solr_document(resource)
+      resource_factory.from_resource(resource).to_h
     end
 
-    def generate_id(model)
+    def generate_id(resource)
       Valkyrie.logger.warn "The Solr adapter is not meant to persist new resources, but is now generating an ID."
-      model.id = SecureRandom.uuid
+      resource.id = SecureRandom.uuid
     end
   end
 end

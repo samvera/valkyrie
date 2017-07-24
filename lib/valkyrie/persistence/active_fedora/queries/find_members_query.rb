@@ -10,7 +10,7 @@ module Valkyrie::Persistence::ActiveFedora::Queries
     def run
       return [] unless obj.id.present?
       ordered_docs.map do |solr_document|
-        resource_factory.to_model(solr_document)
+        resource_factory.to_resource(solr_document)
       end
     end
 

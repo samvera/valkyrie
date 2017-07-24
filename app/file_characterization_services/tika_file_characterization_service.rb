@@ -23,7 +23,7 @@ class TikaFileCharacterizationService
     result = JSON.parse(json_output).last
     @file_characterization_attributes = FileCharacterizationAttributes.new(width: result['tiff:ImageWidth'], height: result['tiff:ImageLength'], mime_type: result['Content-Type'], checksum: checksum)
     @file_node = @file_node.new(@file_characterization_attributes.to_h)
-    @persister.save(model: @file_node) if save
+    @persister.save(resource: @file_node) if save
     @file_node
   end
 

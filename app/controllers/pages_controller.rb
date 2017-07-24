@@ -4,7 +4,7 @@ class PagesController < ApplicationController
   self.change_set_class = PageChangeSet
   self.resource_class = Page
 
-  def model_params
+  def resource_params
     params[:page]
   end
 end

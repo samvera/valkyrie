@@ -6,7 +6,7 @@ RSpec.describe ReindexEverything do
     let(:solr) { Blacklight.default_index.connection }
     context "when there are objects not indexed" do
       it "indexes them" do
-        Persister.save(model: Book.new)
+        Persister.save(resource: Book.new)
         expect(solr.get("select", params: { q: "*:*" })["response"]["numFound"]).to eq 0
 
         described_class.call

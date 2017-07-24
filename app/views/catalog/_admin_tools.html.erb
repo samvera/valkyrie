@@ -16,16 +16,16 @@
           </button>
           <ul class="dropdown-menu">
             <li>
-              <%= link_to "Add Book", book_append_book_path(id: document.model_id) %>
+              <%= link_to "Add Book", book_append_book_path(id: document.resource_id) %>
             </li>
             <li>
-              <%= link_to "Add Page", page_append_book_path(id: document.model_id) %>
+              <%= link_to "Add Page", page_append_book_path(id: document.resource_id) %>
             </li>
           </ul>
         </div>
       </li>
       <li>
-        <%= link_to "File Manager", file_manager_book_path(id: document.model_id) %>
+        <%= link_to "File Manager", file_manager_book_path(id: document.resource_id) %>
       </li>
     </ul>
   </div>

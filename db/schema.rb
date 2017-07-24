@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20170531004548) do
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "internal_model"
+    t.string "internal_resource"
     t.index ["metadata"], name: "index_orm_resources_on_metadata", using: :gin
   end
 

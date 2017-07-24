@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Postgres::Queries
 
     def run
       relation.lazy.map do |orm_object|
-        ::Valkyrie::Persistence::Postgres::ResourceFactory.to_model(orm_object)
+        ::Valkyrie::Persistence::Postgres::ResourceFactory.to_resource(orm_object)
       end
     end
 
@@ -16,13 +16,13 @@ module Valkyrie::Persistence::Postgres::Queries
 
       def relation
         if !model
-          orm_model.all
+          orm_resource.all
         else
-          orm_model.where(internal_model: model.to_s)
+          orm_resource.where(internal_resource: model.to_s)
         end
       end
 
-      def orm_model
+      def orm_resource
         Valkyrie::Persistence::Postgres::ORM::Resource
       end
   end

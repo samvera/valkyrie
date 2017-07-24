@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Postgres::Queries
     end
 
     def run
-      ::Valkyrie::Persistence::Postgres::ResourceFactory.to_model(relation)
+      ::Valkyrie::Persistence::Postgres::ResourceFactory.to_resource(relation)
     rescue ActiveRecord::RecordNotFound
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
@@ -15,10 +15,10 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_model.find(id)
+        orm_resource.find(id)
       end
 
-      def orm_model
+      def orm_resource
         ::Valkyrie::Persistence::Postgres::ORM::Resource
       end
   end

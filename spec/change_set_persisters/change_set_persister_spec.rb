@@ -16,7 +16,7 @@ RSpec.describe ChangeSetPersister do
   describe "#save" do
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
     it "can handle appending to another record" do
-      parent_book = persister.save(model: Book.new)
+      parent_book = persister.save(resource: Book.new)
       change_set = change_set_class.new(Book.new)
       change_set.append_id = parent_book.id
 
@@ -31,7 +31,7 @@ RSpec.describe ChangeSetPersister do
       change_set.files = [file]
 
       output = change_set_persister.save(change_set: change_set)
-      members = query_service.find_members(model: output)
+      members = query_service.find_members(resource: output)
 
       expect(members.length).to eq 1
       expect(members[0]).to be_kind_of FileSet
@@ -40,8 +40,8 @@ RSpec.describe ChangeSetPersister do
 
   describe "#delete" do
     it "cleans up parent associations" do
-      book = persister.save(model: Book.new)
-      parent = persister.save(model: Book.new(member_ids: [book.id]))
+      book = persister.save(resource: Book.new)
+      parent = persister.save(resource: Book.new(member_ids: [book.id]))
       change_set = change_set_class.new(book)
 
       change_set_persister.delete(change_set: change_set)

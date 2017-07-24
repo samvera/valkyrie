@@ -8,8 +8,8 @@ module Valkyrie::Persistence::ActiveFedora::Queries
     end
 
     def run
-      resource_factory.from_model(obj).ordered_by.map do |parent|
-        resource_factory.to_model(parent)
+      resource_factory.from_resource(obj).ordered_by.map do |parent|
+        resource_factory.to_resource(parent)
       end
     end
 

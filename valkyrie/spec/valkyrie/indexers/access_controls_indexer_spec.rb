@@ -4,8 +4,8 @@ require 'spec_helper'
 RSpec.describe Valkyrie::Indexers::AccessControlsIndexer do
   describe ".to_solr" do
     before do
-      class Resource < Valkyrie::Model
-        include Valkyrie::Model::AccessControls
+      class Resource < Valkyrie::Resource
+        include Valkyrie::Resource::AccessControls
       end
     end
     after do

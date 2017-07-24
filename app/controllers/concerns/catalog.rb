@@ -18,8 +18,8 @@ module Catalog
       ## Class for converting Blacklight's url parameters to into request parameters for the search index
       # config.search_builder_class = ::SearchBuilder
       #
-      ## Model that maps search index responses to the blacklight response model
-      # config.response_model = Blacklight::Solr::Response
+      ## Model that maps search index responses to the blacklight response resource
+      # config.response_resource = Blacklight::Solr::Response
 
       ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
       config.default_solr_params = {
@@ -79,8 +79,8 @@ module Catalog
       # Have BL send all facet field names to Solr, which has been the default
       # previously. Simply remove these lines if you'd rather use Solr request
       # handler defaults, or have no facets.
-      config.index.display_type_field = "internal_model_ssim"
-      config.add_facet_field('internal_model_ssim', label: 'Type of Work')
+      config.index.display_type_field = "internal_resource_ssim"
+      config.add_facet_field('internal_resource_ssim', label: 'Type of Work')
       config.add_facet_fields_to_solr_request!
       config.add_search_field('all_fields', label: 'All Fields', include_in_advanced_search: false)
       config.add_show_field('author_tesim', label: 'Author')

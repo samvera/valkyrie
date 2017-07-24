@@ -14,8 +14,8 @@ module Valkyrie::ControllerConcerns
 
     def create
       @change_set = change_set_class.new(resource_class.new)
-      authorize! :create, @change_set.model
-      if @change_set.validate(model_params)
+      authorize! :create, @change_set.resource
+      if @change_set.validate(resource_params)
         @change_set.sync
         obj = nil
         persister.buffer_into_index do |buffered_adapter|
@@ -33,21 +33,21 @@ module Valkyrie::ControllerConcerns
 
     def edit
       @change_set = change_set_class.new(find_book(params[:id])).prepopulate!
-      authorize! :update, @change_set.model
+      authorize! :update, @change_set.resource
       @collections = query_service.find_all_of_model(model: Collection)
       render :edit
     end
 
     def update
       @change_set = change_set_class.new(find_book(params[:id]))
-      authorize! :update, @change_set.model
-      if @change_set.validate(model_params)
+      authorize! :update, @change_set.resource
+      if @change_set.validate(resource_params)
         @change_set.sync
         obj = nil
         persister.buffer_into_index do |buffered_adapter|
           obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
-        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_model(obj)[:id])
+        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_resource(obj)[:id])
       else
         render :edit
       end
@@ -55,11 +55,11 @@ module Valkyrie::ControllerConcerns
 
     def destroy
       @change_set = change_set_class.new(find_book(params[:id]))
-      authorize! :destroy, @change_set.model
+      authorize! :destroy, @change_set.resource
       persister.buffer_into_index do |buffered_adapter|
         change_set_persister(buffered_adapter).delete(change_set: @change_set)
       end
-      flash[:alert] = "Deleted #{@change_set.model}"
+      flash[:alert] = "Deleted #{@change_set.resource}"
       redirect_to root_path
     end
 

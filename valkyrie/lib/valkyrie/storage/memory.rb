@@ -7,10 +7,10 @@ module Valkyrie::Storage
     end
 
     # @param file [IO]
-    # @param model [Valkyrie::Model]
+    # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, model: nil)
-      identifier = Valkyrie::ID.new("memory://#{model.id}")
+    def upload(file:, resource: nil)
+      identifier = Valkyrie::ID.new("memory://#{resource.id}")
       cache[identifier] = Valkyrie::StorageAdapter::File.new(id: identifier, io: file)
     end
 

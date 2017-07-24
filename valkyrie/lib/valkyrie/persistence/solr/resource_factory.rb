@@ -8,44 +8,44 @@ module Valkyrie::Persistence::Solr
     end
 
     # @param solr_document [Hash] The solr document in a hash to convert to a
-    #   model.
-    # @return [Valkyrie::Model]
-    def to_model(solr_document)
-      ModelBuilder.new(solr_document).model
+    #   resource.
+    # @return [Valkyrie::Resource]
+    def to_resource(solr_document)
+      ModelBuilder.new(solr_document).resource
     end
 
-    # @param model [Valkyrie::Model] The model to convert to a solr hash.
+    # @param resource [Valkyrie::Resource] The resource to convert to a solr hash.
     # @return [Hash] The solr document represented as a hash.
-    def from_model(model)
-      Hash[::Valkyrie::Persistence::Solr::Mapper.find(model).to_h.merge(internal_model_ssim: [model.internal_model]).merge(indexer_solr(model))]
+    def from_resource(resource)
+      Hash[::Valkyrie::Persistence::Solr::Mapper.find(resource).to_h.merge(internal_resource_ssim: [resource.internal_resource]).merge(indexer_solr(resource))]
     end
 
-    def indexer_solr(model)
-      resource_indexer.new(resource: model).to_solr
+    def indexer_solr(resource)
+      resource_indexer.new(resource: resource).to_solr
     end
 
     ##
-    # Converts a solr hash to a {Valkyrie::Model}
+    # Converts a solr hash to a {Valkyrie::Resource}
     class ModelBuilder
       attr_reader :solr_document
       def initialize(solr_document)
         @solr_document = solr_document
       end
 
-      def model
-        model_klass.new(attributes.symbolize_keys)
+      def resource
+        resource_klass.new(attributes.symbolize_keys)
       end
 
-      def model_klass
-        internal_model.constantize
+      def resource_klass
+        internal_resource.constantize
       end
 
-      def internal_model
-        solr_document["internal_model_ssim"].first
+      def internal_resource
+        solr_document["internal_resource_ssim"].first
       end
 
       def attributes
-        attribute_hash.merge("id" => id, internal_model: internal_model, created_at: created_at, updated_at: updated_at)
+        attribute_hash.merge("id" => id, internal_resource: internal_resource, created_at: created_at, updated_at: updated_at)
       end
 
       def created_at
@@ -162,7 +162,7 @@ module Valkyrie::Persistence::Solr
         end
       end
 
-      # Converts a nested resource in solr into a {Valkyrie::Model}
+      # Converts a nested resource in solr into a {Valkyrie::Resource}
       class NestedResourceValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)

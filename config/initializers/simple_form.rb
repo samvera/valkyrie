@@ -24,7 +24,7 @@ SimpleForm.setup do |config|
 
     ## Optional extensions
     # They are disabled unless you pass `f.input EXTENSION_NAME => true`
-    # to the input. If so, they will retrieve the values from the model
+    # to the input. If so, they will retrieve the values from the resource
     # if any exists. If you want to enable any of those
     # extensions by default, you can change `b.optional` to `b.use`.
 

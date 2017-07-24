@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Solr
     end
 
     # @return [Valkyrie::Persistence::Solr::ResourceFactory] A resource factory
-    #   to convert a model to a solr document and back.
+    #   to convert a resource to a solr document and back.
     def resource_factory
       Valkyrie::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer)
     end

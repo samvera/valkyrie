@@ -8,7 +8,7 @@ module Valkyrie::Persistence::ActiveFedora::Queries
 
     def run
       relation.lazy.map do |orm_object|
-        resource_factory.to_model(orm_object)
+        resource_factory.to_resource(orm_object)
       end
     end
 
@@ -16,13 +16,13 @@ module Valkyrie::Persistence::ActiveFedora::Queries
 
       def relation
         if !model
-          orm_model.all
+          orm_resource.all
         else
-          orm_model.where(internal_model: model.to_s)
+          orm_resource.where(internal_resource: model.to_s)
         end
       end
 
-      def orm_model
+      def orm_resource
         Valkyrie::Persistence::ActiveFedora::ORM::Resource
       end
 

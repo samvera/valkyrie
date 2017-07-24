@@ -7,11 +7,11 @@ class FileAppender
     @files = files
   end
 
-  def append_to(model)
-    return model if files.blank?
+  def append_to(resource)
+    return resource if files.blank?
     file_sets = build_file_sets || file_nodes
-    model.member_ids = model.member_ids + file_sets.map(&:id)
-    model
+    resource.member_ids = resource.member_ids + file_sets.map(&:id)
+    resource
   end
 
   def build_file_sets
@@ -37,14 +37,14 @@ class FileAppender
   end
 
   def create_node(file)
-    node = persister.save(model: FileNode.for(file: file))
-    file = storage_adapter.upload(file: file, model: node)
+    node = persister.save(resource: FileNode.for(file: file))
+    file = storage_adapter.upload(file: file, resource: node)
     node.file_identifiers = node.file_identifiers + [file.id]
     node = Valkyrie::FileCharacterizationService.for(file_node: node, persister: persister).characterize(save: false)
-    persister.save(model: node)
+    persister.save(resource: node)
   end
 
   def create_file_set(file_node)
-    persister.save(model: FileSet.new(title: file_node.original_filename, member_ids: file_node.id))
+    persister.save(resource: FileSet.new(title: file_node.original_filename, member_ids: file_node.id))
   end
 end

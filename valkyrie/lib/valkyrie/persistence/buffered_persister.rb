@@ -8,16 +8,16 @@ module Valkyrie::Persistence
       @buffer_class = buffer_class
     end
 
-    def save(model:)
-      persister.save(model: model)
+    def save(resource:)
+      persister.save(resource: resource)
     end
 
-    def save_all(models:)
-      persister.save_all(models: models)
+    def save_all(resources:)
+      persister.save_all(resources: resources)
     end
 
-    def delete(model:)
-      persister.delete(model: model)
+    def delete(resource:)
+      persister.delete(resource: resource)
     end
 
     def with_buffer

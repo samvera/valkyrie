@@ -20,9 +20,9 @@ RSpec.describe ImageDerivativeService do
   let(:book) do
     change_set_persister.save(change_set: BookChangeSet.new(Book.new, files: [file]))
   end
-  let(:book_members) { query_service.find_members(model: book) }
-  let(:valid_model) { book_members.first }
-  let(:valid_change_set) { DynamicChangeSetClass.new.new(valid_model) }
+  let(:book_members) { query_service.find_members(resource: book) }
+  let(:valid_resource) { book_members.first }
+  let(:valid_change_set) { DynamicChangeSetClass.new.new(valid_resource) }
 
   describe '#valid?' do
     subject(:valid_file) { derivative_service.new(valid_change_set) }
@@ -44,8 +44,8 @@ RSpec.describe ImageDerivativeService do
   it "creates a thumbnail and attaches it to the fileset" do
     derivative_service.new(valid_change_set).create_derivatives
 
-    reloaded = query_service.find_by(id: valid_model.id)
-    members = query_service.find_members(model: reloaded)
+    reloaded = query_service.find_by(id: valid_resource.id)
+    members = query_service.find_members(resource: reloaded)
     derivative = members.find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.ServiceFile) }
 
     expect(derivative).to be_present
