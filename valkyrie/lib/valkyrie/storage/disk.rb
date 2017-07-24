@@ -7,10 +7,10 @@ module Valkyrie::Storage
     end
 
     # @param file [IO]
-    # @param model [Valkyrie::Model]
+    # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, model: nil)
-      new_path = base_path.join(model.try(:id).to_s, file.original_filename)
+    def upload(file:, resource: nil)
+      new_path = base_path.join(resource.try(:id).to_s, file.original_filename)
       FileUtils.mkdir_p(new_path.parent)
       FileUtils.mv(file.path, new_path)
       find_by(id: Valkyrie::ID.new("disk://#{new_path}"))

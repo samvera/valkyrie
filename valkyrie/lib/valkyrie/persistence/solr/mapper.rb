@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class Mapper
-    # @param obj [Valkyrie::Model]
+    # @param obj [Valkyrie::Resource]
     # @return [Valkyrie::Persistence::Solr::Mapper] Returns a mapper for a given
     #   object.
     def self.find(obj)
@@ -10,7 +10,7 @@ module Valkyrie::Persistence::Solr
 
     attr_reader :object
 
-    # @param object [Valkyrie::Model]
+    # @param object [Valkyrie::Resource]
     def initialize(object)
       @object = object
     end
@@ -48,7 +48,7 @@ module Valkyrie::Persistence::Solr
 
       ##
       # A container object for holding a `key`, `value, and `scope` of a value
-      # in a model together for casting.
+      # in a resource together for casting.
       class Property
         attr_reader :key, :value, :scope
         # @param key [Symbol] Property identifier.

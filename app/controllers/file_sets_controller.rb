@@ -4,7 +4,7 @@ class FileSetsController < ApplicationController
   self.change_set_class = FileSetChangeSet
   self.resource_class = FileSet
 
-  def model_params
+  def resource_params
     params[:file_set]
   end
 end

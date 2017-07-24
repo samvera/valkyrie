@@ -9,7 +9,7 @@ RSpec.describe Valkyrie::FileCharacterizationService do
   let(:file_characterization_service) { described_class }
   let(:persister) { Valkyrie::Persistence::Memory::MetadataAdapter.new.persister }
   before do
-    class FileNode < Valkyrie::Model
+    class FileNode < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :mime_type, Valkyrie::Types::Set
       attribute :height, Valkyrie::Types::Set

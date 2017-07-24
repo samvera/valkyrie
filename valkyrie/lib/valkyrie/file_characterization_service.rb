@@ -30,7 +30,7 @@ module Valkyrie
     # @param save [Boolean] should the persister save the file_node after Characterization
     # @return [FileNode]
     def characterize(save: true)
-      persister.save(model: @file_node) if save
+      persister.save(resource: @file_node) if save
       @file_node
     end
 

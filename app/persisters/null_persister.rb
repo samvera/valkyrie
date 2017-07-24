@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 class NullPersister
   class << self
-    def save(model:)
-      model
+    def save(resource:)
+      resource
     end
   end
 
-  def initialize(model:, **_extra_args)
-    @model = model
+  def initialize(resource:, **_extra_args)
+    @resource = resource
   end
 
   def persist
-    @model
+    @resource
   end
 end

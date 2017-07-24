@@ -3,6 +3,6 @@ require 'rails_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Collection do
-  let(:model_klass) { described_class }
-  it_behaves_like "a Valkyrie::Model"
+  let(:resource_klass) { described_class }
+  it_behaves_like "a Valkyrie::Resource"
 end

@@ -10,8 +10,8 @@ RSpec.describe Valkyrie::Persistence::DeleteTrackingBuffer do
   end
   it_behaves_like "a Valkyrie::Persister"
   before do
-    class Resource < Valkyrie::Model
-      include Valkyrie::Model::AccessControls
+    class Resource < Valkyrie::Resource
+      include Valkyrie::Resource::AccessControls
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
@@ -22,8 +22,8 @@ RSpec.describe Valkyrie::Persistence::DeleteTrackingBuffer do
     Object.send(:remove_const, :Resource)
   end
   it "tracks deletes" do
-    obj = persister.save(model: Resource.new)
-    persister.delete(model: obj)
+    obj = persister.save(resource: Resource.new)
+    persister.delete(resource: obj)
 
     expect(persister.deletes).to eq [obj]
   end

@@ -21,9 +21,9 @@ RSpec.describe TikaFileCharacterizationService do
       change_set.files = [file]
     end
   end
-  let(:book_members) { query_service.find_members(model: book) }
+  let(:book_members) { query_service.find_members(resource: book) }
   let(:valid_file_set) { book_members.first }
-  let(:valid_file_node) { adapter.query_service.find_members(model: valid_file_set).first }
+  let(:valid_file_node) { adapter.query_service.find_members(resource: valid_file_set).first }
 
   before do
     output = '547c81b080eb2d7c09e363a670c46960ac15a6821033263867dd59a31376509c'

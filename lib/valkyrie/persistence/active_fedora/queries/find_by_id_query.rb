@@ -7,7 +7,7 @@ module Valkyrie::Persistence::ActiveFedora::Queries
     end
 
     def run
-      ::Valkyrie::Persistence::ActiveFedora::ResourceFactory.to_model(relation)
+      ::Valkyrie::Persistence::ActiveFedora::ResourceFactory.to_resource(relation)
     rescue ActiveFedora::ObjectNotFoundError, ::Ldp::Gone
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
@@ -15,10 +15,10 @@ module Valkyrie::Persistence::ActiveFedora::Queries
     private
 
       def relation
-        orm_model.find(id.to_s)
+        orm_resource.find(id.to_s)
       end
 
-      def orm_model
+      def orm_resource
         ::Valkyrie::Persistence::ActiveFedora::ORM::Resource
       end
   end

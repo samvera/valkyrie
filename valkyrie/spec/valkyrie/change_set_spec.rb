@@ -3,7 +3,7 @@ require 'spec_helper'
 
 RSpec.describe Valkyrie::ChangeSet do
   before do
-    class Resource < Valkyrie::Model
+    class Resource < Valkyrie::Resource
       attribute :author, Valkyrie::Types::Set
     end
     class ResourceChangeSet < Valkyrie::ChangeSet

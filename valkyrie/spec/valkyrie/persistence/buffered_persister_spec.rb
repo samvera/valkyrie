@@ -11,7 +11,7 @@ RSpec.describe Valkyrie::Persistence::BufferedPersister do
     )
   end
   before do
-    class Resource < Valkyrie::Model
+    class Resource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
@@ -26,7 +26,7 @@ RSpec.describe Valkyrie::Persistence::BufferedPersister do
     it "can buffer a session into a memory adapter" do
       buffer = nil
       persister.with_buffer do |persister, memory_buffer|
-        persister.save(model: Resource.new)
+        persister.save(resource: Resource.new)
         buffer = memory_buffer
       end
       expect(buffer.query_service.find_all.length).to eq 1

@@ -16,7 +16,7 @@ class ContextualPath
     end
   end
 
-  def to_model
+  def to_resource
     nil
   end
 end

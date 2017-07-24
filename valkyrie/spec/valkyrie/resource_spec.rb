@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Valkyrie::Model do
+RSpec.describe Valkyrie::Resource do
   before do
-    class Resource < Valkyrie::Model
+    class Resource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
     end
@@ -14,7 +14,7 @@ RSpec.describe Valkyrie::Model do
   subject(:resource) { Resource.new }
   describe "#fields" do
     it "returns all configured fields as an array of symbols" do
-      expect(Resource.fields).to eq [:internal_model, :created_at, :updated_at, :id, :title]
+      expect(Resource.fields).to eq [:internal_resource, :created_at, :updated_at, :id, :title]
     end
   end
 

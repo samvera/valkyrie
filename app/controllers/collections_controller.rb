@@ -4,7 +4,7 @@ class CollectionsController < ApplicationController
   self.change_set_class = CollectionChangeSet
   self.resource_class = Collection
 
-  def model_params
+  def resource_params
     params[:collection]
   end
 end

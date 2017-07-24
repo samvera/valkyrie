@@ -20,29 +20,29 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
-    def find_all_of_model(model:)
-      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_resource)
+    def find_all_of_resource(resource:)
+      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, resource: resource).run
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
-    def find_parents(model:)
-      find_inverse_references_by(model: model, property: :member_ids)
+    def find_parents(resource:)
+      find_inverse_references_by(resource: resource, property: :member_ids)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
-    def find_members(model:)
-      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(model: model, connection: connection, resource_factory: resource_factory).run
+    def find_members(resource:)
+      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(resource: resource, connection: connection, resource_factory: resource_factory).run
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
-    def find_references_by(model:, property:)
-      Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(model: model, property: property, connection: connection, resource_factory: resource_factory).run
+    def find_references_by(resource:, property:)
+      Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
-    def find_inverse_references_by(model:, property:)
-      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(model: model, property: property, connection: connection, resource_factory: resource_factory).run
+    def find_inverse_references_by(resource:, property:)
+      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
     end
   end
 end

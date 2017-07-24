@@ -7,7 +7,7 @@ RSpec.describe Valkyrie::DerivativeService do
   let(:valid_change_set) { FileSetChangeSet.new(FileSet.new) }
   let(:derivative_service) { described_class }
   before do
-    class FileSet < Valkyrie::Model
+    class FileSet < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
       attribute :file_identifiers, Valkyrie::Types::Set

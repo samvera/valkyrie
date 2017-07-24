@@ -14,7 +14,7 @@ module Valkyrie
     class_attribute :services
     self.services = []
     # Returns a derivative service for a change_set.
-    # @param model [Valkyrie::ChangeSet]
+    # @param resource [Valkyrie::ChangeSet]
     # @return [Valkyrie::DerivativeService]
     def self.for(change_set)
       services.map { |service| service.new(change_set) }.find(&:valid?) ||
@@ -22,7 +22,7 @@ module Valkyrie
     end
     attr_reader :change_set
     delegate :mime_type, :uri, to: :change_set
-    # @param model [Valkyrie::Model]
+    # @param resource [Valkyrie::Resource]
     def initialize(change_set)
       @change_set = change_set
     end
@@ -33,7 +33,7 @@ module Valkyrie
     # Creates derivatives.
     def create_derivatives; end
 
-    # Returns true if the given model is valid for this derivative service.
+    # Returns true if the given resource is valid for this derivative service.
     # @return [Boolean]
     def valid?
       true

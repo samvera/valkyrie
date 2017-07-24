@@ -1,31 +1,31 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres
   ##
-  # Synchronizes a Valkyrie model with an ActiveRecord ORM model.
+  # Synchronizes a Valkyrie resource with an ActiveRecord ORM resource.
   class ORMSyncer
-    attr_reader :model
-    # @param model [Valkyrie::Model]
-    def initialize(model:)
-      @model = model
+    attr_reader :resource
+    # @param resource [Valkyrie::Resource]
+    def initialize(resource:)
+      @resource = resource
     end
 
-    # @return [Valkyrie::Model]
+    # @return [Valkyrie::Resource]
     def save
-      orm_object.save! && rebuild_model
+      orm_object.save! && rebuild_resource
     end
 
     def delete
-      orm_object.delete && rebuild_model
+      orm_object.delete && rebuild_resource
     end
 
     private
 
       def orm_object
-        @orm_object ||= resource_factory.from_model(model)
+        @orm_object ||= resource_factory.from_resource(resource)
       end
 
-      def rebuild_model
-        @model = resource_factory.to_model(orm_object)
+      def rebuild_resource
+        @resource = resource_factory.to_resource(orm_object)
       end
 
       def resource_factory

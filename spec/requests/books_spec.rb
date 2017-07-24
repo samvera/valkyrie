@@ -14,7 +14,7 @@ RSpec.describe "Book Management" do
       end
     end
     it "has a form for creating books" do
-      Persister.save(model: Collection.new(title: ["Test Collection"]))
+      Persister.save(resource: Collection.new(title: ["Test Collection"]))
       get "/books/new"
       expect(response.body).to have_field "Title"
       expect(response.body).to have_button "Create Book"
@@ -55,21 +55,21 @@ RSpec.describe "Book Management" do
     context "when not logged in" do
       let(:user) { nil }
       it "throws a CanCan::AccessDenied error" do
-        book = Persister.save(model: Book.new(title: "Test"))
+        book = Persister.save(resource: Book.new(title: "Test"))
 
         expect { delete book_path(id: book.id) }.to raise_error CanCan::AccessDenied
       end
     end
     it "can delete a book" do
-      book = Persister.save(model: Book.new(title: "Test"))
+      book = Persister.save(resource: Book.new(title: "Test"))
       delete book_path(id: book.id)
 
       expect(response).to redirect_to root_path
       expect { QueryService.find_by(id: book.id) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
     it "cleans up associations in parents" do
-      child = Persister.save(model: Book.new)
-      parent = Persister.save(model: Book.new(member_ids: [child.id]))
+      child = Persister.save(resource: Book.new)
+      parent = Persister.save(resource: Book.new(member_ids: [child.id]))
       delete book_path(id: child.id)
 
       reloaded = QueryService.find_by(id: parent.id)
@@ -80,7 +80,7 @@ RSpec.describe "Book Management" do
   describe "#file_manager" do
     context "when not logged in" do
       let(:user) { nil }
-      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(resource: Book.new(title: ["Testing"])) }
       it "throws a CanCan::AccessDenied error" do
         expect { get file_manager_book_path(id: book.id) }.to raise_error CanCan::AccessDenied
       end
@@ -90,7 +90,7 @@ RSpec.describe "Book Management" do
   describe "edit" do
     context "when not logged in" do
       let(:user) { nil }
-      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(resource: Book.new(title: ["Testing"])) }
       it "throws a CanCan::AccessDenied error" do
         expect { get edit_book_path(id: book.id) }.to raise_error CanCan::AccessDenied
       end
@@ -101,7 +101,7 @@ RSpec.describe "Book Management" do
       end
     end
     context "when it does exist" do
-      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(resource: Book.new(title: ["Testing"])) }
       it "renders a form" do
         get edit_book_path(id: book.id)
         expect(response.body).to have_field "Title", with: "Testing"
@@ -113,7 +113,7 @@ RSpec.describe "Book Management" do
   describe "update" do
     context "when not logged in" do
       let(:user) { nil }
-      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(resource: Book.new(title: ["Testing"])) }
       it "throws a CanCan::AccessDenied error" do
         expect { patch book_path(id: book.id), params: { book: { title: ["Two"] } } }.to raise_error CanCan::AccessDenied
       end
@@ -124,12 +124,12 @@ RSpec.describe "Book Management" do
       end
     end
     context "when it does exist" do
-      let(:book) { Persister.save(model: Book.new(title: ["Testing"])) }
+      let(:book) { Persister.save(resource: Book.new(title: ["Testing"])) }
       let(:solr_adapter) { Valkyrie::MetadataAdapter.find(:index_solr) }
       it "saves it and redirects" do
         patch book_path(id: book.id), params: { book: { title: ["Two"] } }
         expect(response).to be_redirect
-        expect(response.location).to eq solr_document_url(id: solr_adapter.resource_factory.from_model(book)[:id])
+        expect(response.location).to eq solr_document_url(id: solr_adapter.resource_factory.from_resource(book)[:id])
         get response.location
         expect(response.body).to have_content "Two"
       end

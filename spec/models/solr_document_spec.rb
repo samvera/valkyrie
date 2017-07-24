@@ -4,12 +4,12 @@ require 'rails_helper'
 RSpec.describe SolrDocument do
   subject(:solr_document) { described_class.new(solr_hash) }
   let(:solr_adapter) { Valkyrie::MetadataAdapter.find(:index_solr) }
-  let(:solr_hash) { solr_adapter.resource_factory.from_model(book).to_h }
+  let(:solr_hash) { solr_adapter.resource_factory.from_resource(book).to_h }
   let(:book) { Book.new }
 
   describe "#members" do
     context "when the book has members" do
-      let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
+      let(:book) { Persister.save(resource: Book.new(member_ids: Persister.save(resource: Book.new).id)) }
       it "returns them" do
         expect(solr_document.members.first.id).not_to eq book.id
       end
@@ -18,13 +18,13 @@ RSpec.describe SolrDocument do
 
   describe "#member_ids" do
     context "when the book has members" do
-      let(:book) { Persister.save(model: Book.new(member_ids: Persister.save(model: Book.new).id)) }
+      let(:book) { Persister.save(resource: Book.new(member_ids: Persister.save(resource: Book.new).id)) }
       it "returns them" do
         expect(solr_document.member_ids).to eq book.member_ids
       end
     end
     context "when the book has non-ID members" do
-      let(:book) { Book.new(id: "test", member_ids: [Persister.save(model: Book.new).id, "1"]) }
+      let(:book) { Book.new(id: "test", member_ids: [Persister.save(resource: Book.new).id, "1"]) }
       it "returns them" do
         expect(solr_document.member_ids).to eq book.member_ids
       end

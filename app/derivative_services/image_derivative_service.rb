@@ -18,12 +18,12 @@ class ImageDerivativeService
       ::ImageDerivativeService.new(change_set: change_set, original_file: original_file(change_set), change_set_persister: change_set_persister, image_config: image_config, use: use)
     end
 
-    def original_file(model)
-      members(model).find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile) }
+    def original_file(resource)
+      members(resource).find { |x| x.use.include?(Valkyrie::Vocab::PCDMUse.OriginalFile) }
     end
 
-    def members(model)
-      metadata_adapter.query_service.find_members(model: model)
+    def members(resource)
+      metadata_adapter.query_service.find_members(resource: resource)
     end
 
     class ImageConfig < Dry::Struct

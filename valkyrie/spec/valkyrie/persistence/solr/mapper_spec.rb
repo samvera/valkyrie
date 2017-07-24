@@ -4,7 +4,7 @@ require 'spec_helper'
 RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   subject(:mapper) { described_class.new(resource) }
   before do
-    class Resource < Valkyrie::Model
+    class Resource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
       attribute :author, Valkyrie::Types::Set

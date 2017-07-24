@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindMembersQuery
-    attr_reader :model, :connection, :resource_factory
-    def initialize(model:, connection:, resource_factory:)
-      @model = model
+    attr_reader :resource, :connection, :resource_factory
+    def initialize(resource:, connection:, resource_factory:)
+      @resource = resource
       @connection = connection
       @resource_factory = resource_factory
     end
@@ -20,7 +20,7 @@ module Valkyrie::Persistence::Solr::Queries
 
     def unordered_members
       docs.map do |doc|
-        resource_factory.to_model(doc)
+        resource_factory.to_resource(doc)
       end
     end
 
@@ -29,7 +29,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def member_ids
-      Array.wrap(model.member_ids)
+      Array.wrap(resource.member_ids)
     end
 
     def query
@@ -37,7 +37,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def id
-      "id-#{model.id}"
+      "id-#{resource.id}"
     end
   end
 end

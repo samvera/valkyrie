@@ -21,11 +21,11 @@ module Valkyrie::Storage
     end
 
     # @param file [IO]
-    # @param model [Valkyrie::Model]
+    # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, model:)
+    def upload(file:, resource:)
       # TODO: this is a very naive aproach. Change to PCDM
-      identifier = model.id.to_uri + '/original'
+      identifier = resource.id.to_uri + '/original'
       ActiveFedora::File.new(identifier) do |af|
         af.content = file
         af.save!

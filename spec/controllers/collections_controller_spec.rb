@@ -16,7 +16,7 @@ RSpec.describe CollectionsController do
 
   describe "GET /collections/:id/edit" do
     it "renders a form with an existing book" do
-      resource = Persister.save(model: Collection.new(title: "One"))
+      resource = Persister.save(resource: Collection.new(title: "One"))
 
       get :edit, params: { id: resource.id.to_s }
 
@@ -37,7 +37,7 @@ RSpec.describe CollectionsController do
 
   describe "PATCH /collections" do
     it "can update collections" do
-      resource = Persister.save(model: Collection.new(title: "One"))
+      resource = Persister.save(resource: Collection.new(title: "One"))
       patch :update, params: { collection: { title: "Two" }, id: resource.id }
 
       expect(response).to be_redirect

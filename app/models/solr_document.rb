@@ -28,14 +28,14 @@ class SolrDocument
   end
 
   def members
-    QueryService.find_members(model: Book.new(id: model_id, member_ids: member_ids)).map(&:decorate)
+    QueryService.find_members(resource: Book.new(id: resource_id, member_ids: member_ids)).map(&:decorate)
   end
 
-  def model_id
+  def resource_id
     Valkyrie::ID.new(id.gsub(/^id-/, ''))
   end
 
   def resource
-    @resource ||= QueryService.find_by(id: model_id)
+    @resource ||= QueryService.find_by(id: resource_id)
   end
 end

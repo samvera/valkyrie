@@ -6,31 +6,31 @@ module Valkyrie::Persistence::Postgres
   class Persister
     class << self
       # (see Valkyrie::Persistence::Memory::Persister#save)
-      def save(model:)
-        new(sync_object: sync_object(model)).persist
+      def save(resource:)
+        new(sync_object: sync_object(resource)).persist
       end
 
       # (see Valkyrie::Persistence::Memory::Persister#save_all)
-      def save_all(models:)
-        models.map do |model|
-          save(model: model)
+      def save_all(resources:)
+        resources.map do |resource|
+          save(resource: resource)
         end
       end
 
       # (see Valkyrie::Persistence::Memory::Persister#delete)
-      def delete(model:)
-        new(sync_object: sync_object(model)).delete
+      def delete(resource:)
+        new(sync_object: sync_object(resource)).delete
       end
 
-      # @param model [Valkyrie::Model] The model to be persisted via a sync.
+      # @param resource [Valkyrie::Resource] The resource to be persisted via a sync.
       # @return [Valkyrie::Persistence::Postgres::ORMSyncer] Syncer.
-      def sync_object(model)
-        ::Valkyrie::Persistence::Postgres::ORMSyncer.new(model: model)
+      def sync_object(resource)
+        ::Valkyrie::Persistence::Postgres::ORMSyncer.new(resource: resource)
       end
     end
 
     attr_reader :sync_object
-    delegate :model, to: :sync_object
+    delegate :resource, to: :sync_object
 
     def initialize(sync_object: nil)
       @sync_object = sync_object
@@ -38,12 +38,12 @@ module Valkyrie::Persistence::Postgres
 
     def persist
       sync_object.save
-      model
+      resource
     end
 
     def delete
       sync_object.delete
-      model
+      resource
     end
   end
 end

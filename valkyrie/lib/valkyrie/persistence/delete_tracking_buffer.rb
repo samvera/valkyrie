@@ -12,8 +12,8 @@ module Valkyrie::Persistence
         super
       end
 
-      def delete(model:)
-        @deletes << model
+      def delete(resource:)
+        @deletes << resource
         super
       end
     end

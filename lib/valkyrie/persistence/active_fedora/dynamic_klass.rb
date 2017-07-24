@@ -4,11 +4,11 @@ module Valkyrie::Persistence::ActiveFedora
   # Because we override `new`, no instances of DynamicKlass are actually created.
   class DynamicKlass
     # Instantiate the appropriate subclass of Valkrie::Model given the data from
-    # the `internal_model` field on the Valkyrie::Persistence::ActiveFedora::ORM::Resource class
+    # the `internal_resource` field on the Valkyrie::Persistence::ActiveFedora::ORM::Resource class
     # @param [Valkyrie::Persistence::ActiveFedora::ORM::Resource]
     # @return [Valkrie::Model]
     def self.new(orm_object)
-      orm_object.internal_model.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
+      orm_object.internal_resource.constantize.new(cast_attributes(orm_object).merge(member_ids: orm_object.ordered_member_ids.map { |x| Valkyrie::ID.new(x) }))
     end
 
     def self.cast_attributes(orm_object)
@@ -27,7 +27,7 @@ module Valkyrie::Persistence::ActiveFedora
         "edit_groups" => orm_object.edit_groups,
         "created_at" => orm_object.try(:create_date),
         "updated_at" => orm_object.try(:modified_date),
-        "internal_model" => Array(orm_object.internal_model).first
+        "internal_resource" => Array(orm_object.internal_resource).first
       )
     end
 

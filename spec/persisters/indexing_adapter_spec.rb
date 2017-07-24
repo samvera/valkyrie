@@ -14,18 +14,18 @@ RSpec.describe IndexingAdapter do
 
   it "can buffer into an index" do
     persister.buffer_into_index do |buffered_adapter|
-      buffered_adapter.persister.save(model: Book.new)
+      buffered_adapter.persister.save(resource: Book.new)
       expect(index_solr.query_service.find_all.to_a.length).to eq 0
     end
     expect(index_solr.query_service.find_all.to_a.length).to eq 1
   end
 
   it "can buffer deletes through index" do
-    created = persister.save(model: Book.new)
+    created = persister.save(resource: Book.new)
     persister.buffer_into_index do |buffered_adapter|
-      another_one = persister.save(model: Book.new)
-      buffered_adapter.persister.delete(model: created)
-      buffered_adapter.persister.delete(model: another_one)
+      another_one = persister.save(resource: Book.new)
+      buffered_adapter.persister.delete(resource: created)
+      buffered_adapter.persister.delete(resource: another_one)
     end
     expect(index_solr.query_service.find_all.to_a.length).to eq 0
   end

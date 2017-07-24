@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie
-  class Model
+  class Resource
     module AccessControls
       def self.included(klass)
         klass.attribute :read_groups, Valkyrie::Types::Set

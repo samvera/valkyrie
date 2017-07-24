@@ -64,7 +64,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
-        # Converts nested records into {Valkyrie::Model}s
+        # Converts nested records into {Valkyrie::Resource}s
         class NestedRecord < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)

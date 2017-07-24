@@ -9,15 +9,15 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def run
-      raise ::Valkyrie::Persistence::ObjectNotFoundError unless model
-      resource_factory.to_model(model)
+      raise ::Valkyrie::Persistence::ObjectNotFoundError unless resource
+      resource_factory.to_resource(resource)
     end
 
     def id
       "id-#{@id}"
     end
 
-    def model
+    def resource
       connection.get("select", params: { q: "id:\"#{id}\"", fl: "*", rows: 1 })["response"]["docs"].first
     end
   end

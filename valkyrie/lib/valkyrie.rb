@@ -26,7 +26,7 @@ module Valkyrie
   require 'valkyrie/value_mapper'
   require 'valkyrie/persistence'
   require 'valkyrie/types'
-  require 'valkyrie/model'
+  require 'valkyrie/resource'
   require 'valkyrie/derivative_service'
   require 'valkyrie/storage_adapter'
   require 'valkyrie/metadata_adapter'
@@ -34,11 +34,11 @@ module Valkyrie
   require 'valkyrie/file_characterization_service'
   require 'valkyrie/decorators/decorator_list'
   require 'valkyrie/decorators/decorator_with_arguments'
-  require 'valkyrie/model/access_controls'
+  require 'valkyrie/resource/access_controls'
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/storage'
   require 'valkyrie/vocab/pcdm_use'
-  require 'generators/valkyrie/model_generator'
+  require 'generators/valkyrie/resource_generator'
   require 'valkyrie/engine' if defined?(Rails)
   def config
     Config.new(

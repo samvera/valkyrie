@@ -11,8 +11,8 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :representative_id, predicate: ::RDF::URI("http://example.com/representative_id")
     property :start_canvas, predicate: ::RDF::URI("http://example.com/start_canvas")
 
-    # The type of the valkyrie model this resource represents
-    property :internal_model, predicate: ::RDF::URI("http://example.com/internal_model"), multiple: false
+    # The type of the valkyrie resource this resource represents
+    property :internal_resource, predicate: ::RDF::URI("http://example.com/internal_resource"), multiple: false
     property :file_identifiers, predicate: ::RDF::URI("http://example.com/file_identifiers")
     property :label, predicate: ::RDF::URI("http://example.com/label")
     property :mime_type, predicate: ::RDF::URI("http://example.com/mime_type")

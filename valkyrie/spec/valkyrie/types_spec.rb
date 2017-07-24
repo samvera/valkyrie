@@ -3,7 +3,7 @@ require 'spec_helper'
 
 RSpec.describe Valkyrie::Types do
   before do
-    class Resource < Valkyrie::Model
+    class Resource < Valkyrie::Resource
       attribute :title, Valkyrie::Types::SingleValuedString
     end
   end

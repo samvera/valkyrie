@@ -5,14 +5,14 @@ class BooksController < ApplicationController
 
   def append
     @change_set = change_set_class.new(resource_class.new)
-    authorize! :update, @change_set.model
+    authorize! :update, @change_set.resource
     @change_set.append_id = params[:id]
   end
 
   def file_manager
     @record = change_set_class.new(find_book(params[:id])).prepopulate!
-    authorize! :file_manager, @record.model
-    @children = QueryService.find_members(model: @record).map do |x|
+    authorize! :file_manager, @record.resource
+    @children = QueryService.find_members(resource: @record).map do |x|
       change_set_class.new(x).prepopulate!
     end.to_a
   end
@@ -20,14 +20,14 @@ class BooksController < ApplicationController
   private
 
     def change_set_class
-      DynamicChangeSetClass.new(params[:model])
+      DynamicChangeSetClass.new(params[:resource])
     end
 
     def resource_class
       Book
     end
 
-    def model_params
+    def resource_params
       params[:book]
     end
 end

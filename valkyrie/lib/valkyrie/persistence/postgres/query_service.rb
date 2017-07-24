@@ -8,9 +8,9 @@ module Valkyrie::Persistence::Postgres
         Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new.run
       end
 
-      # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
-      def find_all_of_model(model:)
-        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(model: model).run
+      # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_resource)
+      def find_all_of_resource(resource:)
+        Valkyrie::Persistence::Postgres::Queries::FindAllQuery.new(resource: resource).run
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_by)
@@ -19,23 +19,23 @@ module Valkyrie::Persistence::Postgres
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_members)
-      def find_members(model:)
-        Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(model).run
+      def find_members(resource:)
+        Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(resource).run
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
-      def find_parents(model:)
-        find_inverse_references_by(model: model, property: :member_ids)
+      def find_parents(resource:)
+        find_inverse_references_by(resource: resource, property: :member_ids)
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
-      def find_references_by(model:, property:)
-        Valkyrie::Persistence::Postgres::Queries::FindReferencesQuery.new(model, property).run
+      def find_references_by(resource:, property:)
+        Valkyrie::Persistence::Postgres::Queries::FindReferencesQuery.new(resource, property).run
       end
 
       # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
-      def find_inverse_references_by(model:, property:)
-        Valkyrie::Persistence::Postgres::Queries::FindInverseReferencesQuery.new(model, property).run
+      def find_inverse_references_by(resource:, property:)
+        Valkyrie::Persistence::Postgres::Queries::FindInverseReferencesQuery.new(resource, property).run
       end
     end
   end

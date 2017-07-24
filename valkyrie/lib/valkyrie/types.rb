@@ -10,10 +10,10 @@ module Valkyrie
          .constructor do |input|
            Valkyrie::ID.new(input)
          end
-    # Used for casting {Valkyrie::Models} if possible.
+    # Used for casting {Valkyrie::Resources} if possible.
     Anything = Valkyrie::Types::Any.constructor do |value|
-      if value.respond_to?(:fetch) && value.fetch(:internal_model, nil)
-        value.fetch(:internal_model).constantize.new(value)
+      if value.respond_to?(:fetch) && value.fetch(:internal_resource, nil)
+        value.fetch(:internal_resource).constantize.new(value)
       else
         value
       end

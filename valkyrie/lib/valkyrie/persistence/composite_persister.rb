@@ -10,20 +10,20 @@ module Valkyrie::Persistence
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(model:)
-      persisters.inject(model) { |m, persister| persister.save(model: m) }
+    def save(resource:)
+      persisters.inject(resource) { |m, persister| persister.save(resource: m) }
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
-    def save_all(models:)
-      models.map do |model|
-        save(model: model)
+    def save_all(resources:)
+      resources.map do |resource|
+        save(resource: resource)
       end
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
-    def delete(model:)
-      persisters.inject(model) { |m, persister| persister.delete(model: m) }
+    def delete(resource:)
+      persisters.inject(resource) { |m, persister| persister.delete(resource: m) }
     end
   end
 end

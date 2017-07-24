@@ -3,41 +3,41 @@ module Valkyrie::Persistence::ActiveFedora
   class Persister
     class << self
       delegate :save, :delete, to: :instance
-      def save(model:)
-        instance(model).save
+      def save(resource:)
+        instance(resource).save
       end
 
       # (see Valkyrie::Persistence::Memory::Persister#save_all)
-      def save_all(models:)
-        models.map do |model|
-          save(model: model)
+      def save_all(resources:)
+        resources.map do |resource|
+          save(resource: resource)
         end
       end
 
-      def delete(model:)
-        instance(model).delete
+      def delete(resource:)
+        instance(resource).delete
       end
 
-      def instance(model)
-        new(model: model)
+      def instance(resource)
+        new(resource: resource)
       end
     end
 
-    attr_reader :model
-    def initialize(model:)
-      @model = model
+    attr_reader :resource
+    def initialize(resource:)
+      @resource = resource
     end
 
     def save
       orm_object.attributes = cast_attributes.except(:id, :member_ids)
       process_members if member_ids
       orm_object.save!
-      @model = resource_factory.to_model(orm_object)
-      model
+      @resource = resource_factory.to_resource(orm_object)
+      resource
     end
 
     def cast_attributes
-      FedoraAttributes.new(model.attributes.except(:created_at, :updated_at)).result
+      FedoraAttributes.new(resource.attributes.except(:created_at, :updated_at)).result
     end
 
     def delete
@@ -48,7 +48,7 @@ module Valkyrie::Persistence::ActiveFedora
     private
 
       def orm_object
-        @orm_object ||= resource_factory.from_model(model)
+        @orm_object ||= resource_factory.from_resource(resource)
       end
 
       def process_members
@@ -62,7 +62,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
 
       def member_ids
-        Array.wrap(model.attributes[:member_ids]).map(&:to_s)
+        Array.wrap(resource.attributes[:member_ids]).map(&:to_s)
       end
 
       def resource_factory
