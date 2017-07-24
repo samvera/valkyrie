@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 require 'rails_helper'
-require 'specs/shared_specs/change_set_persister'
+require 'valkyrie/specs/shared_specs'
 include ActionDispatch::TestProcess
 
 RSpec.describe ChangeSetPersister do
@@ -12,7 +12,7 @@ RSpec.describe ChangeSetPersister do
   let(:query_service) { adapter.query_service }
   let(:storage_adapter) { Valkyrie.config.storage_adapter }
   let(:change_set_class) { BookChangeSet }
-  it_behaves_like "a ChangeSetPersister"
+  it_behaves_like "a Valkyrie::ChangeSetPersister"
   describe "#save" do
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
     it "can handle appending to another record" do

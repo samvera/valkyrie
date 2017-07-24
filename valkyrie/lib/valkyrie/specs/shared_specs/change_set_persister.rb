@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-RSpec.shared_examples 'a ChangeSetPersister' do |*_flags|
+RSpec.shared_examples 'a Valkyrie::ChangeSetPersister' do |*_flags|
   before do
     raise 'adapter must be set with `let(:change_set_persister)`' unless defined? change_set_persister
     class CustomResource < Valkyrie::Resource
