@@ -79,7 +79,7 @@ module Valkyrie::Persistence::Postgres
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
-            DateTime.parse(value).utc
+            DateTime.iso8601(value).utc
           rescue
             false
           end

@@ -194,7 +194,7 @@ module Valkyrie::Persistence::Solr
       class DateTimeValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
-          DateTime.parse(value.gsub(/^datetime-/, '')).utc
+          DateTime.iso8601(value.gsub(/^datetime-/, '')).utc
         rescue
           false
         end
