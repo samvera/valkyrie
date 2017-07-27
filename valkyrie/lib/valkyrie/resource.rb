@@ -39,6 +39,14 @@ module Valkyrie
       super
     end
 
+    # @return [ActiveModel::Name]
+    # @note Added for ActiveModel compatibility.
+    def self.model_name
+      ::ActiveModel::Name.new(self)
+    end
+
+    delegate :model_name, to: :class
+
     # @return [Hash] Hash of attributes
     def attributes
       to_h
@@ -73,12 +81,6 @@ module Valkyrie
     # @note Added for ActiveModel compatibility
     def to_model
       self
-    end
-
-    # @return [ActiveModel::Name]
-    # @note Added for ActiveModel compatibility.
-    def model_name
-      ::ActiveModel::Name.new(self.class)
     end
 
     # @return [String]
