@@ -58,6 +58,9 @@ RSpec.describe Valkyrie::Resource do
     it "returns a model name" do
       expect(resource.model_name).to be_kind_of(ActiveModel::Name)
     end
+    it "returns a model name at the class level" do
+      expect(resource.class.model_name).to be_kind_of(ActiveModel::Name)
+    end
   end
 
   describe "#to_s" do
