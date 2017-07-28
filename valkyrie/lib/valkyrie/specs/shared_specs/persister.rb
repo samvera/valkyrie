@@ -44,7 +44,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
   it "can mix properties with nested resources" do
     pending "No support for mixed nesting." if flags.include?(:no_mixed_nesting)
-    book2 = resource_class.new(title: "Nested")
+    book2 = resource_class.new(title: "Nested", id: SecureRandom.uuid)
     book3 = persister.save(resource: resource_class.new(nested_resource: [book2, "Alabama"]))
 
     reloaded = query_service.find_by(id: book3.id)

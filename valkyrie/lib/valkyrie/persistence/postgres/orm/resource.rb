@@ -44,7 +44,7 @@ module Valkyrie::Persistence::Postgres
         class IDValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
-            value.is_a?(Hash) && value["id"]
+            value.is_a?(Hash) && value["id"] && !value["internal_resource"]
           end
 
           def result
