@@ -54,13 +54,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
   it "can support deep nesting of resources" do
     pending "No support for deep nesting." if flags.include?(:no_deep_nesting)
-    book = resource_class.new(title: "Sub-nested")
+    book = resource_class.new(title: "Sub-nested", author: Valkyrie::ID.new("test"))
     book2 = resource_class.new(title: "Nested", nested_resource: book)
     book3 = persister.save(resource: resource_class.new(nested_resource: book2))
 
     reloaded = query_service.find_by(id: book3.id)
     expect(reloaded.nested_resource.first.title).to eq ["Nested"]
     expect(reloaded.nested_resource.first.nested_resource.first.title).to eq ["Sub-nested"]
+    expect(reloaded.nested_resource.first.nested_resource.first.author).to eq [Valkyrie::ID.new("test")]
   end
 
   it "stores created_at/updated_at" do
