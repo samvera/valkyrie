@@ -31,7 +31,7 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::File]
     def find_by(id:)
       return unless handles?(id: id)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id)))
+      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id), 'rb'))
     end
   end
 end
