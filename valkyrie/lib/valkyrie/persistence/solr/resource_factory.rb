@@ -170,11 +170,53 @@ module Valkyrie::Persistence::Solr
         end
 
         def result
-          JSON.parse(json, symbolize_names: true)
+          NestedResourceConverter.for(JSON.parse(json, symbolize_names: true)).result
         end
 
         def json
           value.gsub(/^serialized-/, '')
+        end
+      end
+
+      class NestedResourceConverter < ::Valkyrie::ValueMapper
+      end
+
+      class NestedEnumerable < ::Valkyrie::ValueMapper
+        NestedResourceConverter.register(self)
+        def self.handles?(value)
+          value.is_a?(Array)
+        end
+
+        def result
+          value.map do |v|
+            calling_mapper.for(v).result
+          end
+        end
+      end
+
+      class NestedResourceID < ::Valkyrie::ValueMapper
+        NestedResourceConverter.register(self)
+        def self.handles?(value)
+          value.is_a?(Hash) && value[:id] && !value[:internal_resource]
+        end
+
+        def result
+          Valkyrie::ID.new(value[:id])
+        end
+      end
+
+      class NestedResourceHash < ::Valkyrie::ValueMapper
+        NestedResourceConverter.register(self)
+        def self.handles?(value)
+          value.is_a?(Hash)
+        end
+
+        def result
+          Hash[
+            value.map do |k, v|
+              [k, calling_mapper.for(v).result]
+            end
+          ]
         end
       end
 
