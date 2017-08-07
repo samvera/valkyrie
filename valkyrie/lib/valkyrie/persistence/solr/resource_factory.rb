@@ -205,6 +205,17 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      class NestedResourceLiteral < ::Valkyrie::ValueMapper
+        NestedResourceConverter.register(self)
+        def self.handles?(value)
+          value.is_a?(Hash) && value[:@value]
+        end
+
+        def result
+          RDF::Literal.new(value[:@value], language: value[:@language])
+        end
+      end
+
       class NestedResourceHash < ::Valkyrie::ValueMapper
         NestedResourceConverter.register(self)
         def self.handles?(value)
