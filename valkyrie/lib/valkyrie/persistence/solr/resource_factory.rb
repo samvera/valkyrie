@@ -247,6 +247,7 @@ module Valkyrie::Persistence::Solr
       class DateTimeValue < ::Valkyrie::ValueMapper
         SolrValue.register(self)
         def self.handles?(value)
+          return false unless value.to_s.start_with?("datetime-")
           DateTime.iso8601(value.gsub(/^datetime-/, '')).utc
         rescue
           false
