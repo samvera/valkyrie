@@ -87,7 +87,7 @@ module Valkyrie::Persistence::Postgres
           end
 
           def result
-            DateTime.parse(value).utc
+            DateTime.iso8601(value).utc
           end
         end
 
