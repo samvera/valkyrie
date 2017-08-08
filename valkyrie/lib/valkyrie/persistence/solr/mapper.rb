@@ -23,7 +23,7 @@ module Valkyrie::Persistence::Solr
     # @return [String] ISO-8601 timestamp in UTC of the created_at for this solr
     #   document.
     def created_at
-      object.attributes[:created_at] || Time.current.utc.iso8601
+      object_attributes[:created_at] || Time.current.utc.iso8601
     end
 
     # @return [Hash] Solr document to index.
@@ -38,12 +38,16 @@ module Valkyrie::Persistence::Solr
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
-          SolrMapperValue.for(Property.new(property, object.attributes[property])).result.apply_to(hsh)
+          SolrMapperValue.for(Property.new(property, object_attributes[property])).result.apply_to(hsh)
         end
       end
 
       def properties
-        object.attributes.keys - [:id, :created_at, :updated_at]
+        object_attributes.keys - [:id, :created_at, :updated_at]
+      end
+
+      def object_attributes
+        @object_attributes ||= object.attributes
       end
 
       ##
