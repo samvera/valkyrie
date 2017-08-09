@@ -79,6 +79,7 @@ module Valkyrie::Persistence::Postgres
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
+            return false unless value[4] == "-"
             year = value.to_s[0..3]
             return false unless year.length == 4 && year.to_i.to_s == year
             DateTime.iso8601(value)
@@ -87,7 +88,7 @@ module Valkyrie::Persistence::Postgres
           end
 
           def result
-            DateTime.parse(value).utc
+            DateTime.iso8601(value).utc
           end
         end
 
