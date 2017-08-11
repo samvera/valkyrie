@@ -34,7 +34,7 @@ module Valkyrie::Persistence::Fedora
     def find_members(resource:)
       Array(resource.member_ids).lazy.map do |id|
         find_by(id: id)
-      end
+      end.select(&:present?)
     end
 
     def find_all
@@ -43,6 +43,8 @@ module Valkyrie::Persistence::Fedora
       ids.lazy.map do |id|
         find_by(id: id)
       end
+    rescue ::Ldp::NotFound
+      []
     end
 
     def find_all_of_model(model:)
@@ -52,7 +54,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def find_references_by(resource:, property:)
-      resource[property].select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|
+      (resource[property] || []).select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|
         find_by(id: id)
       end
     end
@@ -68,7 +70,7 @@ module Valkyrie::Persistence::Fedora
 
     def find_inverse_references_by(resource:, property:)
       content = content_with_inbound(id: resource.id)
-      property_uri = RDF::URI("http://example.com/#{property}")
+      property_uri = RDF::URI("http://example.com/predicate/#{property}")
       ids = content.graph.query([nil, property_uri, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
       ids.lazy.map do |id|
         find_by(id: id)

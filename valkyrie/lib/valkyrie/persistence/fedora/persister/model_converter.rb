@@ -24,14 +24,14 @@ module Valkyrie::Persistence::Fedora
       end
 
       def subject
-        adapter.id_to_uri(resource.id) if resource.id
+        adapter.id_to_uri(resource.id) if resource.try(:id)
       end
 
       class Property
         attr_reader :key, :value, :subject, :adapter
 
         def self.to_uri(key)
-          RDF::URI.new("http://example.com/#{key}")
+          RDF::URI.new("http://example.com/predicate/#{key}")
         end
 
         def initialize(subject, key, value, adapter)
@@ -140,7 +140,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/valkyrie_id")), value.adapter)).result
+          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/predicate/valkyrie_id")), value.adapter)).result
         end
       end
 
@@ -173,7 +173,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/valkyrie_id")), value.adapter)).result
+          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/predicate/valkyrie_id")), value.adapter)).result
         end
       end
 

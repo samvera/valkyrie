@@ -19,7 +19,12 @@ module Valkyrie::Persistence::Fedora
       end
 
       def id
-        adapter.uri_to_id(object.subject_uri)
+        id_property.present? ? Valkyrie::ID.new(id_property) : adapter.uri_to_id(object.subject_uri)
+      end
+
+      def id_property
+        return unless object.subject_uri.to_s.include?("#")
+        object.graph.query([RDF::URI(""), RDF::URI("http://example.com/predicate/id"), nil]).to_a.first.try(:object).to_s
       end
 
       class GraphToAttributes
@@ -90,7 +95,7 @@ module Valkyrie::Persistence::Fedora
           end
 
           def result
-            value.statement.predicate = ::RDF::URI("http://example.com/member_ids")
+            value.statement.predicate = ::RDF::URI("http://example.com/predicate/member_ids")
             values = OrderedList.new(scope, head, tail, adapter).to_a.map(&:proxy_for)
             values = values.map do |val|
               calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
@@ -110,7 +115,9 @@ module Valkyrie::Persistence::Fedora
         class NestedValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.object.is_a?(RDF::URI) && value.statement.object.to_s.include?("#")
+            value.statement.object.is_a?(RDF::URI) && value.statement.object.to_s.include?("#") &&
+              (value.statement.object.to_s.start_with?("#") ||
+               value.statement.object.to_s.start_with?(value.adapter.connection_prefix))
           end
 
           def result
@@ -176,10 +183,22 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class LiteralValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == RDF::URI("http://www.w3.org/2001/XMLSchema#string")
+          end
+
+          def result
+            value.statement.object = value.statement.object.to_s
+            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
+          end
+        end
+
         class ValkyrieIDValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::URI("http://example.com/valkyrie_id")
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::URI("http://example.com/predicate/valkyrie_id")
           end
 
           def result
@@ -203,7 +222,7 @@ module Valkyrie::Persistence::Fedora
         class InternalModelValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/internal_resource"
+            value.statement.predicate.to_s == "http://example.com/predicate/internal_resource"
           end
 
           def result
@@ -214,22 +233,22 @@ module Valkyrie::Persistence::Fedora
         class CreatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/created_at"
+            value.statement.predicate.to_s == "http://example.com/predicate/created_at"
           end
 
           def result
-            SingleApplicator.new(value)
+            NonStringSingleApplicator.new(value)
           end
         end
 
         class UpdatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/updated_at"
+            value.statement.predicate.to_s == "http://example.com/predicate/updated_at"
           end
 
           def result
-            SingleApplicator.new(value)
+            NonStringSingleApplicator.new(value)
           end
         end
 
@@ -284,7 +303,7 @@ module Valkyrie::Persistence::Fedora
             [
               "http://www.fedora.info/definitions/v4/",
               "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-              "http://example.com/"
+              "http://example.com/predicate/"
             ]
           end
 
@@ -296,6 +315,12 @@ module Valkyrie::Persistence::Fedora
         class SingleApplicator < Applicator
           def apply_to(hsh)
             hsh[key.to_sym] = values.to_s
+          end
+        end
+
+        class NonStringSingleApplicator < Applicator
+          def apply_to(hsh)
+            hsh[key.to_sym] = values
           end
         end
 

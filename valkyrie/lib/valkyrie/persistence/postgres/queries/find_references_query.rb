@@ -8,7 +8,7 @@ module Valkyrie::Persistence::Postgres::Queries
     end
 
     def run
-      return [] if obj.id.blank?
+      return [] if obj.id.blank? || obj[property].blank?
       relation.lazy.map do |orm_object|
         resource_factory.to_resource(orm_object)
       end
