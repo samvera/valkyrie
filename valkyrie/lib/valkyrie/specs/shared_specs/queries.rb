@@ -46,6 +46,9 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       expect(query_service.find_all_of_model(model: SecondResource).map(&:id)).to contain_exactly resource2.id
     end
+    it "returns an empty array if there are none" do
+      expect(query_service.find_all_of_model(model: SecondResource).to_a).to eq []
+    end
   end
 
   describe ".find_by" do
@@ -72,6 +75,9 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       parent = resource_class.new
       expect(query_service.find_members(resource: parent).to_a).to eq []
     end
+    it "returns an empty array if there are none" do
+      expect(query_service.find_all.to_a).to eq []
+    end
   end
 
   describe ".find_references_by" do
@@ -81,6 +87,10 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       persister.save(resource: resource_class.new)
 
       expect(query_service.find_references_by(resource: child, property: :a_member_of).map(&:id).to_a).to eq [parent.id]
+    end
+    it "returns an empty array if there are none" do
+      child = persister.save(resource: resource_class.new)
+      expect(query_service.find_references_by(resource: child, property: :a_member_of).to_a).to eq []
     end
   end
 
@@ -92,6 +102,11 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to eq [child.id]
     end
+    it "returns an empty array if there are none" do
+      parent = persister.save(resource: resource_class.new)
+
+      expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).to_a).to eq []
+    end
   end
 
   describe ".find_parents" do
@@ -102,6 +117,11 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       parent2 = persister.save(resource: resource_class.new(member_ids: [child1.id]))
 
       expect(query_service.find_parents(resource: child1).map(&:id).to_a).to contain_exactly parent.id, parent2.id
+    end
+    it "returns an empty array if there are none" do
+      child1 = persister.save(resource: resource_class.new)
+
+      expect(query_service.find_parents(resource: child1).to_a).to eq []
     end
   end
 end

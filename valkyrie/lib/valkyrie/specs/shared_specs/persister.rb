@@ -61,7 +61,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     reloaded = query_service.find_by(id: book3.id)
     expect(reloaded.nested_resource.first.title).to eq ["Nested"]
     expect(reloaded.nested_resource.first.nested_resource.first.title).to eq ["Sub-nested"]
-    expect(reloaded.nested_resource.first.nested_resource.first.author).to eq [Valkyrie::ID.new("test"), RDF::Literal.new("Test", language: :fr)]
+    expect(reloaded.nested_resource.first.nested_resource.first.author).to contain_exactly Valkyrie::ID.new("test"), RDF::Literal.new("Test", language: :fr)
   end
 
   it "stores created_at/updated_at" do
