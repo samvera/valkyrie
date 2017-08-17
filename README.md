@@ -7,12 +7,19 @@ A proof of concept "breakable toy" for enabling multiple backends for storage of
 [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
 [![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
 
+## Requirements
+
+### Postgres
+
+Valkyrie requires support for the JSON data type, which was introduced in version 9.4. As a result,
+it will only work with versions 9.4 or later.
+
 ## Configure Valkyrie
 
 Valkyrie is configured in `config/valkyrie.yml`.  For each environment you must set
 two values.  The first, `adapter`, is the store where Valkyrie will put the metadata.
 The valid values for `adapter` are `:postgres` (default), `:fedora`(actually ActiveFedora),
-`:memory` (should only be used for running tests, because it's not persistent).  
+`:memory` (should only be used for running tests, because it's not persistent).
 You can register your own adapters in `config/initializers/valkyrie.rb`.
 
 Valkyrie will automatically persist to the metadata store you have chosen and write
