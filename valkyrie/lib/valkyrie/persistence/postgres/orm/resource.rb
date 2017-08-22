@@ -79,6 +79,7 @@ module Valkyrie::Persistence::Postgres
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
+            return false unless value.is_a?(String)
             return false unless value[4] == "-"
             year = value.to_s[0..3]
             return false unless year.length == 4 && year.to_i.to_s == year
