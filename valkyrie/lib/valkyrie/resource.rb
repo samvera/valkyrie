@@ -42,7 +42,7 @@ module Valkyrie
     # @return [ActiveModel::Name]
     # @note Added for ActiveModel compatibility.
     def self.model_name
-      ::ActiveModel::Name.new(self)
+      @model_name ||= ::ActiveModel::Name.new(self)
     end
 
     delegate :model_name, to: :class
