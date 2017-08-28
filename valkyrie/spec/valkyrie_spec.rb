@@ -37,6 +37,7 @@ describe Valkyrie do
     it "uses that path" do
       allow(Rails).to receive(:root).and_return(ROOT_PATH)
 
+      described_class.instance_variable_set(:@config, nil)
       described_class.config
 
       expect(Rails).to have_received(:root).exactly(2).times

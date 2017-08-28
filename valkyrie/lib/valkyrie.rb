@@ -41,7 +41,7 @@ module Valkyrie
   require 'generators/valkyrie/resource_generator'
   require 'valkyrie/engine' if defined?(Rails)
   def config
-    Config.new(
+    @config ||= Config.new(
       YAML.safe_load(ERB.new(File.read(config_root_path.join("config", "valkyrie.yml"))).result)[environment]
     )
   end
