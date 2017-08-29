@@ -170,11 +170,27 @@ module Valkyrie::Persistence::Solr
         end
 
         def result
-          NestedResourceConverter.for(JSON.parse(json, symbolize_names: true)).result
+          NestedResourceConverter.for(convert_uris(JSON.parse(json, symbolize_names: true))).result
         end
 
         def json
           value.gsub(/^serialized-/, '')
+        end
+
+        def convert_uris(h)
+          h.map { |k, v| [k, convert_uri_values(v)] }.to_h
+        end
+
+        def convert_uri_values(v)
+          return RDF::URI.new(v[:@id]) if uri?(v)
+          return v unless v.is_a?(Array)
+          v.map do |inner|
+            uri?(inner) ? ::RDF::URI.new(inner[:@id]) : inner
+          end
+        end
+
+        def uri?(obj)
+          obj.is_a?(Hash) && obj[:@id] && obj.length == 1
         end
       end
 
