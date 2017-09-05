@@ -8,15 +8,15 @@ module Valkyrie::Storage
 
     # @param file [IO]
     # @param resource [Valkyrie::Resource]
-    # @return [Valkyrie::StorageAdapter::File]
+    # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, resource: nil)
       identifier = Valkyrie::ID.new("memory://#{resource.id}")
-      cache[identifier] = Valkyrie::StorageAdapter::File.new(id: identifier, io: file)
+      cache[identifier] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file)
     end
 
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
-    # @return [Valkyrie::StorageAdapter::File]
+    # @return [Valkyrie::StorageAdapter::StreamFile]
     def find_by(id:)
       return unless handles?(id: id) && cache[id]
       cache[id]

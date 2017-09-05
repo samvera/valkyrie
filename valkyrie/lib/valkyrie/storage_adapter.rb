@@ -45,5 +45,34 @@ module Valkyrie
         io
       end
     end
+
+    class DiskFile < File
+      def disk_path
+        Pathname.new(io.path)
+      end
+    end
+
+    class StreamFile < File
+      def disk_path
+        Pathname.new(tmp_file.path)
+      end
+
+      private
+
+        def tmp_file_name
+          id.to_s.split('://').last
+        end
+
+        def tmp_file_path
+          ::File.join(Dir.tmpdir, tmp_file_name)
+        end
+
+        def tmp_file
+          @tmp_file ||= ::File.open(tmp_file_path, 'w+b') do |f|
+            IO.copy_stream(io, f)
+            f
+          end
+        end
+    end
   end
 end

@@ -15,14 +15,14 @@ module Valkyrie::Storage
 
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
-    # @return [Valkyrie::StorageAdapter::File]
+    # @return [Valkyrie::StorageAdapter::StreamFile]
     def find_by(id:)
-      Valkyrie::StorageAdapter::File.new(id: id, io: response(id: id))
+      Valkyrie::StorageAdapter::StreamFile.new(id: id, io: response(id: id))
     end
 
     # @param file [IO]
     # @param resource [Valkyrie::Resource]
-    # @return [Valkyrie::StorageAdapter::File]
+    # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, resource:)
       # TODO: this is a very naive aproach. Change to PCDM
       identifier = resource.id.to_uri + '/original'

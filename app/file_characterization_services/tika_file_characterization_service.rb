@@ -38,9 +38,9 @@ class TikaFileCharacterizationService
   end
 
   # Determines the location of the file on disk for the file_node
-  # @return Pathname
+  # @return [Pathname]
   def filename
-    return Pathname.new(file_object.io.path) if file_object.io.respond_to?(:path) && File.exist?(file_object.io.path)
+    file_object.disk_path
   end
 
   # Provides the file attached to the file_node
