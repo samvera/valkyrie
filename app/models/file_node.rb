@@ -7,6 +7,7 @@ class FileNode < Valkyrie::Resource
   attribute :height, Valkyrie::Types::Set
   attribute :width, Valkyrie::Types::Set
   attribute :checksum, Valkyrie::Types::Set
+  attribute :size, Valkyrie::Types::Set
   attribute :original_filename, Valkyrie::Types::Set
   attribute :file_identifiers, Valkyrie::Types::Set
   attribute :use, Valkyrie::Types::Set
@@ -21,5 +22,9 @@ class FileNode < Valkyrie::Resource
 
   def download_id
     id
+  end
+
+  def valid?
+    Valkyrie.config.storage_adapter.valid?(id: file_identifiers.first, size: size.first, digests: { sha256: checksum.first })
   end
 end

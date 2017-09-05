@@ -21,7 +21,11 @@ class TikaFileCharacterizationService
   #   Valkyrie::FileCharacterizationService.for(file_node, persister).characterize(save: false)
   def characterize(save: true)
     result = JSON.parse(json_output).last
-    @file_characterization_attributes = FileCharacterizationAttributes.new(width: result['tiff:ImageWidth'], height: result['tiff:ImageLength'], mime_type: result['Content-Type'], checksum: checksum)
+    @file_characterization_attributes = FileCharacterizationAttributes.new(width: result['tiff:ImageWidth'],
+                                                                           height: result['tiff:ImageLength'],
+                                                                           mime_type: result['Content-Type'],
+                                                                           checksum: checksum,
+                                                                           size: result['Content-Length'])
     @file_node = @file_node.new(@file_characterization_attributes.to_h)
     @persister.save(resource: @file_node) if save
     @file_node
@@ -59,5 +63,6 @@ class TikaFileCharacterizationService
     attribute :height, Valkyrie::Types::Int
     attribute :mime_type, Valkyrie::Types::String
     attribute :checksum, Valkyrie::Types::String
+    attribute :size, Valkyrie::Types::Int
   end
 end
