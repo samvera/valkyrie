@@ -47,7 +47,7 @@ module Valkyrie::ControllerConcerns
         persister.buffer_into_index do |buffered_adapter|
           obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
-        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_resource(obj)[:id])
+        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_resource(resource: obj)[:id])
       else
         render :edit
       end
