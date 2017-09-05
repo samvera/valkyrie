@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres::Queries
   class FindReferencesQuery
-    attr_reader :obj, :property
-    def initialize(obj, property)
+    delegate :orm_class, to: :resource_factory
+    attr_reader :obj, :property, :resource_factory
+    def initialize(obj, property, resource_factory:)
       @obj = obj
       @property = property
+      @resource_factory = resource_factory
     end
 
     def run
@@ -17,7 +19,7 @@ module Valkyrie::Persistence::Postgres::Queries
     private
 
       def relation
-        orm_resource.find_by_sql([query, property, obj.id.to_s])
+        orm_class.find_by_sql([query, property, obj.id.to_s])
       end
 
       def query
@@ -26,14 +28,6 @@ module Valkyrie::Persistence::Postgres::Queries
         jsonb_array_elements(a.metadata->?) AS b(member)
         JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
       SQL
-      end
-
-      def orm_resource
-        ::Valkyrie::Persistence::Postgres::ORM::Resource
-      end
-
-      def resource_factory
-        ::Valkyrie::Persistence::Postgres::ResourceFactory
       end
   end
 end

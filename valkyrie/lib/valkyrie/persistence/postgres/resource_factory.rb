@@ -19,6 +19,10 @@ module Valkyrie::Persistence::Postgres
           orm_object.metadata.merge!(resource.attributes.except(:id, :internal_resource, :created_at, :updated_at))
         end
       end
+
+      def orm_class
+        ::Valkyrie::Persistence::Postgres::ORM::Resource
+      end
     end
   end
 end
