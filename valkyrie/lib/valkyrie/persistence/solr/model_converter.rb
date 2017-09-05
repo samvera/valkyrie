@@ -1,29 +1,30 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
-  class Mapper
-    # @param obj [Valkyrie::Resource]
-    # @return [Valkyrie::Persistence::Solr::Mapper] Returns a mapper for a given
-    #   object.
-    def self.find(obj)
-      new(obj)
+  class ModelConverter
+    attr_reader :resource, :resource_factory
+    delegate :resource_indexer, to: :resource_factory
+    def initialize(resource, resource_factory:)
+      @resource = resource
+      @resource_factory = resource_factory
     end
 
-    attr_reader :object
+    def convert!
+      to_h.merge(internal_resource_ssim: [resource.internal_resource]).merge(indexer_solr(resource))
+    end
 
-    # @param object [Valkyrie::Resource]
-    def initialize(object)
-      @object = object
+    def indexer_solr(resource)
+      resource_indexer.new(resource: resource).to_solr
     end
 
     # @return [String] The solr document ID
     def id
-      "id-#{object.id}"
+      "id-#{resource.id}"
     end
 
     # @return [String] ISO-8601 timestamp in UTC of the created_at for this solr
     #   document.
     def created_at
-      object_attributes[:created_at] || Time.current.utc.iso8601
+      resource_attributes[:created_at] || Time.current.utc.iso8601
     end
 
     # @return [Hash] Solr document to index.
@@ -38,27 +39,27 @@ module Valkyrie::Persistence::Solr
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
-          SolrMapperValue.for(Property.new(property, object_attributes[property])).result.apply_to(hsh)
+          SolrMapperValue.for(Property.new(property, resource_attributes[property])).result.apply_to(hsh)
         end
       end
 
       def properties
-        object_attributes.keys - [:id, :created_at, :updated_at]
+        resource_attributes.keys - [:id, :created_at, :updated_at]
       end
 
-      def object_attributes
-        @object_attributes ||= object.attributes
+      def resource_attributes
+        @resource_attributes ||= resource.attributes
       end
 
       ##
-      # A container object for holding a `key`, `value, and `scope` of a value
+      # A container resource for holding a `key`, `value, and `scope` of a value
       # in a resource together for casting.
       class Property
         attr_reader :key, :value, :scope
         # @param key [Symbol] Property identifier.
         # @param value [Object] Value or list of values which are underneath the
         #   key.
-        # @param scope [Object] The object or point where the key and values
+        # @param scope [Object] The resource or point where the key and values
         #   came from.
         def initialize(key, value, scope = [])
           @key = key
@@ -115,7 +116,7 @@ module Valkyrie::Persistence::Solr
       class SolrMapperValue < ::Valkyrie::ValueMapper
       end
 
-      # Casts nested objects into a JSON string in solr.
+      # Casts nested resources into a JSON string in solr.
       class NestedObjectValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
         def self.handles?(value)
