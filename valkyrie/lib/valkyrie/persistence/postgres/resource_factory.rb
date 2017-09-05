@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'valkyrie/persistence/postgres/dynamic_klass'
+require 'valkyrie/persistence/postgres/orm_converter'
 module Valkyrie::Persistence::Postgres
   class ResourceFactory
     class << self
@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Postgres
       #   record to be converted.
       # @return [Valkyrie::Resource] Model representation of the AR record.
       def to_resource(orm_object)
-        ::Valkyrie::Persistence::Postgres::DynamicKlass.new(orm_object.all_attributes)
+        ::Valkyrie::Persistence::Postgres::ORMConverter.new(orm_object).convert!
       end
 
       # @param resource [Valkyrie::Resource] Model to be converted to ActiveRecord.
