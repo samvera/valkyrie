@@ -11,13 +11,13 @@ module Valkyrie::Persistence::Solr
     # @param solr_document [Hash] The solr document in a hash to convert to a
     #   resource.
     # @return [Valkyrie::Resource]
-    def to_resource(solr_document)
-      ORMConverter.new(solr_document).convert!
+    def to_resource(object:)
+      ORMConverter.new(object).convert!
     end
 
     # @param resource [Valkyrie::Resource] The resource to convert to a solr hash.
     # @return [Hash] The solr document represented as a hash.
-    def from_resource(resource)
+    def from_resource(resource:)
       Valkyrie::Persistence::Solr::ModelConverter.new(resource, resource_factory: self).convert!
     end
   end

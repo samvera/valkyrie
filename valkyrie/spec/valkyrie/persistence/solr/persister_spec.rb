@@ -37,7 +37,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     end
     it "can add custom indexing" do
       b = Resource.new(title: ["Test"], other_title: ["Author"])
-      expect(adapter.resource_factory.from_resource(b)["combined_title_ssim"]).to eq ["Test", "Author"]
+      expect(adapter.resource_factory.from_resource(resource: b)["combined_title_ssim"]).to eq ["Test", "Author"]
     end
     context "when told to index a really long string" do
       let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }

@@ -20,7 +20,7 @@ module Valkyrie::Persistence::Solr::Queries
 
     def unordered_members
       docs.map do |doc|
-        resource_factory.to_resource(doc)
+        resource_factory.to_resource(object: doc)
       end
     end
 
