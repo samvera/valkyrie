@@ -34,10 +34,6 @@ module Valkyrie::Persistence::Fedora
       class Property
         attr_reader :key, :value, :subject, :adapter
 
-        def self.to_uri(key)
-          RDF::URI.new("http://example.com/predicate/#{key}")
-        end
-
         def initialize(subject, key, value, adapter)
           @subject = subject
           @key = key
@@ -47,9 +43,13 @@ module Valkyrie::Persistence::Fedora
 
         def to_graph(graph = RDF::Graph.new)
           Array(value).each do |val|
-            graph << RDF::Statement.new(subject, self.class.to_uri(key), val)
+            graph << RDF::Statement.new(subject, predicate, val)
           end
           graph
+        end
+
+        def predicate
+          adapter.schema.fetch(key, ::RDF::URI("http://example.com/predicate/#{key}"))
         end
       end
 
@@ -124,7 +124,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          nested_graph << RDF::Statement.new(value.subject, Property.to_uri(value.key), subject_uri)
+          nested_graph << RDF::Statement.new(value.subject, value.predicate, subject_uri)
           GraphProperty.new(value.subject, value.key, nested_graph, value.adapter)
         end
 
