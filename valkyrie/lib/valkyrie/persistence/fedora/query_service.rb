@@ -2,7 +2,7 @@
 module Valkyrie::Persistence::Fedora
   class QueryService
     attr_reader :adapter
-    delegate :connection, to: :adapter
+    delegate :connection, :resource_factory, to: :adapter
     def initialize(adapter:)
       @adapter = adapter
     end
@@ -11,7 +11,7 @@ module Valkyrie::Persistence::Fedora
       uri = adapter.id_to_uri(id)
       begin
         resource = Ldp::Resource.for(connection, uri, connection.get(uri))
-        ::Valkyrie::Persistence::Fedora::Persister::ResourceFactory.to_resource(object: resource, adapter: adapter)
+        resource_factory.to_resource(object: resource)
       rescue ::Ldp::Gone, ::Ldp::NotFound
         raise ::Valkyrie::Persistence::ObjectNotFoundError
       end

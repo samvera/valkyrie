@@ -15,6 +15,10 @@ module Valkyrie::Persistence::Fedora
       Valkyrie::Persistence::Fedora::Persister.new(adapter: self)
     end
 
+    def resource_factory
+      Valkyrie::Persistence::Fedora::Persister::ResourceFactory.new(adapter: self)
+    end
+
     def uri_to_id(uri)
       Valkyrie::ID.new(uri.to_s.gsub(/^.*\//, ''))
     end
