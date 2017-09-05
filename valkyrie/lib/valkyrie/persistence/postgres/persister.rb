@@ -11,9 +11,9 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
-      orm_object = resource_factory.from_resource(resource)
+      orm_object = resource_factory.from_resource(resource: resource)
       orm_object.save!
-      resource_factory.to_resource(orm_object)
+      resource_factory.to_resource(object: orm_object)
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
     def delete(resource:)
-      orm_object = resource_factory.from_resource(resource)
+      orm_object = resource_factory.from_resource(resource: resource)
       orm_object.delete
       resource
     end

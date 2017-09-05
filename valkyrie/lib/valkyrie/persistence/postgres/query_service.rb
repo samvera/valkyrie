@@ -12,20 +12,20 @@ module Valkyrie::Persistence::Postgres
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
       orm_class.all.lazy.map do |orm_object|
-        resource_factory.to_resource(orm_object)
+        resource_factory.to_resource(object: orm_object)
       end
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
     def find_all_of_model(model:)
       orm_class.where(internal_resource: model.to_s).lazy.map do |orm_object|
-        resource_factory.to_resource(orm_object)
+        resource_factory.to_resource(object: orm_object)
       end
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
-      resource_factory.to_resource(orm_class.find(id))
+      resource_factory.to_resource(object: orm_class.find(id))
     rescue ActiveRecord::RecordNotFound
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
