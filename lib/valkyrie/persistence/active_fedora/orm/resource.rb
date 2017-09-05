@@ -40,6 +40,9 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :edit_groups, predicate: ::RDF::URI("http://example.com/edit_groups")
     property :edit_users, predicate: ::RDF::URI("http://example.com/edit_users")
   end
+
+  # A PCDM work object used for serializing all Valkyrie::Models to ActiveFedora
+  # @see https://github.com/samvera/hydra-works/#hydraworks
   class Resource < ActiveFedora::Base
     include Hydra::AccessControls::Permissions
     include Hydra::Works::WorkBehavior
