@@ -54,7 +54,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "bixby"
-  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'rubocop', '~> 0.48.0'
   spec.add_development_dependency 'rubocop-rails'
   spec.add_development_dependency 'yard'
 end
