@@ -53,9 +53,9 @@ RSpec.describe TikaFileCharacterizationService do
     t_file_node = valid_file_node
     t_file_node.size = 0
     t_file_node.checksum = 'asdf'
-    expect(t_file_node.valid?).to be_falsy
+    expect(t_file_node.valid?).to be false
     new_file_node = Valkyrie::FileCharacterizationService.for(file_node: t_file_node, persister: persister).characterize(save: false)
-    expect(new_file_node.valid?).to be_truthy
+    expect(new_file_node.valid?).to be true
   end
 
   it 'saves to the persister by default on characterize' do
