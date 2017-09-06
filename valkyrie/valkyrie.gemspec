@@ -40,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'reform-rails'
   spec.add_dependency 'pg'
   spec.add_dependency 'json-ld'
+  spec.add_dependency 'json'
   spec.add_dependency 'active-triples'
   spec.add_dependency 'hydra-access-controls'
   spec.add_dependency 'hydra-derivatives'
