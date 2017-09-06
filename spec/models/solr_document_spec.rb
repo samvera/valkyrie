@@ -30,4 +30,24 @@ RSpec.describe SolrDocument do
       end
     end
   end
+
+  describe "#children" do
+    context "when the collection has children" do
+      subject(:children) { solr_document.children }
+      let(:solr_document) { described_class.new(solr_hash) }
+      let(:solr_hash) { solr_adapter.resource_factory.from_resource(collection).to_h }
+      let(:collection) { Persister.save(resource: Collection.new) }
+      let(:child_book) { Persister.save(resource: Book.new(a_member_of: [collection.id])) }
+      let(:other_book) { Persister.save(resource: Book.new) }
+      before do
+        child_book
+        other_book
+      end
+
+      it "returns them" do
+        expect(children.count).to eq 1
+        expect(children.first.id).to eq child_book.id
+      end
+    end
+  end
 end

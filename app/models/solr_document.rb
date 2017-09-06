@@ -31,6 +31,10 @@ class SolrDocument
     QueryService.find_members(resource: Book.new(id: resource_id, member_ids: member_ids)).map(&:decorate)
   end
 
+  def children
+    QueryService.find_inverse_references_by(resource: Collection.new(id: resource_id), property: :a_member_of)
+  end
+
   def resource_id
     Valkyrie::ID.new(id.gsub(/^id-/, ''))
   end
