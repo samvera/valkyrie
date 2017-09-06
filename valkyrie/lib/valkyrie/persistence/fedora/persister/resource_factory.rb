@@ -4,11 +4,16 @@ module Valkyrie::Persistence::Fedora
     class ResourceFactory
       require 'valkyrie/persistence/fedora/persister/model_converter'
       require 'valkyrie/persistence/fedora/persister/orm_converter'
-      def self.from_resource(resource:, adapter:)
+      attr_reader :adapter
+      def initialize(adapter:)
+        @adapter = adapter
+      end
+
+      def from_resource(resource:)
         ModelConverter.new(resource: resource, adapter: adapter).convert
       end
 
-      def self.to_resource(object:, adapter:)
+      def to_resource(object:)
         OrmConverter.new(object: object, adapter: adapter).convert
       end
     end

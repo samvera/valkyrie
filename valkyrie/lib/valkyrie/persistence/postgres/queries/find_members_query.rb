@@ -1,22 +1,24 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres::Queries
   class FindMembersQuery
-    attr_reader :obj
-    def initialize(obj)
+    attr_reader :obj, :resource_factory
+    delegate :orm_class, to: :resource_factory
+    def initialize(obj, resource_factory:)
       @obj = obj
+      @resource_factory = resource_factory
     end
 
     def run
       return [] if obj.id.blank?
       relation.lazy.map do |orm_object|
-        resource_factory.to_resource(orm_object)
+        resource_factory.to_resource(object: orm_object)
       end
     end
 
     private
 
       def relation
-        orm_resource.find_by_sql([query, obj.id.to_s])
+        orm_class.find_by_sql([query, obj.id.to_s])
       end
 
       def query
@@ -26,14 +28,6 @@ module Valkyrie::Persistence::Postgres::Queries
         JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
         ORDER BY b.member_pos
       SQL
-      end
-
-      def orm_resource
-        ::Valkyrie::Persistence::Postgres::ORM::Resource
-      end
-
-      def resource_factory
-        ::Valkyrie::Persistence::Postgres::ResourceFactory
       end
   end
 end

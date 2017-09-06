@@ -4,7 +4,7 @@ require 'rails_helper'
 RSpec.describe SolrDocument do
   subject(:solr_document) { described_class.new(solr_hash) }
   let(:solr_adapter) { Valkyrie::MetadataAdapter.find(:index_solr) }
-  let(:solr_hash) { solr_adapter.resource_factory.from_resource(book).to_h }
+  let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: book).to_h }
   let(:book) { Book.new }
 
   describe "#members" do

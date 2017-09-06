@@ -13,7 +13,7 @@ module Valkyrie::Persistence::Fedora
       def convert
         graph_resource.graph.delete([nil, nil, nil])
         resource.attributes.each do |key, values|
-          output = FedoraValue.for(Property.new(subject_uri, key, values, adapter)).result
+          output = property_converter.for(Property.new(subject_uri, key, values, adapter)).result
           graph_resource.graph << output.to_graph
         end
         graph_resource
@@ -25,6 +25,10 @@ module Valkyrie::Persistence::Fedora
 
       def subject
         adapter.id_to_uri(resource.id) if resource.try(:id)
+      end
+
+      def property_converter
+        FedoraValue
       end
 
       class Property

@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Solr
       end
       connection.add documents, params: { softCommit: true }
       documents.map do |document|
-        resource_factory.to_resource(document.stringify_keys)
+        resource_factory.to_resource(object: document.stringify_keys)
       end
     end
 
@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def solr_document(resource)
-      resource_factory.from_resource(resource).to_h
+      resource_factory.from_resource(resource: resource).to_h
     end
 
     def generate_id(resource)

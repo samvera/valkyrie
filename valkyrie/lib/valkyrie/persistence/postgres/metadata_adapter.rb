@@ -5,12 +5,16 @@ module Valkyrie::Persistence::Postgres
   class MetadataAdapter
     # @return [Class] {Valkyrie::Persistence::Postgres::Persister}
     def persister
-      Valkyrie::Persistence::Postgres::Persister
+      Valkyrie::Persistence::Postgres::Persister.new(adapter: self)
     end
 
     # @return [Class] {Valkyrie::Persistence::Postgres::QueryService}
     def query_service
-      Valkyrie::Persistence::Postgres::QueryService
+      Valkyrie::Persistence::Postgres::QueryService.new(adapter: self)
+    end
+
+    def resource_factory
+      Valkyrie::Persistence::Postgres::ResourceFactory
     end
   end
 end

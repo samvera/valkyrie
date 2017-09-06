@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Valkyrie::Persistence::Solr::Mapper do
-  subject(:mapper) { described_class.new(resource) }
+RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
+  subject(:mapper) { described_class.new(resource, resource_factory: resource_factory) }
+  let(:resource_factory) { adapter.resource_factory }
+  let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
+  let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
   before do
     class Resource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
@@ -16,9 +19,10 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
   let(:resource) do
     instance_double(Resource,
                     id: "1",
+                    internal_resource: 'Resource',
                     attributes:
                     {
-                      created_at: Time.at(0),
+                      created_at: Time.at(0).utc,
                       title: ["Test", RDF::Literal.new("French", language: :fr)],
                       author: ["Author"]
                     })
@@ -26,7 +30,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
 
   describe "#to_h" do
     it "maps all available properties to the solr record" do
-      expect(mapper.to_h).to eq(
+      expect(mapper.convert!).to eq(
         id: "id-#{resource.id}",
         title_ssim: ["Test", "French"],
         title_tesim: ["Test", "French"],
@@ -37,7 +41,8 @@ RSpec.describe Valkyrie::Persistence::Solr::Mapper do
         author_ssim: ["Author"],
         author_tesim: ["Author"],
         author_tsim: ["Author"],
-        created_at_dtsi: Time.at(0).utc.iso8601
+        created_at_dtsi: Time.at(0).utc.iso8601,
+        internal_resource_ssim: ["Resource"]
       )
     end
   end

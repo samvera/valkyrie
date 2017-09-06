@@ -3,8 +3,9 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Postgres::Persister do
-  let(:query_service) { Valkyrie::Persistence::Postgres::QueryService }
+  let(:query_service) { adapter.query_service }
+  let(:adapter) { Valkyrie::Persistence::Postgres::MetadataAdapter.new }
 
-  let(:persister) { described_class }
+  let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
 end

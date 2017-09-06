@@ -10,7 +10,7 @@ module Valkyrie::Persistence::Solr::Queries
 
     def run
       raise ::Valkyrie::Persistence::ObjectNotFoundError unless resource
-      resource_factory.to_resource(resource)
+      resource_factory.to_resource(object: resource)
     end
 
     def id
