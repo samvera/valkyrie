@@ -35,7 +35,7 @@ RSpec.describe SolrDocument do
     context "when the collection has children" do
       subject(:children) { solr_document.children }
       let(:solr_document) { described_class.new(solr_hash) }
-      let(:solr_hash) { solr_adapter.resource_factory.from_resource(collection).to_h }
+      let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: collection).to_h }
       let(:collection) { Persister.save(resource: Collection.new) }
       let(:child_book) { Persister.save(resource: Book.new(a_member_of: [collection.id])) }
       let(:other_book) { Persister.save(resource: Book.new) }
@@ -60,14 +60,14 @@ RSpec.describe SolrDocument do
     end
 
     context "for a collection" do
-      let(:solr_hash) { solr_adapter.resource_factory.from_resource(collection).to_h }
+      let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: collection).to_h }
       let(:collection) { Persister.save(resource: Collection.new) }
 
       it { is_expected.to be_falsey }
     end
 
     context "for a page" do
-      let(:solr_hash) { solr_adapter.resource_factory.from_resource(page).to_h }
+      let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: page).to_h }
       let(:page) { Persister.save(resource: Page.new) }
 
       it { is_expected.to be_falsey }
