@@ -42,4 +42,8 @@ class SolrDocument
   def resource
     @resource ||= QueryService.find_by(id: resource_id)
   end
+
+  def book?
+    resource.class == Book
+  end
 end

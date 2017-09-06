@@ -9,24 +9,9 @@
         <%= link_to "Edit", polymorphic_path([:edit, document.resource]) %>
         <%= link_to "Delete", polymorphic_path([document.resource]), method: :delete %>
       </li>
-      <li>
-        <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Add Child <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu">
-            <li>
-              <%= link_to "Add Book", book_append_book_path(id: document.resource_id) %>
-            </li>
-            <li>
-              <%= link_to "Add Page", page_append_book_path(id: document.resource_id) %>
-            </li>
-          </ul>
-        </div>
-      </li>
-      <li>
-        <%= link_to "File Manager", file_manager_book_path(id: document.resource_id) %>
-      </li>
+      <% if document.book? %>
+        <%= render 'book_admin_list_items', document: document %>
+      <% end %>
     </ul>
   </div>
 </div>
