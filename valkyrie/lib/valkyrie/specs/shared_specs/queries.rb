@@ -99,6 +99,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       parent = persister.save(resource: resource_class.new)
       child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
       persister.save(resource: resource_class.new)
+      persister.save(resource: SecondResource.new)
 
       expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to eq [child.id]
     end

@@ -60,7 +60,11 @@ module Valkyrie::Persistence::Memory
     #   in order.
     def find_inverse_references_by(resource:, property:)
       find_all.select do |obj|
-        Array.wrap(obj[property]).include?(resource.id)
+        begin
+          Array.wrap(obj[property]).include?(resource.id)
+        rescue
+          false
+        end
       end
     end
 
