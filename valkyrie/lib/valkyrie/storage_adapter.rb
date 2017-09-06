@@ -44,6 +44,30 @@ module Valkyrie
       def stream
         io
       end
+
+      # @param id [Valkyre::ID]
+      # @param digests [Array<Digest>]
+      # @return [Array<Digest>]
+      def checksum(digests:)
+        io.rewind
+        while (chunk = io.read(4096))
+          digests.each { |digest| digest.update(chunk) }
+        end
+
+        digests.map(&:to_s)
+      end
+
+      # @param id [Valkyre::ID]
+      # @param size [Integer]
+      # @param digests [Array<Digest>]
+      # @return [Boolean]
+      def valid?(size:, digests:)
+        return false if size && io.size.to_i != size.to_i
+        calc_digests = checksum(digests: digests.keys.map { |alg| Digest(alg.upcase).new })
+        return false unless digests.values == calc_digests
+
+        true
+      end
     end
   end
 end

@@ -35,38 +35,14 @@ module Valkyrie::Storage
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
     end
 
-    # @param id [Valkyre::ID]
-    # @param digests [Digest]
-    # @return [Digest]
-    def checksum(id:, digests:)
-      # TODO: if we only want the SHA1, we could get that from a HEAD request without reading the whole file
-      io = response(id: id)
-      while (chunk = io.read(4096))
-        digests.each { |digest| digest.update(chunk) }
-      end
-
-      digests.map(&:to_s)
-    end
-
-    # @param id [Valkyre::ID]
-    # @param size [Integer]
-    # @param digests [Array<Digest>]
-    # @return [Boolean]
-    def valid?(id:, size:, digests:)
-      return false unless handles?(id: id)
-      return false if size && size(id: id).to_i != size.to_i
-      calc_digests = checksum(id: id, digests: digests.keys.map { |alg| Digest(alg.upcase).new })
-      return false unless digests.values == calc_digests
-
-      true
-    end
-
     class IOProxy
       # @param response [Ldp::Resource::BinarySource]
-      def initialize(source)
+      attr_reader :size
+      def initialize(source, size)
         @source = source
+        @size = size
       end
-      delegate :read, to: :io
+      delegate :read, :rewind, to: :io
 
       # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
       # @return [StringIO]
@@ -81,12 +57,7 @@ module Valkyrie::Storage
       # @return [IOProxy]
       def response(id:)
         af_file = ActiveFedora::File.new(active_fedora_identifier(id: id))
-        IOProxy.new(af_file.ldp_source)
-      end
-
-      # @return [Integer]
-      def size(id:)
-        ActiveFedora::File.new(active_fedora_identifier(id: id)).size
+        IOProxy.new(af_file.ldp_source, af_file.size)
       end
 
       # Translate the Valkrie ID into a URL for the fedora file

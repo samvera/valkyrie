@@ -27,31 +27,5 @@ module Valkyrie::Storage
     def handles?(id:)
       id.to_s.start_with?("memory://")
     end
-
-    # @param id [Valkyre::ID]
-    # @param digests [Digest]
-    # @return [Digest]
-    def checksum(id:, digests:)
-      io = cache[id].io
-      io.rewind
-      while (chunk = io.read(4096))
-        digests.each { |digest| digest.update(chunk) }
-      end
-
-      digests.map(&:to_s)
-    end
-
-    # @param id [Valkyre::ID]
-    # @param size [Integer]
-    # @param digests [Array<Digest>]
-    # @return [Boolean]
-    def valid?(id:, size:, digests:)
-      return false unless handles?(id: id)
-      return false if size && cache[id].size.to_i != size.to_i
-      calc_digests = checksum(id: id, digests: digests.keys.map { |alg| Digest(alg.upcase).new })
-      return false unless digests.values == calc_digests
-
-      true
-    end
   end
 end

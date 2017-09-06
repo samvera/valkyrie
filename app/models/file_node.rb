@@ -25,6 +25,7 @@ class FileNode < Valkyrie::Resource
   end
 
   def valid?
-    Valkyrie.config.storage_adapter.valid?(id: file_identifiers.first, size: size.first, digests: { sha256: checksum.first })
+    file = Valkyrie::StorageAdapter.find_by(id: file_identifiers.first)
+    file.valid?(size: size.first, digests: { sha256: checksum.first })
   end
 end

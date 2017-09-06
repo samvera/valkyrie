@@ -24,32 +24,6 @@ module Valkyrie::Storage
       id.to_s.start_with?("disk://")
     end
 
-    # @param id [Valkyre::ID]
-    # @param digests [Array<Digest>]
-    # @return [Array<Digest>]
-    def checksum(id:, digests:)
-      file = File.open(file_path(id))
-      while (chunk = file.read(4096))
-        digests.each { |digest| digest.update(chunk) }
-      end
-
-      digests.map(&:to_s)
-    end
-
-    # @param id [Valkyre::ID]
-    # @param size [Integer]
-    # @param digests [Array<Digest>]
-    # @return [Boolean]
-    def valid?(id:, size:, digests:)
-      return false unless handles?(id: id)
-      file = find_by(id: id)
-      return false if size && file.size.to_i != size.to_i
-      calc_digests = checksum(id: id, digests: digests.keys.map { |alg| Digest(alg.upcase).new })
-      return false unless digests.values == calc_digests
-
-      true
-    end
-
     def file_path(id)
       id.to_s.gsub(/^disk:\/\//, '')
     end
