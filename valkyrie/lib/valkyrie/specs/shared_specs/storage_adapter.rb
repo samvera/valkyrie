@@ -17,9 +17,20 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource) }
 
-  it "can upload and re-fetch a file" do
+  it "can upload, validate, and re-fetch a file" do
     resource = CustomResource.new(id: "test")
+    sha1 = Digest::SHA1.file(file).to_s
+    size = file.size
     expect(uploaded_file = storage_adapter.upload(file: file, resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
+
+    expect(uploaded_file).to respond_to(:checksum).with_keywords(:digests)
+    expect(uploaded_file).to respond_to(:valid?).with_keywords(:size, :digests)
+    expect(uploaded_file.checksum(digests: [Digest::SHA1.new])).to eq([sha1])
+    expect(uploaded_file.valid?(digests: { sha1: sha1 })).to be true
+    expect(uploaded_file.valid?(size: size, digests: { sha1: sha1 })).to be true
+    expect(uploaded_file.valid?(size: (size + 1), digests: { sha1: sha1 })).to be false
+    expect(uploaded_file.valid?(size: size, digests: { sha1: 'bogus' })).to be false
+
     expect(storage_adapter.handles?(id: uploaded_file.id)).to eq true
     file = storage_adapter.find_by(id: uploaded_file.id)
     expect(file.id).to eq uploaded_file.id

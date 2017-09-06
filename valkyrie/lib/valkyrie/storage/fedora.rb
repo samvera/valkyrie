@@ -37,10 +37,12 @@ module Valkyrie::Storage
 
     class IOProxy
       # @param response [Ldp::Resource::BinarySource]
-      def initialize(source)
+      attr_reader :size
+      def initialize(source, size)
         @source = source
+        @size = size
       end
-      delegate :read, to: :io
+      delegate :read, :rewind, to: :io
 
       # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
       # @return [StringIO]
@@ -55,7 +57,7 @@ module Valkyrie::Storage
       # @return [IOProxy]
       def response(id:)
         af_file = ActiveFedora::File.new(active_fedora_identifier(id: id))
-        IOProxy.new(af_file.ldp_source)
+        IOProxy.new(af_file.ldp_source, af_file.size)
       end
 
       # Translate the Valkrie ID into a URL for the fedora file
