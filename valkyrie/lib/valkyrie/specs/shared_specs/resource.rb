@@ -49,4 +49,23 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(resource.internal_resource).to eq resource_klass.to_s
     end
   end
+
+  describe "#human_readable_type" do
+    before do
+      class MyCustomResource < Valkyrie::Resource
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :title, Valkyrie::Types::Set
+      end
+    end
+
+    after do
+      Object.send(:remove_const, :MyCustomResource)
+    end
+
+    subject(:my_custom_resource) { MyCustomResource.new }
+
+    it "returns a human readable rendering of the resource class" do
+      expect(my_custom_resource.human_readable_type).to eq "My Custom Resource"
+    end
+  end
 end
