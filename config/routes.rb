@@ -53,4 +53,7 @@ Rails.application.routes.draw do
   resources :file_sets, only: [:new, :create, :edit, :update, :destroy]
   resources :collections
   resources :downloads, only: [:show]
+
+  # Dashboard Page
+  resources :dashboard, only: [:index]
 end
