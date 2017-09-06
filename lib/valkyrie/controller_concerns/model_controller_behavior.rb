@@ -32,14 +32,14 @@ module Valkyrie::ControllerConcerns
     end
 
     def edit
-      @change_set = change_set_class.new(find_book(params[:id])).prepopulate!
+      @change_set = change_set_class.new(find_resource(params[:id])).prepopulate!
       authorize! :update, @change_set.resource
       @collections = query_service.find_all_of_model(model: Collection)
       render :edit
     end
 
     def update
-      @change_set = change_set_class.new(find_book(params[:id]))
+      @change_set = change_set_class.new(find_resource(params[:id]))
       authorize! :update, @change_set.resource
       if @change_set.validate(resource_params)
         @change_set.sync
@@ -54,7 +54,7 @@ module Valkyrie::ControllerConcerns
     end
 
     def destroy
-      @change_set = change_set_class.new(find_book(params[:id]))
+      @change_set = change_set_class.new(find_resource(params[:id]))
       authorize! :destroy, @change_set.resource
       persister.buffer_into_index do |buffered_adapter|
         change_set_persister(buffered_adapter).delete(change_set: @change_set)
@@ -75,7 +75,7 @@ module Valkyrie::ControllerConcerns
         ContextualPath.new(obj.id, change_set.append_id)
       end
 
-      def find_book(id)
+      def find_resource(id)
         QueryService.find_by(id: Valkyrie::ID.new(id.to_s))
       end
 
