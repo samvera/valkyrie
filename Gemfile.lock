@@ -20,6 +20,7 @@ PATH
       dry-types
       hydra-access-controls
       hydra-derivatives
+      json
       json-ld
       pg
       rdf
@@ -612,4 +613,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.15.1
+   1.15.4
