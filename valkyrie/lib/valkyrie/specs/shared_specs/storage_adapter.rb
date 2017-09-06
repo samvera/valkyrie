@@ -25,9 +25,9 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(uploaded_file = storage_adapter.upload(file: file, resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
 
     expect(storage_adapter.checksum(id: uploaded_file.id, digests: [Digest::SHA1.new])).to eq([sha1])
-    expect(storage_adapter.valid?(id: uploaded_file.id, size: size, digests: { sha1: sha1 })).to be_truthy
-    expect(storage_adapter.valid?(id: uploaded_file.id, size: (size + 1), digests: { sha1: sha1 })).to be_falsy
-    expect(storage_adapter.valid?(id: uploaded_file.id, size: size, digests: { sha1: 'bogus' })).to be_falsy
+    expect(storage_adapter.valid?(id: uploaded_file.id, size: size, digests: { sha1: sha1 })).to be true
+    expect(storage_adapter.valid?(id: uploaded_file.id, size: (size + 1), digests: { sha1: sha1 })).to be false
+    expect(storage_adapter.valid?(id: uploaded_file.id, size: size, digests: { sha1: 'bogus' })).to be false
 
     expect(storage_adapter.handles?(id: uploaded_file.id)).to eq true
     file = storage_adapter.find_by(id: uploaded_file.id)
