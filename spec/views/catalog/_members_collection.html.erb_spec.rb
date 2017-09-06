@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe "catalog/_children_collection.html.erb" do
-  let(:document) { instance_double(SolrDocument, resource: resource, members: [child]) }
+RSpec.describe "catalog/_members_collection.html.erb" do
+  let(:document) { instance_double(SolrDocument, resource: resource, children: [child]) }
   let(:resource) { persister.save(resource: Book.new(title: "Title")) }
   let(:persister) { Valkyrie.config.metadata_adapter.persister }
   let(:child) { persister.save(resource: Book.new(title: "Child", a_member_of: resource.id)).decorate }
@@ -13,7 +13,7 @@ RSpec.describe "catalog/_children_collection.html.erb" do
     render
   end
 
-  it "displays all members of the resource" do
+  it "displays all children of the resource" do
     expect(response).to have_link "Child"
     expect(response).not_to have_link "[\"Child\"]"
   end
