@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Storage
   class Disk
-    attr_reader :base_path, :path_generator
-    def initialize(base_path:, path_generator: BucketedStorage)
+    attr_reader :base_path, :path_generator, :file_mover
+    def initialize(base_path:, path_generator: BucketedStorage, file_mover: FileUtils.method(:mv))
       @base_path = Pathname.new(base_path.to_s)
       @path_generator = path_generator.new(base_path: base_path)
+      @file_mover = file_mover
     end
 
     # @param file [IO]
@@ -13,7 +14,7 @@ module Valkyrie::Storage
     def upload(file:, resource: nil)
       new_path = path_generator.generate(resource: resource, file: file)
       FileUtils.mkdir_p(new_path.parent)
-      FileUtils.mv(file.path, new_path)
+      file_mover.call(file.path, new_path)
       find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
     end
 
