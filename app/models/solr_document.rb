@@ -32,7 +32,7 @@ class SolrDocument
   end
 
   def children
-    QueryService.find_inverse_references_by(resource: Collection.new(id: resource_id), property: :a_member_of)
+    QueryService.find_inverse_references_by(resource: Collection.new(id: resource_id), property: :a_member_of).map(&:decorate)
   end
 
   def resource_id
