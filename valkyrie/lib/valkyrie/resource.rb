@@ -47,6 +47,14 @@ module Valkyrie
 
     delegate :model_name, to: :class
 
+    def self.human_readable_type
+      @_human_readable_type ||= name.demodulize.titleize
+    end
+
+    def self.human_readable_type=(val)
+      @_human_readable_type = val
+    end
+
     # @return [Hash] Hash of attributes
     def attributes
       to_h
@@ -86,6 +94,13 @@ module Valkyrie
     # @return [String]
     def to_s
       "#{self.class}: #{id}"
+    end
+
+    ##
+    # Provide a human readable name for the resource
+    # @return [String]
+    def human_readable_type
+      self.class.human_readable_type
     end
   end
 end
