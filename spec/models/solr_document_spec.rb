@@ -47,6 +47,7 @@ RSpec.describe SolrDocument do
       it "returns them" do
         expect(children.count).to eq 1
         expect(children.first.id).to eq child_book.id
+        expect(children.first.class).to eq BookDecorator
       end
     end
   end
