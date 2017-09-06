@@ -53,6 +53,7 @@ RSpec.describe BooksController do
       get :append, params: { id: parent.id, resource: Book }
 
       expect(assigns(:change_set).append_id).to eq parent.id
+      expect(assigns(:change_set).internal_resource).to eq 'Book'
     end
   end
 
@@ -75,6 +76,7 @@ RSpec.describe BooksController do
 
       expect(assigns(:change_set).class).to eq PageChangeSet
       expect(assigns(:change_set).append_id).to eq parent.id
+      expect(assigns(:change_set).internal_resource).to eq 'Page'
     end
   end
 
