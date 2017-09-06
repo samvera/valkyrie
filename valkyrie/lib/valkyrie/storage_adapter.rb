@@ -61,7 +61,7 @@ module Valkyrie
       # @param size [Integer]
       # @param digests [Array<Digest>]
       # @return [Boolean]
-      def valid?(size:, digests:)
+      def valid?(size: nil, digests:)
         return false if size && io.size.to_i != size.to_i
         calc_digests = checksum(digests: digests.keys.map { |alg| Digest(alg.upcase).new })
         return false unless digests.values == calc_digests
