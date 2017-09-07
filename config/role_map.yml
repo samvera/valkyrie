@@ -6,7 +6,7 @@ development:
 
 test:
   admin:
-    - mat141@psu.edu
+    - admin@example.com
   archivist:
     - archivist1@example.com
     - archivist2@example.com
