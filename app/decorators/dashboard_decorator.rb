@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class DashboardDecorator < ApplicationDecorator
   delegate_all
 
@@ -9,5 +10,4 @@ class DashboardDecorator < ApplicationDecorator
   #       object.created_at.strftime("%a %m/%d/%y")
   #     end
   #   end
-
 end
