@@ -45,6 +45,10 @@ module Valkyrie
         io
       end
 
+      def disk_path
+        Pathname.new(io.path)
+      end
+
       # @param id [Valkyre::ID]
       # @param digests [Array<Digest>]
       # @return [Array<Digest>]
@@ -70,12 +74,6 @@ module Valkyrie
       end
     end
 
-    class DiskFile < File
-      def disk_path
-        Pathname.new(io.path)
-      end
-    end
-
     class StreamFile < File
       def disk_path
         Pathname.new(tmp_file.path)
@@ -84,7 +82,7 @@ module Valkyrie
       private
 
         def tmp_file_name
-          id.to_s.split('://').last
+          id.to_s.tr(':/', '__')
         end
 
         def tmp_file_path

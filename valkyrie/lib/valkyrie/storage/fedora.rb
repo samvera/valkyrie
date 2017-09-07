@@ -42,7 +42,7 @@ module Valkyrie::Storage
         @source = source
         @size = size
       end
-      delegate :read, :rewind, to: :io
+      delegate :each, :read, :rewind, to: :io
 
       # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
       # @return [StringIO]

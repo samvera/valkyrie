@@ -20,6 +20,8 @@ database:
   post:
     - "cd valkyrie && bundle exec rake db:create && bundle exec rake db:migrate"
 test:
+  override:
+    - bundle exec rake multispec
   post:
     - "cd valkyrie && bundle exec rspec spec"
 notify:

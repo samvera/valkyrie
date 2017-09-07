@@ -50,7 +50,7 @@ RSpec.describe ImageDerivativeService do
 
     expect(derivative).to be_present
     derivative_file = Valkyrie::StorageAdapter.find_by(id: derivative.file_identifiers.first)
-    image = MiniMagick::Image.open(derivative_file.io.path)
+    image = MiniMagick::Image.open(derivative_file.disk_path)
     expect(image.width).to eq 105
     expect(image.height).to eq 150
   end
