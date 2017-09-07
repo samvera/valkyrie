@@ -22,6 +22,7 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     property :height, predicate: ::RDF::URI("http://example.com/height")
     property :width, predicate: ::RDF::URI("http://example.com/height")
     property :checksum, predicate: ::RDF::URI("http://example.com/checksum")
+    property :file_size, predicate: ::RDF::URI("http://example.com/file_size")
   end
   class NestedResource < ActiveTriples::Resource
     def initialize(uri = RDF::Node.new, _parent = ActiveTriples::Resource.new)
@@ -51,6 +52,14 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     )
     property :nested_resource, predicate: ::RDF::URI("http://example.com/nested_resource"), class_name: "Valkyrie::Persistence::ActiveFedora::ORM::NestedResource"
     accepts_nested_attributes_for :nested_resource
+
+    def size=(size)
+      file_size = size
+    end
+
+    def size
+      file_size
+    end
 
     def to_solr(doc = {})
       super.merge(

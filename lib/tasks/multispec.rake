@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 desc "Runs tests with a variety of backends"
 task :multispec do
-  # TODO: fix fedora/fedora
   profiles = [
     { metadata: 'memory',   storage: 'memory' },
-    { metadata: 'postgres', storage: 'disk' }
+    { metadata: 'postgres', storage: 'disk' },
+    { metadata: 'fedora', storage: 'fedora' }
   ]
   profiles.each do |profile|
     ENV['VALKYRIE_METADATA'] = profile[:metadata]

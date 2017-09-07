@@ -34,7 +34,7 @@ class TikaFileCharacterizationService
   # Provides the SHA256 hexdigest string for the file
   # @return String
   def checksum
-    Digest::SHA256.file(filename).hexdigest
+    Digest::SHA256.file(filename).hexdigest if filename
   end
 
   def json_output
