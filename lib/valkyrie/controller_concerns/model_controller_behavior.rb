@@ -21,7 +21,7 @@ module Valkyrie::ControllerConcerns
         persister.buffer_into_index do |buffered_adapter|
           obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
-        redirect_to contextual_path(obj, @change_set).show
+        redirect_to contextual_path(obj.id, @change_set.append_id).show
       else
         render :new
       end
@@ -47,7 +47,9 @@ module Valkyrie::ControllerConcerns
         persister.buffer_into_index do |buffered_adapter|
           obj = change_set_persister(buffered_adapter).save(change_set: @change_set)
         end
-        redirect_to solr_document_path(id: solr_adapter.resource_factory.from_resource(resource: obj)[:id])
+        parents = query_service.find_inverse_references_by(resource: obj, property: :member_ids)
+        parent = parents.try(:first)
+        redirect_to contextual_path(obj.id, parent.try(:id)).show
       else
         render :edit
       end
@@ -71,8 +73,8 @@ module Valkyrie::ControllerConcerns
         @_prefixes ||= super + ['books']
       end
 
-      def contextual_path(obj, change_set)
-        ContextualPath.new(obj.id, change_set.append_id)
+      def contextual_path(obj_id, parent_id)
+        ContextualPath.new(obj_id, parent_id)
       end
 
       def find_resource(id)
