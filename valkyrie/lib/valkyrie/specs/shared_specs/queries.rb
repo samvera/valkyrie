@@ -53,7 +53,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
   end
 
-  describe ".find_by(id:)" do
+  describe ".find_by" do
     it "returns a resource by id" do
       resource = persister.save(resource: resource_class.new)
 
