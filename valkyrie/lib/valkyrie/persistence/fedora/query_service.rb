@@ -17,6 +17,10 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    def find_all_by_checksum(checksum:)
+      # TODO write the query
+    end
+
     def find_parents(resource:)
       content = content_with_inbound(id: resource.id)
       parent_ids = content.graph.query([nil, RDF::Vocab::ORE.proxyFor, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
