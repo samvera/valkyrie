@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe "books/file_manager.html.erb", type: :view do
+RSpec.describe "records/file_manager.html.erb", type: :view do
   let(:members) { [member] }
   let(:member) { BookChangeSet.new(Persister.save(resource: Book.new)) }
   let(:parent) { BookChangeSet.new(Persister.save(resource: Book.new(title: "Test title", member_ids: members.map(&:id)))) }

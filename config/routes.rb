@@ -47,6 +47,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :songs, only: [:new, :create, :edit, :update, :destroy] do
+    member do
+      get :file_manager
+    end
+  end
+
   resources :pages, only: [:new, :create, :edit, :update, :destroy]
   resources :file_sets, only: [:new, :create, :edit, :update, :destroy]
   resources :collections

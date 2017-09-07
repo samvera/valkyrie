@@ -51,26 +51,4 @@ RSpec.describe SolrDocument do
       end
     end
   end
-
-  describe '#book?' do
-    subject { solr_document.book? }
-    context "for a book" do
-      let(:book) { Persister.save(resource: Book.new) }
-      it { is_expected.to be_truthy }
-    end
-
-    context "for a collection" do
-      let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: collection).to_h }
-      let(:collection) { Persister.save(resource: Collection.new) }
-
-      it { is_expected.to be_falsey }
-    end
-
-    context "for a page" do
-      let(:solr_hash) { solr_adapter.resource_factory.from_resource(resource: page).to_h }
-      let(:page) { Persister.save(resource: Page.new) }
-
-      it { is_expected.to be_falsey }
-    end
-  end
 end
