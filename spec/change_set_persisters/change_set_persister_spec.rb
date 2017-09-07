@@ -33,8 +33,8 @@ RSpec.describe ChangeSetPersister do
       output = change_set_persister.save(change_set: change_set)
       members = query_service.find_members(resource: output)
 
-      expect(members.length).to eq 1
-      expect(members[0]).to be_kind_of FileSet
+      expect(members.to_a.length).to eq 1
+      expect(members.to_a[0]).to be_kind_of FileSet
     end
   end
 
