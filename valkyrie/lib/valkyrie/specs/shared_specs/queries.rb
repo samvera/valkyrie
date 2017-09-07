@@ -8,6 +8,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :title
       attribute :member_ids
       attribute :a_member_of
+      attribute :checksum, Valkyrie::Types::Hash
     end
     class SecondResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
@@ -25,6 +26,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
+  it { is_expected.to respond_to(:find_all_by_checksum).with_keywords(:checksum) }
   it { is_expected.to respond_to(:find_members).with_keywords(:resource) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property) }
@@ -51,7 +53,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
   end
 
-  describe ".find_by" do
+  describe ".find_by(id:)" do
     it "returns a resource by id" do
       resource = persister.save(resource: resource_class.new)
 
@@ -59,6 +61,24 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
     it "returns a Valkyrie::Persistence::ObjectNotFoundError for a non-found ID" do
       expect { query_service.find_by(id: "123123123") }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+  end
+
+  describe '.find_all_by_checksum' do
+    let!(:resource1) { persister.save(resource: resource_class.new(checksum: { sha256: '123456' })) }
+    let!(:resource2) { persister.save(resource: resource_class.new(checksum: { md5: '654321' })) }
+    let!(:resource3) { persister.save(resource: resource_class.new(checksum: { sha256: '123456', md5: '654321' })) }
+
+    it 'returns resources that match a given checksum' do
+      expect(query_service.find_all_by_checksum(checksum: { sha256: '123456' }).to_a).to eq [resource1.id, resource3.id]
+    end
+
+    it 'returns resources that match any checksum' do
+      expect(query_service.find_all_by_checksum(checksum: { sha256: 'blah', md5: '654321' }).to_a).to eq [resource2.id, resource3.id]
+    end
+
+    it 'returns an empty array if there are no checksum matches' do
+      expect(query_service.find_all_by_checksum(checksum: { sha256: 'blah' }).to_a).to eq []
     end
   end
 

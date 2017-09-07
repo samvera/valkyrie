@@ -30,5 +30,6 @@ module Valkyrie
     SingleValuedString = Valkyrie::Types::String.constructor do |value|
       ::Array.wrap(value).first.to_s
     end
+    Hash = Types::Hash
   end
 end

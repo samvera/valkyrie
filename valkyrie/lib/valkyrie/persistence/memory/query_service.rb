@@ -17,6 +17,14 @@ module Valkyrie::Persistence::Memory
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
+    # @param checksum [Symbol] The checksum to query.
+    # @return [Array<Valkyrie::Resource>] All objects containing the value of the `checksum` property being searched.
+    def find_all_by_checksum(checksum:)
+      cache.values.each.with_object([]) do |obj, result|
+        result << obj.id if obj.checksum.any? { |k, v| checksum.key?(k) && checksum[k] == v }
+      end
+    end
+
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend.
     def find_all
       cache.values
