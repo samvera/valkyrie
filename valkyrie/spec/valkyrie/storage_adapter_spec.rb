@@ -17,7 +17,7 @@ RSpec.describe Valkyrie::StorageAdapter do
 
   describe ".find_by" do
     it "delegates down to its storage_adapters to find one which handles the given identifier" do
-      file = instance_double(Valkyrie::StorageAdapter::File, id: "yo")
+      file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
       allow(storage_adapter).to receive(:handles?).and_return(true)
       allow(storage_adapter).to receive(:find_by).and_return(file)
       described_class.register(storage_adapter, :find_test)

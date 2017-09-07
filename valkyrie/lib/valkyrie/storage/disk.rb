@@ -30,10 +30,10 @@ module Valkyrie::Storage
 
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
-    # @return [Valkyrie::StorageAdapter::File]
+    # @return [Valkyrie::StorageAdapter::DiskFile]
     def find_by(id:)
       return unless handles?(id: id)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id), 'rb'))
+      Valkyrie::StorageAdapter::DiskFile.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id), 'rb'))
     end
 
     class BucketedStorage
