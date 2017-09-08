@@ -125,4 +125,26 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(query_service.find_parents(resource: child1).to_a).to eq []
     end
   end
+
+  describe ".register_query_handler" do
+    it "can register a query handler" do
+      class QueryHandler
+        def self.queries
+          [:find_by_user_id]
+        end
+
+        attr_reader :query_service
+        def initialize(query_service:)
+          @query_service = query_service
+        end
+
+        def find_by_user_id
+          1
+        end
+      end
+      query_service.custom_queries.register_query_handler(QueryHandler)
+      expect(query_service.custom_queries).to respond_to :find_by_user_id
+      expect(query_service.custom_queries.find_by_user_id).to eq 1
+    end
+  end
 end

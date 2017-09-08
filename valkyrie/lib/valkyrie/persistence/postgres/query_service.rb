@@ -49,5 +49,9 @@ module Valkyrie::Persistence::Postgres
     def find_inverse_references_by(resource:, property:)
       Valkyrie::Persistence::Postgres::Queries::FindInverseReferencesQuery.new(resource, property, resource_factory: resource_factory).run
     end
+
+    def custom_queries
+      @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
+    end
   end
 end

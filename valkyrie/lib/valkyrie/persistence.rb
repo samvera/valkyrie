@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie
   module Persistence
+    require 'valkyrie/persistence/custom_query_container'
     require 'valkyrie/persistence/memory'
     require 'valkyrie/persistence/postgres'
     require 'valkyrie/persistence/solr'
