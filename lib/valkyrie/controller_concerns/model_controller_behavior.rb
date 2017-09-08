@@ -67,10 +67,10 @@ module Valkyrie::ControllerConcerns
 
     private
 
-      # Include 'curation_concerns/base' in the search path for views, while prefering
+      # Include 'records' in the search path for views, while prefering
       # our local paths. Thus we are unable to just override `self.local_prefixes`
       def _prefixes
-        @_prefixes ||= super + ['books']
+        @_prefixes ||= super + ['records']
       end
 
       def contextual_path(obj_id, parent_id)

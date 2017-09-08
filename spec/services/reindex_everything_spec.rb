@@ -7,11 +7,12 @@ RSpec.describe ReindexEverything do
     context "when there are objects not indexed" do
       it "indexes them" do
         Persister.save(resource: Book.new)
+        Persister.save(resource: Song.new)
         expect(solr.get("select", params: { q: "*:*" })["response"]["numFound"]).to eq 0
 
         described_class.call
 
-        expect(solr.get("select", params: { q: "*:*" })["response"]["numFound"]).to eq 1
+        expect(solr.get("select", params: { q: "*:*" })["response"]["numFound"]).to eq 2
       end
     end
   end

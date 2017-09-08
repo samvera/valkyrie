@@ -1,0 +1,56 @@
+# frozen_string_literal: true
+require 'rails_helper'
+
+RSpec.describe SongChangeSet do
+  subject(:change_set) { described_class.new(song) }
+  let(:song) { Song.new(title: "Test") }
+
+  describe "#title" do
+    it "delegates down appropriately" do
+      expect(change_set.title).to eq ["Test"]
+    end
+    it "requires a title be set" do
+      change_set.title = []
+      expect(change_set).not_to be_valid
+    end
+  end
+
+  describe "#append_id" do
+    it "coerces it to a Valkyrie::ID" do
+      change_set.validate(append_id: "Test")
+      expect(change_set.append_id).to be_kind_of Valkyrie::ID
+    end
+  end
+
+  describe "#member_ids" do
+    it "coerces an array into Valkyrie::IDs" do
+      change_set.validate(member_ids: ["1", "2"])
+      change_set.member_ids.each do |id|
+        expect(id).to be_kind_of Valkyrie::ID
+      end
+    end
+  end
+
+  describe "#a_member_of" do
+    it "coerces an array into Valkyrie::IDs" do
+      change_set.validate(a_member_of: ["1", "2"])
+      change_set.a_member_of.each do |id|
+        expect(id).to be_kind_of Valkyrie::ID
+      end
+    end
+  end
+
+  describe "#thumbnail_id" do
+    it "coerces it to a Valkyrie::ID" do
+      change_set.validate(thumbnail_id: "Test")
+      expect(change_set.thumbnail_id).to be_kind_of Valkyrie::ID
+    end
+  end
+
+  describe "#start_canvas" do
+    it "coerces it to a Valkyrie::ID" do
+      change_set.validate(start_canvas: "Test")
+      expect(change_set.start_canvas).to be_kind_of Valkyrie::ID
+    end
+  end
+end
