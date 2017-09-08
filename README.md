@@ -45,6 +45,8 @@ only be used for testing as it's not a persistent store.
    1. Start Solr and Fedora servers for testing with `rake server:test`
    1. Run the RSpec test suite with `rspec spec`
 1. To run the app in development mode for local usage:
+   1. Initial test accounts can be created with `rake db:seed`. In order to see the options
+      to create works you should sign in as `admin@example.com` with password `valkyrie`
    1. Start Solr and Fedora servers for development with `rake server:development`
    1. Bring up a Rails server with `rails s` or a console with `rails c`
 
