@@ -33,6 +33,16 @@ describe Valkyrie do
 
     Valkyrie::StorageAdapter.storage_adapters = {}
   end
+
+  it "can have a configured derivatives adapter, which it looks up" do
+    derivatives_adapter = Valkyrie::Storage::Memory.new
+    Valkyrie::StorageAdapter.register(derivatives_adapter, :test)
+
+    expect(described_class.config.derivatives_adapter).to eq derivatives_adapter
+
+    Valkyrie::StorageAdapter.storage_adapters = {}
+  end
+
   context "when Rails is defined and configured" do
     it "uses that path" do
       allow(Rails).to receive(:root).and_return(ROOT_PATH)

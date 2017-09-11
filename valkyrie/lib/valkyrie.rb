@@ -74,6 +74,10 @@ module Valkyrie
     def storage_adapter
       Valkyrie::StorageAdapter.find(super.to_sym)
     end
+
+    def derivatives_adapter
+      Valkyrie::StorageAdapter.find(super.to_sym)
+    end
   end
 
   module_function :config, :logger, :logger=, :config_root_path, :environment
