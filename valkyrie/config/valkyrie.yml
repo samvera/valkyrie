@@ -2,7 +2,9 @@
 test:
   metadata_adapter: test
   storage_adapter: test
+  derivatives_adapter: test
 development:
   metadata_adapter: test
   storage_adapter: test
+  derivatives_adapter: test
 production:
