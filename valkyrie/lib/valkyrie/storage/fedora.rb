@@ -16,8 +16,12 @@ module Valkyrie::Storage
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::StreamFile]
+    # @return [nil] if nothing is found
     def find_by(id:)
       Valkyrie::StorageAdapter::StreamFile.new(id: id, io: response(id: id))
+    rescue ::Ldp::Gone
+      Valkyrie.logger.warn "Unable to find Fedora file with id #{id}"
+      nil
     end
 
     # @param file [IO]
@@ -33,6 +37,10 @@ module Valkyrie::Storage
         af.metadata.save
       end
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
+    end
+
+    def delete(id:)
+      ActiveFedora::File.new(active_fedora_identifier(id: id)).ldp_source.delete
     end
 
     class IOProxy

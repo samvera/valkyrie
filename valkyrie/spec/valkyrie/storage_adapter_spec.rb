@@ -26,4 +26,26 @@ RSpec.describe Valkyrie::StorageAdapter do
       expect(storage_adapter).to have_received(:find_by).with(id: "yo")
     end
   end
+
+  describe ".adapter_for" do
+    it "finds a storage adapter for a given identifier" do
+      file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
+      allow(storage_adapter).to receive(:handles?).and_return(true)
+      described_class.register(storage_adapter, :find_test)
+
+      expect(described_class.adapter_for(id: file.id)).to eq storage_adapter
+    end
+  end
+
+  describe ".delete" do
+    it "calls delete on the matching identifier" do
+      file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
+      allow(storage_adapter).to receive(:handles?).and_return(true)
+      allow(storage_adapter).to receive(:delete)
+      described_class.register(storage_adapter, :find_test)
+
+      described_class.delete(id: file.id)
+      expect(storage_adapter).to have_received(:delete).with(id: "yo")
+    end
+  end
 end

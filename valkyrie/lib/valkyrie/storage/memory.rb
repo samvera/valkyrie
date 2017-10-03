@@ -17,6 +17,7 @@ module Valkyrie::Storage
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::StreamFile]
+    # @return [nil] if nothing is found
     def find_by(id:)
       return unless handles?(id: id) && cache[id]
       cache[id]
@@ -26,6 +27,13 @@ module Valkyrie::Storage
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
       id.to_s.start_with?("memory://")
+    end
+
+    # Delete the file on disk associated with the given identifier.
+    # @param id [Valkyrie::ID]
+    def delete(id:)
+      cache.delete(id)
+      nil
     end
   end
 end
