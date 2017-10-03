@@ -38,12 +38,20 @@ only be used for testing as it's not a persistent store.
    1. `gem install pg -- --with-pg-config=/usr/local/bin/pg_config`
    1. `cp config/database.yml.example config/database.yml`
    1.  Edit `config/database.yml` so that the username is the name you use to log into your Mac
-1. `bundle install`
-1. `rake db:create:all`
-1. `rake db:migrate`
-1. To run the test suite:
+1. Set up the app
+   1. `bundle install`
+   1. `rake db:create:all`
+   1. `rake db:migrate`
+1. Set up the gem
+   1. `cd valkyrie`
+   1. `bundle install`
+   1. `rake db:create`
+   1. `rake db:migrate`
+   1. `cd ..`
+1. Run the test suites:
    1. Start Solr and Fedora servers for testing with `rake server:test`
-   1. Run the RSpec test suite with `rspec spec`
+   1. run app test suite with `rspec`
+   1. run gem test suite in the gem directory, e.g. `cd valkyrie; rspec; cd -`
 1. To run the app in development mode for local usage:
    1. Initial test accounts can be created with `rake db:seed`. In order to see the options
       to create works you should sign in as `admin@example.com` with password `valkyrie`
