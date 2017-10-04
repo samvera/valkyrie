@@ -139,7 +139,7 @@ module Valkyrie::Persistence::Fedora
       class TailSentinel < Sentinel
         def initialize(*args)
           super
-          prev.next = self if prev && prev.next != self
+          prev.next = self if prev&.next != self
         end
       end
   end

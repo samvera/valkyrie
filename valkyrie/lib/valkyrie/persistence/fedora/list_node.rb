@@ -2,7 +2,8 @@
 module Valkyrie::Persistence::Fedora
   class ListNode
     attr_reader :rdf_subject, :graph
-    attr_accessor :prev, :next, :target
+    attr_writer :next, :prev
+    attr_accessor :target
     attr_writer :next_uri, :prev_uri
     attr_accessor :proxy_in, :proxy_for
     attr_reader :adapter
@@ -55,7 +56,7 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      attr_reader :next_uri, :prev_uri, :graph, :node_cache
+      attr_reader :next_uri, :prev_uri, :node_cache
 
       class Builder
         attr_reader :uri, :graph

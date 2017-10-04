@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 RSpec.configure do |config|
-  config.before(:each) do |example|
+  config.before do |example|
     mime_type = if example.metadata[:is_song]
                   'audio/mp3'
                 else
