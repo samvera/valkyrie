@@ -10,7 +10,7 @@ if Rails.env == 'development'
   seed_file = Rails.root.join('config', 'role_map.yml')
   config = YAML.load_file(seed_file)[Rails.env]
 
-  config.each do |_role, emails|
+  config.each_value do |emails|
     email = emails.first
     password = 'valkyrie'
     User.create!(email: email, password: password, password_confirmation: password) unless User.exists?(email: email)

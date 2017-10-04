@@ -14,7 +14,7 @@ module Valkyrie::Persistence::Fedora
       while proxy
         yield proxy unless proxy.nil?
         next_proxy = proxy.next
-        next_proxy.try(:prev=, proxy) if next_proxy && next_proxy.prev != proxy
+        next_proxy.try(:prev=, proxy) if next_proxy&.prev != proxy
         proxy = next_proxy
       end
     end

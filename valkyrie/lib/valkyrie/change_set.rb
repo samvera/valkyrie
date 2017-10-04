@@ -70,7 +70,7 @@ module Valkyrie
     # override of Reform::Form's method to allow for single-valued fields to
     # prepopulate appropriately.
     def prepopulate!(_options = {})
-      self.class.definitions.select { |_field, definition| definition[:multiple] == false }.each do |field, _definition|
+      self.class.definitions.select { |_field, definition| definition[:multiple] == false }.each_key do |field|
         value = Array.wrap(send(field.to_s)).first
         send("#{field}=", value)
       end

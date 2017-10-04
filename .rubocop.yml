@@ -10,12 +10,12 @@ AllCops:
     - 'vendor/**/*'
     - 'valkyrie/**/*'
     - 'db/schema.rb'
-Style/FileName:
+Naming/FileName:
   Enabled: true
   Exclude:
     - 'Gemfile'
     - '**/*.rake'
-Style/PredicateName:
+Naming/PredicateName:
   Exclude:
     - "app/controllers/catalog_controller.rb"
     - "lib/valkyrie/model.rb"

@@ -9,6 +9,9 @@ A proof of concept "breakable toy" for enabling multiple backends for storage of
 
 ## Requirements
 
+### Ruby version
+Ruby 2.3 or above
+
 ### Postgres
 
 Valkyrie requires support for the JSON data type, which was introduced in version 9.4. As a result,
