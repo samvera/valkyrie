@@ -27,7 +27,7 @@ module Valkyrie::Persistence
     end
 
     def wipe!
-      persisters.each_entry { |persister| persister.wipe! }
+      persisters.each_entry(&:wipe!)
     end
   end
 end
