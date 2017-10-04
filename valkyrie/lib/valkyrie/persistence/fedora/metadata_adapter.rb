@@ -34,9 +34,5 @@ module Valkyrie::Persistence::Fedora
     def connection_prefix
       "#{connection.options}/#{base_path}"
     end
-
-    def wipe!
-      persister.wipe!
-    end
   end
 end
