@@ -62,3 +62,6 @@ RSpec/DescribeClass:
     - 'spec/routing/**/*'
     - 'spec/inputs/**/*'
     - 'spec/requests/**/*'
+Rails/Delegate:
+  Exclude:
+    - 'app/persisters/indexing_adapter.rb'

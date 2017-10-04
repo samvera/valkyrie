@@ -29,5 +29,9 @@ module Valkyrie::Persistence::Postgres
       orm_object.delete
       resource
     end
+
+    def wipe!
+      resource_factory.orm_class.delete_all
+    end
   end
 end

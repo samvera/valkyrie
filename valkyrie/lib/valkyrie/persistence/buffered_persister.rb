@@ -2,7 +2,7 @@
 module Valkyrie::Persistence
   class BufferedPersister
     attr_reader :persister, :buffer_class
-    delegate :adapter, to: :persister
+    delegate :adapter, :wipe!, to: :persister
     def initialize(persister, buffer_class: Valkyrie::Persistence::DeleteTrackingBuffer)
       @persister = persister
       @buffer_class = buffer_class

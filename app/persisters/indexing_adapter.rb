@@ -58,6 +58,10 @@ class IndexingAdapter
       composite_persister.delete(resource: resource)
     end
 
+    def wipe!
+      composite_persister.wipe!
+    end
+
     # Yields the primary persister. At the end of the block, this will use changes tracked
     # by an in-memory persister to replicate new and deleted objects into the
     # `index_persister` in bulk.

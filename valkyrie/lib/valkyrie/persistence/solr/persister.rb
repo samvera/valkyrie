@@ -25,6 +25,11 @@ module Valkyrie::Persistence::Solr
       repository([resource]).delete.first
     end
 
+    def wipe!
+      connection.delete_by_query("*:*")
+      connection.commit
+    end
+
     def repository(resources)
       Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection, resource_factory: resource_factory)
     end

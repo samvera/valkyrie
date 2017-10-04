@@ -35,6 +35,13 @@ module Valkyrie::Persistence::Fedora
       resource
     end
 
+    def wipe!
+      connection.delete(base_path)
+      connection.delete("#{base_path}/fcr:tombstone")
+    rescue => error
+      Valkyrie.logger.debug("Failed to wipe Fedora for some reason.") unless error.is_a?(::Ldp::NotFound)
+    end
+
     def initialize_repository
       @initialized ||=
         begin

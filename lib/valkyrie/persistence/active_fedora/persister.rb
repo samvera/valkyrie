@@ -18,6 +18,12 @@ module Valkyrie::Persistence::ActiveFedora
         instance(resource).delete
       end
 
+      def wipe!
+        ActiveFedora::SolrService.instance.conn.delete_by_query("*:*")
+        ActiveFedora::SolrService.instance.conn.commit
+        ActiveFedora::Cleaner.clean!
+      end
+
       def instance(resource)
         new(resource: resource)
       end
