@@ -74,6 +74,7 @@ module Valkyrie
         value = Array.wrap(send(field.to_s)).first
         send("#{field}=", value)
       end
+      super
       self
     end
 
