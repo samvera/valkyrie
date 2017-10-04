@@ -151,4 +151,11 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     persister.delete(resource: persisted)
     expect { query_service.find_by(id: persisted.id) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
   end
+
+  it "can delete all objects" do
+    resource2 = resource_class.new
+    results = persister.save_all(resources: [resource, resource2])
+    persister.wipe!
+    expect(query_service.find_all.to_a.length).to eq 0
+  end
 end

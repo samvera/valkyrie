@@ -36,10 +36,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def wipe!
-      connection.delete(base_path)
-      connection.delete("#{base_path}/fcr:tombstone")
-    rescue => error
-      Valkyrie.logger.debug("Failed to wipe Fedora for some reason.") unless error.is_a?(::Ldp::NotFound)
+      persister.wipe!
     end
   end
 end

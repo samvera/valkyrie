@@ -25,5 +25,9 @@ module Valkyrie::Persistence
     def delete(resource:)
       persisters.inject(resource) { |m, persister| persister.delete(resource: m) }
     end
+
+    def wipe!
+      persisters.each_entry { |persister| persister.wipe! }
+    end
   end
 end

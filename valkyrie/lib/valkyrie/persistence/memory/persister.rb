@@ -34,6 +34,10 @@ module Valkyrie::Persistence::Memory
       cache.delete(resource.id)
     end
 
+    def wipe!
+      cache.clear
+    end
+
     private
 
       def generate_id(resource)

@@ -20,6 +20,10 @@ module Valkyrie::Persistence
       persister.delete(resource: resource)
     end
 
+    def wipe!
+      persister.wipe!
+    end
+
     def with_buffer
       memory_buffer = buffer_class.new
       yield [Valkyrie::Persistence::CompositePersister.new(self, memory_buffer.persister), memory_buffer]
