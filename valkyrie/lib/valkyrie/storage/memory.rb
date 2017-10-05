@@ -17,9 +17,9 @@ module Valkyrie::Storage
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    # @return [nil] if nothing is found
+    # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      return unless handles?(id: id) && cache[id]
+      raise Valkyrie::StorageAdapter::FileNotFound unless cache[id]
       cache[id]
     end
 

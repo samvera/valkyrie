@@ -43,6 +43,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect { IO.copy_stream(file, new_file) }.not_to raise_error
 
     storage_adapter.delete(id: uploaded_file.id)
-    expect(storage_adapter.find_by(id: uploaded_file.id)).to eq nil
+    expect { storage_adapter.find_by(id: uploaded_file.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+    expect { storage_adapter.find_by(id: Valkyrie::ID.new("noexist")) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
   end
 end
