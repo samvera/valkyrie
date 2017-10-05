@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require 'valkyrie/persistence/postgres/queries'
 module Valkyrie::Persistence::Postgres
   class QueryService
     attr_reader :adapter
@@ -32,7 +31,8 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:)
-      Valkyrie::Persistence::Postgres::Queries::FindMembersQuery.new(resource, resource_factory: resource_factory).run
+      return if resource.id.blank?
+      run_query(find_members_query, resource.id.to_s)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
@@ -42,12 +42,44 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
-      Valkyrie::Persistence::Postgres::Queries::FindReferencesQuery.new(resource, property, resource_factory: resource_factory).run
+      return [] if resource.id.blank? || resource[property].blank?
+      run_query(find_references_query, property, resource.id.to_s)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
-      Valkyrie::Persistence::Postgres::Queries::FindInverseReferencesQuery.new(resource, property, resource_factory: resource_factory).run
+      internal_array = "[{\"id\": \"#{resource.id}\"}]"
+      run_query(find_inverse_references_query, property, internal_array)
+    end
+
+    def run_query(query, *args)
+      orm_class.find_by_sql(([query] + args)).lazy.map do |object|
+        resource_factory.to_resource(object: object)
+      end
+    end
+
+    def find_members_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        ORDER BY b.member_pos
+      SQL
+    end
+
+    def find_inverse_references_query
+      <<-SQL
+        SELECT * FROM orm_resources WHERE
+        metadata->? @> ?
+      SQL
+    end
+
+    def find_references_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) AS b(member)
+        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+      SQL
     end
   end
 end
