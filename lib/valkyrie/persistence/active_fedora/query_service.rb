@@ -29,6 +29,10 @@ module Valkyrie::Persistence::ActiveFedora
       def find_inverse_references_by(resource:, property:)
         Valkyrie::Persistence::ActiveFedora::Queries::FindInverseReferencesQuery.new(resource, property).run
       end
+
+      def custom_queries
+        @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
+      end
     end
   end
 end

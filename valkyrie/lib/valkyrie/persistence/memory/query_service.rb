@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Memory
   class QueryService
-    attr_reader :adapter
+    attr_reader :adapter, :query_handlers
     delegate :cache, to: :adapter
     # @param adapter [Valkyrie::Persistence::Memory::MetadataAdapter] The adapter which
     #   has the cache to query.
     def initialize(adapter:)
       @adapter = adapter
+      @query_handlers = []
     end
 
     # @param id [Valkyrie::ID] The ID to query for.
@@ -81,6 +82,10 @@ module Valkyrie::Persistence::Memory
 
     def member_ids(resource:)
       resource.member_ids || []
+    end
+
+    def custom_queries
+      @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
   end
 end

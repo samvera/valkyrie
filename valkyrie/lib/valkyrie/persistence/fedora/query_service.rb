@@ -76,5 +76,9 @@ module Valkyrie::Persistence::Fedora
         find_by(id: id)
       end
     end
+
+    def custom_queries
+      @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
+    end
   end
 end

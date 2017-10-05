@@ -81,5 +81,9 @@ module Valkyrie::Persistence::Postgres
         JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
       SQL
     end
+
+    def custom_queries
+      @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
+    end
   end
 end
