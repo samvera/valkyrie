@@ -2,11 +2,14 @@
 class ChangeSetPersister
   attr_reader :metadata_adapter, :storage_adapter
   delegate :persister, :query_service, to: :metadata_adapter
+  # @param [Valkyrie::MetadataAdapter] metadata_adapter
+  # @param [Valkyrie::StorageAdapter] storage_adapter
   def initialize(metadata_adapter:, storage_adapter:)
     @metadata_adapter = metadata_adapter
     @storage_adapter = storage_adapter
   end
 
+  # @param [Valkyrie::ChangeSet] change_set
   def save(change_set:)
     before_save(change_set: change_set)
     persister.save(resource: change_set.resource).tap do |output|
@@ -14,11 +17,13 @@ class ChangeSetPersister
     end
   end
 
+  # @param [Valkyrie::ChangeSet] change_set
   def delete(change_set:)
     before_delete(change_set: change_set)
     persister.delete(resource: change_set.resource)
   end
 
+  # @param [Valkyrie::ChangeSet] change_set
   def save_all(change_sets:)
     change_sets.map do |change_set|
       save(change_set: change_set)
@@ -46,6 +51,8 @@ class ChangeSetPersister
       appender.append_to(change_set.resource)
     end
 
+    # @param [Valkyrie::ChangeSet] change_set
+    # @return [Array<File>] a list of files
     def files(change_set:)
       change_set.try(:files) || []
     end
