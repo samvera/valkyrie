@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 source "https://rubygems.org"
 
+git_source(:github) do |repo_name|
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  "https://github.com/#{repo_name}.git"
+end
+
 gem 'activerecord-import'
 gem "autoprefixer-rails"
 gem 'devise'
@@ -16,7 +21,6 @@ gem "simple_form"
 gem "sprockets", ">= 3.0.0"
 gem "sprockets-es6"
 gem "sqlite3"
-gem "suspenders"
 gem "title"
 gem "uglifier"
 
