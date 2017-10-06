@@ -21,7 +21,6 @@ gem "simple_form"
 gem "sprockets", ">= 3.0.0"
 gem "sprockets-es6"
 gem "sqlite3"
-gem "suspenders"
 gem "title"
 gem "uglifier"
 
