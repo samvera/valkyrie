@@ -10,4 +10,13 @@ RSpec.describe Valkyrie::MetadataAdapter do
       expect(described_class.find(:test_adapter)).to eq adapter
     end
   end
+
+  describe '.find' do
+    subject(:find) { described_class.find(:huh?) }
+    context 'when no adapter is registered' do
+      it 'raises an error' do
+        expect { find }.to raise_error "Unable to find unregistered adapter `huh?'"
+      end
+    end
+  end
 end
