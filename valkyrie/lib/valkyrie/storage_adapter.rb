@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie
   class StorageAdapter
+    class FileNotFound < StandardError; end
     class_attribute :storage_adapters
     self.storage_adapters = {}
     class << self
@@ -30,10 +31,24 @@ module Valkyrie
       # with the given identifier.
       # @param id [Valkyrie::ID]
       # @return [Valkyrie::StorageAdapter::File]
+      # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
       def find_by(id:)
+        adapter_for(id: id).find_by(id: id)
+      end
+
+      # Search through all registered storage adapters until it finds one that
+      # can handle the passed in identifier.  The call delete on that adapter
+      # with the given identifier.
+      # @param id [Valkyrie::ID]
+      def delete(id:)
+        adapter_for(id: id).delete(id: id)
+      end
+
+      # Return the registered storage adapter which handles the given ID.
+      def adapter_for(id:)
         storage_adapters.values.find do |storage_adapter|
           storage_adapter.handles?(id: id)
-        end.find_by(id: id)
+        end
       end
     end
 

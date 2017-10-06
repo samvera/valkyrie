@@ -31,9 +31,18 @@ module Valkyrie::Storage
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::File]
+    # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      return unless handles?(id: id)
       Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id), 'rb'))
+    rescue Errno::ENOENT
+      raise Valkyrie::StorageAdapter::FileNotFound
+    end
+
+    # Delete the file on disk associated with the given identifier.
+    # @param id [Valkyrie::ID]
+    def delete(id:)
+      path = file_path(id)
+      FileUtils.rm_rf(path) if File.exist?(path)
     end
 
     class BucketedStorage
