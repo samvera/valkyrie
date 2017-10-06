@@ -15,7 +15,9 @@ module Valkyrie
       # @param short_name [Symbol]
       # @return [#persister,#query_service]
       def find(short_name)
-        adapters[short_name.to_sym]
+        symbolized_key = short_name.to_sym
+        return adapters[symbolized_key] if adapters.key?(symbolized_key)
+        raise "Unable to find unregistered adapter `#{short_name}'"
       end
     end
   end
