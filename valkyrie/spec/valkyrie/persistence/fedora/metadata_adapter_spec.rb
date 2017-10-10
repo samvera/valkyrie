@@ -8,7 +8,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter do
 
   describe "#schema" do
     context "by default" do
-      specify { expect(adapter.schema).to eq({}) }
+      specify { expect(adapter.schema).to be_a Valkyrie::Persistence::Fedora::PermissiveSchema }
     end
 
     context "with a custom schema" do

@@ -26,7 +26,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
   end
 
   context "with the default schema" do
-    let(:schema) { {} }
+    let(:schema) { Valkyrie::Persistence::Fedora::PermissiveSchema.new }
     let(:query)  { converter.convert.graph.query(predicate: RDF::URI("http://example.com/predicate/title")) }
 
     it "persists to Fedora using a fake predicate" do
@@ -35,7 +35,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
   end
 
   context "with a defined schema" do
-    let(:schema) { { title: ::RDF::Vocab::DC.title } }
+    let(:schema) { Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: ::RDF::Vocab::DC.title) }
     let(:query)  { converter.convert.graph.query(predicate: ::RDF::Vocab::DC.title) }
 
     it "persists to Fedora using the defined predicate" do

@@ -13,7 +13,7 @@ module Valkyrie::Persistence::Fedora
       def convert
         graph_resource.graph.delete([nil, nil, nil])
         resource.attributes.each do |key, values|
-          output = property_converter.for(Property.new(subject_uri, key, values, adapter)).result
+          output = property_converter.for(Property.new(subject_uri, key, values, adapter, resource)).result
           graph_resource.graph << output.to_graph
         end
         graph_resource
@@ -32,13 +32,15 @@ module Valkyrie::Persistence::Fedora
       end
 
       class Property
-        attr_reader :key, :value, :subject, :adapter
+        attr_reader :key, :value, :subject, :adapter, :resource
+        delegate :schema, to: :adapter
 
-        def initialize(subject, key, value, adapter)
+        def initialize(subject, key, value, adapter, resource)
           @subject = subject
           @key = key
           @value = value
           @adapter = adapter
+          @resource = resource
         end
 
         def to_graph(graph = RDF::Graph.new)
@@ -49,7 +51,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def predicate
-          adapter.schema.fetch(key, ::RDF::URI("http://example.com/predicate/#{key}"))
+          schema.predicate_for(resource: resource, property: key)
         end
       end
 
@@ -68,12 +70,13 @@ module Valkyrie::Persistence::Fedora
       end
 
       class GraphProperty
-        attr_reader :key, :graph, :subject, :adapter
-        def initialize(subject, key, graph, adapter)
+        attr_reader :key, :graph, :subject, :adapter, :resource
+        def initialize(subject, key, graph, adapter, resource)
           @subject = subject
           @key = key
           @graph = graph
           @adapter = adapter
+          @resource = resource
         end
 
         def to_graph(passed_graph = RDF::Graph.new)
@@ -93,7 +96,7 @@ module Valkyrie::Persistence::Fedora
         def result
           initialize_list
           apply_first_and_last
-          GraphProperty.new(value.subject, value.key, graph, value.adapter)
+          GraphProperty.new(value.subject, value.key, graph, value.adapter, value.resource)
         end
 
         def graph
@@ -108,7 +111,7 @@ module Valkyrie::Persistence::Fedora
 
         def initialize_list
           Array(value.value).each_with_index do |val, index|
-            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, :member_id, val, value.adapter)).result.value)
+            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, :member_id, val, value.adapter, value.resource)).result.value)
           end
         end
 
@@ -125,7 +128,7 @@ module Valkyrie::Persistence::Fedora
 
         def result
           nested_graph << RDF::Statement.new(value.subject, value.predicate, subject_uri)
-          GraphProperty.new(value.subject, value.key, nested_graph, value.adapter)
+          GraphProperty.new(value.subject, value.key, nested_graph, value.adapter, value.resource)
         end
 
         def nested_graph
@@ -144,7 +147,18 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/predicate/valkyrie_id")), value.adapter)).result
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value,
+                datatype: RDF::URI("http://example.com/predicate/valkyrie_id")
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
         end
       end
 
@@ -155,7 +169,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, value.adapter.id_to_uri(value.value), value.adapter)).result
+          calling_mapper.for(Property.new(value.subject, value.key, value.adapter.id_to_uri(value.value), value.adapter, value.resource)).result
         end
       end
 
@@ -166,7 +180,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, value.value.to_datetime, value.adapter)).result
+          calling_mapper.for(Property.new(value.subject, value.key, value.value.to_datetime, value.adapter, value.resource)).result
         end
       end
 
@@ -177,7 +191,18 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, RDF::Literal.new(value.value, datatype: RDF::URI("http://example.com/predicate/valkyrie_id")), value.adapter)).result
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value,
+                datatype: RDF::URI("http://example.com/predicate/valkyrie_id")
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
         end
       end
 
@@ -189,7 +214,7 @@ module Valkyrie::Persistence::Fedora
 
         def result
           new_values = value.value.map do |val|
-            calling_mapper.for(Property.new(value.subject, value.key, val, value.adapter)).result
+            calling_mapper.for(Property.new(value.subject, value.key, val, value.adapter, value.resource)).result
           end
           CompositeProperty.new(new_values)
         end
