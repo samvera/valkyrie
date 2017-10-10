@@ -33,7 +33,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def connection_prefix
-      "#{connection.options}/#{base_path}"
+      "#{connection.http.url_prefix}/#{base_path}"
     end
   end
 end
