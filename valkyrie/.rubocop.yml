@@ -26,3 +26,5 @@ Style/PredicateName:
   Exclude:
     - "lib/valkyrie/resource.rb"
     - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true

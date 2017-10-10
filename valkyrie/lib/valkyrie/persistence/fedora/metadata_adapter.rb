@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
   class MetadataAdapter
-    attr_reader :connection, :base_path
-    def initialize(connection:, base_path: "/")
+    attr_reader :connection, :base_path, :schema
+    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new)
       @connection = connection
       @base_path = base_path
+      @schema = schema
     end
 
     def query_service
