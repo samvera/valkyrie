@@ -30,9 +30,13 @@ module Valkyrie::Persistence::Postgres
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
-    def find_members(resource:)
+    def find_members(resource:, model: nil)
       return if resource.id.blank?
-      run_query(find_members_query, resource.id.to_s)
+      if model
+        run_query(find_members_with_type_query, resource.id.to_s, model.to_s)
+      else
+        run_query(find_members_query, resource.id.to_s)
+      end
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
@@ -63,6 +67,16 @@ module Valkyrie::Persistence::Postgres
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
         JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        ORDER BY b.member_pos
+      SQL
+    end
+
+    def find_members_with_type_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        AND member.internal_resource = ?
         ORDER BY b.member_pos
       SQL
     end

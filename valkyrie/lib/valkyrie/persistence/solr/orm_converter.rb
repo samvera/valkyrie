@@ -21,7 +21,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def internal_resource
-      solr_document["internal_resource_ssim"].first
+      solr_document[Valkyrie::Persistence::Solr::Queries::MODEL].first
     end
 
     def attributes

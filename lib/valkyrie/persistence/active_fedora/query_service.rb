@@ -14,8 +14,8 @@ module Valkyrie::Persistence::ActiveFedora
         Valkyrie::Persistence::ActiveFedora::Queries::FindByIdQuery.new(id).run
       end
 
-      def find_members(resource:)
-        Valkyrie::Persistence::ActiveFedora::Queries::FindMembersQuery.new(resource).run
+      def find_members(resource:, model: nil)
+        Valkyrie::Persistence::ActiveFedora::Queries::FindMembersQuery.new(resource, model).run
       end
 
       def find_parents(resource:)

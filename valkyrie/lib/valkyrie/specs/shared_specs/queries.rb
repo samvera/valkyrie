@@ -6,7 +6,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     class CustomResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
-      attribute :member_ids
+      attribute :member_ids, Valkyrie::Types::Array
       attribute :a_member_of
     end
     class SecondResource < Valkyrie::Resource
@@ -63,20 +63,58 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   end
 
   describe ".find_members" do
-    it "returns all a resource's members in order" do
-      child1 = persister.save(resource: resource_class.new)
-      child2 = persister.save(resource: resource_class.new)
-      parent = persister.save(resource: resource_class.new(member_ids: [child2.id, child1.id]))
+    context "without filtering by model" do
+      subject { query_service.find_members(resource: parent) }
 
-      expect(query_service.find_members(resource: parent).map(&:id).to_a).to eq [child2.id, child1.id]
-      expect(query_service.find_by(id: parent.id).member_ids).to eq [child2.id, child1.id]
+      context "when the object has members" do
+        let!(:child1) { persister.save(resource: resource_class.new) }
+        let!(:child2) { persister.save(resource: resource_class.new) }
+        let(:parent) { persister.save(resource: resource_class.new(member_ids: [child2.id, child1.id])) }
+
+        it "returns all a resource's members in order" do
+          expect(subject.map(&:id).to_a).to eq [child2.id, child1.id]
+        end
+      end
+
+      context "when there's no resource ID" do
+        let(:parent) { resource_class.new }
+
+        it "doesn't error" do
+          expect(subject.to_a).to eq []
+        end
+      end
+
+      context "when there are no members" do
+        let(:parent) { persister.save(resource: resource_class.new) }
+
+        it "returns an empty array" do
+          expect(subject.to_a).to eq []
+        end
+      end
     end
-    it "doesn't error when there's no resource ID" do
-      parent = resource_class.new
-      expect(query_service.find_members(resource: parent).to_a).to eq []
-    end
-    it "returns an empty array if there are none" do
-      expect(query_service.find_all.to_a).to eq []
+
+    context "filtering by model" do
+      subject { query_service.find_members(resource: parent, model: SecondResource) }
+
+      context "when the object has members" do
+        let(:child1) { persister.save(resource: SecondResource.new) }
+        let(:child2) { persister.save(resource: resource_class.new) }
+        let(:child3) { persister.save(resource: SecondResource.new) }
+        let(:parent) { persister.save(resource: resource_class.new(member_ids: [child3.id, child2.id, child1.id])) }
+
+        it "returns all a resource's members in order" do
+          expect(subject.map(&:id).to_a).to eq [child3.id, child1.id]
+        end
+      end
+
+      context "when there are no members that match the filter" do
+        let(:child1) { persister.save(resource: resource_class.new) }
+        let(:parent) { persister.save(resource: resource_class.new(member_ids: [child1.id])) }
+
+        it "returns an empty array" do
+          expect(subject.to_a).to eq []
+        end
+      end
     end
   end
 

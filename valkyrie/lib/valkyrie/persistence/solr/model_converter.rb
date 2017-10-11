@@ -9,7 +9,8 @@ module Valkyrie::Persistence::Solr
     end
 
     def convert!
-      to_h.merge(internal_resource_ssim: [resource.internal_resource]).merge(indexer_solr(resource))
+      to_h.merge(Valkyrie::Persistence::Solr::Queries::MODEL.to_sym => [resource.internal_resource])
+          .merge(indexer_solr(resource))
     end
 
     def indexer_solr(resource)

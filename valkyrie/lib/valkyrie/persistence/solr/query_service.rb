@@ -31,8 +31,8 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
-    def find_members(resource:)
-      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(resource: resource, connection: connection, resource_factory: resource_factory).run
+    def find_members(resource:, model: nil)
+      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(resource: resource, model: model, connection: connection, resource_factory: resource_factory).run
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)

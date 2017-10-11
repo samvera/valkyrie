@@ -31,10 +31,12 @@ module Valkyrie::Persistence::Fedora
       ]
     end
 
-    def find_members(resource:)
-      Array(resource.member_ids).lazy.map do |id|
+    def find_members(resource:, model: nil)
+      result = Array(resource.member_ids).lazy.map do |id|
         find_by(id: id)
       end.select(&:present?)
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
     def find_all
