@@ -54,7 +54,7 @@ module Valkyrie::Persistence::ActiveFedora::ORM
     accepts_nested_attributes_for :nested_resource
 
     def size=(size)
-      file_size = size
+      self.file_size = size
     end
 
     def size

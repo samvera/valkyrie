@@ -24,9 +24,6 @@ Naming/PredicateName:
 Style/MethodMissing:
   Exclude:
     - "lib/valkyrie/persistence/active_fedora/resource_factory.rb"
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/valkyrie/persistence/active_fedora/orm/resource.rb'
 Metrics/BlockLength:
   Exclude:
     - 'config/environments/**/*'
