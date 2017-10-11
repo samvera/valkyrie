@@ -8,7 +8,8 @@ AllCops:
     - 'bin/*'
     - 'config/deploy.rb'
     - 'vendor/**/*'
-    - 'valkyrie/**/*'
+    - 'valkyrie/db/**/*'
+    - 'valkyrie/bin/**/*'
     - 'db/schema.rb'
 Naming/FileName:
   Enabled: true
