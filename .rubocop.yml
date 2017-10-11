@@ -1,3 +1,6 @@
+# At present, the Rubocop enforcement of Valkyrie is in two parts, as
+# defined in the CI configuration (./circle.yml). To support these two
+# parts, there are two files: ./.rubocop.yml and ./valkyrie/.rubocop.yml
 require: rubocop-rspec
 inherit_gem:
   bixby: bixby_default.yml
