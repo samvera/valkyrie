@@ -44,7 +44,7 @@ module Valkyrie::Persistence::ActiveFedora
           end
 
           def ordered_member_ids
-            solr_hit.fetch("member_ids_ssim", [])
+            solr_hit.fetch(Valkyrie::Persistence::Solr::Queries::MEMBER_IDS, [])
           end
 
           def read_groups
@@ -64,7 +64,7 @@ module Valkyrie::Persistence::ActiveFedora
           end
 
           def internal_resource
-            Array.wrap(solr_hit.fetch("internal_resource_ssim")).first
+            Array.wrap(solr_hit.fetch(Valkyrie::Persistence::Solr::Queries::MODEL)).first
           end
 
           def create_date

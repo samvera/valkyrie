@@ -18,7 +18,7 @@ class SolrDocument
   use_extension(Blacklight::Document::DublinCore)
 
   def member_ids
-    fetch(:member_ids_ssim, []).map do |id|
+    fetch(Valkyrie::Persistence::Solr::Queries::MEMBER_IDS, []).map do |id|
       if id.start_with?("id-")
         Valkyrie::ID.new(id.gsub(/^id-/, ''))
       else

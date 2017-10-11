@@ -23,7 +23,7 @@ module Valkyrie::Persistence::Memory
       cache.values
     end
 
-    # @param resource [Class] Class to query for.
+    # @param model [Class] Class to query for.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend
     #   with the given class.
     def find_all_of_model(model:)
@@ -33,12 +33,15 @@ module Valkyrie::Persistence::Memory
     end
 
     # @param resource [Valkyrie::Resource] Model whose members are being searched for.
-    # @return [Array<Valkyrie::Resource>] All child objects referenced by `resource`'s
-    #   `member_ids` method. Returned in order.
-    def find_members(resource:)
-      member_ids(resource: resource).map do |id|
+    # @param model [Class] Class to query for. (optional)
+    # @return [Array<Valkyrie::Resource>] child objects of type `model` referenced by
+    #   `resource`'s `member_ids` method. Returned in order.
+    def find_members(resource:, model: nil)
+      result = member_ids(resource: resource).map do |id|
         find_by(id: id)
       end
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
     # @param resource [Valkyrie::Resource] Model whose property is being searched.

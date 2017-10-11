@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
   class FindMembersQuery
-    attr_reader :resource, :connection, :resource_factory
-    def initialize(resource:, connection:, resource_factory:)
+    attr_reader :resource, :connection, :resource_factory, :model
+    def initialize(resource:, connection:, resource_factory:, model:)
       @resource = resource
       @connection = connection
       @resource_factory = resource_factory
+      @model = model
     end
 
     def run
@@ -25,7 +26,9 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def docs
-      connection.get("select", params: { q: query, rows: 1_000_000_000 })["response"]["docs"]
+      options = { q: query, rows: 1_000_000_000 }
+      options[:fq] = "{!raw f=internal_resource_ssim}SecondResource" if model
+      connection.get("select", params: options)["response"]["docs"]
     end
 
     def member_ids
@@ -33,7 +36,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      "{!join from=member_ids_ssim to=id}id:#{id}"
+      "{!join from=#{MEMBER_IDS} to=id}id:#{id}"
     end
 
     def id

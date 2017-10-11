@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::ActiveFedora::Queries
   class FindMembersQuery
-    attr_reader :obj
+    attr_reader :obj, :model
     delegate :id, to: :obj
-    def initialize(obj)
+    def initialize(obj, model)
       @obj = obj
+      @model = model
     end
 
     def run
@@ -16,9 +17,15 @@ module Valkyrie::Persistence::ActiveFedora::Queries
 
     private
 
+      def solr_query
+        "{!join from=ordered_targets_ssim to=id}proxy_in_ssi:#{id}"
+      end
+
       def ordered_docs
         @ordered_docs ||= begin
-                            ActiveFedora::SolrService.query("{!join from=ordered_targets_ssim to=id}proxy_in_ssi:#{id}", rows: 100_000).sort_by { |x| ordered_ids.index(x["id"]) }
+                            opts = { rows: 100_000 }
+                            opts[:fq] = "{!raw f=internal_resource_ssim}SecondResource" if model
+                            ActiveFedora::SolrService.query(solr_query, opts).sort_by { |x| ordered_ids.index(x["id"]) }
                           end
       end
 
