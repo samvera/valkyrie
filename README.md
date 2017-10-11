@@ -108,3 +108,12 @@ Valkyrie is available under [the Apache 2.0 license](LICENSE).
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/samvera-labs/valkyrie/.
+
+### Anatomy of this Repository
+
+Valkyrie began as a proof of concept; a "breakable toy." From the early demonstrations, it has become clear that there is a larger interest in the core functionality of Valkyrie. This repository, at present contains two high level ideas:
+
+1. A gem defined and contained in the `./valkyrie` subdirectory.
+1. A Rails application, built at `./`, that leverages the Valkyrie gem.
+
+By keeping the gem code close to a functioning application, we are able to iterate towards extraction. At some point, we envision that everything except what is in `./valkyrie` would be removed, and the contents of the `./valkyrie` directory would be promoted in the directory structure to look like what you might expect a gem to look like.
