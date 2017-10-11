@@ -6,7 +6,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     class CustomResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title
-      attribute :member_ids
+      attribute :member_ids, Valkyrie::Types::Array
       attribute :a_member_of
     end
     class SecondResource < Valkyrie::Resource
@@ -76,7 +76,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(query_service.find_members(resource: parent).to_a).to eq []
     end
     it "returns an empty array if there are none" do
-      expect(query_service.find_all.to_a).to eq []
+      parent = persister.save(resource: resource_class.new)
+      expect(query_service.find_members(resource: parent).to_a).to eq []
     end
   end
 
