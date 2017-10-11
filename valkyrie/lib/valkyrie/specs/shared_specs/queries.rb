@@ -80,6 +80,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         let(:parent) { resource_class.new }
 
         it "doesn't error" do
+          expect(subject).not_to eq nil
           expect(subject.to_a).to eq []
         end
       end
