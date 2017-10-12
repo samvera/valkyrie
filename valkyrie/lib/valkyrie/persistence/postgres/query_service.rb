@@ -31,7 +31,7 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
-      return if resource.id.blank?
+      return [] if resource.id.blank?
       if model
         run_query(find_members_with_type_query, resource.id.to_s, model.to_s)
       else
