@@ -258,7 +258,8 @@ module Valkyrie::Persistence::Fedora
 
         class Applicator
           attr_reader :property
-          delegate :statement, to: :property
+          delegate :statement, :adapter, to: :property
+          delegate :schema, to: :adapter
           def initialize(property)
             @property = property
           end
@@ -271,8 +272,9 @@ module Valkyrie::Persistence::Fedora
 
           def key
             key = statement.predicate.to_s
+            key = schema.property_for(resource: nil, predicate: key)
             namespaces.each do |namespace|
-              key = key.gsub(/^#{namespace}/, '')
+              key = key.to_s.gsub(/^#{namespace}/, '')
             end
             key
           end
@@ -302,8 +304,7 @@ module Valkyrie::Persistence::Fedora
           def namespaces
             [
               "http://www.fedora.info/definitions/v4/",
-              "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-              "http://example.com/predicate/"
+              "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             ]
           end
 
