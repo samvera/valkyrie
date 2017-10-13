@@ -9,5 +9,9 @@ module Valkyrie::Persistence::Fedora
     def predicate_for(resource:, property:)
       schema.fetch(property, ::RDF::URI("http://example.com/predicate/#{property}"))
     end
+
+    def property_for(resource:, predicate:)
+      (schema.find { |_k, v| v == RDF::URI(predicate.to_s) } || []).first || predicate.to_s.gsub("http://example.com/predicate/", "")
+    end
   end
 end
