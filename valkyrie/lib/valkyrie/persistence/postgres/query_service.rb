@@ -24,6 +24,7 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
+      validate_id(id)
       resource_factory.to_resource(object: orm_class.find(id))
     rescue ActiveRecord::RecordNotFound
       raise Valkyrie::Persistence::ObjectNotFoundError
@@ -99,5 +100,11 @@ module Valkyrie::Persistence::Postgres
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
+
+    private
+
+      def validate_id(id)
+        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
   end
 end

@@ -57,8 +57,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       expect(query_service.find_by(id: resource.id).id).to eq resource.id
     end
+
     it "returns a Valkyrie::Persistence::ObjectNotFoundError for a non-found ID" do
-      expect { query_service.find_by(id: "123123123") }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+      expect { query_service.find_by(id: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+
+    it 'raises an error if the id is not a Valkyrie::ID' do
+      expect { query_service.find_by(id: "123123123") }.to raise_error ArgumentError
     end
   end
 

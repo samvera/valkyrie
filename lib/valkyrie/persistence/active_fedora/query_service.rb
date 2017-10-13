@@ -11,6 +11,7 @@ module Valkyrie::Persistence::ActiveFedora
       end
 
       def find_by(id:)
+        validate_id(id)
         Valkyrie::Persistence::ActiveFedora::Queries::FindByIdQuery.new(id).run
       end
 
@@ -33,6 +34,12 @@ module Valkyrie::Persistence::ActiveFedora
       def custom_queries
         @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
       end
+
+      private
+
+        def validate_id(id)
+          raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+        end
     end
   end
 end

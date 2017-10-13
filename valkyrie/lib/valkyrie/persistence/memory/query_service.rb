@@ -15,6 +15,7 @@ module Valkyrie::Persistence::Memory
     #   isn't in the persistence backend.
     # @return [Valkyrie::Resource] The object being searched for.
     def find_by(id:)
+      validate_id(id)
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
@@ -90,5 +91,11 @@ module Valkyrie::Persistence::Memory
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
+
+    private
+
+      def validate_id(id)
+        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
   end
 end

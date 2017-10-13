@@ -12,6 +12,7 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
+      validate_id(id)
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
 
@@ -48,5 +49,11 @@ module Valkyrie::Persistence::Solr
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
+
+    private
+
+      def validate_id(id)
+        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
   end
 end

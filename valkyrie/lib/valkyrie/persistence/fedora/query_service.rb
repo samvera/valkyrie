@@ -8,6 +8,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def find_by(id:)
+      validate_id(id)
       uri = adapter.id_to_uri(id)
       begin
         resource = Ldp::Resource.for(connection, uri, connection.get(uri))
@@ -82,5 +83,11 @@ module Valkyrie::Persistence::Fedora
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
+
+    private
+
+      def validate_id(id)
+        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
   end
 end
