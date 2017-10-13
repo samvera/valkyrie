@@ -12,7 +12,7 @@ module Valkyrie::Persistence::Memory
     # @return [Valkyrie::Persistence::Memory::QueryService] A query service for
     #   this adapter.
     def query_service
-      Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
+      @query_service ||= Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
     end
 
     def cache

@@ -22,7 +22,10 @@ module Valkyrie::Persistence::Solr
     # @return [Valkyrie::Persistence::Solr::QueryService] The solr query
     #   service.
     def query_service
-      Valkyrie::Persistence::Solr::QueryService.new(connection: connection, resource_factory: resource_factory)
+      @query_service ||= Valkyrie::Persistence::Solr::QueryService.new(
+        connection: connection,
+        resource_factory: resource_factory
+      )
     end
 
     # @return [Valkyrie::Persistence::Solr::ResourceFactory] A resource factory
