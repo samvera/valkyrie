@@ -15,6 +15,11 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_by_checksum)
+    def find_all_by_checksum(checksum:)
+      # TODO write the query
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run

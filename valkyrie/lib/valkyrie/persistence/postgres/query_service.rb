@@ -29,6 +29,11 @@ module Valkyrie::Persistence::Postgres
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_by_checksum)
+    def find_all_by_checksum(checksum:)
+      # TODO write the query
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
       return [] if resource.id.blank?
