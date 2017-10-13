@@ -24,11 +24,11 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      "{!join from=#{property}_ssim to=id}id:#{id}"
+      "{!join from=#{property}_ssim to=join_id_ssi}id:#{id}"
     end
 
     def id
-      "id-#{resource.id}"
+      resource.id.to_s
     end
   end
 end

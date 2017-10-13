@@ -19,7 +19,7 @@ module Valkyrie::Persistence::Solr
 
     # @return [String] The solr document ID
     def id
-      "id-#{resource.id}"
+      resource.id.to_s
     end
 
     # @return [String] ISO-8601 timestamp in UTC of the created_at for this solr
@@ -32,6 +32,7 @@ module Valkyrie::Persistence::Solr
     def to_h
       {
         "id": id,
+        "join_id_ssi": "id-#{id}",
         "created_at_dtsi": created_at
       }.merge(attribute_hash)
     end

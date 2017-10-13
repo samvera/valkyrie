@@ -31,7 +31,8 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
   describe "#to_h" do
     it "maps all available properties to the solr record" do
       expect(mapper.convert!).to eq(
-        id: "id-#{resource.id}",
+        id: resource.id.to_s,
+        join_id_ssi: "id-#{resource.id}",
         title_ssim: ["Test", "French"],
         title_tesim: ["Test", "French"],
         title_tsim: ["Test", "French"],

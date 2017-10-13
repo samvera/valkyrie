@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def id
-      "id-#{@id}"
+      @id.to_s
     end
 
     def resource

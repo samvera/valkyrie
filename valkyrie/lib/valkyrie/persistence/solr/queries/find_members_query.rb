@@ -14,6 +14,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def each
+      return [] unless resource.id.present?
       unordered_members.sort_by { |x| member_ids.index(x.id) }.each do |member|
         yield member
       end
@@ -27,7 +28,7 @@ module Valkyrie::Persistence::Solr::Queries
 
     def docs
       options = { q: query, rows: 1_000_000_000 }
-      options[:fq] = "{!raw f=internal_resource_ssim}SecondResource" if model
+      options[:fq] = "{!raw f=internal_resource_ssim}#{model}" if model
       connection.get("select", params: options)["response"]["docs"]
     end
 
@@ -36,11 +37,11 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     def query
-      "{!join from=#{MEMBER_IDS} to=id}id:#{id}"
+      "{!join from=#{MEMBER_IDS} to=join_id_ssi}id:#{id}"
     end
 
     def id
-      "id-#{resource.id}"
+      resource.id.to_s
     end
   end
 end

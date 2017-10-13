@@ -47,7 +47,7 @@ RSpec.describe "Song Management" do
       parent_book = find_book(id)
       expect(parent_book.member_ids).not_to be_blank
 
-      expect(request).to redirect_to parent_solr_document_path(parent_id: id, id: "id-#{parent_book.member_ids.first}")
+      expect(request).to redirect_to parent_solr_document_path(parent_id: id, id: parent_book.member_ids.first.to_s)
     end
   end
 
