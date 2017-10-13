@@ -20,7 +20,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def delete
-      connection.delete_by_id resources.map { |resource| "id-#{resource.id}" }, params: { softCommit: true }
+      connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: { softCommit: true }
       resources
     end
 
