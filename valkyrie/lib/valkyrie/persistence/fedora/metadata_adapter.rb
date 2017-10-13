@@ -9,7 +9,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def query_service
-      Valkyrie::Persistence::Fedora::QueryService.new(adapter: self)
+      @query_service ||= Valkyrie::Persistence::Fedora::QueryService.new(adapter: self)
     end
 
     def persister
