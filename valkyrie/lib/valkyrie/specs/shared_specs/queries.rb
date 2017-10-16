@@ -18,14 +18,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     Object.send(:remove_const, :SecondResource)
   end
   let(:resource_class) { CustomResource }
-  let(:query_service) { adapter.query_service }
+  let(:query_service) { adapter.query_service } unless defined? query_service
   let(:persister) { adapter.persister }
   subject { adapter.query_service }
 
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
-  it { is_expected.to respond_to(:find_members).with_keywords(:resource) }
+  it { is_expected.to respond_to(:find_members).with_keywords(:resource, :model) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:resource) }
