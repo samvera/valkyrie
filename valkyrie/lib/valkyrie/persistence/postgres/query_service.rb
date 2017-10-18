@@ -53,8 +53,8 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
-      internal_array = "[{\"id\": \"#{resource.id}\"}]"
-      run_query(find_inverse_references_query, property, internal_array)
+      internal_array = "{\"#{property}\": [{\"id\": \"#{resource.id}\"}]}"
+      run_query(find_inverse_references_query, internal_array)
     end
 
     def run_query(query, *args)
@@ -85,7 +85,7 @@ module Valkyrie::Persistence::Postgres
     def find_inverse_references_query
       <<-SQL
         SELECT * FROM orm_resources WHERE
-        metadata->? @> ?
+        metadata @> ?
       SQL
     end
 
