@@ -23,8 +23,10 @@ module Valkyrie
       value.select(&:present?).uniq.map do |val|
         Anything[val]
       end
-    end.default([])
-    Array = Dry::Types['coercible.array'].default([])
+    end.default([].freeze)
+
+    Array = Dry::Types['coercible.array'].default([].freeze)
+
     # Used for when an input may be an array, but the output needs to be a
     # single string.
     SingleValuedString = Valkyrie::Types::String.constructor do |value|
