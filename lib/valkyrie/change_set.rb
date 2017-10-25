@@ -29,17 +29,17 @@ module Valkyrie
     end
 
     # Returns whether or not a given field has multiple values.
-    # @param field [Symbol]
+    # @param field_name [Symbol]
     # @return [Boolean]
-    def multiple?(field)
-      self.class.definitions[field.to_s][:multiple] != false
+    def multiple?(field_name)
+      field(field_name)[:multiple] != false
     end
 
     # Returns whether or not a given field is required.
-    # @param field [Symbol]
+    # @param field_name [Symbol]
     # @return [Boolean]
-    def required?(field)
-      self.class.definitions[field.to_s][:required] == true
+    def required?(field_name)
+      field(field_name)[:required] == true
     end
 
     # Quick setter for fields that should be in a changeset. Defaults to multiple,
@@ -87,5 +87,11 @@ module Valkyrie
       errors.clear
       super
     end
+
+    private
+
+      def field(field_name)
+        self.class.definitions.fetch(field_name.to_s)
+      end
   end
 end
