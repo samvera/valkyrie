@@ -7,10 +7,40 @@ RSpec.describe Valkyrie::Types do
       attribute :title, Valkyrie::Types::SingleValuedString
       attribute :authors, Valkyrie::Types::Array
       attribute :geonames_uri, Valkyrie::Types::URI
+      attribute :thumbnail_id, Valkyrie::Types::ID
     end
   end
   after do
     Object.send(:remove_const, :Resource)
+  end
+
+  describe 'The ID type' do
+    let(:resource) { Resource.new(thumbnail_id: thumbnail_id) }
+
+    context 'when an array of ids is passed in' do
+      # This happens from the Solr::ORMConverter
+      let(:thumbnail_id) { [Valkyrie::ID.new('123')] }
+
+      it 'uses the first' do
+        expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
+      end
+    end
+
+    context 'when a string is passed in' do
+      let(:thumbnail_id) { '123' }
+
+      it 'casts to a string' do
+        expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
+      end
+    end
+
+    context 'when an ID is passed in' do
+      let(:thumbnail_id) { Valkyrie::ID.new('123') }
+
+      it 'uses the passed in value' do
+        expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
+      end
+    end
   end
 
   describe 'The URI Type' do
