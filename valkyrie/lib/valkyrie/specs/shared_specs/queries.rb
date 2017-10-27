@@ -97,6 +97,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
           expect(subject.to_a).to eq []
         end
       end
+
+      context "when the model doesn't have member_ids" do
+        let(:parent) { persister.save(resource: SecondResource.new) }
+
+        it "returns an empty array" do
+          expect(subject.to_a).to eq []
+        end
+      end
     end
 
     context "filtering by model" do
@@ -167,6 +175,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       child1 = persister.save(resource: resource_class.new)
 
       expect(query_service.find_parents(resource: child1).to_a).to eq []
+    end
+
+    context "when the model doesn't have member_ids" do
+      let(:child1) { persister.save(resource: SecondResource.new) }
+
+      it "returns an empty array if there are none" do
+        expect(query_service.find_parents(resource: child1).to_a).to eq []
+      end
     end
   end
 

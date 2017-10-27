@@ -85,6 +85,7 @@ module Valkyrie::Persistence::Memory
     end
 
     def member_ids(resource:)
+      return [] unless resource.respond_to? :member_ids
       resource.member_ids || []
     end
 
