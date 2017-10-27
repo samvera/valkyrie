@@ -8,8 +8,18 @@ module Valkyrie
     ID = Dry::Types::Definition
          .new(Valkyrie::ID)
          .constructor do |input|
-           Valkyrie::ID.new(input)
-         end
+      Valkyrie::ID.new(input)
+    end
+    # Valkyrie::URI
+    URI = Dry::Types::Definition
+          .new(RDF::URI)
+          .constructor do |input|
+      if input.present?
+        RDF::URI.new(input.to_s)
+      else
+        input
+      end
+    end
     # Used for casting {Valkyrie::Resources} if possible.
     Anything = Valkyrie::Types::Any.constructor do |value|
       if value.respond_to?(:fetch) && value.fetch(:internal_resource, nil)
