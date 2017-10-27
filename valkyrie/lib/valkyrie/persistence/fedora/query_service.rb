@@ -33,6 +33,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def find_members(resource:, model: nil)
+      return [] unless resource.respond_to? :member_ids
       result = Array(resource.member_ids).lazy.map do |id|
         find_by(id: id)
       end.select(&:present?)
