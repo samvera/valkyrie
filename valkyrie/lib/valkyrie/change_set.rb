@@ -38,7 +38,7 @@ module Valkyrie
     # @param field [Symbol]
     # @return [Boolean]
     def required?(field)
-      self.class.definitions[field.to_s][:required]
+      self.class.definitions[field.to_s][:required] == true
     end
 
     # Quick setter for fields that should be in a changeset. Defaults to multiple,

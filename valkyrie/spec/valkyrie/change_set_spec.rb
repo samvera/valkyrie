@@ -37,8 +37,9 @@ RSpec.describe Valkyrie::ChangeSet do
     it "is true when marked" do
       expect(change_set.required?(:title)).to eq true
     end
+
     it "is false when not marked" do
-      expect(change_set.required?(:files)).not_to eq true
+      expect(change_set.required?(:files)).to eq false
     end
   end
 
