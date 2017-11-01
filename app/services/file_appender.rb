@@ -39,7 +39,9 @@ class FileAppender
   # @param [ActionDispatch::Http::UploadedFile] file
   def create_node(file)
     node = persister.save(resource: FileNode.for(file: file))
-    stored_file = storage_adapter.upload(file: file, resource: node)
+    stored_file = storage_adapter.upload(file: file,
+                                         original_filename: file.original_filename,
+                                         resource: node)
     node.file_identifiers = node.file_identifiers + [stored_file.id]
     node = Valkyrie::FileCharacterizationService.for(file_node: node, persister: persister).characterize(save: false)
     persister.save(resource: node)

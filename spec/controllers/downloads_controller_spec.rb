@@ -12,7 +12,12 @@ RSpec.describe DownloadsController do
 
   describe "GET /downloads/:id" do
     context "when there's a FileNode with that ID" do
-      let(:uploaded_file) { storage_adapter.upload(file: file, resource: file_node) }
+      let(:uploaded_file) do
+        storage_adapter.upload(file: file,
+                               original_filename: file.original_filename,
+                               resource: file_node)
+      end
+
       let(:file_node) { persister.save(resource: FileNode.new(mime_type: file.content_type, original_filename: file.original_filename)) }
       before do
         file_node.file_identifiers = uploaded_file.id

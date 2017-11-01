@@ -16,13 +16,13 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:handles?).with_keywords(:id) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
-  it { is_expected.to respond_to(:upload).with_keywords(:file, :resource) }
+  it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
 
   it "can upload, validate, re-fetch, and delete a file" do
     resource = CustomResource.new(id: "test")
     sha1 = Digest::SHA1.file(file).to_s
     size = file.size
-    expect(uploaded_file = storage_adapter.upload(file: file, resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
+    expect(uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
 
     expect(uploaded_file).to respond_to(:checksum).with_keywords(:digests)
     expect(uploaded_file).to respond_to(:valid?).with_keywords(:size, :digests)
