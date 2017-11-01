@@ -9,10 +9,11 @@ module Valkyrie::Storage
     end
 
     # @param file [IO]
+    # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, resource: nil)
-      new_path = path_generator.generate(resource: resource, file: file)
+    def upload(file:, original_filename:, resource: nil)
+      new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
       find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
@@ -51,8 +52,9 @@ module Valkyrie::Storage
         @base_path = base_path
       end
 
-      def generate(resource:, file:)
-        Pathname.new(base_path).join(*bucketed_path(resource.id)).join(file.original_filename)
+      def generate(resource:, file:, original_filename:)
+        raise ArgumentError, "original_filename must be provided" unless original_filename
+        Pathname.new(base_path).join(*bucketed_path(resource.id)).join(original_filename)
       end
 
       def bucketed_path(id)
