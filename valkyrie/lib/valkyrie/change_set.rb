@@ -81,5 +81,9 @@ module Valkyrie
     def resource
       model
     end
+
+    def valid?
+      super if errors.clear.empty?
+    end
   end
 end

@@ -12,6 +12,17 @@ RSpec.describe BookChangeSet do
     it "requires a title be set" do
       change_set.title = []
       expect(change_set).not_to be_valid
+      change_set.title = ["Test"]
+      expect(change_set).to be_valid
+    end
+  end
+
+  describe "#validate" do
+    it "revalidates on correction" do
+      change_set.validate(title: []) # sets error when title is required
+      expect(change_set).not_to be_valid
+      change_set.validate(title: ['good title']) # should clear the error
+      expect(change_set).to be_valid
     end
   end
 
