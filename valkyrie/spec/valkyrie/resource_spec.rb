@@ -48,6 +48,13 @@ RSpec.describe Valkyrie::Resource do
     end
   end
 
+  describe "#to_param" do
+    it "returns the record's id as a string" do
+      resource.id = "test"
+      expect(resource.to_param).to eq 'test'
+    end
+  end
+
   describe "#to_model" do
     it "returns itself" do
       expect(resource.to_model).to eq resource
