@@ -80,7 +80,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly "Test1", RDF::Literal.new("Test", language: :fr)
   end
 
-  it "can store Valkyrie::Ids" do
+  it "can store Valkyrie::IDs" do
     shared_title = persister.save(resource: resource_class.new(id: "test"))
     book = persister.save(resource: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]))
     reloaded = query_service.find_by(id: book.id)
