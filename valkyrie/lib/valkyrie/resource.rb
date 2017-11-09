@@ -83,7 +83,7 @@ module Valkyrie
     end
 
     def to_param
-      id
+      to_key.map(&:to_s).join('-')
     end
 
     # @note Added for ActiveModel compatibility
