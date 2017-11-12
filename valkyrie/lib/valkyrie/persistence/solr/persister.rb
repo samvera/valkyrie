@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/repository'
   class Persister
     attr_reader :adapter
-    delegate :connection, :resource_factory, to: :adapter
+    delegate :connection, :resource_factory, :commit_params, to: :adapter
     # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
     def initialize(adapter:)
@@ -31,7 +31,8 @@ module Valkyrie::Persistence::Solr
     end
 
     def repository(resources)
-      Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection, resource_factory: resource_factory)
+      Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection,
+                                                  resource_factory: resource_factory, commit_params: commit_params)
     end
   end
 end
