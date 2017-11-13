@@ -9,9 +9,10 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
+    # @param previous [Valkyrie::StorageAdapter::StreamFile]
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource: nil)
-      identifier = Valkyrie::ID.new("memory://#{resource.id}")
+    def upload(file:, original_filename:, resource:, previous: nil)
+      identifier = next_version_identifier(resource: resource, previous: previous)
       cache[identifier] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file)
     end
 
@@ -35,6 +36,17 @@ module Valkyrie::Storage
     def delete(id:)
       cache.delete(id)
       nil
+    end
+
+    private
+
+    def next_version_identifier(resource:, previous:)
+      n = if previous.nil?
+            0
+          else
+            previous.id.to_s.split('/').last.to_i + 1
+          end
+      Valkyrie::ID.new("memory://#{resource.id}/#{n}")
     end
   end
 end
