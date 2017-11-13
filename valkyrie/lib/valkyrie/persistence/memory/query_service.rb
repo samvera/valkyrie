@@ -84,16 +84,17 @@ module Valkyrie::Persistence::Memory
       end
     end
 
-    def member_ids(resource:)
-      return [] unless resource.respond_to? :member_ids
-      resource.member_ids || []
-    end
-
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
 
     private
+
+      # @return [Array<Valkyrie::ID>] a list of the identifiers of the member objects
+      def member_ids(resource:)
+        return [] unless resource.respond_to? :member_ids
+        resource.member_ids || []
+      end
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
