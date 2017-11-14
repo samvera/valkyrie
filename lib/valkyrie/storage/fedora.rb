@@ -28,22 +28,37 @@ module Valkyrie::Storage
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:)
-      # TODO: this is a very naive aproach. Change to PCDM
-      identifier = resource.id.to_uri + '/original'
-      ActiveFedora::File.new(identifier) do |af|
-        af.content = file
-        af.original_name = original_filename
-        af.save!
-        af.metadata.set_value(:type, af.metadata.type + [::RDF::URI('http://pcdm.org/use#OriginalFile')])
-        af.metadata.save
+      identifier = resource_identifier(resource: resource)
+      af = ActiveFedora::File.new(identifier) do |f|
+        f.original_name = original_filename
+        f.content = file
+        f.save!
+        f.metadata.set_value(:type, f.metadata.type + [::RDF::URI('http://pcdm.org/use#OriginalFile')])
+        f.metadata.save
       end
-      find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
+      _version_uri = create_version(af)
+      find_by(id: to_valkyrie_id(identifier))
     end
 
     # Delete the file in Fedora associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
       ActiveFedora::File.new(active_fedora_identifier(id: id)).ldp_source.delete
+    end
+
+    def supports_versions?
+      true
+    end
+
+    def versions(resource:)
+      ActiveFedora::File.new(active_fedora_identifier(id: resource.id)).versions.all.map(&:label)
+    end
+
+    def retrieve_version(resource:, label:)
+      version = ActiveFedora::File.new(active_fedora_identifier(id: resource.id)).versions.all.find { |vr| vr.label == label }
+      raise Valkyrie::StorageAdapter::FileNotFound, "Unable to find #{resource.id} version labeled #{label}" if version.nil?
+      id = to_valkyrie_id(version.uri)
+      Valkyrie::StorageAdapter::StreamFile.new(id: id, io: response(id: id))
     end
 
     class IOProxy
@@ -65,6 +80,21 @@ module Valkyrie::Storage
 
     private
 
+      def create_version(af)
+        versions_uri = "#{af.uri}/fcr:versions"
+        resp = ActiveFedora.fedora.connection.post(versions_uri, nil, slug: version_name(af))
+        raise "error creating version" unless resp.success?
+        resp.headers['location']
+      end
+
+      def version_name(af)
+        if af.versions.all.empty?
+          'version1'
+        else
+          'version' + (af.versions.all.count + 1).to_s
+        end
+      end
+
       # @return [IOProxy]
       def response(id:)
         af_file = ActiveFedora::File.new(active_fedora_identifier(id: id))
@@ -72,12 +102,22 @@ module Valkyrie::Storage
         IOProxy.new(af_file.ldp_source, af_file.size)
       end
 
-      # Translate the Valkrie ID into a URL for the fedora file
+      # TODO: this is a very naive aproach. Change to PCDM
+      def resource_identifier(resource:)
+        resource.id.to_uri + '/original'
+      end
+
+      # Translate the Valkyrie ID into a URL for the fedora file
+      # @param id [Valkyrie::ID]
       # @return [RDF::URI]
       def active_fedora_identifier(id:)
         scheme = URI(ActiveFedora.config.credentials[:url]).scheme
         identifier = id.to_s.sub(PROTOCOL, "#{scheme}://")
         RDF::URI(identifier)
+      end
+
+      def to_valkyrie_id(identifier)
+        Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL))
       end
   end
 end

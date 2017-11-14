@@ -46,6 +46,18 @@ module Valkyrie::Storage
       FileUtils.rm_rf(path) if File.exist?(path)
     end
 
+    def supports_versions?
+      false
+    end
+
+    def versions(resource:)
+      raise Valkyrie::VersionsNotSupported
+    end
+
+    def retrieve_version(resource:, label:)
+      raise Valkyrie::VersionsNotSupported
+    end
+
     class BucketedStorage
       attr_reader :base_path
       def initialize(base_path:)
