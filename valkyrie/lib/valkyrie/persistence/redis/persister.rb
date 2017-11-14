@@ -38,7 +38,7 @@ module Valkyrie::Persistence::Redis
 
     def wipe!
       keys = cache.keys("#{cache_prefix}*")
-      cache.del(keys) unless keys.empty?
+      keys.each { |key| cache.set(key, "__GONE__", ex: expiration) }
     end
 
     private
