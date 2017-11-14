@@ -50,11 +50,7 @@ module Valkyrie::Storage
       false
     end
 
-    def versions(resource:)
-      raise Valkyrie::VersionsNotSupported
-    end
-
-    def retrieve_version(resource:, label:)
+    def versions(id:)
       raise Valkyrie::VersionsNotSupported
     end
 

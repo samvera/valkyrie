@@ -20,8 +20,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
   it { is_expected.to respond_to(:supports_versions?) }
-  it { is_expected.to respond_to(:versions).with_keywords(:resource) }
-  it { is_expected.to respond_to(:retrieve_version).with_keywords(:resource, :label) }
+  it { is_expected.to respond_to(:versions).with_keywords(:id) }
 
   it "can upload, validate, re-fetch, and delete a file" do
     resource = CustomResource.new(id: "test")
@@ -61,10 +60,13 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
       stored2 = storage_adapter.upload(file: version2, original_filename: 'foo.jpg', resource: resource)
       expect(stored2).to be_kind_of Valkyrie::StorageAdapter::File
 
-      expect(storage_adapter.versions(resource: stored2).size).to eq 2
-      expect(storage_adapter.retrieve_version(resource: stored2, label: 'version1')).to be_kind_of Valkyrie::StorageAdapter::StreamFile
-      expect(storage_adapter.retrieve_version(resource: stored2, label: 'version2')).to be_kind_of Valkyrie::StorageAdapter::StreamFile
-      expect { storage_adapter.retrieve_version(resource: stored2, label: 'version3') }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+      versions = storage_adapter.versions(id: stored2.id)
+      expect(versions.size).to eq 2
+      expect(storage_adapter.find_by(id: versions[0])).to be_kind_of Valkyrie::StorageAdapter::StreamFile
+      expect(storage_adapter.find_by(id: versions[1])).to be_kind_of Valkyrie::StorageAdapter::StreamFile
+
+      sub_versions = storage_adapter.versions(id: versions[0])
+      expect(sub_versions).to eq [versions[0]]
     else
       expect { storage_adapter.versions }.to raise_error { Valkyrie::VersionsNotSupported }
       expect { storage_adapter.retrieve_version('foo') }.to raise_error { Valkyrie::VersionsNotSupported }

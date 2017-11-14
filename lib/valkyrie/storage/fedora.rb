@@ -50,15 +50,11 @@ module Valkyrie::Storage
       true
     end
 
-    def versions(resource:)
-      ActiveFedora::File.new(active_fedora_identifier(id: resource.id)).versions.all.map(&:label)
-    end
-
-    def retrieve_version(resource:, label:)
-      version = ActiveFedora::File.new(active_fedora_identifier(id: resource.id)).versions.all.find { |vr| vr.label == label }
-      raise Valkyrie::StorageAdapter::FileNotFound, "Unable to find #{resource.id} version labeled #{label}" if version.nil?
-      id = to_valkyrie_id(version.uri)
-      Valkyrie::StorageAdapter::StreamFile.new(id: id, io: response(id: id))
+    # @param id [Valkyrie::ID]
+    def versions(id:)
+      # This already is a version, so just return itself.
+      return [id] if /fcr:versions/.match?(id.to_s)
+      ActiveFedora::File.new(active_fedora_identifier(id: id)).versions.all.map { |v| to_valkyrie_id(v.uri) }
     end
 
     class IOProxy

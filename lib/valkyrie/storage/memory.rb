@@ -20,9 +20,11 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      head = head_version(id: id)
-      raise Valkyrie::StorageAdapter::FileNotFound unless head
-      cache[id][head]
+      version_id = URI(id.to_s).path.to_i
+      base_path = to_id(resource_id: URI(id.to_s).host)
+      result = cache.fetch(base_path) { raise Valkyrie::StorageAdapter::FileNotFound }[version_id]
+      return result if result
+      raise Valkyrie::StorageAdapter::FileNotFound
     end
 
     # @param id [Valkyrie::ID]
@@ -42,14 +44,15 @@ module Valkyrie::Storage
       true
     end
 
-    def versions(resource:)
-      cache[resource.id].keys
-    end
-
-    def retrieve_version(resource:, label:)
-      result = cache[resource.id][label]
-      return result if result
-      raise Valkyrie::StorageAdapter::FileNotFound
+    # @param id [Valkyrie::ID]
+    def versions(id:)
+      uri = URI(id.to_s)
+      # This already is a version, so just return itself.
+      return [id] if uri.path.present?
+      resource_id = uri.host
+      cache[to_id(resource_id: resource_id)].keys.map do |v|
+        Valkyrie::ID.new("memory://#{resource_id}/#{v}")
+      end
     end
 
     private
@@ -69,11 +72,11 @@ module Valkyrie::Storage
       def next_version_key(resource:)
         id = to_id(resource_id: resource.id)
         n = if cache.key?(id)
-              cache[id].keys.count + 1
+              cache[id].keys.count
             else
-              1
+              0
             end
-        { resource_id: resource.id, version: "version#{n}" }
+        { resource_id: resource.id, version: n }
       end
 
       def to_id(key)
