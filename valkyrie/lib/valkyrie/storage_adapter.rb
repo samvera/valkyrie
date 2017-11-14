@@ -64,7 +64,6 @@ module Valkyrie
         Pathname.new(io.path)
       end
 
-      # @param id [Valkyre::ID]
       # @param digests [Array<Digest>]
       # @return [Array<Digest>]
       def checksum(digests:)
@@ -76,7 +75,6 @@ module Valkyrie
         digests.map(&:to_s)
       end
 
-      # @param id [Valkyre::ID]
       # @param size [Integer]
       # @param digests [Array<Digest>]
       # @return [Boolean]
