@@ -24,8 +24,8 @@ module Valkyrie::Persistence::Redis
 
     def find_all
       cache.keys("#{cache_prefix}*").collect do |key|
-        Marshal.load(cache.get(key))
-      end
+        load(key)
+      end.compact
     end
 
     # @param model [Class] Class to query for.
@@ -103,10 +103,14 @@ module Valkyrie::Persistence::Redis
 
     private
 
-      def fetch(id)
-        object = cache.get("#{cache_prefix}#{id}")
+      def load(key)
+        object = cache.get(key)
         return nil if object.nil? || (object == '__GONE__')
         Marshal.load(object)
+      end
+
+      def fetch(id)
+        load("#{cache_prefix}#{id}")
       end
 
       def validate_id(id)
