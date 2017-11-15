@@ -19,7 +19,7 @@ require 'pry'
 
 # Setup to use the fedora.yml in the test app
 ActiveFedora.init(environment: ENV['RACK_ENV'],
-                  fedora_config_path: File.expand_path("../../../config/fedora.yml", __FILE__))
+                  fedora_config_path: File.expand_path("../../config/fedora.yml", __FILE__))
 
 ROOT_PATH = Pathname.new(Dir.pwd)
 Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }

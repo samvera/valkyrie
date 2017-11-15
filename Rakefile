@@ -64,6 +64,12 @@ namespace :db do
     end
   end
 
+  namespace :schema do
+    task :load do
+      Rake::Task["db:migrate"].invoke
+    end
+  end
+
   desc 'Rolls the schema back to the previous version (specify steps w/ STEP=n).'
   task rollback: :configure_connection do
     step = ENV['STEP'] ? ENV['STEP'].to_i : 1

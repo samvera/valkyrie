@@ -7,22 +7,11 @@ general:
   artifacts:
     - "tmp/capybara"
 dependencies:
-  cache_directories:
-    - "vendor/valk_bundle"
   post:
-    - "(bundle check --path=vendor/valk_bundle || bundle install --path=vendor/valk_bundle --jobs=4 --retry=3)"
-    #- bundle exec rake rubocop
+    - bundle exec rake rubocop
     - bundle exec rake server:test:
         background: true
     - bin/jetty_wait
-database:
-  post:
-    - "bundle exec rake db:create db:migrate"
-test:
-  override:
-    - bundle exec rake multispec
-  post:
-    - "bundle exec rspec spec"
 notify:
   webhooks:
     - url: https://coveralls.io/webhook?repo_token=c3AnaQOFVYYTitAR1w6ySNScXSIfLQwN4
