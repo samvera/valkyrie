@@ -28,3 +28,6 @@ Style/PredicateName:
     - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
+Security/MarshalLoad:
+  Exclude:
+    - "lib/valkyrie/persistence/redis/query_service.rb"

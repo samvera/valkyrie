@@ -9,6 +9,8 @@ module Valkyrie
     require 'valkyrie/persistence/composite_persister'
     require 'valkyrie/persistence/delete_tracking_buffer'
     require 'valkyrie/persistence/buffered_persister'
+    require 'valkyrie/persistence/redis'
+    require 'valkyrie/persistence/write_cached'
     class ObjectNotFoundError < StandardError
     end
   end

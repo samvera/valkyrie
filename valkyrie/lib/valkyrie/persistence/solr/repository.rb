@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   class Repository
-    attr_reader :resources, :connection, :resource_factory
-    def initialize(resources:, connection:, resource_factory:)
+    attr_reader :resources, :connection, :resource_factory, :commit_params
+
+    def initialize(resources:, connection:, resource_factory:, commit_params:)
       @resources = resources
       @connection = connection
       @resource_factory = resource_factory
+      @commit_params = commit_params
     end
 
     def persist
@@ -13,14 +15,14 @@ module Valkyrie::Persistence::Solr
         generate_id(resource) if resource.id.blank?
         solr_document(resource)
       end
-      connection.add documents, params: { softCommit: true }
+      connection.add documents, params: commit_params
       documents.map do |document|
         resource_factory.to_resource(object: document.stringify_keys)
       end
     end
 
     def delete
-      connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: { softCommit: true }
+      connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: commit_params
       resources
     end
 

@@ -24,6 +24,7 @@ PATH
       json-ld
       pg
       rdf
+      redis
       reform
       reform-rails
       ruby_tika_app
@@ -420,6 +421,7 @@ GEM
       rdf (~> 2.2)
     recipient_interceptor (0.1.2)
       mail
+    redis (4.0.1)
     reform (2.2.4)
       disposable (>= 0.4.1)
       representable (>= 2.4.0, < 3.1.0)
@@ -633,4 +635,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   1.15.4
+   1.16.0

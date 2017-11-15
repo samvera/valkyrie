@@ -5,13 +5,14 @@ module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/query_service'
   require 'valkyrie/persistence/solr/resource_factory'
   class MetadataAdapter
-    attr_reader :connection, :resource_indexer
+    attr_reader :connection, :resource_indexer, :commit_params
     # @param connection [RSolr::Client] The RSolr connection to index to.
     # @param resource_indexer [Class, #to_solr] An indexer which is able to
     #   receive a `resource` argument and then has an instance method `#to_solr`
-    def initialize(connection:, resource_indexer: NullIndexer)
+    def initialize(connection:, resource_indexer: NullIndexer, commit_params: { softCommit: true })
       @connection = connection
       @resource_indexer = resource_indexer
+      @commit_params = commit_params
     end
 
     # @return [Valkyrie::Persistence::Solr::Persister] The solr persister.
