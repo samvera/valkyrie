@@ -27,17 +27,19 @@ module Valkyrie::Storage
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:)
+    def upload(file:, original_filename:, resource:, previous: nil)
       # TODO: this is a very naive aproach. Change to PCDM
       identifier = resource.id.to_uri + '/original'
-      ActiveFedora::File.new(identifier) do |af|
-        af.content = file
-        af.original_name = original_filename
-        af.save!
-        af.metadata.set_value(:type, af.metadata.type + [::RDF::URI('http://pcdm.org/use#OriginalFile')])
-        af.metadata.save
-      end
-      find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
+      af = ActiveFedora::File.new(identifier) do |af|
+             af.content = file
+             af.original_name = original_filename
+             af.save!
+             af.metadata.set_value(:type, af.metadata.type + [::RDF::URI('http://pcdm.org/use#OriginalFile')])
+             af.metadata.save
+           end
+      version_uri = create_version(af)
+      new_id = Valkyrie::ID.new(version_uri.sub(/^.+\/\//, PROTOCOL).sub(/\/fcr:metadata/, ''))
+      find_by(id: new_id)
     end
 
     # Delete the file in Fedora associated with the given identifier.
@@ -64,6 +66,22 @@ module Valkyrie::Storage
     private_constant :IOProxy
 
     private
+
+      def create_version(af)
+        versions_uri = "#{af.uri}/fcr:versions"
+        resp = ActiveFedora.fedora.connection.post(versions_uri, nil, slug: version_name(af))
+        raise "error creating version" unless resp.success?
+        resp.headers['location']
+      end
+
+      def version_name(af)
+        if af.versions.all.empty?
+          "version1"
+        else
+          "version" + (af.versions.all.count + 1).to_s
+        end
+      end
+
 
       # @return [IOProxy]
       def response(id:)

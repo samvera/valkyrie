@@ -5,6 +5,8 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
       defined? storage_adapter
     raise 'file must be set with `let(:file)`' unless
       defined? file
+    raise 'version2 must be set with `let(:version2)`' unless
+      defined? version2
     class CustomResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
     end
@@ -45,5 +47,19 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     storage_adapter.delete(id: uploaded_file.id)
     expect { storage_adapter.find_by(id: uploaded_file.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
     expect { storage_adapter.find_by(id: Valkyrie::ID.new("noexist")) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+  end
+
+  it "can version files" do
+    resource = CustomResource.new(id: "test")
+    stored1 = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource)
+    expect(stored1).to be_kind_of Valkyrie::StorageAdapter::File
+
+    stored2 = storage_adapter.upload(file: version2, original_filename: 'foo.jpg', resource: resource, previous: stored1)
+    expect(stored2).to be_kind_of Valkyrie::StorageAdapter::File
+
+    expect(stored1.read).not_to eq stored2.read
+    file = storage_adapter.find_by(id: stored1.id)
+    file = storage_adapter.find_by(id: stored2.id)
+
   end
 end

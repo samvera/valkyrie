@@ -12,4 +12,5 @@ RSpec.describe Valkyrie::Storage::Fedora do
   it_behaves_like "a Valkyrie::StorageAdapter"
   let(:storage_adapter) { described_class.new(connection: ActiveFedora.fedora.connection) }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+  let(:version2) { fixture_file_upload('files/4-20.png', 'image/png') }
 end
