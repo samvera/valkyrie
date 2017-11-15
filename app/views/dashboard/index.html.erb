@@ -1,0 +1,12 @@
+<h1>Dashboard</h1>
+  <h2>Some heading related to the content on the page</h2>
+
+# need to send it some data to be sorted by the user but how is being decided–perhaps find_by_user?
+# this returns a nil class because there is nothing to display based on user
+# let the amount of content and its organization dictate the layout
+
+<% @documents.each do |document| %>
+
+  <%= document.inspect %>
+
+<% end %>

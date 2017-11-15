@@ -2,7 +2,7 @@ development:
   archivist:
     - archivist1@example.com
   admin:
-    - admin@example.com
+    - mat141@psu.edu
 
 test:
   admin:

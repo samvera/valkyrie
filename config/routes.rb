@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  get 'dashboard/index'
+
   devise_for :users
   concern :exportable, Blacklight::Routes::Exportable.new
 
@@ -57,4 +59,7 @@ Rails.application.routes.draw do
   resources :file_sets, only: [:new, :create, :edit, :update, :destroy]
   resources :collections
   resources :downloads, only: [:show]
+
+  # Dashboard Page
+  resources :dashboard, only: [:index]
 end
