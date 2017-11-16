@@ -1,37 +1,25 @@
 # frozen_string_literal: true
-if ENV.fetch("COVERAGE", false)
-  require "simplecov"
-  require 'coveralls'
-
-  if ENV["CIRCLE_ARTIFACTS"]
-    dir = File.join(ENV["CIRCLE_ARTIFACTS"], "coverage")
-    SimpleCov.coverage_dir(dir)
-  end
-
-  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+ENV['RACK_ENV'] = 'test'
+ENV['RAILS_ENV'] = 'test'
+require 'simplecov'
+require 'coveralls'
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
+  [
     SimpleCov::Formatter::HTMLFormatter,
     Coveralls::SimpleCov::Formatter
   ]
-  SimpleCov.start "rails" do
-    add_filter '/valkyrie/'
-  end
+)
+SimpleCov.start do
+  add_filter 'spec'
+  add_filter 'vendor'
 end
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+require "valkyrie"
+require 'pry'
 
-require "webmock/rspec"
+# Setup to use the fedora.yml in the test app
+ActiveFedora.init(environment: ENV['RACK_ENV'],
+                  fedora_config_path: File.expand_path("../../config/fedora.yml", __FILE__))
 
-# http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-RSpec.configure do |config|
-  config.expect_with :rspec do |expectations|
-    expectations.syntax = :expect
-  end
-
-  config.mock_with :rspec do |mocks|
-    mocks.syntax = :expect
-    mocks.verify_partial_doubles = true
-  end
-
-  config.example_status_persistence_file_path = "tmp/rspec_examples.txt"
-  config.order = :random
-end
-
-WebMock.disable_net_connect!(allow_localhost: true)
+ROOT_PATH = Pathname.new(Dir.pwd)
+Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }

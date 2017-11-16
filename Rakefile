@@ -1,20 +1,14 @@
 # frozen_string_literal: true
-# Add your own tasks in files placed in lib/tasks ending in .rake,
-# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
-
-require_relative 'config/application'
+require "bundler/gem_tasks"
+require "rspec/core/rake_task"
+require 'yaml'
+require 'config/database_connection'
+require 'active_record'
 require 'rubocop/rake_task'
+load "lib/tasks/dev.rake"
+RSpec::Core::RakeTask.new(:spec)
 
-Rails.application.load_tasks
-task(:default).clear
-task default: [:spec]
-
-if defined? RSpec
-  task(:spec).clear
-  RSpec::Core::RakeTask.new(:spec) do |t|
-    t.verbose = false
-  end
-end
+task default: :spec
 
 desc 'Run RuboCop style checker'
 RuboCop::RakeTask.new(:rubocop) do |task|
@@ -22,6 +16,63 @@ RuboCop::RakeTask.new(:rubocop) do |task|
   task.fail_on_error = true
 end
 
-task default: "bundler:audit"
+namespace :db do
+  task :environment do
+    path = File.join(File.dirname(__FILE__), './db/migrate')
+    migrations_paths = [path]
+    DATABASE_ENV = ENV['RACK_ENV'] || 'test'
+    MIGRATIONS_DIR = ENV['MIGRATIONS_DIR'] || migrations_paths
+  end
 
-require 'solr_wrapper/rake_task' unless Rails.env.production?
+  task configuration: :environment do
+    @config = YAML.safe_load(ERB.new(File.read("db/config.yml")).result)[DATABASE_ENV]
+  end
+
+  task configure_connection: :configuration do
+    DatabaseConnection.connect!(DATABASE_ENV)
+    ActiveRecord::Base.logger = Logger.new STDOUT if @config['logger']
+  end
+
+  desc 'Create the database from db/config.yml for the current DATABASE_ENV'
+  task create: :configure_connection do
+    database = ActiveRecord::Tasks::PostgreSQLDatabaseTasks.new(@config)
+    database.create
+    puts "Database created"
+  end
+
+  desc 'Drops the database for the current DATABASE_ENV'
+  task drop: :configure_connection do
+    database = ActiveRecord::Tasks::PostgreSQLDatabaseTasks.new(@config)
+    database.drop
+    puts "Database dropped"
+  end
+
+  desc 'Migrate the database (options: VERSION=x, VERBOSE=false).'
+  task migrate: :configure_connection do
+    begin
+      verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
+      version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
+      scope   = ENV['SCOPE']
+      verbose_was = ActiveRecord::Migration.verbose
+      ActiveRecord::Migration.verbose = verbose
+      ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
+        scope.blank? || scope == migration.scope
+      end
+      ActiveRecord::Base.clear_cache!
+    ensure
+      ActiveRecord::Migration.verbose = verbose_was
+    end
+  end
+
+  namespace :schema do
+    task :load do
+      Rake::Task["db:migrate"].invoke
+    end
+  end
+
+  desc 'Rolls the schema back to the previous version (specify steps w/ STEP=n).'
+  task rollback: :configure_connection do
+    step = ENV['STEP'] ? ENV['STEP'].to_i : 1
+    ActiveRecord::Migrator.rollback(MIGRATIONS_DIR, step)
+  end
+end

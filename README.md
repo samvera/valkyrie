@@ -1,87 +1,170 @@
 # Valkyrie
 
-A proof of concept "breakable toy" for enabling multiple backends for storage of
-  files and metadata in Samvera.
+Valkyrie is a gem for enabling multiple backends for storage of files and metadata in Samvera,
+currently developed in a subdirectory of the [proof-of-concept app of the same name](..).
 
 [![CircleCI](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
 [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
 [![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
 
-## Requirements
 
-### Ruby version
-Ruby 2.3 or above
+## Installation
 
-### Postgres
+Add this line to your application's Gemfile:
 
-Valkyrie requires support for the JSON data type, which was introduced in version 9.4. As a result,
-it will only work with versions 9.4 or later.
+```ruby
+gem 'valkyrie', github: 'samvera-labs/valkyrie'
+```
 
-## Configure Valkyrie
+And then execute:
 
-Valkyrie is configured in `config/valkyrie.yml`.  For each environment you must set
-two values.  The first, `adapter`, is the store where Valkyrie will put the metadata.
-The valid values for `adapter` are `:postgres` (default), `:fedora`(actually ActiveFedora),
-`:memory` (should only be used for running tests, because it's not persistent).
-You can register your own adapters in `config/initializers/valkyrie.rb`.
+    $ bundle
 
-Valkyrie will automatically persist to the metadata store you have chosen and write
-to Solr synchronously (using the `:indexing_persister`).
 
-The second configuration value `storage_adapter` is where the binaries are stored.
-The valid values for `storage_adapter` are `:disk` and `:memory`. `:memory` should
-only be used for testing as it's not a persistent store.
+## Configuration
+
+Valkyrie is configured in two places: an initializer that registers the persistence options and a YAML
+configuration file that sets which options are used by default in which environments.
+
+### Sample initializer: `config/initializers/valkyrie.rb`:
+
+Here is a sample initializer that registers a couple adapters and storage adapters, in each case linking an
+instance with a short name that can be used to refer to it in your application:
+
+```
+# frozen_string_literal: true
+require 'valkyrie'
+Rails.application.config.to_prepare do
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Postgres::MetadataAdapter,
+    :postgres
+  )
+
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Memory::MetadataAdapter.new,
+    :memory
+  )
+
+  Valkyrie::StorageAdapter.register(
+    Valkyrie::Storage::Disk.new(base_path: Rails.root.join("tmp", "files")),
+    :disk
+  )
+
+  Valkyrie::StorageAdapter.register(
+    Valkyrie::Storage::Fedora.new(connection: ActiveFedora.fedora.connection),
+    :fedora
+  )
+
+
+  Valkyrie::StorageAdapter.register(
+    Valkyrie::Storage::Memory.new,
+    :memory
+  )
+end
+```
+
+The initializer registers two `Valkyrie::MetadataAdapter` instances for storing metadata:
+* `:postgres` which stores metadata in a PostgreSQL database
+* `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
+  appropriate for testing)
+
+Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
+updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
+at once, and `Valkyrie::Persistence::Solr` for storing in Solr.
+
+The initializer also registers three `Valkyrie::StorageAdapter` instances for storing files:
+* `:disk` which stores files on disk
+* `:fedora` which stores files in Fedora
+* `:memory` which stores files in an in-memory cache (again, not persistent, so this is only appropriate for
+  testing)
+
+### Sample configuration: `config/valkyrie.yml`:
+
+A sample configuration file that configures your application to use different adapters:
+
+```
+development:
+  adapter: postgres
+  storage_adapter: disk
+
+test:
+  adapter: memory
+  storage_adapter: memory
+
+production:
+  adapter: postgres
+  storage_adapter: fedora
+```
+
+For each environment, you must set two values:
+* `adapter` is the store where Valkyrie will put the metadata
+* `storage_adapter` is the store where Valkyrie will put the files
+
+The values are the short names used in your initializer.
+
+
+## Usage
+
+### Define a Custom Work
+
+Define a custom work class:
+
+```
+# frozen_string_literal: true
+class MyModel < Valkyrie::Resource
+  include Valkyrie::Resource::AccessControls
+  attribute :id, Valkyrie::Types::ID.optional  # Optional to allow auto-generation of IDs
+  attribute :title, Valkyrie::Types::Set       # Sets are unordered
+  attribute :authors, Valkyrie::Types::Array   # Arrays are ordered
+end
+```
+
+#### Work Types Generator
+
+To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to 
+generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
+
+```
+rails generate valkyrie:model FooBar title member_ids:array
+```
+
+You can namespace your model class by including a slash in the model name:
+
+```
+rails generate valkyrie:model Foo/Bar title member_ids:array
+```
+
+### Read and Write Data
+
+```
+# create an object
+object1 = MyModel.new title: 'My Cool Object', authors: ['Jones, Alice', 'Smith, Bob']
+object1 = Persister.save(model: object1)
+
+# load an object from the database
+object2 = QueryService.find_by(id: object1.id)
+
+# load all objects
+objects = QueryService.find_all
+
+# load all MyModel objects
+Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
+```
 
 
 ## Installing a Development environment
 
-1. Install Postgres on your machine.  If you have homebrew on OS X you can run the following steps:
-   1. `brew install postgres`
-   1. `brew services start postgresql`
-   1. `gem install pg -- --with-pg-config=/usr/local/bin/pg_config`
-   1. `cp config/database.yml.example config/database.yml`
-   1.  Edit `config/database.yml` so that the username is the name you use to log into your Mac
-1. Set up the app
-   1. `bundle install`
-   1. `rake db:create:all`
-   1. `rake db:migrate`
-1. Set up the gem
-   1. `cd valkyrie`
-   1. `bundle install`
-   1. `rake db:create`
-   1. `rake db:migrate`
-   1. `cd ..`
-1. Run the test suites:
-   1. Start Solr and Fedora servers for testing with `rake server:test`
-   1. run app test suite with `rspec`
-   1. run gem test suite in the gem directory, e.g. `cd valkyrie; rspec; cd -`
-1. To run the app in development mode for local usage:
-   1. Initial test accounts can be created with `rake db:seed`. In order to see the options
-      to create works you should sign in as `admin@example.com` with password `valkyrie`
-   1. Start Solr and Fedora servers for development with `rake server:development`
-   1. Bring up a Rails server with `rails s` or a console with `rails c`
+See the parent app README for [instructions on setting up a development
+environment](../#installing-a-development-environment).  To run the test suite:
+1. Start Solr and Fedora servers for testing with `rake server:test` in the parent app
+1. Run the gem's RSpec test suite with `cd valkyrie && rspec spec`
 
-
-During development, use [shared specs](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs) to ensure valid API implementations.
-
-## Documentation
-
-Maintained in the project's [wiki](https://github.com/samvera-labs/valkyrie/wiki). Please contribute or create issues for missing / incomplete documentation.
 
 ## License
 
-Valkyrie is available under [the Apache 2.0 license](LICENSE).
+Valkyrie is available under [the Apache 2.0 license](../LICENSE).
 
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/samvera-labs/valkyrie/.
-
-### Anatomy of this Repository
-
-Valkyrie began as a proof of concept; a "breakable toy." From the early demonstrations, it has become clear that there is a larger interest in the core functionality of Valkyrie. This repository, at present contains two high level ideas:
-
-1. A gem defined and contained in the `./valkyrie` subdirectory.
-1. A Rails application, built at `./`, that leverages the Valkyrie gem.
-
-By keeping the gem code close to a functioning application, we are able to iterate towards extraction. At some point, we envision that everything except what is in `./valkyrie` would be removed, and the contents of the `./valkyrie` directory would be promoted in the directory structure to look like what you might expect a gem to look like.

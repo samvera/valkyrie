@@ -1,7 +1,3 @@
-# At present, the Rubocop enforcement of Valkyrie is in two parts, as
-# defined in the CI configuration (./circle.yml). To support these two
-# parts, there are two files: ./.rubocop.yml and ./valkyrie/.rubocop.yml
-require: rubocop-rspec
 inherit_gem:
   bixby: bixby_default.yml
 AllCops:
@@ -9,56 +5,27 @@ AllCops:
   TargetRubyVersion: 2.3
   Exclude:
     - 'bin/*'
-    - 'config/deploy.rb'
-    - 'vendor/**/*'
-    - 'valkyrie/**/*'
     - 'db/schema.rb'
-Naming/FileName:
-  Enabled: true
-  Exclude:
-    - 'Gemfile'
-    - '**/*.rake'
-Naming/PredicateName:
-  Exclude:
-    - "app/controllers/catalog_controller.rb"
-    - "lib/valkyrie/model.rb"
-    - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
-    - "lib/valkyrie/persistence/active_fedora/queries/default_paginator.rb"
+    - 'vendor/**/*'
+RSpec/ScatteredSetup:
+  Enabled: false
 Metrics/BlockLength:
   Exclude:
-    - 'config/environments/**/*'
     - 'spec/**/*'
-    - 'config/initializers/*'
-    - 'config/routes.rb'
     - 'lib/valkyrie/specs/**/*'
-    - 'lib/specs/**/*'
+    - 'lib/tasks/**/*'
     - 'db/schema.rb'
-    - 'lib/tasks/dev.rake'
-    - 'script/benchmarker.rb'
-Metrics/MethodLength:
-  Exclude:
-    - 'db/migrate/**/*'
-Metrics/LineLength:
-  Exclude:
-    - 'spec/support/stub_tika.rb'
-RSpec/FilePath:
-  Exclude:
-    - 'spec/adapters/registered_adapter_spec.rb'
-RSpec/MultipleExpectations:
-  Enabled: false
+    - 'Rakefile'
+    - '*.gemspec'
 RSpec/ExampleLength:
   Enabled: false
-RSpec/DescribeClass:
+RSpec/MultipleExpectations:
+  Enabled: false
+Rails/TimeZone:
+  Enabled: false
+Style/PredicateName:
   Exclude:
-    - 'spec/javascripts/jasmine_spec.rb'
-    - 'spec/tasks/rake_spec.rb'
-    - 'spec/jobs/event_jobs_spec.rb'
-    - 'spec/abilities/**/*'
-    - 'spec/features/**/*'
-    - 'spec/views/**/*'
-    - 'spec/routing/**/*'
-    - 'spec/inputs/**/*'
-    - 'spec/requests/**/*'
-Rails/Delegate:
-  Exclude:
-    - 'app/persisters/indexing_adapter.rb'
+    - "lib/valkyrie/resource.rb"
+    - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true

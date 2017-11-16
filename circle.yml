@@ -7,23 +7,11 @@ general:
   artifacts:
     - "tmp/capybara"
 dependencies:
-  cache_directories:
-    - "valkyrie/vendor/valk_bundle"
   post:
-    - "cd valkyrie && (bundle check --path=vendor/valk_bundle || bundle install --path=vendor/valk_bundle --jobs=4 --retry=3)"
     - bundle exec rake rubocop
-    - "cd valkyrie && bundle exec rubocop --ignore-parent-exclusion"
     - bundle exec rake server:test:
         background: true
     - bin/jetty_wait
-database:
-  post:
-    - "cd valkyrie && bundle exec rake db:create && bundle exec rake db:migrate"
-test:
-  override:
-    - bundle exec rake multispec
-  post:
-    - "cd valkyrie && bundle exec rspec spec"
 notify:
   webhooks:
     - url: https://coveralls.io/webhook?repo_token=c3AnaQOFVYYTitAR1w6ySNScXSIfLQwN4
