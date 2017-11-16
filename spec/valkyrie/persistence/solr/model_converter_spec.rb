@@ -6,6 +6,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
   let(:resource_factory) { adapter.resource_factory }
   let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
   let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
+  let(:created_at) { Time.now.utc }
   before do
     class Resource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
@@ -22,7 +23,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
                     internal_resource: 'Resource',
                     attributes:
                     {
-                      created_at: Time.at(0).utc,
+                      created_at: created_at,
                       title: ["Test", RDF::Literal.new("French", language: :fr)],
                       author: ["Author"]
                     })
@@ -42,9 +43,24 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
         author_ssim: ["Author"],
         author_tesim: ["Author"],
         author_tsim: ["Author"],
-        created_at_dtsi: Time.at(0).utc.iso8601,
+        created_at_dtsi: created_at.iso8601,
         internal_resource_ssim: ["Resource"]
       )
+    end
+  end
+
+  describe "#created_at" do
+    context "when created_at attribute is a Time" do
+      it "returns a String" do
+        expect(mapper.created_at).to be_a String
+      end
+    end
+
+    context "when created_at attribute is nil" do
+      let(:created_at) { nil }
+      it "returns a String" do
+        expect(mapper.created_at).to be_a String
+      end
     end
   end
 end

@@ -25,7 +25,11 @@ module Valkyrie::Persistence::Solr
     # @return [String] ISO-8601 timestamp in UTC of the created_at for this solr
     #   document.
     def created_at
-      resource_attributes[:created_at] || Time.current.utc.iso8601
+      if resource_attributes[:created_at]
+        DateTime.parse(resource_attributes[:created_at].to_s).utc.iso8601
+      else
+        Time.current.utc.iso8601
+      end
     end
 
     # @return [Hash] Solr document to index.
