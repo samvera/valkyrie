@@ -12,6 +12,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
       attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
       attribute :author, Valkyrie::Types::Set
+      attribute :birthday, Valkyrie::Types::DateTime.optional
     end
   end
   after do
@@ -24,6 +25,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
                     attributes:
                     {
                       created_at: created_at,
+                      internal_resource: 'Resource',
                       title: ["Test", RDF::Literal.new("French", language: :fr)],
                       author: ["Author"]
                     })
@@ -44,7 +46,28 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
         author_tesim: ["Author"],
         author_tsim: ["Author"],
         created_at_dtsi: created_at.iso8601,
-        internal_resource_ssim: ["Resource"]
+        internal_resource_ssim: ["Resource"],
+        internal_resource_tesim: ["Resource"],
+        internal_resource_tsim: ["Resource"]
+      )
+    end
+  end
+
+  context "when there's an error" do
+    let(:resource) do
+      instance_double(Resource,
+                      id: "1",
+                      internal_resource: 'Resource',
+                      attributes:
+                      {
+                        internal_resource: 'Resource',
+                        birthdate: Date.parse('1930-10-20')
+                      })
+    end
+
+    it "raises an error" do
+      expect { mapper.convert! }.to raise_error(
+        "Unable to cast Resource#birthdate which has been set to an instance of 'Date'"
       )
     end
   end

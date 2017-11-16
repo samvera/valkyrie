@@ -17,6 +17,8 @@ $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "valkyrie"
 require 'pry'
 
+SOLR_TEST_URL = "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8984}/solr/blacklight-core-test"
+
 # Setup to use the fedora.yml in the test app
 ActiveFedora.init(environment: ENV['RACK_ENV'],
                   fedora_config_path: File.expand_path("../../config/fedora.yml", __FILE__))
