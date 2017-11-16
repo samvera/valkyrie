@@ -1,7 +1,6 @@
 # Valkyrie
 
-Valkyrie is a gem for enabling multiple backends for storage of files and metadata in Samvera,
-currently developed in a subdirectory of the [proof-of-concept app of the same name](..).
+Valkyrie is a gem for enabling multiple backends for storage of files and metadata in Samvera.
 
 [![CircleCI](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
 [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
