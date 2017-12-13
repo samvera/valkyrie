@@ -17,7 +17,6 @@ module Valkyrie
       # @raise RuntimeError when the given short_name is not found amongst the registered adapters
       def find(short_name)
         symbolized_key = short_name.to_sym
-        # TODO: Instead of RuntimeError could we simply perform `adapters.fetch(symbolized_key)` this would raise a KeyError instead
         return adapters[symbolized_key] if adapters.key?(symbolized_key)
         raise "Unable to find unregistered adapter `#{short_name}'"
       end
