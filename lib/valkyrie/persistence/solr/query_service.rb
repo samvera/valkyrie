@@ -14,17 +14,17 @@ module Valkyrie::Persistence::Solr
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
       validate_id(id)
-      query_runner::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
+      query_runner.run_find_by_id_query(id, connection: connection, resource_factory: resource_factory)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
-      query_runner::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
+      query_runner.run_find_all_query(connection: connection, resource_factory: resource_factory)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
     def find_all_of_model(model:)
-      query_runner::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
+      query_runner.run_find_all_query(connection: connection, resource_factory: resource_factory, model: model)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
@@ -34,17 +34,17 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
-      query_runner::FindMembersQuery.new(resource: resource, model: model, connection: connection, resource_factory: resource_factory).run
+      query_runner.run_find_members(resource: resource, model: model, connection: connection, resource_factory: resource_factory)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
-      query_runner::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+      query_runner.run_find_references_query(resource: resource, property: property, connection: connection, resource_factory: resource_factory)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
-      query_runner::FindInverseReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+      query_runner.run_find_inverse_references_query(resource: resource, property: property, connection: connection, resource_factory: resource_factory)
     end
 
     def custom_queries
