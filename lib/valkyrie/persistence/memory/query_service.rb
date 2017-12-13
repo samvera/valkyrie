@@ -27,8 +27,8 @@ module Valkyrie::Persistence::Memory
     # @param model [Class] Class to query for.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend
     #   with the given class.
-    def find_all_of_model(model:)
-      cache.values.select do |obj|
+    def find_all_of_model(model:, from_results: find_all)
+      from_results.select do |obj|
         obj.is_a?(model)
       end
     end
@@ -42,7 +42,7 @@ module Valkyrie::Persistence::Memory
         find_by(id: id)
       end
       return result unless model
-      result.select { |obj| obj.is_a?(model) }
+      find_all_of_model(model: model, from_results: result)
     end
 
     # @param resource [Valkyrie::Resource] Model whose property is being searched.
@@ -78,8 +78,8 @@ module Valkyrie::Persistence::Memory
     # @return [Array<Valkyrie::Resource>] All resources which are parents of the given
     #   `resource`. This means the resource's `id` appears in their `member_ids`
     #   array.
-    def find_parents(resource:)
-      cache.values.select do |record|
+    def find_parents(resource:, from_results: find_all)
+      from_results.select do |record|
         member_ids(resource: record).include?(resource.id)
       end
     end
