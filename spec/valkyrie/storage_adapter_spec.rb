@@ -15,6 +15,14 @@ RSpec.describe Valkyrie::StorageAdapter do
     end
   end
 
+  describe '.find' do
+    context "with an unregistered adapter" do
+      it "raises a #{described_class}::AdapterNotFoundError" do
+        expect { described_class.find(:obviously_missing) }.to raise_error(RuntimeError, /:obviously_missing/)
+      end
+    end
+  end
+
   describe ".find_by" do
     it "delegates down to its storage_adapters to find one which handles the given identifier" do
       file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
