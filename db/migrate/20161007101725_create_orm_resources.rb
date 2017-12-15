@@ -2,7 +2,7 @@
 class CreateOrmResources < ActiveRecord::Migration[5.0]
   def change
     if ENV["VALKYRIE_ID_TYPE"] == "string"
-      create_table :orm_resources, { id: :text, default: -> { '(uuid_generate_v4())::text' } } do |t|
+      create_table :orm_resources, id: :text, default: -> { '(uuid_generate_v4())::text' } do |t|
         t.jsonb :metadata, null: false, default: {}
         t.timestamps
       end
