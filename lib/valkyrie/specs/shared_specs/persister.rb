@@ -88,6 +88,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect([shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]).to contain_exactly(*reloaded.title)
   end
 
+  it "can override default id generation with a provided id" do
+    id = SecureRandom.uuid
+    book = persister.save(resource: resource_class.new(id: id))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.id).to eq Valkyrie::ID.new(id)
+  end
+
   it "can store ::RDF::URIs" do
     book = persister.save(resource: resource_class.new(title: [::RDF::URI("http://example.com")]))
     reloaded = query_service.find_by(id: book.id)

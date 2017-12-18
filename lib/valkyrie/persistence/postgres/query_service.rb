@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Postgres
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
       validate_id(id)
-      resource_factory.to_resource(object: orm_class.find(id))
+      resource_factory.to_resource(object: orm_class.find(id.to_s))
     rescue ActiveRecord::RecordNotFound
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
@@ -67,7 +67,7 @@ module Valkyrie::Persistence::Postgres
       <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
-        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
         ORDER BY b.member_pos
       SQL
     end
@@ -76,7 +76,7 @@ module Valkyrie::Persistence::Postgres
       <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->'member_ids') WITH ORDINALITY AS b(member, member_pos)
-        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
         AND member.internal_resource = ?
         ORDER BY b.member_pos
       SQL
@@ -93,7 +93,7 @@ module Valkyrie::Persistence::Postgres
       <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->?) AS b(member)
-        JOIN orm_resources member ON (b.member->>'id')::uuid = member.id WHERE a.id = ?
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
       SQL
     end
 
@@ -105,6 +105,10 @@ module Valkyrie::Persistence::Postgres
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def id_type
+        @id_type ||= orm_class.columns_hash["id"].type
       end
   end
 end
