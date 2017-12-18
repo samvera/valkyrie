@@ -15,7 +15,7 @@ module Valkyrie
     # Overridden to provide default attributes.
     # @note The current theory is that we should use this sparingly.
     def self.inherited(subclass)
-      ::Dry::Struct.inherited(subclass)
+      super(subclass)
       subclass.constructor_type :schema
       subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional

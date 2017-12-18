@@ -76,4 +76,20 @@ RSpec.describe Valkyrie::Resource do
       expect(resource.to_s).to eq "Resource: test"
     end
   end
+
+  context "extended class" do
+    before do
+      class MyResource < Resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :MyResource)
+    end
+    subject(:resource) { MyResource.new }
+    describe "#fields" do
+      it "returns all configured parent fields as an array of symbols" do
+        expect(MyResource.fields).to eq [:internal_resource, :created_at, :updated_at, :id, :title]
+      end
+    end
+  end
 end
