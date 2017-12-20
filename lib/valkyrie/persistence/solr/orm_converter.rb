@@ -13,7 +13,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def resource
-      resource_klass.new(attributes.symbolize_keys)
+      resource_klass.new(attributes.symbolize_keys.merge(new_record: false))
     end
 
     def resource_klass

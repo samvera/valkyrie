@@ -56,7 +56,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def properties
-        resource_attributes.keys - [:id, :created_at, :updated_at]
+        resource_attributes.keys - [:id, :created_at, :updated_at, :new_record]
       end
 
       def resource_attributes

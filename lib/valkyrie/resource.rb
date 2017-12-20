@@ -20,11 +20,12 @@ module Valkyrie
       subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
       subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
+      subclass.attribute :new_record, Types::Bool.default(true)
     end
 
     # @return [Array<Symbol>] Array of fields defined for this class.
     def self.fields
-      schema.keys
+      schema.keys.without(:new_record)
     end
 
     # Define an attribute.
@@ -75,7 +76,7 @@ module Valkyrie
 
     # @return [Boolean]
     def persisted?
-      to_param.present?
+      @new_record == false
     end
 
     def to_key

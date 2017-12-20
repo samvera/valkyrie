@@ -41,7 +41,9 @@ module Valkyrie::Persistence::Memory
     private
 
       def generate_id(resource)
-        resource.new(id: SecureRandom.uuid, created_at: Time.current)
+        resource.new(id: SecureRandom.uuid,
+                     created_at: Time.current,
+                     new_record: false)
       end
 
       def normalize_dates!(resource)

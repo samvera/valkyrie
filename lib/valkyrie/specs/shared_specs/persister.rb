@@ -24,7 +24,10 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   it { is_expected.to respond_to(:delete).with_keywords(:resource) }
 
   it "can save a resource" do
-    expect(persister.save(resource: resource).id).not_to be_blank
+    expect(resource).not_to be_persisted
+    saved = persister.save(resource: resource)
+    expect(saved).to be_persisted
+    expect(saved.id).not_to be_blank
   end
 
   it "can save multiple resources at once" do
