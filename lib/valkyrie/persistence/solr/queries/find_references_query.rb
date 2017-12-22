@@ -16,7 +16,9 @@ module Valkyrie::Persistence::Solr::Queries
     def each
       docs = DefaultPaginator.new
       while docs.has_next?
-        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
+        params = { q: query, defType: 'lucene' }
+        result = connection.paginate(docs.next_page, docs.per_page, 'select', params: params)
+        docs = result.fetch('response').fetch('docs')
         docs.each do |doc|
           yield resource_factory.to_resource(object: doc)
         end
