@@ -29,7 +29,9 @@ module Valkyrie::Persistence::Solr::Queries
     def docs
       options = { q: query, rows: 1_000_000_000 }
       options[:fq] = "{!raw f=internal_resource_ssim}#{model}" if model
-      connection.get("select", params: options)["response"]["docs"]
+      options[:defType] = 'lucene'
+      result = connection.get("select", params: options)
+      result["response"]["docs"]
     end
 
     def member_ids
