@@ -12,12 +12,20 @@ module Valkyrie::Persistence::Fedora
 
       def convert
         graph_resource.graph.delete([nil, nil, nil])
-        resource.attributes.each do |key, values|
-          output = property_converter.for(Property.new(subject_uri, key, values, adapter, resource)).result
+        properties.each do |property|
+          values = resource_attributes[property]
+
+          output = property_converter.for(Property.new(subject_uri, property, values, adapter, resource)).result
           graph_resource.graph << output.to_graph
         end
         graph_resource
       end
+
+      def properties
+        resource_attributes.keys - [:new_record]
+      end
+
+      delegate :attributes, to: :resource, prefix: true
 
       def graph_resource
         @graph_resource ||= ::Ldp::Container::Basic.new(connection, subject, nil, base_path)

@@ -14,8 +14,9 @@ module Valkyrie::Persistence::Fedora
       end
 
       def attributes
-        GraphToAttributes.new(graph: graph, adapter: adapter).convert.merge(id:
-                                                                            id)
+        GraphToAttributes.new(graph: graph, adapter: adapter)
+                         .convert
+                         .merge(id: id, new_record: false)
       end
 
       def id

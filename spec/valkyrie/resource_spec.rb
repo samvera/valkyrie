@@ -32,12 +32,14 @@ RSpec.describe Valkyrie::Resource do
   end
 
   describe "#persisted?" do
-    it "returns false if the ID is gone" do
-      expect(resource).not_to be_persisted
+    context 'when nothing is passed to the constructor' do
+      it { is_expected.not_to be_persisted }
     end
-    it "returns true if the ID exists" do
-      resource.id = "test"
-      expect(resource).to be_persisted
+
+    context 'when new_record: false is passed to the constructor' do
+      subject(:resource) { Resource.new(new_record: false) }
+
+      it { is_expected.to be_persisted }
     end
   end
 

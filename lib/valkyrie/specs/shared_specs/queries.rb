@@ -55,7 +55,9 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     it "returns a resource by id" do
       resource = persister.save(resource: resource_class.new)
 
-      expect(query_service.find_by(id: resource.id).id).to eq resource.id
+      found = query_service.find_by(id: resource.id)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
     end
 
     it "returns a Valkyrie::Persistence::ObjectNotFoundError for a non-found ID" do
