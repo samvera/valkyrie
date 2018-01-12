@@ -74,7 +74,7 @@ module Valkyrie::Persistence::Fedora
 
     def find_inverse_references_by(resource:, property:)
       content = content_with_inbound(id: resource.id)
-      property_uri = RDF::URI("http://example.com/predicate/#{property}")
+      property_uri =  adapter.schema.predicate_for(property: property, resource: nil)
       ids = content.graph.query([nil, property_uri, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
       ids.lazy.map do |id|
         find_by(id: id)
