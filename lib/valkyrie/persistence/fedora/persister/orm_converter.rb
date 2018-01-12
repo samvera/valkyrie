@@ -25,7 +25,7 @@ module Valkyrie::Persistence::Fedora
 
       def id_property
         return unless object.subject_uri.to_s.include?("#")
-        object.graph.query([RDF::URI(""), RDF::URI("http://example.com/predicate/id"), nil]).to_a.first.try(:object).to_s
+        object.graph.query([RDF::URI(""), PermissiveSchema.id, nil]).to_a.first.try(:object).to_s
       end
 
       class GraphToAttributes
@@ -96,7 +96,7 @@ module Valkyrie::Persistence::Fedora
           end
 
           def result
-            value.statement.predicate = ::RDF::URI("http://example.com/predicate/member_ids")
+            value.statement.predicate = PermissiveSchema.member_ids
             values = OrderedList.new(scope, head, tail, adapter).to_a.map(&:proxy_for)
             values = values.map do |val|
               calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
@@ -199,7 +199,7 @@ module Valkyrie::Persistence::Fedora
         class ValkyrieIDValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::URI("http://example.com/predicate/valkyrie_id")
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == PermissiveSchema.valkyrie_id
           end
 
           def result
@@ -223,7 +223,7 @@ module Valkyrie::Persistence::Fedora
         class InternalModelValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/predicate/internal_resource"
+            value.statement.predicate == PermissiveSchema.internal_resource
           end
 
           def result
@@ -234,7 +234,7 @@ module Valkyrie::Persistence::Fedora
         class CreatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/predicate/created_at"
+            value.statement.predicate == PermissiveSchema.created_at
           end
 
           def result
@@ -245,7 +245,7 @@ module Valkyrie::Persistence::Fedora
         class UpdatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate.to_s == "http://example.com/predicate/updated_at"
+            value.statement.predicate == PermissiveSchema.updated_at
           end
 
           def result
@@ -272,8 +272,8 @@ module Valkyrie::Persistence::Fedora
           end
 
           def key
-            key = statement.predicate.to_s
-            key = schema.property_for(resource: nil, predicate: key)
+            predicate = statement.predicate.to_s
+            key = schema.property_for(resource: nil, predicate: predicate)
             namespaces.each do |namespace|
               key = key.to_s.gsub(/^#{namespace}/, '')
             end

@@ -161,7 +161,7 @@ module Valkyrie::Persistence::Fedora
               value.key,
               RDF::Literal.new(
                 value.value,
-                datatype: RDF::URI("http://example.com/predicate/valkyrie_id")
+                datatype: PermissiveSchema.valkyrie_id
               ),
               value.adapter,
               value.resource
@@ -205,7 +205,7 @@ module Valkyrie::Persistence::Fedora
               value.key,
               RDF::Literal.new(
                 value.value,
-                datatype: RDF::URI("http://example.com/predicate/valkyrie_id")
+                datatype: PermissiveSchema.valkyrie_id
               ),
               value.adapter,
               value.resource
