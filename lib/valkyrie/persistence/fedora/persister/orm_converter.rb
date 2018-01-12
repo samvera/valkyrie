@@ -222,8 +222,9 @@ module Valkyrie::Persistence::Fedora
 
         class InternalModelValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
+
           def self.handles?(value)
-            value.statement.predicate == PermissiveSchema.internal_resource
+            value.statement.predicate == value.adapter.schema.predicate_for(property: :internal_resource, resource: nil)
           end
 
           def result
@@ -234,7 +235,7 @@ module Valkyrie::Persistence::Fedora
         class CreatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate == PermissiveSchema.created_at
+            value.statement.predicate == value.adapter.schema.predicate_for(property: :created_at, resource: nil)
           end
 
           def result
@@ -245,7 +246,7 @@ module Valkyrie::Persistence::Fedora
         class UpdatedAtValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.predicate == PermissiveSchema.updated_at
+            value.statement.predicate == value.adapter.schema.predicate_for(property: :updated_at, resource: nil)
           end
 
           def result

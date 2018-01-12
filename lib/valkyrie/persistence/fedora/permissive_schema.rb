@@ -18,21 +18,6 @@ module Valkyrie::Persistence::Fedora
       uri_for(:member_ids)
     end
 
-    # @return [RDF::URI]
-    def self.created_at
-      uri_for(:created_at)
-    end
-
-    # @return [RDF::URI]
-    def self.updated_at
-      uri_for(:updated_at)
-    end
-
-    # @return [RDF::URI]
-    def self.internal_resource
-      uri_for(:internal_resource)
-    end
-
     # Cast the property to a URI in the namespace
     # @param property [Symbol]
     # @return [RDF::URI]
