@@ -21,7 +21,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def internal_resource
-      solr_document[Valkyrie::Persistence::Solr::Queries::MODEL].first
+      solr_document.fetch(Valkyrie::Persistence::Solr::Queries::MODEL).first
     end
 
     def attributes
@@ -29,15 +29,15 @@ module Valkyrie::Persistence::Solr
     end
 
     def created_at
-      DateTime.parse(solr_document["created_at_dtsi"].to_s).utc
+      DateTime.parse(solr_document.fetch("created_at_dtsi").to_s).utc
     end
 
     def updated_at
-      DateTime.parse(solr_document["timestamp"] || solr_document["created_at_dtsi"].to_s).utc
+      DateTime.parse(solr_document["timestamp"] || solr_document.fetch("created_at_dtsi").to_s).utc
     end
 
     def id
-      solr_document["id"].gsub(/^id-/, '')
+      solr_document.fetch('id').sub(/^id-/, '')
     end
 
     def attribute_hash
@@ -49,7 +49,7 @@ module Valkyrie::Persistence::Solr
     def strip_tsim(hsh)
       Hash[
         hsh.map do |k, v|
-          [k.gsub("_tsim", ""), v]
+          [k.sub("_tsim", ""), v]
         end
       ]
     end
@@ -126,7 +126,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def result
-        Valkyrie::ID.new(value.gsub(/^id-/, ''))
+        Valkyrie::ID.new(value.sub(/^id-/, ''))
       end
     end
 
@@ -138,7 +138,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def result
-        ::RDF::URI.new(value.gsub(/^uri-/, ''))
+        ::RDF::URI.new(value.sub(/^uri-/, ''))
       end
     end
 
@@ -154,7 +154,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def json
-        value.gsub(/^serialized-/, '')
+        value.sub(/^serialized-/, '')
       end
     end
 
@@ -230,7 +230,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def result
-        value.gsub(/^integer-/, '').to_i
+        value.sub(/^integer-/, '').to_i
       end
     end
 
@@ -239,13 +239,13 @@ module Valkyrie::Persistence::Solr
       SolrValue.register(self)
       def self.handles?(value)
         return false unless value.to_s.start_with?("datetime-")
-        DateTime.iso8601(value.gsub(/^datetime-/, '')).utc
+        DateTime.iso8601(value.sub(/^datetime-/, '')).utc
       rescue
         false
       end
 
       def result
-        DateTime.parse(value.gsub(/^datetime-/, '')).utc
+        DateTime.parse(value.sub(/^datetime-/, '')).utc
       end
     end
   end
