@@ -96,6 +96,11 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     book = persister.save(resource: resource_class.new(id: id))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.id).to eq Valkyrie::ID.new(id)
+    expect(reloaded).to be_persisted
+    expect(reloaded.created_at).not_to be_blank
+    expect(reloaded.updated_at).not_to be_blank
+    expect(reloaded.created_at).not_to be_kind_of Array
+    expect(reloaded.updated_at).not_to be_kind_of Array
   end
 
   it "can store ::RDF::URIs" do
