@@ -153,10 +153,9 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 
 ## Installing a Development environment
 
-See the parent app README for [instructions on setting up a development
-environment](../#installing-a-development-environment).  To run the test suite:
-1. Start Solr and Fedora servers for testing with `rake server:test` in the parent app
-1. Run the gem's RSpec test suite with `cd valkyrie && rspec spec`
+To run the test suite:
+1. Start Solr and Fedora servers for testing with `rake server:test`
+1. Run the gem's RSpec test suite with `rspec spec`
 
 
 ## License
