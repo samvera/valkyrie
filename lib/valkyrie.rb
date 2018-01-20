@@ -76,5 +76,7 @@ module Valkyrie
     end
   end
 
+  class VersionsNotSupported < StandardError; end
+
   module_function :config, :logger, :logger=, :config_root_path, :environment
 end

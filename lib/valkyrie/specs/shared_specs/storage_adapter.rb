@@ -5,6 +5,8 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
       defined? storage_adapter
     raise 'file must be set with `let(:file)`' unless
       defined? file
+    raise 'version2 must be set with `let(:version2)`' unless
+      defined? version2
     class CustomResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
     end
@@ -17,6 +19,8 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
+  it { is_expected.to respond_to(:supports_versions?) }
+  it { is_expected.to respond_to(:versions).with_keywords(:id) }
 
   it "can upload, validate, re-fetch, and delete a file" do
     resource = CustomResource.new(id: "test")
@@ -45,5 +49,27 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     storage_adapter.delete(id: uploaded_file.id)
     expect { storage_adapter.find_by(id: uploaded_file.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
     expect { storage_adapter.find_by(id: Valkyrie::ID.new("noexist")) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+  end
+
+  it "can version files (if supported)" do
+    if storage_adapter.supports_versions?
+      resource = CustomResource.new(id: "test")
+      stored1 = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource)
+      expect(stored1).to be_kind_of Valkyrie::StorageAdapter::File
+
+      stored2 = storage_adapter.upload(file: version2, original_filename: 'foo.jpg', resource: resource)
+      expect(stored2).to be_kind_of Valkyrie::StorageAdapter::File
+
+      versions = storage_adapter.versions(id: stored2.id)
+      expect(versions.size).to eq 2
+      expect(storage_adapter.find_by(id: versions[0])).to be_kind_of Valkyrie::StorageAdapter::StreamFile
+      expect(storage_adapter.find_by(id: versions[1])).to be_kind_of Valkyrie::StorageAdapter::StreamFile
+
+      sub_versions = storage_adapter.versions(id: versions[0])
+      expect(sub_versions).to eq [versions[0]]
+    else
+      expect { storage_adapter.versions }.to raise_error { Valkyrie::VersionsNotSupported }
+      expect { storage_adapter.retrieve_version('foo') }.to raise_error { Valkyrie::VersionsNotSupported }
+    end
   end
 end
