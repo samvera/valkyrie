@@ -10,13 +10,13 @@ module Valkyrie
       # @param short_name [Symbol]
       # @return [void]
       def register(storage_adapter, short_name)
-        storage_adapters[short_name.to_sym] = storage_adapter
+        storage_adapters[short_name] = storage_adapter
       end
 
       # @param short_name [Symbol]
       # @return [void]
       def unregister(short_name)
-        storage_adapters.delete(short_name.to_sym)
+        storage_adapters.delete(short_name)
       end
 
       # Find the adapter associated with the provided short name
@@ -24,9 +24,9 @@ module Valkyrie
       # @return [Valkyrie::StorageAdapter]
       # @raise Valkyrie::StorageAdapter::AdapterNotFoundError when we are unable to find the named adapter
       def find(short_name)
-        storage_adapters.fetch(short_name.to_sym)
+        storage_adapters.fetch(short_name)
       rescue KeyError
-        raise "Unable to find #{self} with short_name of #{short_name.to_sym.inspect}. Registered adapters are #{storage_adapters.keys.inspect}"
+        raise "Unable to find #{self} with short_name of #{short_name.inspect}. Registered adapters are #{storage_adapters.keys.inspect}"
       end
 
       # Search through all registered storage adapters until it finds one that
