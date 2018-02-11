@@ -15,8 +15,8 @@ require 'json/ld'
 require 'logger'
 require 'active_triples'
 require 'rdf/vocab'
+require 'rails'
 require 'active_fedora'
-require 'hydra-access-controls'
 require 'ruby_tika_app'
 
 # frozen_string_literal: true
