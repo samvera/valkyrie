@@ -124,13 +124,13 @@ To create a custom Valkyrie model in your application, you can use the Rails gen
 generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
 
 ```
-rails generate valkyrie:model FooBar title member_ids:array
+rails generate valkyrie:resource FooBar title member_ids:array
 ```
 
 You can namespace your model class by including a slash in the model name:
 
 ```
-rails generate valkyrie:model Foo/Bar title member_ids:array
+rails generate valkyrie:resource Foo/Bar title member_ids:array
 ```
 
 ### Read and Write Data
