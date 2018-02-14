@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+require 'rails/engine'
 ##
 # This engine exists for the sole purpose of enabling the
 #   `valkyrie_engine:install:migrations` rake task from an including Rails

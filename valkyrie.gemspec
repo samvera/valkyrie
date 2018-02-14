@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'active-fedora'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'activerecord'
+  spec.add_dependency 'railties' # To use generators and engines
   spec.add_dependency 'reform'
   spec.add_dependency 'reform-rails'
   # pg 1.0 is not compatable with Rails 5 yet.
@@ -35,7 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
   spec.add_dependency 'active-triples'
-  spec.add_dependency 'hydra-access-controls'
   spec.add_dependency 'hydra-derivatives'
   spec.add_dependency 'ruby_tika_app'
 

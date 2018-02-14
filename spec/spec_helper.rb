@@ -16,6 +16,7 @@ end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "valkyrie"
 require 'pry'
+require 'action_dispatch'
 
 SOLR_TEST_URL = "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8984}/solr/blacklight-core-test"
 
