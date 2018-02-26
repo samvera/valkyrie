@@ -26,7 +26,7 @@ module Valkyrie::Indexers
             read_groups: Hydra.config[:permissions][:read].group,
             read_users: Hydra.config[:permissions][:read].individual,
             edit_groups: Hydra.config[:permissions][:edit].group,
-            edit_users: Hydra.config[:permissions][:edit].group
+            edit_users: Hydra.config[:permissions][:edit].individual
           }
         else
           {
