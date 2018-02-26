@@ -49,6 +49,12 @@ RSpec.describe Valkyrie::Types do
       resource = Resource.new(geonames_uri: 'http://sws.geonames.org/6619874')
       expect(resource.geonames_uri).to be_a(RDF::URI)
     end
+
+    it 'returns an RDF::URI for a nil uri' do
+      # We don't want to modify the defaults in the schema.
+      resource = Resource.new(geonames_uri: nil)
+      expect(resource.geonames_uri).to be_nil
+    end
   end
 
   describe "Single Valued String" do
