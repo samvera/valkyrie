@@ -37,14 +37,16 @@ module Valkyrie
       end
     end
 
+    Array = Dry::Types['array'].constructor do |value|
+      ::Array.wrap(value)
+    end.default([].freeze)
+
     # Represents an array of unique values.
-    Set = Valkyrie::Types::Coercible::Array.constructor do |value|
-      value.select(&:present?).uniq.map do |val|
+    Set = Array.constructor do |value|
+      ::Array.wrap(value).select(&:present?).uniq.map do |val|
         Anything[val]
       end
     end.default([].freeze)
-
-    Array = Dry::Types['coercible.array'].default([].freeze)
 
     # Used for when an input may be an array, but the output needs to be a
     # single string.

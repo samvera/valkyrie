@@ -8,6 +8,7 @@ RSpec.describe Valkyrie::Types do
       attribute :authors, Valkyrie::Types::Array
       attribute :geonames_uri, Valkyrie::Types::URI
       attribute :thumbnail_id, Valkyrie::Types::ID
+      attribute :embargo_release_date, Valkyrie::Types::Set.member(Valkyrie::Types::DateTime).optional
     end
   end
   after do
@@ -68,6 +69,13 @@ RSpec.describe Valkyrie::Types do
     it 'is not modifiable' do
       # We don't want to modify the defaults in the schema.
       expect { Resource.new.authors << 'foo' }.to raise_error(RuntimeError, "can't modify frozen Array")
+    end
+  end
+
+  describe "the DateTime type" do
+    it "can be set as a time inside an array" do
+      resource = Resource.new(embargo_release_date: 2.days.ago)
+      expect(resource.embargo_release_date.first).to be_a Time
     end
   end
 end
