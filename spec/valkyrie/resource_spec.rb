@@ -79,6 +79,13 @@ RSpec.describe Valkyrie::Resource do
     end
   end
 
+  describe '.human_readable_type=' do
+    it 'sets the human readable type' do
+      described_class.human_readable_type = 'Bogus Type'
+      expect(described_class.human_readable_type).to eq('Bogus Type')
+    end
+  end
+
   context "extended class" do
     before do
       class MyResource < Resource
