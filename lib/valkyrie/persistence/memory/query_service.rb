@@ -15,6 +15,7 @@ module Valkyrie::Persistence::Memory
     #   isn't in the persistence backend.
     # @return [Valkyrie::Resource] The object being searched for.
     def find_by(id:)
+      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end

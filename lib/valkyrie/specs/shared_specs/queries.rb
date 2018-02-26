@@ -52,10 +52,14 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   end
 
   describe ".find_by" do
-    it "returns a resource by id" do
+    it "returns a resource by id or string representation of an id" do
       resource = persister.save(resource: resource_class.new)
 
       found = query_service.find_by(id: resource.id)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
+
+      found = query_service.find_by(id: resource.id.to_s)
       expect(found.id).to eq resource.id
       expect(found).to be_persisted
     end
@@ -64,8 +68,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect { query_service.find_by(id: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
 
-    it 'raises an error if the id is not a Valkyrie::ID' do
-      expect { query_service.find_by(id: "123123123") }.to raise_error ArgumentError
+    it 'raises an error if the id is not a Valkyrie::ID or a string' do
+      expect { query_service.find_by(id: 123) }.to raise_error ArgumentError
     end
   end
 

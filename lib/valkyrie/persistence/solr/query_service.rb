@@ -12,6 +12,7 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
+      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
