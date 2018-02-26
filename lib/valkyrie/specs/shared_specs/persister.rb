@@ -9,6 +9,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :author
       attribute :member_ids
       attribute :nested_resource
+      attribute :single_value, Valkyrie::Types::String
     end
   end
   after do
@@ -28,6 +29,11 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     saved = persister.save(resource: resource)
     expect(saved).to be_persisted
     expect(saved.id).not_to be_blank
+  end
+
+  it "does not save non-array properties" do
+    resource.single_value = "A Single Value"
+    expect { persister.save(resource: resource) }.to raise_error ::Valkyrie::Persistence::UnsupportedDatatype
   end
 
   it "can save multiple resources at once" do
