@@ -83,7 +83,8 @@ module Valkyrie
     end
 
     def valid?
-      super if errors.clear.empty?
+      errors.clear
+      super
     end
   end
 end

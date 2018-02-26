@@ -10,6 +10,7 @@ RSpec.describe Valkyrie::ChangeSet do
       self.fields = [:author]
       property :title, virtual: true, required: true
       property :files, virtual: true, multiple: false
+      validates :title, presence: true
     end
   end
   after do
@@ -47,6 +48,15 @@ RSpec.describe Valkyrie::ChangeSet do
     it "creates a field with a default" do
       change_set.prepopulate!
       expect(change_set.author).to eq []
+    end
+  end
+
+  describe "#validate" do
+    it "revalidates on correction" do
+      change_set.validate(title: []) # sets error when title is required
+      expect(change_set).not_to be_valid
+      change_set.validate(title: ['good title']) # should clear the error
+      expect(change_set).to be_valid
     end
   end
 end
