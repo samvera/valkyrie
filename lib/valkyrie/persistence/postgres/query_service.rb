@@ -24,6 +24,7 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
+      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       resource_factory.to_resource(object: orm_class.find(id.to_s))
     rescue ActiveRecord::RecordNotFound

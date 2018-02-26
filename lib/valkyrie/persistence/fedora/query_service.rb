@@ -8,6 +8,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def find_by(id:)
+      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       uri = adapter.id_to_uri(id)
       begin
