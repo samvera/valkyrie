@@ -154,12 +154,13 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ## Installing a Development environment
 
 ### External Requirements
-* PostgreSQL with the uuid-ossp extension
-  * Databases named `Valkyrie_gem_development` and `Valkyrie_gem_test`.
-  * Note: Enabling uuid-ossp requires database superuser privileges.   
+* PostgreSQL with the uuid-ossp extension.
+  * Note: Enabling uuid-ossp requires database superuser privileges.
+    * From `psql`: `alter user [username] with superuser;`
 
 ### To run the test suite
 1. Start Solr and Fedora servers for testing with `rake server:test`
+1. Run `rake db:create` (First time only)
 1. Run `rake db:migrate`
 1. Run the gem's RSpec test suite with `rspec spec` or `rake`
 
