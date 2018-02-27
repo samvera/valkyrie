@@ -44,6 +44,7 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
+      ensure_persisted(resource)
       Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
     end
 
@@ -55,6 +56,10 @@ module Valkyrie::Persistence::Solr
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def ensure_persisted(resource)
+        raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
   end
 end

@@ -61,10 +61,12 @@ module Valkyrie::Persistence::Memory
     #   other resources.
     # @param property [Symbol] The property which, on other resources, is
     #   referencing the given `resource`
+    # @raise [ArgumentError] Raised when the ID is not in the persistence backend.
     # @return [Array<Valkyrie::Resource>] All resources in the persistence backend
     #   which have the ID of the given `resource` in their `property` property. Not
     #   in order.
     def find_inverse_references_by(resource:, property:)
+      ensure_persisted(resource)
       find_all.select do |obj|
         begin
           Array.wrap(obj[property]).include?(resource.id)
@@ -99,6 +101,10 @@ module Valkyrie::Persistence::Memory
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def ensure_persisted(resource)
+        raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
   end
 end

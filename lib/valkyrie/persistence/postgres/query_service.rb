@@ -54,6 +54,7 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
+      ensure_persisted(resource)
       internal_array = "{\"#{property}\": [{\"id\": \"#{resource.id}\"}]}"
       run_query(find_inverse_references_query, internal_array)
     end
@@ -106,6 +107,10 @@ module Valkyrie::Persistence::Postgres
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def ensure_persisted(resource)
+        raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
 
       def id_type
