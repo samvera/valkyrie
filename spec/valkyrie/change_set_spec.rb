@@ -19,7 +19,15 @@ RSpec.describe Valkyrie::ChangeSet do
     Object.send(:remove_const, :Resource)
     Object.send(:remove_const, :ResourceChangeSet)
   end
+
   it_behaves_like "a Valkyrie::ChangeSet"
+
+  describe ".validators_on" do
+    it "the class responds to validators_on" do
+      expect(ResourceChangeSet.validators_on(:title)).to contain_exactly ActiveModel::Validations::PresenceValidator
+      expect(ResourceChangeSet.validators_on(:files)).to eq []
+    end
+  end
 
   describe "#multiple?" do
     it "is not multiple for tagged items" do
