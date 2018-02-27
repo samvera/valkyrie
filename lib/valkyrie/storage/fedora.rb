@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Storage
+  # Implements the DataMapper Pattern to store binary data in fedora
   class Fedora
     attr_reader :connection
     PROTOCOL = 'fedora://'

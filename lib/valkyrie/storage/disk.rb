@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Storage
+  # Implements the DataMapper Pattern to store binary data on disk
   class Disk
     attr_reader :base_path, :path_generator, :file_mover
     def initialize(base_path:, path_generator: BucketedStorage, file_mover: FileUtils.method(:mv))
