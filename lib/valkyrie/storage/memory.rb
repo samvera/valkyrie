@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Storage
+  # Implements the DataMapper Pattern to store binary data in memory
+  #
+  # @note this adapter is used primarily for testing, and is not recommended
+  #   in cases where you want to preserve real data
   class Memory
     attr_reader :cache
     def initialize
