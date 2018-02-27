@@ -11,6 +11,14 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
+    #
+    # @note Fields are saved using Solr's dynamic fields functionality.
+    #   If the text has length > 1000, it is stored as *_tsim
+    #   otherwise it's stored as *_tsim, *_ssim, and *_tesim
+    #   e.g., a field called 'title' would be stored as 3 solr fields:
+    #     'title_tsim'
+    #     'title_ssim'
+    #     'title_tesim'
     def save(resource:)
       repository([resource]).persist.first
     end
