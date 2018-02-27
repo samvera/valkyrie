@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::ChangeSet do
+  let(:change_set) { ResourceChangeSet.new(Resource.new) }
   before do
     class Resource < Valkyrie::Resource
       attribute :author, Valkyrie::Types::Set
@@ -17,19 +19,7 @@ RSpec.describe Valkyrie::ChangeSet do
     Object.send(:remove_const, :Resource)
     Object.send(:remove_const, :ResourceChangeSet)
   end
-  subject(:change_set) { ResourceChangeSet.new(Resource.new) }
-
-  describe ".validators_on" do
-    it "the class responds to validators_on" do
-      expect(described_class).to respond_to(:validators_on)
-    end
-  end
-
-  it "can set an append_id" do
-    change_set.append_id = Valkyrie::ID.new("test")
-    expect(change_set.append_id).to eq Valkyrie::ID.new("test")
-    expect(change_set[:append_id]).to eq Valkyrie::ID.new("test")
-  end
+  it_behaves_like "a Valkyrie::ChangeSet"
 
   describe "#multiple?" do
     it "is not multiple for tagged items" do
