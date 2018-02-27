@@ -14,6 +14,7 @@ module Valkyrie
   #     property :title, multiple: false, required: true
   #   end
   class ChangeSet < Reform::Form
+    include Reform::Form::ModelReflections
     include Reform::Form::ActiveModel::Validations
     feature Coercion
     class_attribute :fields
