@@ -1,5 +1,7 @@
 # frozen_string_literal: true
+#
 module Valkyrie::Persistence
+  # Implements the DataMapper Pattern to store metadata into Fedora
   module Fedora
     require 'valkyrie/persistence/fedora/permissive_schema'
     require 'valkyrie/persistence/fedora/metadata_adapter'
