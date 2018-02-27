@@ -17,9 +17,7 @@ require 'active_triples'
 require 'rdf/vocab'
 require 'rails'
 require 'active_fedora'
-require 'ruby_tika_app'
 
-# frozen_string_literal: true
 module Valkyrie
   require 'valkyrie/id'
   require 'valkyrie/change_set'
@@ -27,11 +25,9 @@ module Valkyrie
   require 'valkyrie/persistence'
   require 'valkyrie/types'
   require 'valkyrie/resource'
-  require 'valkyrie/derivative_service'
   require 'valkyrie/storage_adapter'
   require 'valkyrie/metadata_adapter'
   require 'valkyrie/adapter_container'
-  require 'valkyrie/file_characterization_service'
   require 'valkyrie/resource/access_controls'
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/storage'

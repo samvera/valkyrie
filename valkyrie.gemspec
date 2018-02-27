@@ -36,8 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
   spec.add_dependency 'active-triples'
-  spec.add_dependency 'hydra-derivatives'
-  spec.add_dependency 'ruby_tika_app'
 
   spec.add_development_dependency "bundler", "~> 1.13"
   spec.add_development_dependency "rake", "~> 10.0"
