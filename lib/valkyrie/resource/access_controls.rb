@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 module Valkyrie
   class Resource
+    # Provides an optional interface consistent with Hydra::AccessControls
+    #
+    # @example
+    #     class CustomResource < Valkyrie::Resource
+    #       include Valkyrie::Resource::AccessControls
+    #       attribute :id, Valkyrie::Types::ID.optional
+    #       attribute :title
+    #       attribute :member_ids
+    #       attribute :nested_resource
+    #     end
+    #
+    # @see https://github.com/samvera/hydra-head/tree/master/hydra-access-controls
     module AccessControls
       def self.included(klass)
         klass.attribute :read_groups, Valkyrie::Types::Set
