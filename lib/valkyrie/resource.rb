@@ -8,6 +8,12 @@ module Valkyrie
   #     attribute :member_ids, Valkyrie::Types::Array
   #     attribute :author
   #   end
+  #
+  # @see https://github.com/samvera-labs/valkyrie/wiki/Persistence Resources are persisted by metadata persisters
+  # @see https://github.com/samvera-labs/valkyrie/wiki/Queries Resources are retrieved by query adapters
+  # @see https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking Validation and change tracking is provided by change sets
+  #
+  # @see lib/valkyrie/specs/shared_specs/resource.rb
   class Resource < Dry::Struct
     include Draper::Decoratable
     constructor_type :schema
