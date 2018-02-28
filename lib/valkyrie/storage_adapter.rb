@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie
+  # StorageAdapter is the primary DataMapper object for binary content persistence.
+  #  Used to register and locate adapters for individual
+  #  storage backends (such as fedora, disk, etc)
   class StorageAdapter
     class FileNotFound < StandardError; end
     class_attribute :storage_adapters

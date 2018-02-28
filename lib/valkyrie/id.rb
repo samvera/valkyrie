@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie
+  # A simple ID class to keep IDs distinguished from strings
   class ID
     attr_reader :id
     delegate :empty?, to: :id
