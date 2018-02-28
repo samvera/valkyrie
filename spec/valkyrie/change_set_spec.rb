@@ -33,8 +33,13 @@ RSpec.describe Valkyrie::ChangeSet do
     it "is not multiple for tagged items" do
       expect(change_set.multiple?(:files)).to eq false
     end
+
     it "is multiple for un-tagged items" do
       expect(change_set.multiple?(:title)).to eq true
+    end
+
+    it "raises an error when no field exists" do
+      expect { change_set.multiple?(:missing) }.to raise_error KeyError, 'key not found: "missing"'
     end
   end
 
