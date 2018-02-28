@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres
+  # Responsible for converting a {Valkyrie::Resource} into a
+  # {Valkyrie::Persistence::Postgres::ORM::Resource}
   class ResourceConverter
     delegate :orm_class, to: :resource_factory
     attr_reader :resource, :resource_factory

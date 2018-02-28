@@ -2,6 +2,7 @@
 require 'valkyrie/persistence/postgres/orm'
 require 'valkyrie/persistence/postgres/resource_factory'
 module Valkyrie::Persistence::Postgres
+  # Persister for Postgres MetadataAdapter.
   class Persister
     attr_reader :adapter
     delegate :resource_factory, to: :adapter
@@ -31,6 +32,7 @@ module Valkyrie::Persistence::Postgres
       resource
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     def wipe!
       resource_factory.orm_class.delete_all
     end

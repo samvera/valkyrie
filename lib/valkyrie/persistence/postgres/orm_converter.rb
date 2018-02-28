@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres
+  # Responsible for converting a
+  # {Valkyrie::Persistence::Postgres::ORM::Resource} to a {Valkyrie::Resource}
   class ORMConverter
     attr_reader :orm_object
     def initialize(orm_object)
@@ -35,6 +37,9 @@ module Valkyrie::Persistence::Postgres
         @rdf_metadata ||= RDFMetadata.new(orm_object.metadata).result
       end
 
+      # Responsible for converting `metadata` JSON-B field in
+      # {Valkyrie::Persistence::Postgres::ORM::Resource} into an acceptable hash
+      # for {Valkyrie::Resource}
       class RDFMetadata
         attr_reader :metadata
         def initialize(metadata)
@@ -102,6 +107,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Converts Date strings to `DateTime`
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
@@ -119,6 +125,7 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Handles iterating over arrays of values and converting each value.
         class EnumeratorValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
           def self.handles?(value)
