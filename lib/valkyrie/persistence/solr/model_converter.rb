@@ -236,7 +236,8 @@ module Valkyrie::Persistence::Solr
           CompositeSolrRow.new(
             [
               calling_mapper.for(Property.new(value.key, value.value)).result,
-              calling_mapper.for(Property.new("#{value.key}_lang", "eng")).result
+              calling_mapper.for(Property.new("#{value.key}_lang", "eng")).result,
+              calling_mapper.for(Property.new("#{value.key}_type", "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString")).result
             ]
           )
         end
@@ -273,7 +274,8 @@ module Valkyrie::Persistence::Solr
           CompositeSolrRow.new(
             [
               calling_mapper.for(Property.new(value.key, value.value.to_s)).result,
-              calling_mapper.for(Property.new("#{value.key}_lang", value.value.language.to_s)).result
+              calling_mapper.for(Property.new("#{value.key}_lang", value.value.language.to_s)).result,
+              calling_mapper.for(Property.new("#{value.key}_type", value.value.datatype.to_s)).result
             ]
           )
         end

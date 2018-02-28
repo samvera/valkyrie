@@ -60,7 +60,9 @@ module Valkyrie::Persistence::Postgres
           end
 
           def result
-            RDF::Literal.new(value["@value"], language: value["@language"])
+            RDF::Literal.new(value["@value"],
+                             language: value["@language"],
+                             datatype: value["@type"])
           end
         end
 
