@@ -42,7 +42,7 @@ module Valkyrie::Indexers
 
       # rubocop:disable Metrics/MethodLength
       def default_config
-        if Hydra.respond_to?(:config)
+        if defined?(Hydra) && Hydra.respond_to?(:config)
           {
             read_groups: Hydra.config[:permissions][:read].group,
             read_users: Hydra.config[:permissions][:read].individual,

@@ -65,7 +65,7 @@ RSpec.describe Valkyrie::Indexers::AccessControlsIndexer do
         end
       end
       after do
-        Hydra.remove_possible_method(:configure)
+        Object.send(:remove_const, :Hydra)
       end
 
       it "indexes with Hydra::AccessControls" do
