@@ -74,6 +74,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def find_inverse_references_by(resource:, property:)
+      ensure_persisted(resource)
       content = content_with_inbound(id: resource.id)
       property_uri =  adapter.schema.predicate_for(property: property, resource: nil)
       ids = content.graph.query([nil, property_uri, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
@@ -90,6 +91,10 @@ module Valkyrie::Persistence::Fedora
 
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def ensure_persisted(resource)
+        raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
   end
 end
