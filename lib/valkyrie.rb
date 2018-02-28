@@ -32,8 +32,6 @@ module Valkyrie
   require 'valkyrie/metadata_adapter'
   require 'valkyrie/adapter_container'
   require 'valkyrie/file_characterization_service'
-  require 'valkyrie/decorators/decorator_list'
-  require 'valkyrie/decorators/decorator_with_arguments'
   require 'valkyrie/resource/access_controls'
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/storage'
