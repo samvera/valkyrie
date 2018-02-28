@@ -1,5 +1,26 @@
 # frozen_string_literal: true
 module Valkyrie::Indexers
+  # Provides an optional interface consistent with Hydra::AccessControls
+  #   This allows for storing access control information into an index
+  #
+  # @note This is used primarily with Solr
+  #
+  # @example Use in Solr Adapter with a CompositeIndexer
+  #
+  #   # insert into config/initializers/valkyrie.rb
+  #   Valkyrie::MetadataAdapter.register(
+  #       Valkyrie::Persistence::Solr::MetadataAdapter.new(
+  #           connection: Blacklight.default_index.connection,
+  #           resource_indexer: Valkyrie::Persistence::Solr::CompositeIndexer.new(
+  #               Valkyrie::Indexers::AccessControlsIndexer,
+  #               Collection::TypeIndexer
+  #           )
+  #       ),
+  #       :index_solr
+  #   )
+  #
+  # @see https://github.com/pulibrary/figgy/blob/684a4fb71cad1c9592d8272416f36e2a4f4ae3c4/config/initializers/valkyrie.rb#L82
+  # @see lib/valkyrie/resource/access_controls.rb
   class AccessControlsIndexer
     attr_reader :resource, :config
     def initialize(resource:, config: default_config)

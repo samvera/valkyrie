@@ -13,6 +13,7 @@ module Valkyrie
     #     end
     #
     # @see https://github.com/samvera/hydra-head/tree/master/hydra-access-controls
+    # @see lib/valkyrie/indexers/access_controls_indexer/rb
     module AccessControls
       def self.included(klass)
         klass.attribute :read_groups, Valkyrie::Types::Set
