@@ -271,11 +271,13 @@ module Valkyrie::Persistence::Solr
         end
 
         def result
+          key = value.key
+          val = value.value
           CompositeSolrRow.new(
             [
-              calling_mapper.for(Property.new(value.key, value.value.to_s)).result,
-              calling_mapper.for(Property.new("#{value.key}_lang", value.value.language.to_s)).result,
-              calling_mapper.for(Property.new("#{value.key}_type", value.value.datatype.to_s)).result
+              calling_mapper.for(Property.new(key, val.to_s)).result,
+              calling_mapper.for(Property.new("#{key}_lang", val.language.to_s)).result,
+              calling_mapper.for(Property.new("#{key}_type", val.datatype.to_s)).result
             ]
           )
         end
