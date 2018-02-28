@@ -13,7 +13,7 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
     - 'lib/valkyrie/specs/**/*'
-    - 'lib/tasks/**/*'
+    - 'tasks/**/*'
     - 'db/schema.rb'
     - 'Rakefile'
     - '*.gemspec'
