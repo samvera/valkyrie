@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie
+  # MetadataAdapter is the primary DataMapper object for metadata persistence.
+  #  Used to register and locate adapters, persisters, and query services for individual
+  #  metadata storage backends (such as fedora, postgres, etc)
   class MetadataAdapter
     class_attribute :adapters
     self.adapters = {}
