@@ -126,8 +126,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly double_rdf
   end
 
-  # Pending support for RDF::Literal integer in fedora
-  xit "can handle Integer RDF properties" do
+  it "can handle Integer RDF properties" do
     int_rdf = RDF::Literal.new(17)
     book = persister.save(resource: resource_class.new(title: [int_rdf]))
     reloaded = query_service.find_by(id: book.id)

@@ -163,7 +163,7 @@ module Valkyrie::Persistence::Fedora
         class IntegerValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::URI("http://www.w3.org/2001/XMLSchema#integer")
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::Vocabulary.term(:integer)
           end
 
           def result
