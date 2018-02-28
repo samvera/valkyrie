@@ -83,31 +83,28 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(book.updated_at).not_to be_kind_of Array
   end
 
-  # Pending support for RDF::Literal boolean in postgres and solr
-  xit "can handle Boolean RDF properties" do
+  it "can handle Boolean RDF properties" do
     boolean_rdf = RDF::Literal.new(false)
     book = persister.save(resource: resource_class.new(title: [boolean_rdf]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly boolean_rdf
   end
 
-  # Pending support for RDF::Literal custom type in postgres and solr
-  xit "can handle custom-typed RDF properties" do
+  it "can handle custom-typed RDF properties" do
     custom_rdf = RDF::Literal.new("Test", datatype: RDF::URI.parse("http://my_made_up_type"))
     book = persister.save(resource: resource_class.new(title: [custom_rdf]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly custom_rdf
   end
 
-  # Pending support for RDF::Literal date in postgres and solr
-  xit "can handle Date RDF properties" do
+  it "can handle Date RDF properties" do
     date_rdf = RDF::Literal.new(Date.current)
     book = persister.save(resource: resource_class.new(title: [date_rdf]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly date_rdf
   end
 
-  # Pending support for RDF::Literal date time in postgres, solr, and fedora
+  # Pending support for RDF::Literal date time in fedora
   xit "can handle DateTime RDF properties" do
     datetime_rdf = RDF::Literal.new(DateTime.current)
     book = persister.save(resource: resource_class.new(title: [datetime_rdf]))
@@ -115,23 +112,21 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly datetime_rdf
   end
 
-  # Pending support for RDF::Literal decimal in postgres and solr
-  xit "can handle Decimal RDF properties" do
+  it "can handle Decimal RDF properties" do
     decimal_rdf = RDF::Literal.new(BigDecimal(5.5, 10))
     book = persister.save(resource: resource_class.new(title: [decimal_rdf]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly decimal_rdf
   end
 
-  # Pending support for RDF::Literal double in postgres and solr
-  xit "can handle Double RDF properties" do
+  it "can handle Double RDF properties" do
     double_rdf = RDF::Literal.new(5.5)
     book = persister.save(resource: resource_class.new(title: [double_rdf]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly double_rdf
   end
 
-  # Pending support for RDF::Literal integer in postgres, solr and fedora
+  # Pending support for RDF::Literal integer in fedora
   xit "can handle Integer RDF properties" do
     int_rdf = RDF::Literal.new(17)
     book = persister.save(resource: resource_class.new(title: [int_rdf]))
@@ -146,8 +141,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly "Test1", language_rdf
   end
 
-  # Pending support for RDF::Literal time in postgres and solr
-  xit "can handle Time RDF properties" do
+  it "can handle Time RDF properties" do
     time_rdf = RDF::Literal.new(Time.current)
     book = persister.save(resource: resource_class.new(title: [time_rdf]))
     reloaded = query_service.find_by(id: book.id)

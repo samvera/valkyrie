@@ -66,6 +66,7 @@ module Valkyrie::Persistence::Solr
     def build_literals(hsh)
       hsh.each_with_object({}) do |(key, value), output|
         next if key.end_with?("_lang")
+        next if key.end_with?("_type")
         output[key] = SolrValue.for(Property.new(key, value, hsh)).result
       end
     end
@@ -75,26 +76,36 @@ module Valkyrie::Persistence::Solr
 
     # Converts a stored language typed literal from two fields into one
     #   {RDF::Literal}
-    class LanguagePropertyValue < ::Valkyrie::ValueMapper
+    class RDFLiteralPropertyValue < ::Valkyrie::ValueMapper
       SolrValue.register(self)
       def self.handles?(value)
-        value.is_a?(Property) && value.document["#{value.key}_lang"]
+        value.is_a?(Property) &&
+          (value.document["#{value.key}_lang"] || value.document["#{value.key}_type"])
       end
 
       def result
-        value.value.zip(languages).map do |literal, language|
-          if language == "eng"
+        value.value.each_with_index.map do |literal, idx|
+          language = languages[idx]
+          type = datatypes[idx]
+          if language == "eng" && type == "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
             literal
+          elsif language.present?
+            RDF::Literal.new(literal, language: language, datatype: type)
           else
-            RDF::Literal.new(literal, language: language)
+            RDF::Literal.new(literal, datatype: type)
           end
         end
       end
 
       def languages
-        value.document["#{value.key}_lang"]
+        value.document.fetch("#{value.key}_lang", [])
+      end
+
+      def datatypes
+        value.document.fetch("#{value.key}_type", [])
       end
     end
+
     class PropertyValue < ::Valkyrie::ValueMapper
       SolrValue.register(self)
       def self.handles?(value)
