@@ -104,8 +104,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly date_rdf
   end
 
-  # Pending support for RDF::Literal date time in fedora
-  xit "can handle DateTime RDF properties" do
+  it "can handle DateTime RDF properties" do
     datetime_rdf = RDF::Literal.new(DateTime.current)
     book = persister.save(resource: resource_class.new(title: [datetime_rdf]))
     reloaded = query_service.find_by(id: book.id)
@@ -126,8 +125,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly double_rdf
   end
 
-  # Pending support for RDF::Literal integer in fedora
-  xit "can handle Integer RDF properties" do
+  it "can handle Integer RDF properties" do
     int_rdf = RDF::Literal.new(17)
     book = persister.save(resource: resource_class.new(title: [int_rdf]))
     reloaded = query_service.find_by(id: book.id)
@@ -148,6 +146,77 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly time_rdf
   end
 
+  # Pending boolean support in Valkyrie
+  #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+  xit "can store booleans" do
+    boolean = false
+    book = persister.save(resource: resource_class.new(title: [boolean]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly boolean
+  end
+
+  # Pending date support in Valkyrie
+  #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+  xit "can store Dates" do
+    date = Date.current
+    book = persister.save(resource: resource_class.new(title: [date]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly date
+  end
+
+  it "can store DateTimes" do
+    time1 = DateTime.current
+    time2 = Time.current.in_time_zone
+    book = persister.save(resource: resource_class.new(title: [time1], author: [time2]))
+
+    reloaded = query_service.find_by(id: book.id)
+
+    expect(reloaded.title.first.to_i).to eq(time1.to_i)
+    expect(reloaded.title.first.zone).to eq('UTC')
+    expect(reloaded.author.first.to_i).to eq(time2.to_i)
+    expect(reloaded.author.first.zone).to eq('UTC')
+  end
+
+  # Pending decimals support in Valkyrie
+  #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+  xit "can store Decimals" do
+    decimal = BigDecimal(5.5, 10)
+    book = persister.save(resource: resource_class.new(title: [decimal]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly decimal
+  end
+
+  # Pending doubles support in Valkyrie
+  #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+  xit "can store doubles" do
+    book = persister.save(resource: resource_class.new(title: [1.5]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly 1.5
+  end
+
+  it "can store integers" do
+    book = persister.save(resource: resource_class.new(title: [1]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly 1
+  end
+
+  # Pending time support in Valkyrie
+  #  currently millisecond precision is lost is postgres and solr
+  #
+  #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+  xit "can store Times" do
+    time = Time.current
+    book = persister.save(resource: resource_class.new(title: [time]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly time.utc
+  end
+
+  it "can store ::RDF::URIs" do
+    book = persister.save(resource: resource_class.new(title: [::RDF::URI("http://example.com")]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly RDF::URI("http://example.com")
+  end
+
   it "can store Valkyrie::IDs" do
     shared_title = persister.save(resource: resource_class.new(id: "test"))
     book = persister.save(resource: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]))
@@ -166,31 +235,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.updated_at).not_to be_blank
     expect(reloaded.created_at).not_to be_kind_of Array
     expect(reloaded.updated_at).not_to be_kind_of Array
-  end
-
-  it "can store ::RDF::URIs" do
-    book = persister.save(resource: resource_class.new(title: [::RDF::URI("http://example.com")]))
-    reloaded = query_service.find_by(id: book.id)
-    expect(reloaded.title).to contain_exactly RDF::URI("http://example.com")
-  end
-
-  it "can store integers" do
-    book = persister.save(resource: resource_class.new(title: [1]))
-    reloaded = query_service.find_by(id: book.id)
-    expect(reloaded.title).to contain_exactly 1
-  end
-
-  it "can store datetimes" do
-    time1 = DateTime.current
-    time2 = Time.current.in_time_zone
-    book = persister.save(resource: resource_class.new(title: [time1], author: [time2]))
-
-    reloaded = query_service.find_by(id: book.id)
-
-    expect(reloaded.title.first.to_i).to eq(time1.to_i)
-    expect(reloaded.title.first.zone).to eq('UTC')
-    expect(reloaded.author.first.to_i).to eq(time2.to_i)
-    expect(reloaded.author.first.zone).to eq('UTC')
   end
 
   context "parent tests" do
