@@ -6,9 +6,9 @@ namespace :server do
     require 'solr_wrapper'
     require 'fcrepo_wrapper'
     SolrWrapper.wrap(shared_solr_opts.merge(port: 8984, instance_dir: 'tmp/blacklight-core-test')) do |solr|
-      solr.with_collection(name: "blacklight-core-test", dir: Pathname.new(__dir__).join("../..", "solr", "config").to_s) do
+      solr.with_collection(name: "blacklight-core-test", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
         SolrWrapper.wrap(shared_solr_opts.merge(port: 8985, instance_dir: 'tmp/hydra-test')) do |solr2|
-          solr2.with_collection(name: "hydra-test", dir: Pathname.new(__dir__).join("../..", "solr", "config").to_s) do
+          solr2.with_collection(name: "hydra-test", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
             FcrepoWrapper.wrap(shared_fedora_opts.merge(port: 8988, fcrepo_home_dir: "tmp/fcrepo4-test-data")) do |_fcrepo|
               puts "Setup two solr servers & Fedora"
               loop do
@@ -37,9 +37,9 @@ namespace :server do
     require 'fcrepo_wrapper'
 
     SolrWrapper.wrap(shared_solr_opts.merge(port: 8983, instance_dir: 'tmp/blacklight-core')) do |solr|
-      solr.with_collection(name: "blacklight-core", dir: Pathname.new(__dir__).join("../..", "solr", "config").to_s) do
+      solr.with_collection(name: "blacklight-core", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
         SolrWrapper.wrap(shared_solr_opts.merge(port: 8987, instance_dir: 'tmp/hydra-dev')) do |solr2|
-          solr2.with_collection(name: "hydra-dev", dir: Pathname.new(__dir__).join("../..", "solr", "config").to_s) do
+          solr2.with_collection(name: "hydra-dev", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
             FcrepoWrapper.wrap(shared_fedora_opts.merge(port: 8986, fcrepo_home_dir: "fcrepo4-dev-data")) do |_fcrepo|
               puts "Setup two solr servers & Fedora"
               loop do

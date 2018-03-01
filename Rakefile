@@ -5,7 +5,7 @@ require 'yaml'
 require 'config/database_connection'
 require 'active_record'
 require 'rubocop/rake_task'
-load "lib/tasks/dev.rake"
+load "tasks/dev.rake"
 RSpec::Core::RakeTask.new(:spec)
 
 task default: :spec
