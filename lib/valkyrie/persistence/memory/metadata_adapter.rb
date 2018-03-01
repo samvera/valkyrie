@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Memory
+  # MetadataAdapter for the memory adapter.
+  # @see Valkyrie::Persistence::Memory
+  # @note Documentation for instance methods on other MetadataAdapters are
+  #   copied from the Memory implementation via `(see
+  #   Valkyrie::Persistence::Memory#method)` to reduce duplication.
   class MetadataAdapter
     attr_writer :cache
 

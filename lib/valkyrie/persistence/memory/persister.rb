@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Memory
+  # Persister for the memory metadata adapter.
+  # @see Valkyrie::Persistence::Memory
+  # @note Documentation for persisters in general is maintained here.
   class Persister
     attr_reader :adapter
     delegate :cache, to: :adapter
