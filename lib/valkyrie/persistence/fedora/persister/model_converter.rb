@@ -181,6 +181,28 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      class BooleanValue < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && ([true, false].include? value.value)
+        end
+
+        def result
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value,
+                datatype: PermissiveSchema.valkyrie_bool
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
+        end
+      end
+
       class IntegerValue < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
