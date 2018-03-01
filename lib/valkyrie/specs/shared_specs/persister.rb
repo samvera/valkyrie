@@ -146,13 +146,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title).to contain_exactly time_rdf
   end
 
-  # Pending boolean support in Valkyrie
   #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
-  xit "can store booleans" do
-    boolean = false
-    book = persister.save(resource: resource_class.new(title: [boolean]))
+  it "can store booleans" do
+    boolean = [false, true]
+    book = persister.save(resource: resource_class.new(title: boolean))
     reloaded = query_service.find_by(id: book.id)
-    expect(reloaded.title).to contain_exactly boolean
+    expect(reloaded.title).to contain_exactly(*boolean)
   end
 
   # Pending date support in Valkyrie

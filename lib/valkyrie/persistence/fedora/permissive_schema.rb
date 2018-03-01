@@ -19,6 +19,11 @@ module Valkyrie::Persistence::Fedora
     end
 
     # @return [RDF::URI]
+    def self.valkyrie_bool
+      uri_for(:valkyrie_bool)
+    end
+
+    # @return [RDF::URI]
     def self.valkyrie_datetime
       uri_for(:valkyrie_datetime)
     end

@@ -53,7 +53,11 @@ module Valkyrie
 
     # Represents an array of unique values.
     Set = Array.constructor do |value|
-      ::Array.wrap(value).select(&:present?).uniq.map do |val|
+      clean_values = ::Array.wrap(value).reject do |val|
+        val == ''
+      end.reject(&:nil?).uniq
+
+      clean_values.map do |val|
         Anything[val]
       end
     end.default([].freeze)

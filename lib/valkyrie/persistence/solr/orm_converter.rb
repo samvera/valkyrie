@@ -233,6 +233,19 @@ module Valkyrie::Persistence::Solr
       end
     end
 
+    # Converts an boolean in solr into an {Boolean}
+    class BooleanValue < ::Valkyrie::ValueMapper
+      SolrValue.register(self)
+      def self.handles?(value)
+        value.to_s.start_with?("boolean-")
+      end
+
+      def result
+        val = value.sub(/^boolean-/, '')
+        val.casecmp("true").zero?
+      end
+    end
+
     # Converts an integer in solr into an {Integer}
     class IntegerValue < ::Valkyrie::ValueMapper
       SolrValue.register(self)

@@ -9,6 +9,8 @@ RSpec.describe Valkyrie::Types do
       attribute :geonames_uri, Valkyrie::Types::URI
       attribute :thumbnail_id, Valkyrie::Types::ID
       attribute :embargo_release_date, Valkyrie::Types::Set.member(Valkyrie::Types::DateTime).optional
+      attribute :set_of_values, Valkyrie::Types::Set
+      attribute :my_flag, Valkyrie::Types::Bool
     end
   end
   after do
@@ -76,6 +78,20 @@ RSpec.describe Valkyrie::Types do
     it "can be set as a time inside an array" do
       resource = Resource.new(embargo_release_date: 2.days.ago)
       expect(resource.embargo_release_date.first).to be_a Time
+    end
+  end
+
+  describe "a set of values" do
+    it "can contain any type except empty string and nil" do
+      resource = Resource.new(set_of_values: ["", nil, "one", 2, false])
+      expect(resource.set_of_values).to contain_exactly "one", 2, false
+    end
+  end
+
+  describe "A boolean value" do
+    it "returns the boolean value set" do
+      resource = Resource.new(my_flag: true)
+      expect(resource.my_flag).to be true
     end
   end
 end

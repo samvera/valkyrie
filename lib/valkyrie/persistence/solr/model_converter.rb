@@ -128,6 +128,18 @@ module Valkyrie::Persistence::Solr
       class SolrMapperValue < ::Valkyrie::ValueMapper
       end
 
+      # Casts {Boolean} values into a recognizable string in Solr.
+      class BooleanPropertyValue < ::Valkyrie::ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && ([true, false].include? value.value)
+        end
+
+        def result
+          calling_mapper.for(Property.new(value.key, "boolean-#{value.value}")).result
+        end
+      end
+
       # Casts nested resources into a JSON string in solr.
       class NestedObjectValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
