@@ -37,6 +37,7 @@ module Valkyrie::Persistence::Memory
       cache.delete(resource.id)
     end
 
+    # Wipes all data in the persistence backend.
     def wipe!
       cache.clear
     end

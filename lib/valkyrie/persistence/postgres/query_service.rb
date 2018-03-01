@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Postgres
+  # Query Service for the Postgres Metadata Adapter
+  #
+  # Most queries are delegated through to the ActiveRecord model
+  # {Valkyrie::Persistence::Postgres::ORM::Resource}
+  #
+  # @see Valkyrie::Persistence::Postgres::MetadataAdapter
   class QueryService
     attr_reader :adapter
     delegate :resource_factory, to: :adapter
