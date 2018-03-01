@@ -181,6 +181,54 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      class IntegerValue < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Integer)
+        end
+
+        def result
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value,
+                datatype: PermissiveSchema.valkyrie_int
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
+        end
+      end
+
+      class DateTimeValue < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(DateTime)
+        end
+
+        def result
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value,
+                datatype: PermissiveSchema.valkyrie_datetime
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
+        end
+      end
+
+      # technically valkyrie does not support time, but when other persister support time
+      #  this code will make fedora compliant
+      #
+      #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
       class TimeValue < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
@@ -188,7 +236,19 @@ module Valkyrie::Persistence::Fedora
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, value.value.to_datetime, value.adapter, value.resource)).result
+          # cast it to datetime for storage, to preserve miliseconds and date
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              RDF::Literal.new(
+                value.value.to_datetime,
+                datatype: PermissiveSchema.valkyrie_time
+              ),
+              value.adapter,
+              value.resource
+            )
+          ).result
         end
       end
 

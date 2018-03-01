@@ -18,6 +18,21 @@ module Valkyrie::Persistence::Fedora
       uri_for(:member_ids)
     end
 
+    # @return [RDF::URI]
+    def self.valkyrie_datetime
+      uri_for(:valkyrie_datetime)
+    end
+
+    # @return [RDF::URI]
+    def self.valkyrie_int
+      uri_for(:valkyrie_int)
+    end
+
+    # @return [RDF::URI]
+    def self.valkyrie_time
+      uri_for(:valkyrie_time)
+    end
+
     # Cast the property to a URI in the namespace
     # @param property [Symbol]
     # @return [RDF::URI]

@@ -160,26 +160,26 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
-        class IntegerValue < ::Valkyrie::ValueMapper
-          FedoraValue.register(self)
-          def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == RDF::URI("http://www.w3.org/2001/XMLSchema#integer")
-          end
-
-          def result
-            value.statement.object = value.statement.object.to_i
-            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
-          end
-        end
-
         class DateTimeValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal::DateTime)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == PermissiveSchema.valkyrie_datetime
           end
 
           def result
             value.statement.object = ::DateTime.iso8601(value.statement.object.to_s).utc
+            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
+          end
+        end
+
+        class IntegerValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == PermissiveSchema.valkyrie_int
+          end
+
+          def result
+            value.statement.object = value.statement.object.value.to_i
             calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
           end
         end
@@ -192,6 +192,22 @@ module Valkyrie::Persistence::Fedora
 
           def result
             value.statement.object = value.statement.object.to_s
+            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
+          end
+        end
+
+        # technically valkyrie does not support time, but when other persister support time
+        #  this code will make fedora compliant
+        #
+        #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
+        class TimeValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == PermissiveSchema.valkyrie_time
+          end
+
+          def result
+            value.statement.object = Time.parse(value.statement.object.to_s).utc
             calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
           end
         end
