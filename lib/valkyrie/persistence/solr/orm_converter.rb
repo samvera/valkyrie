@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
-  ##
-  # Converts a solr hash to a {Valkyrie::Resource}
+  # Responsible for converting hashes from Solr into a {Valkyrie::Resource}
   class ORMConverter
     attr_reader :solr_document
     def initialize(solr_document)

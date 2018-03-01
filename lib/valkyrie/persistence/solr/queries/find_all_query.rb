@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
+  # Responsible for efficiently returning all objects in the solr repository as
+  # {Valkyrie::Resource}s
   class FindAllQuery
     attr_reader :connection, :resource_factory, :model
     def initialize(connection:, resource_factory:, model: nil)

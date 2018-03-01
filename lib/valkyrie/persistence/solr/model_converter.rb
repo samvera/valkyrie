@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
+  # Responsible for converting a {Valkyrie::Resource} into hashes for indexing
+  # into Solr.
   class ModelConverter
     attr_reader :resource, :resource_factory
     delegate :resource_indexer, to: :resource_factory

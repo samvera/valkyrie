@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
+  # Responsible for handling the logic for persisting or deleting multiple
+  # objects into or out of solr.
   class Repository
     COMMIT_PARAMS = { softCommit: true }.freeze
 

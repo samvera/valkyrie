@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
+  # Provides access to generic methods for converting to/from
+  # {Valkyrie::Resource} and hashes for persistence into Solr.
   class ResourceFactory
     require 'valkyrie/persistence/solr/orm_converter'
     require 'valkyrie/persistence/solr/model_converter'
@@ -8,7 +10,7 @@ module Valkyrie::Persistence::Solr
       @resource_indexer = resource_indexer
     end
 
-    # @param solr_document [Hash] The solr document in a hash to convert to a
+    # @param object [Hash] The solr document in a hash to convert to a
     #   resource.
     # @return [Valkyrie::Resource]
     def to_resource(object:)

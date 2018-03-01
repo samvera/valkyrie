@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
+  # Responsible for returning a single resource identified by an ID.
   class FindByIdQuery
     attr_reader :connection, :resource_factory
     attr_writer :id

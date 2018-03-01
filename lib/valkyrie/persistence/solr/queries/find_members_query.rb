@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
+  # Responsible for returning all members of a given resource as
+  # {Valkyrie::Resource}s
   class FindMembersQuery
     attr_reader :resource, :connection, :resource_factory, :model
     def initialize(resource:, connection:, resource_factory:, model:)
