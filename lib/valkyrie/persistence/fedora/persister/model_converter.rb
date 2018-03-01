@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
   class Persister
+    # Responsible for converting {Valkyrie::Resource} to {LDP::Container::Basic}
     class ModelConverter
       attr_reader :resource, :adapter, :subject_uri
       delegate :connection, :connection_prefix, :base_path, to: :adapter

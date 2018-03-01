@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
-  ##
   # Ruby object representation of an ORE doubly linked list.
+  # Used in the Fedora adapter for persisting ordered members.
   class OrderedList
     include Enumerable
     attr_reader :graph, :head_subject, :tail_subject, :adapter

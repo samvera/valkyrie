@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
+  # Query Service for Fedora MetadataAdapter
   class QueryService
     attr_reader :adapter
     delegate :connection, :resource_factory, to: :adapter
@@ -7,6 +8,7 @@ module Valkyrie::Persistence::Fedora
       @adapter = adapter
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
       id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
@@ -19,6 +21,7 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
     def find_parents(resource:)
       content = content_with_inbound(id: resource.id)
       parent_ids = content.graph.query([nil, RDF::Vocab::ORE.proxyFor, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
@@ -33,6 +36,7 @@ module Valkyrie::Persistence::Fedora
       ]
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
       return [] unless resource.respond_to? :member_ids
       result = Array(resource.member_ids).lazy.map do |id|
@@ -42,6 +46,9 @@ module Valkyrie::Persistence::Fedora
       result.select { |obj| obj.is_a?(model) }
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all)
+    #
+    # @note This requires iterating over every resource in Fedora.
     def find_all
       resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path))
       ids = resource.graph.query([nil, RDF::Vocab::LDP.contains, nil]).map(&:object).map { |x| adapter.uri_to_id(x) }
@@ -52,12 +59,16 @@ module Valkyrie::Persistence::Fedora
       []
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
+    #
+    # @note This requires iterating over every resource in Fedora.
     def find_all_of_model(model:)
       find_all.select do |m|
         m.is_a?(model)
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
       (resource[property] || []).select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|
         find_by(id: id)
@@ -73,6 +84,7 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource:, property:)
       ensure_persisted(resource)
       content = content_with_inbound(id: resource.id)

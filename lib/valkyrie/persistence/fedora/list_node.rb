@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
+  # Represents a node in an ORE List. Used for persisting ordered members into
+  # an RDF Graph for Fedora, to keep order maintained.
   class ListNode
     attr_reader :rdf_subject, :graph
     attr_writer :next, :prev

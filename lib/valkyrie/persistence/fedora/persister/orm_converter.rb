@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
   class Persister
+    # Responsible for converting {LDP::Container::Basic} to {RDF::Resource}
     class OrmConverter
       attr_reader :object, :adapter
       delegate :graph, to: :object

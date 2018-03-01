@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
-  ##
   # Lazily iterates over a doubly linked list, fixing up nodes if necessary.
+  # Used for reading ordered members out of Fedora, and then converting them to
+  # member_ids.
   class OrderedReader
     include Enumerable
     attr_reader :root
