@@ -89,7 +89,7 @@ RSpec.describe Valkyrie::Types do
 
   describe "a set of values" do
     it "can contain any type except empty string and nil" do
-      resource = Resource.new(set_of_values: ["", nil, "one", 2, false])
+      resource = Resource.new(set_of_values: ["", nil, "one", 2, false, Valkyrie::ID.new("")])
       expect(resource.set_of_values).to contain_exactly "one", 2, false
     end
     it "doesn't create things inside if no value is passed" do
