@@ -1,0 +1,43 @@
+# v1.0.0.RC1 2018-03-02
+
+Initial Release
+
+## Changes Since Last Sprint
+
+* Added find_many_by_ids query.
+* Enforces only persisting arrays - no scalars.
+* Fixes casting edge cases for `Set` and `Array`.
+* Significantly improved documentation
+* Support `Booleans`
+* Support `RDF::Literal`
+* Fix support for `DateTime`.
+* Fix rake tasks leaking out of gem.
+* Extract derivatives/file characterization to
+    [valkyrie-derivatives](https://github.com/samvera-labs/valkyrie-derivatives)
+* ChangeSet shared spec
+* Allow strings as an argument for find_by.
+* Improve development documentation.
+* Throw error on `find_inverse_references_by` for unsaved `resource`.
+
+## Special Thanks to All Contributors:
+
+* [atz](https://github.com/atz)
+* [awead](https://github.com/awead)
+* [barmintor](https://github.com/barmintor)
+* [bmquinn](https://github.com/bmquinn)
+* [cam156](https://github.com/cam156)
+* [carrickr](https://github.com/carrickr)
+* [cbeer](https://github.com/cbeer)
+* [cjcolvar](https://github.com/cjcolvar)
+* [csyversen](https://github.com/csyversen)
+* [dlpierce](https://github.com/dlpierce)
+* [escowles](https://github.com/escowles)
+* [geekscruff](https://github.com/geekscruff)
+* [hackmastera](https://github.com/hackmastera)
+* [jcoyne](https://github.com/jcoyne)
+* [jeremyf](https://github.com/jeremyf)
+* [jgondron](https://github.com/jgondron)
+* [jrgriffiniii](https://github.com/jrgriffiniii)
+* [mbklein](https://github.com/mbklein)
+* [stkenny](https://github.com/stkenny)
+* [tpendragon](https://github.com/tpendragon)
