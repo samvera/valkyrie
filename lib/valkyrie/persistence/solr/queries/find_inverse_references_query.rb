@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr::Queries
+  # Responsible for efficiently returning all {Valkyrie::Resource}s which
+  # reference a {Valkyrie::Resource} in a given property.
   class FindInverseReferencesQuery
     attr_reader :resource, :property, :connection, :resource_factory
     def initialize(resource:, property:, connection:, resource_factory:)

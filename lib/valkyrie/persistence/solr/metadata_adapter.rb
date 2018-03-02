@@ -4,6 +4,28 @@ module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/persister'
   require 'valkyrie/persistence/solr/query_service'
   require 'valkyrie/persistence/solr/resource_factory'
+  # MetadataAdapter for Solr Adapter.
+  #
+  # This adapter persists resources as hashes to an RSolr connection.
+  #
+  # @example Instantiate a Solr MetadataAdapter for Blacklight
+  #   Valkyrie::Persistence::Solr::MetadataAdapter.new(
+  #     connection: Blacklight.default_index.connection
+  #   )
+  #
+  # @example Instantiate a Solr MetadataAdapter with just RSolr
+  #   Valkyrie::Persistence::Solr::MetadataAdapter.new(
+  #     connection: RSolr.connect(url: "http://127.0.0.1:8983/solr/core")
+  #   )
+  #
+  # @example Instantiate a Solr MetadataAdapter with custom indexers
+  #   Valkyrie::Persistence::Solr::MetadataAdapter.new(
+  #     connection: Blacklight.default_index.connection,
+  #     resource_indexer: CompositeIndexer.new(
+  #       Valkyrie::Indexers::AccessControlsIndexer,
+  #       MyIndexer
+  #     )
+  #   )
   class MetadataAdapter
     attr_reader :connection, :resource_indexer
     # @param connection [RSolr::Client] The RSolr connection to index to.

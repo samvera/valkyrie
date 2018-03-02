@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/queries'
+  # Query Service for Solr MetadataAdapter.
   class QueryService
     attr_reader :connection, :resource_factory
     # @param connection [RSolr::Client]

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/repository'
+  # Persister for Solr MetadataAdapter.
+  #
+  # Most methods are delegated to {Valkyrie::Persistence::Solr::Repository}
   class Persister
     attr_reader :adapter
     delegate :connection, :resource_factory, to: :adapter
