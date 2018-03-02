@@ -76,6 +76,7 @@ RSpec.describe Valkyrie::Types do
     end
     it "doesn't create things inside if no value is passed" do
       expect(Resource.new.nested_resource_array).to eq []
+      expect(Resource.new(title: "bla").nested_resource_array).to eq []
     end
   end
 
@@ -93,6 +94,7 @@ RSpec.describe Valkyrie::Types do
     end
     it "doesn't create things inside if no value is passed" do
       expect(Resource.new.nested_resource_set).to eq []
+      expect(Resource.new(title: "bla").nested_resource_set).to eq []
     end
     it "can create things" do
       resource = Resource.new(nested_resource_set: { title: "test" })

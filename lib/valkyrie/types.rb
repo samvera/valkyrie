@@ -71,6 +71,18 @@ module Valkyrie
       end
     end.default([].freeze)
 
+    module ArrayDefault
+      def of(type)
+        super.default([].freeze)
+      end
+
+      def member(type)
+        super.default([].freeze)
+      end
+    end
+    Array.singleton_class.include(ArrayDefault)
+    Set.singleton_class.include(ArrayDefault)
+
     # Used for when an input may be an array, but the output needs to be a
     # single string.
     SingleValuedString = Valkyrie::Types::String.constructor do |value|
