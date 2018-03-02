@@ -37,6 +37,21 @@ module Valkyrie::Persistence::Postgres
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
+    def find_many_by_ids(ids:)
+      ids.map! do |id|
+        id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
+        validate_id(id)
+        id.to_s
+      end
+
+      orm_class.where(id: ids).map do |orm_resource|
+        resource_factory.to_resource(object: orm_resource)
+      end
+    rescue ActiveRecord::RecordNotFound
+      raise Valkyrie::Persistence::ObjectNotFoundError
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
       return [] if resource.id.blank?

@@ -21,6 +21,17 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
+    def find_many_by_ids(ids:)
+      ids.map do |id|
+        begin
+          find_by(id: id)
+        rescue ::Valkyrie::Persistence::ObjectNotFoundError
+          nil
+        end
+      end.reject(&:nil?)
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
     def find_parents(resource:)
       content = content_with_inbound(id: resource.id)
