@@ -48,12 +48,21 @@ module Valkyrie
     end
 
     Array = Dry::Types['array'].constructor do |value|
-      ::Array.wrap(value)
+      if value.is_a?(::Hash)
+        if value.empty?
+          []
+        else
+          [value]
+        end
+      else
+        ::Array.wrap(value)
+      end
     end.default([].freeze)
 
     # Represents an array of unique values.
     Set = Array.constructor do |value|
-      clean_values = ::Array.wrap(value).reject do |val|
+      value = Array[value]
+      clean_values = value.reject do |val|
         val == ''
       end.reject(&:nil?).uniq
 
