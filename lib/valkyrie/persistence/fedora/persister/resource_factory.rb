@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
   class Persister
+    # Provides access to generic methods for converting to/from
+    # {Valkyrie::Resource} and {LDP::Container::Basic}.
     class ResourceFactory
       require 'valkyrie/persistence/fedora/persister/model_converter'
       require 'valkyrie/persistence/fedora/persister/orm_converter'

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
+  # Persister for Fedora MetadataAdapter.
   class Persister
     require 'valkyrie/persistence/fedora/persister/resource_factory'
     attr_reader :adapter
@@ -8,6 +9,7 @@ module Valkyrie::Persistence::Fedora
       @adapter = adapter
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
       initialize_repository
       resource.created_at ||= Time.current
@@ -24,18 +26,21 @@ module Valkyrie::Persistence::Fedora
       resource_factory.to_resource(object: orm)
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#save_all)
     def save_all(resources:)
       resources.map do |resource|
         save(resource: resource)
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#delete)
     def delete(resource:)
       orm = resource_factory.from_resource(resource: resource)
       orm.delete
       resource
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     def wipe!
       connection.delete(base_path)
       connection.delete("#{base_path}/fcr:tombstone")

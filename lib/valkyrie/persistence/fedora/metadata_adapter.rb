@@ -1,5 +1,13 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
+  # Metadata Adapter for Fedora adapter.
+  #
+  # @example Instantiate with connection to Fedora.
+  #   Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+  #     connection: ::Ldp::Client.new("http://localhost:8988/rest"),
+  #     base_path: "test_fed",
+  #     schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+  #   )
   class MetadataAdapter
     attr_reader :connection, :base_path, :schema
     def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new)

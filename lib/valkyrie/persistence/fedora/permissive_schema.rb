@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
+  # Default schema for Fedora MetadataAdapter. It's used to generate a mapping
+  # of {Valkyrie::Resource} attributes to predicates. This implementation will
+  # make up a URI if one doesn't exist in a passed in schema.
+  #
+  # @example Passing in a mapping
+  #   schema = Valkyrie::Persistence::Fedora::PermissiveSchema.new(member_ids:
+  #     RDF::URI("http://mypredicates.com/member_ids"))
+  #   schema.predicate_for(resource: Resource.new, property: :member_ids) # => RDF::URI<"http://mypredicates.com/member_ids">
+  #   schema.predicate_for(resource: Resource.new, property: :unknown) # => RDF::URI<"http://example.com/predicate/unknown">
   class PermissiveSchema
     URI_PREFIX = 'http://example.com/predicate/'
 
