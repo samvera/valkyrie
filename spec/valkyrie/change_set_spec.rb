@@ -29,6 +29,12 @@ RSpec.describe Valkyrie::ChangeSet do
     end
   end
 
+  describe ".model_for_property" do
+    it "returns the model" do
+      expect(change_set.model_for_property(:title)).to eq change_set.model
+    end
+  end
+
   describe "#multiple?" do
     it "is not multiple for tagged items" do
       expect(change_set.multiple?(:files)).to eq false
