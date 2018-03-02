@@ -16,11 +16,25 @@ module Valkyrie::Persistence::Memory
     # @param id [Valkyrie::ID] The ID to query for.
     # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the ID
     #   isn't in the persistence backend.
+    # @raise [ArgumentError] Raised when ID is not a String or a Valkyrie::ID
     # @return [Valkyrie::Resource] The object being searched for.
     def find_by(id:)
       id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+    end
+
+    # @param ids [Array<Valkyrie::ID, String>] The IDs to query for.
+    # @raise [ArgumentError] Raised when any ID is not a String or a Valkyrie::ID
+    # @return [Array<Valkyrie::Resource>] All requested objects that were found
+    def find_many_by_ids(ids:)
+      ids.map do |id|
+        begin
+          find_by(id: id)
+        rescue ::Valkyrie::Persistence::ObjectNotFoundError
+          nil
+        end
+      end.reject(&:nil?)
     end
 
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend.

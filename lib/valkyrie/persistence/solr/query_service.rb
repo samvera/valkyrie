@@ -18,6 +18,16 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
+    def find_many_by_ids(ids:)
+      ids.map! do |id|
+        id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
+        validate_id(id)
+        id
+      end
+      Valkyrie::Persistence::Solr::Queries::FindManyByIdsQuery.new(ids, connection: connection, resource_factory: resource_factory).run
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
