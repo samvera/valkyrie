@@ -63,7 +63,7 @@ module Valkyrie
     Set = Array.constructor do |value|
       value = Array[value]
       clean_values = value.reject do |val|
-        val == ''
+        val == '' || (val.is_a?(Valkyrie::ID) && val.to_s == '')
       end.reject(&:nil?).uniq
 
       clean_values.map do |val|
