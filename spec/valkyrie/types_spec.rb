@@ -11,6 +11,8 @@ RSpec.describe Valkyrie::Types do
       attribute :embargo_release_date, Valkyrie::Types::Set.member(Valkyrie::Types::DateTime).optional
       attribute :set_of_values, Valkyrie::Types::Set
       attribute :my_flag, Valkyrie::Types::Bool
+      attribute :nested_resource_array, Valkyrie::Types::Array.member(Resource.optional)
+      attribute :nested_resource_set, Valkyrie::Types::Set.member(Resource.optional)
     end
   end
   after do
@@ -72,6 +74,10 @@ RSpec.describe Valkyrie::Types do
       # We don't want to modify the defaults in the schema.
       expect { Resource.new.authors << 'foo' }.to raise_error(RuntimeError, "can't modify frozen Array")
     end
+    it "doesn't create things inside if no value is passed" do
+      expect(Resource.new.nested_resource_array).to eq []
+      expect(Resource.new(title: "bla").nested_resource_array).to eq []
+    end
   end
 
   describe "the DateTime type" do
@@ -85,6 +91,14 @@ RSpec.describe Valkyrie::Types do
     it "can contain any type except empty string and nil" do
       resource = Resource.new(set_of_values: ["", nil, "one", 2, false])
       expect(resource.set_of_values).to contain_exactly "one", 2, false
+    end
+    it "doesn't create things inside if no value is passed" do
+      expect(Resource.new.nested_resource_set).to eq []
+      expect(Resource.new(title: "bla").nested_resource_set).to eq []
+    end
+    it "can create things" do
+      resource = Resource.new(nested_resource_set: { title: "test" })
+      expect(resource.nested_resource_set.length).to eq 1
     end
   end
 

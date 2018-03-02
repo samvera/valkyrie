@@ -48,12 +48,21 @@ module Valkyrie
     end
 
     Array = Dry::Types['array'].constructor do |value|
-      ::Array.wrap(value)
+      if value.is_a?(::Hash)
+        if value.empty?
+          []
+        else
+          [value]
+        end
+      else
+        ::Array.wrap(value)
+      end
     end.default([].freeze)
 
     # Represents an array of unique values.
     Set = Array.constructor do |value|
-      clean_values = ::Array.wrap(value).reject do |val|
+      value = Array[value]
+      clean_values = value.reject do |val|
         val == ''
       end.reject(&:nil?).uniq
 
@@ -61,6 +70,18 @@ module Valkyrie
         Anything[val]
       end
     end.default([].freeze)
+
+    module ArrayDefault
+      def of(type)
+        super.default([].freeze)
+      end
+
+      def member(type)
+        super.default([].freeze)
+      end
+    end
+    Array.singleton_class.include(ArrayDefault)
+    Set.singleton_class.include(ArrayDefault)
 
     # Used for when an input may be an array, but the output needs to be a
     # single string.
