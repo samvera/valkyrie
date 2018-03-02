@@ -148,102 +148,86 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
-      class NestedInternalValkyrieID < ::Valkyrie::ValueMapper
+      class MappedFedoraValue < ::Valkyrie::ValueMapper
+        private
+
+          def map_value(converted_value:)
+            calling_mapper.for(
+              Property.new(
+                value.subject,
+                value.key,
+                converted_value,
+                value.adapter,
+                value.resource
+              )
+            ).result
+          end
+      end
+
+      class NestedInternalValkyrieID < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Valkyrie::ID) && value.subject.to_s.include?("#")
         end
 
         def result
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
-              RDF::Literal.new(
-                value.value,
-                datatype: PermissiveSchema.valkyrie_id
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_id
+          ))
         end
       end
 
-      class InternalValkyrieID < ::Valkyrie::ValueMapper
+      class InternalValkyrieID < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Valkyrie::ID) && !value.value.to_s.include?("://")
         end
 
         def result
-          calling_mapper.for(Property.new(value.subject, value.key, value.adapter.id_to_uri(value.value), value.adapter, value.resource)).result
+          map_value(converted_value: value.adapter.id_to_uri(value.value))
         end
       end
 
-      class BooleanValue < ::Valkyrie::ValueMapper
+      class BooleanValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && ([true, false].include? value.value)
         end
 
         def result
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
-              RDF::Literal.new(
-                value.value,
-                datatype: PermissiveSchema.valkyrie_bool
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_bool
+          ))
         end
       end
 
-      class IntegerValue < ::Valkyrie::ValueMapper
+      class IntegerValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Integer)
         end
 
         def result
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
-              RDF::Literal.new(
-                value.value,
-                datatype: PermissiveSchema.valkyrie_int
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_int
+          ))
         end
       end
 
-      class DateTimeValue < ::Valkyrie::ValueMapper
+      class DateTimeValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(DateTime)
         end
 
         def result
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
-              RDF::Literal.new(
-                value.value,
-                datatype: PermissiveSchema.valkyrie_datetime
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_datetime
+          ))
         end
       end
 
@@ -251,7 +235,7 @@ module Valkyrie::Persistence::Fedora
       #  this code will make fedora compliant
       #
       #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
-      class TimeValue < ::Valkyrie::ValueMapper
+      class TimeValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Time)
@@ -259,44 +243,29 @@ module Valkyrie::Persistence::Fedora
 
         def result
           # cast it to datetime for storage, to preserve miliseconds and date
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
+          map_value(converted_value:
               RDF::Literal.new(
                 value.value.to_datetime,
                 datatype: PermissiveSchema.valkyrie_time
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+              ))
         end
       end
 
-      class IdentifiableValue < ::Valkyrie::ValueMapper
+      class IdentifiableValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Valkyrie::ID)
         end
 
         def result
-          calling_mapper.for(
-            Property.new(
-              value.subject,
-              value.key,
-              RDF::Literal.new(
-                value.value,
-                datatype: PermissiveSchema.valkyrie_id
-              ),
-              value.adapter,
-              value.resource
-            )
-          ).result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_id
+          ))
         end
       end
 
-      class EnumerableValue < ::Valkyrie::ValueMapper
+      class EnumerableValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Array)
@@ -304,7 +273,7 @@ module Valkyrie::Persistence::Fedora
 
         def result
           new_values = value.value.map do |val|
-            calling_mapper.for(Property.new(value.subject, value.key, val, value.adapter, value.resource)).result
+            map_value(converted_value: val)
           end
           CompositeProperty.new(new_values)
         end
