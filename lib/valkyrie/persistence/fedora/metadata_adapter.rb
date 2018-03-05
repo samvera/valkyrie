@@ -29,15 +29,15 @@ module Valkyrie::Persistence::Fedora
     end
 
     def uri_to_id(uri)
-      Valkyrie::ID.new(uri.to_s.gsub(/^.*\//, ''))
+      Valkyrie::ID.new(CGI.unescape(uri.to_s.gsub(/^.*\//, '')))
     end
 
     def id_to_uri(id)
-      RDF::URI("#{connection_prefix}/#{pair_path(id)}/#{id}")
+      RDF::URI("#{connection_prefix}/#{pair_path(id)}/#{CGI.escape(id.to_s)}")
     end
 
     def pair_path(id)
-      id.to_s.split("-").first.split("").each_slice(2).map(&:join).join("/")
+      id.to_s.split(/[-\/]/).first.split("").each_slice(2).map(&:join).join("/")
     end
 
     def connection_prefix
