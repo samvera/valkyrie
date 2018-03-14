@@ -1,3 +1,10 @@
+# v1.0.0.RC2 2018-03-14
+
+## Changes since last release
+
+* Support slashes in IDs for Fedora adapter.
+    [dlpierce](https://github.com/dlpierce)
+
 # v1.0.0.RC1 2018-03-02
 
 Initial Release
