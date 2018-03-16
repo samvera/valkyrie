@@ -40,4 +40,64 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       expect(reloaded).to be_persisted
     end
   end
+
+  context "when given an alternate identifier" do
+    before do
+      raise 'persister must be set with `let(:persister)`' unless defined? persister
+      class CustomResource < Valkyrie::Resource
+        include Valkyrie::Resource::AccessControls
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :alternate_ids, Valkyrie::Types::Array
+        attribute :title
+        attribute :author
+        attribute :member_ids
+        attribute :nested_resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+    let(:resource_class) { CustomResource }
+
+    it "creates an alternate identifier resource" do
+      alternate_identifier = Valkyrie::ID.new("alternative")
+      resource = resource_class.new
+      resource.alternate_ids = [alternate_identifier]
+      persister.save(resource: resource)
+
+      alternate = query_service.find_by(id: alternate_identifier)
+      expect(alternate.id).to eq alternate_identifier
+      expect(alternate).to be_persisted
+    end
+
+    it "updates an alternate identifier resource" do
+      alternate_identifier = Valkyrie::ID.new("alternative")
+      resource = resource_class.new
+      resource.alternate_ids = [alternate_identifier]
+      reloaded = persister.save(resource: resource)
+
+      alternate = query_service.find_by(id: alternate_identifier)
+      expect(alternate.id).to eq alternate_identifier
+      expect(alternate).to be_persisted
+
+      alternate_identifier = Valkyrie::ID.new("alternate")
+      reloaded.alternate_ids = [alternate_identifier]
+      persister.save(resource: reloaded)
+      expect(query_service.find_by_alternate_identifier(alternate_identifier: alternate_identifier).id).to eq reloaded.id
+    end
+
+    it "deletes the alternate identifier with the resource" do
+      alternate_identifier = Valkyrie::ID.new("alternative")
+      resource = resource_class.new
+      resource.alternate_ids = [alternate_identifier]
+      reloaded = persister.save(resource: resource)
+
+      alternate = query_service.find_by(id: alternate_identifier)
+      expect(alternate.id).to eq alternate_identifier
+      expect(alternate).to be_persisted
+
+      persister.delete(resource: reloaded)
+      expect { query_service.find_by(id: alternate_identifier) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+    end
+  end
 end

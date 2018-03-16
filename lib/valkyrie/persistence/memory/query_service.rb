@@ -24,6 +24,17 @@ module Valkyrie::Persistence::Memory
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
+    # @param alternate_identifier [Valkyrie::ID] The alternate identifier to query for.
+    # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the alternate identifier
+    #   isn't in the persistence backend.
+    # @raise [ArgumentError] Raised when alternate identifier is not a String or a Valkyrie::ID
+    # @return [Valkyrie::Resource] The object being searched for.
+    def find_by_alternate_identifier(alternate_identifier:)
+      alternate_identifier = Valkyrie::ID.new(alternate_identifier.to_s) if alternate_identifier.is_a?(String)
+      validate_id(alternate_identifier)
+      cache.select { |_key, resource| resource['alternate_ids'].include?(alternate_identifier) }.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+    end
+
     # @param ids [Array<Valkyrie::ID, String>] The IDs to query for.
     # @raise [ArgumentError] Raised when any ID is not a String or a Valkyrie::ID
     # @return [Array<Valkyrie::Resource>] All requested objects that were found

@@ -5,6 +5,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       defined? adapter
     class CustomResource < Valkyrie::Resource
       attribute :id, Valkyrie::Types::ID.optional
+      attribute :alternate_ids, Valkyrie::Types::Array
       attribute :title
       attribute :member_ids, Valkyrie::Types::Array
       attribute :a_member_of
@@ -25,6 +26,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
+  it { is_expected.to respond_to(:find_by_alternate_identifier).with_keywords(:alternate_identifier) }
   it { is_expected.to respond_to(:find_many_by_ids).with_keywords(:ids) }
   it { is_expected.to respond_to(:find_members).with_keywords(:resource, :model) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
@@ -71,6 +73,44 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
     it 'raises an error if the id is not a Valkyrie::ID or a string' do
       expect { query_service.find_by(id: 123) }.to raise_error ArgumentError
+    end
+  end
+
+  describe ".find_by_alternate_identifier" do
+    it "returns a resource by alternate identifier or string representation of an alternate identifier" do
+      resource = resource_class.new
+      resource.alternate_ids = [Valkyrie::ID.new('p9s0xfj')]
+      resource = persister.save(resource: resource)
+
+      found = query_service.find_by_alternate_identifier(alternate_identifier: resource.alternate_ids.first)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
+
+      found = query_service.find_by_alternate_identifier(alternate_identifier: resource.alternate_ids.first.to_s)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
+    end
+
+    it "returns a Valkyrie::Persistence::ObjectNotFoundError for a non-found alternate identifier" do
+      expect { query_service.find_by_alternate_identifier(alternate_identifier: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+
+    it 'raises an error if the alternate identifier is not a Valkyrie::ID or a string' do
+      expect { query_service.find_by_alternate_identifier(alternate_identifier: 123) }.to raise_error ArgumentError
+    end
+
+    it 'can have multiple alternate identifiers' do
+      resource = resource_class.new
+      resource.alternate_ids = [Valkyrie::ID.new('p9s0xfj'), Valkyrie::ID.new('jks0xfj')]
+      resource = persister.save(resource: resource)
+
+      found = query_service.find_by_alternate_identifier(alternate_identifier: resource.alternate_ids.first)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
+
+      found = query_service.find_by_alternate_identifier(alternate_identifier: resource.alternate_ids.last)
+      expect(found.id).to eq resource.id
+      expect(found).to be_persisted
     end
   end
 

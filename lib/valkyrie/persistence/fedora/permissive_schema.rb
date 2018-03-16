@@ -22,9 +22,17 @@ module Valkyrie::Persistence::Fedora
       uri_for(:id)
     end
 
+    def self.alternate_ids
+      uri_for(:alternate_ids)
+    end
+
     # @return [RDF::URI]
     def self.member_ids
       uri_for(:member_ids)
+    end
+
+    def self.references
+      uri_for(:references)
     end
 
     # @return [RDF::URI]

@@ -10,15 +10,19 @@ module Valkyrie::Persistence::Fedora
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
-      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       uri = adapter.id_to_uri(id)
-      begin
-        resource = Ldp::Resource.for(connection, uri, connection.get(uri))
-        resource_factory.to_resource(object: resource)
-      rescue ::Ldp::Gone, ::Ldp::NotFound
-        raise ::Valkyrie::Persistence::ObjectNotFoundError
-      end
+
+      resource_from_uri(uri)
+    end
+
+    # (see Valkyrie::Persistence::Memory::QueryService#find_by_alternate_identifier)
+    def find_by_alternate_identifier(alternate_identifier:)
+      validate_id(alternate_identifier)
+      uri = adapter.id_to_uri(alternate_identifier)
+      alternate_id = resource_from_uri(uri).references
+
+      find_by(id: alternate_id)
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
@@ -113,7 +117,15 @@ module Valkyrie::Persistence::Fedora
     private
 
       def validate_id(id)
+        id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+      end
+
+      def resource_from_uri(uri)
+        resource = Ldp::Resource.for(connection, uri, connection.get(uri))
+        resource_factory.to_resource(object: resource)
+      rescue ::Ldp::Gone, ::Ldp::NotFound
+        raise ::Valkyrie::Persistence::ObjectNotFoundError
       end
 
       def ensure_persisted(resource)
