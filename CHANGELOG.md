@@ -1,3 +1,25 @@
+# v1.0.0 2018-03-23
+
+## Changes since last release
+
+* Final release of 1.0.0!
+* Support slashes in IDs for Fedora adapter.
+    [dlpierce](https://github.com/dlpierce)
+* Added find_many_by_ids query.
+* Enforces only persisting arrays - no scalars.
+* Fixes casting edge cases for `Set` and `Array`.
+* Significantly improved documentation
+* Support `Booleans`
+* Support `RDF::Literal`
+* Fix support for `DateTime`.
+* Fix rake tasks leaking out of gem.
+* Extract derivatives/file characterization to
+    [valkyrie-derivatives](https://github.com/samvera-labs/valkyrie-derivatives)
+* ChangeSet shared spec
+* Allow strings as an argument for find_by.
+* Improve development documentation.
+* Throw error on `find_inverse_references_by` for unsaved `resource`.
+
 # v1.0.0.RC2 2018-03-14
 
 ## Changes since last release
