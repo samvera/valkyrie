@@ -20,6 +20,7 @@ module Valkyrie::Persistence::Fedora
       alternate_resources = find_or_create_alternate_ids(resource)
 
       if !orm.new? || resource.id
+        cleanup_alternate_resources(resource) if alternate_resources
         orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
       else
         orm.create
@@ -86,6 +87,15 @@ module Valkyrie::Persistence::Fedora
             alternate_resource = ::Valkyrie::Persistence::Fedora::AlternateIdentifier.new(id: alternate_identifier)
             adapter.persister.save(resource: alternate_resource)
           end
+        end
+      end
+
+      def cleanup_alternate_resources(updated_resource)
+        persisted_resource = adapter.query_service.find_by(id: updated_resource.id)
+        removed_identifiers = persisted_resource.alternate_ids - updated_resource.alternate_ids
+
+        removed_identifiers.each do |removed_id|
+          adapter.persister.delete(resource: adapter.query_service.find_by(id: removed_id))
         end
       end
 

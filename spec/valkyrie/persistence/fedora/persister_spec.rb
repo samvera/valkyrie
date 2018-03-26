@@ -99,5 +99,27 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       persister.delete(resource: reloaded)
       expect { query_service.find_by(id: alternate_identifier) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
     end
+
+    it "deletes removed alternate identifiers" do
+      alternate_identifier = Valkyrie::ID.new("altfirst")
+      second_alternate_identifier = Valkyrie::ID.new("altsecond")
+      resource = resource_class.new
+      resource.alternate_ids = [alternate_identifier, second_alternate_identifier]
+      reloaded = persister.save(resource: resource)
+
+      alternate = query_service.find_by(id: second_alternate_identifier)
+      expect(alternate.id).to eq second_alternate_identifier
+      expect(alternate).to be_persisted
+
+      reload = query_service.find_by(id: reloaded.id)
+      reload.alternate_ids = [alternate_identifier]
+      persister.save(resource: reload)
+
+      alternate = query_service.find_by(id: alternate_identifier)
+      expect(alternate.id).to eq alternate_identifier
+      expect(alternate).to be_persisted
+
+      expect { query_service.find_by(id: second_alternate_identifier) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+    end
   end
 end
