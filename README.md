@@ -153,6 +153,10 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 
 ## Installing a Development environment
 
+### External Requirements
+* [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
+
+### Starting the development mode dependencies
 1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
 1. Run `rake db:create db:migrate` to initialize the database
 1. Develop!
