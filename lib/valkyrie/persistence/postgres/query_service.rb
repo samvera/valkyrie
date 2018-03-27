@@ -37,6 +37,14 @@ module Valkyrie::Persistence::Postgres
       raise Valkyrie::Persistence::ObjectNotFoundError
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_by_alternate_identifier)
+    def find_by_alternate_identifier(alternate_identifier:)
+      alternate_identifier = Valkyrie::ID.new(alternate_identifier.to_s) if alternate_identifier.is_a?(String)
+      validate_id(alternate_identifier)
+      internal_array = "{\"alternate_ids\": [{\"id\": \"#{alternate_identifier}\"}]}"
+      run_query(find_inverse_references_query, internal_array).first || raise(Valkyrie::Persistence::ObjectNotFoundError)
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
     def find_many_by_ids(ids:)
       ids.map! do |id|
