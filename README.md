@@ -120,7 +120,7 @@ end
 
 #### Work Types Generator
 
-To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to 
+To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to
 generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
 
 ```
@@ -153,17 +153,23 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 
 ## Installing a Development environment
 
-### External Requirements
-* PostgreSQL with the uuid-ossp extension.
-  * Note: Enabling uuid-ossp requires database superuser privileges.
-    * From `psql`: `alter user [username] with superuser;`
+1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
+1. Run `rake db:create db:migrate` to initialize the database
+1. Develop!
+1. Run `rake docker:dev:down` to stop the server stack
+   * Development servers maintain data between runs. To clean them out, run `rake docker:dev:clean`
 
-### To run the test suite
-1. Start Solr and Fedora servers for testing with `rake server:test`
-1. Run `rake db:create` (First time only)
-1. Run `rake db:migrate`
+### To run the test suite with all dependencies in one go
+1. `rake docker:spec`
+
+### To run the test suite manually
+1. Start Solr, Fedora, and PostgreSQL with `rake docker:test:daemon` (or `rake docker:test:up` in a separate shell to run them in the foreground)
+1. Run `rake db:create db:migrate` to initialize the database
 1. Run the gem's RSpec test suite with `rspec spec` or `rake`
+1. Run `rake docker:test:down` to stop the server stack
+   * The test stack cleans up after itself on exit.
 
+The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
 
 ## License
 

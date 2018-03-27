@@ -6,6 +6,10 @@ development: &default
   pool: <%= Integer(ENV.fetch("DB_POOL", 5)) %>
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000
+  host: localhost
+  port: 5433
+  username: docker
+  password: d0ck3r
 
 test:
   adapter: postgresql
@@ -15,3 +19,7 @@ test:
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000
   database: Valkyrie_gem_test
+  host: localhost
+  port: <%= Rails.env.development? ? 5433 : 5434 %>
+  username: docker
+  password: d0ck3r
