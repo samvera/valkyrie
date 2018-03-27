@@ -153,20 +153,34 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 
 ## Installing a Development environment
 
-### External Requirements
+### Without Docker
+
+#### External Requirements
+* PostgreSQL with the uuid-ossp extension.
+  * Note: Enabling uuid-ossp requires database superuser privileges.
+    * From `psql`: `alter user [username] with superuser;`
+
+#### To run the test suite
+1. Start Solr and Fedora servers for testing with `rake server:test`
+1. Run `rake db:create` (First time only)
+1. Run `rake db:migrate`
+
+### With Docker
+
+#### External Requirements
 * [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
 
-### Starting the development mode dependencies
+#### Starting the development mode dependencies
 1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
 1. Run `rake db:create db:migrate` to initialize the database
 1. Develop!
 1. Run `rake docker:dev:down` to stop the server stack
    * Development servers maintain data between runs. To clean them out, run `rake docker:dev:clean`
 
-### To run the test suite with all dependencies in one go
+#### To run the test suite with all dependencies in one go
 1. `rake docker:spec`
 
-### To run the test suite manually
+#### To run the test suite manually
 1. Start Solr, Fedora, and PostgreSQL with `rake docker:test:daemon` (or `rake docker:test:up` in a separate shell to run them in the foreground)
 1. Run `rake db:create db:migrate` to initialize the database
 1. Run the gem's RSpec test suite with `rspec spec` or `rake`
