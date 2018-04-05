@@ -35,7 +35,7 @@ instance with a short name that can be used to refer to it in your application:
 require 'valkyrie'
 Rails.application.config.to_prepare do
   Valkyrie::MetadataAdapter.register(
-    Valkyrie::Persistence::Postgres::MetadataAdapter,
+    Valkyrie::Persistence::Postgres::MetadataAdapter.new,
     :postgres
   )
 
@@ -83,20 +83,20 @@ A sample configuration file that configures your application to use different ad
 
 ```
 development:
-  adapter: postgres
+  metadata_adapter: postgres
   storage_adapter: disk
 
 test:
-  adapter: memory
+  metadata_adapter: memory
   storage_adapter: memory
 
 production:
-  adapter: postgres
+  metadata_adapter: postgres
   storage_adapter: fedora
 ```
 
 For each environment, you must set two values:
-* `adapter` is the store where Valkyrie will put the metadata
+* `metadata_adapter` is the store where Valkyrie will put the metadata
 * `storage_adapter` is the store where Valkyrie will put the files
 
 The values are the short names used in your initializer.
@@ -120,7 +120,7 @@ end
 
 #### Work Types Generator
 
-To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to 
+To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to
 generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
 
 ```
@@ -136,15 +136,18 @@ rails generate valkyrie:resource Foo/Bar title member_ids:array
 ### Read and Write Data
 
 ```
+# initialize a metadata adapter
+adapter = Valkyrie::MetadataAdapter.find(:postgres)
+
 # create an object
 object1 = MyModel.new title: 'My Cool Object', authors: ['Jones, Alice', 'Smith, Bob']
-object1 = Persister.save(model: object1)
+object1 = adapter.persister.save(resource: object1)
 
 # load an object from the database
-object2 = QueryService.find_by(id: object1.id)
+object2 = adapter.query_service.find_by(id: object1.id)
 
 # load all objects
-objects = QueryService.find_all
+objects = adapter.query_service.find_all
 
 # load all MyModel objects
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
