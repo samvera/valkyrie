@@ -169,6 +169,18 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 
 #### External Requirements
 * [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
+*
+### Dependency Setup (Mac OSX)
+
+1. `brew install docker`
+1. `brew install docker-machine`
+1. `brew install docker-compose`
+
+### Starting Docker (Mac OSX)
+
+1. `docker-machine create default`
+1. `docker-machine start default`
+1. `eval "$(docker-machine env)"
 
 #### Starting the development mode dependencies
 1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
