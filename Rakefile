@@ -5,7 +5,9 @@ require 'yaml'
 require 'config/database_connection'
 require 'active_record'
 require 'rubocop/rake_task'
-load "tasks/dev.rake"
+load 'tasks/dev.rake'
+load 'tasks/docker.rake'
+
 RSpec::Core::RakeTask.new(:spec)
 
 task default: :spec
@@ -25,7 +27,7 @@ namespace :db do
   end
 
   task configuration: :environment do
-    @config = YAML.safe_load(ERB.new(File.read("db/config.yml")).result)[DATABASE_ENV]
+    @config = YAML.safe_load(ERB.new(File.read("db/config.yml")).result, [], [], true)[DATABASE_ENV]
   end
 
   task configure_connection: :configuration do

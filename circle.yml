@@ -1,17 +1,30 @@
-machine:
-  ruby:
-    version: 2.3.1
-  services:
-    - redis
-general:
-  artifacts:
-    - "tmp/capybara"
-dependencies:
-  post:
-    - bundle exec rake rubocop
-    - bundle exec rake server:test:
-        background: true
-    - bin/jetty_wait
-notify:
-  webhooks:
-    - url: https://coveralls.io/webhook?repo_token=c3AnaQOFVYYTitAR1w6ySNScXSIfLQwN4
+version: 2
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - restore_cache:
+         keys:
+           - bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+           - bundle- # used if checksum fails
+      - run: sudo apt-get update && sudo apt-get install -y libpq-dev
+      - run:
+          name: Install dependencies
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs 4 --retry 3
+      - save_cache:
+          key: bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+          paths:
+            - "vendor/bundle"
+      - run:
+          name: Run Rubocop
+          command: bundle exec rake rubocop
+      - run:
+          name: Run Specs
+          command: bundle exec rake docker:spec
