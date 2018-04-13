@@ -1,3 +1,4 @@
+---
 version: 2
 jobs:
   build:
@@ -28,3 +29,18 @@ jobs:
       - run:
           name: Run Specs
           command: bundle exec rake docker:spec
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
