@@ -12,6 +12,7 @@ RSpec.describe Valkyrie::Types do
       attribute :set_of_values, Valkyrie::Types::Set
       attribute :my_flag, Valkyrie::Types::Bool
       attribute :nested_resource_array, Valkyrie::Types::Array.member(Resource.optional)
+      attribute :nested_resource_array_of, Valkyrie::Types::Array.of(Resource.optional)
       attribute :nested_resource_set, Valkyrie::Types::Set.member(Resource.optional)
     end
   end
@@ -78,6 +79,14 @@ RSpec.describe Valkyrie::Types do
       expect(Resource.new.nested_resource_array).to eq []
       expect(Resource.new(title: "bla").nested_resource_array).to eq []
     end
+    it "doesn't create things inside if no value is passed via of" do
+      expect(Resource.new.nested_resource_array_of).to eq []
+      expect(Resource.new(title: "bla").nested_resource_array_of).to eq []
+    end
+    it "returns an empty array if given an empty hash" do
+      resource = Resource.new(authors: {})
+      expect(resource.authors).to eq []
+    end
   end
 
   describe "the DateTime type" do
@@ -99,6 +108,10 @@ RSpec.describe Valkyrie::Types do
     it "can create things" do
       resource = Resource.new(nested_resource_set: { title: "test" })
       expect(resource.nested_resource_set.length).to eq 1
+    end
+    it "returns an empty array if given an empty hash" do
+      resource = Resource.new(set_of_values: {})
+      expect(resource.set_of_values).to eq []
     end
   end
 

@@ -56,8 +56,6 @@ module Valkyrie::Persistence::Postgres
       orm_class.where(id: ids).map do |orm_resource|
         resource_factory.to_resource(object: orm_resource)
       end
-    rescue ActiveRecord::RecordNotFound
-      raise Valkyrie::Persistence::ObjectNotFoundError
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_members)
