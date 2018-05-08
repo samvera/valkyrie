@@ -1,3 +1,16 @@
+# v1.1.0 2018-05-08
+
+## Changes since last release
+
+* Added `find_by_alternate_identifier` query.
+    [stkenny](https://github.com/stkenny)
+* Added Docker environment for development.
+    [mbklein](https://github.com/mbklein)
+* Fixed README documentation.
+    [revgum](https://github.com/revgum)
+* Deprecated `Valkyrie::Persistence::Fedora::PermissiveSchema.references`
+* Deprecated `Valkyrie::Persistence::Fedora::PermissiveSchema.alternate_ids`
+
 # v1.0.0 2018-03-23
 
 ## Changes since last release
