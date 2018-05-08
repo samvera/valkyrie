@@ -22,7 +22,11 @@ module Valkyrie::Persistence::Fedora
       uri_for(:id)
     end
 
+    # @deprecated Please use {.uri_for} instead
     def self.alternate_ids
+      warn "[DEPRECATION] `alternate_ids` is deprecated and will be removed in the next major release. " \
+           "It was never used internally - please use `uri_for(:alternate_ids)` " \
+           "Called from #{Gem.location_of_caller.join(':')}"
       uri_for(:alternate_ids)
     end
 
@@ -31,7 +35,11 @@ module Valkyrie::Persistence::Fedora
       uri_for(:member_ids)
     end
 
+    # @deprecated Please use {.uri_for} instead
     def self.references
+      warn "[DEPRECATION] `references` is deprecated and will be removed in the next major release. " \
+           "It was never used internally - please use `uri_for(:references)` " \
+           "Called from #{Gem.location_of_caller.join(':')}"
       uri_for(:references)
     end
 
