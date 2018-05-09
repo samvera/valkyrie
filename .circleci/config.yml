@@ -1,39 +1,48 @@
 ---
 version: 2
+default: &default
+  machine: true
+  steps:
+    - checkout
+    - restore_cache:
+        keys:
+          - bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+          - bundle- # used if checksum fails
+    - run:
+        name: Install Docker Compose
+        command: |
+          curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+          chmod +x ~/docker-compose
+          sudo mv ~/docker-compose /usr/local/bin/docker-compose
+    - run: sudo apt-get update && sudo apt-get install -y libpq-dev
+    - run:
+        name: Install dependencies
+        command: bundle install --path=vendor/bundle --jobs 4 --retry 3
+    - save_cache:
+        key: bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+        paths:
+          - "vendor/bundle"
+    - run:
+        name: Run Rubocop
+        command: bundle exec rake rubocop
+    - run:
+        name: Run Specs
+        command: bundle exec rake docker:spec
 jobs:
-  build:
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - restore_cache:
-         keys:
-           - bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
-           - bundle- # used if checksum fails
-      - run: sudo apt-get update && sudo apt-get install -y libpq-dev
-      - run:
-          name: Install dependencies
-          command: bundle install --path=vendor/bundle --jobs 4 --retry 3
-      - save_cache:
-          key: bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
-          paths:
-            - "vendor/bundle"
-      - run:
-          name: Run Rubocop
-          command: bundle exec rake rubocop
-      - run:
-          name: Run Specs
-          command: bundle exec rake docker:spec
+  spec_51:
+    <<: *default
+    environment:
+      ACTIVERECORD_VERSION: "~> 5.1.0"
+  spec_52:
+    <<: *default
+    environment:
+      ACTIVERECORD_VERSION: "~> 5.2.0"
 workflows:
   version: 2
   build:
     jobs:
-      - build
+      - spec_51
+      - spec_52
   nightly:
     triggers:
       - schedule:
@@ -43,4 +52,4 @@ workflows:
               only:
                 - master
     jobs:
-      - build
+      - spec_51
