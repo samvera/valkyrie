@@ -1,3 +1,10 @@
+# v1.1.1 2018-05-31
+
+## Changes since last release
+
+* Loosened ActiveRecord restriction to allow upgrading pg gem to 1.0.
+    [hackmastera](https://github.com/hackmastera)
+
 # v1.1.0 2018-05-08
 
 ## Changes since last release
