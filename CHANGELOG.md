@@ -1,3 +1,10 @@
+# v1.1.2 2018-06-08
+
+## Changes since last release
+
+* Performance improvements for ActiveRecord to Valkyrie::Resource conversions.
+    [tpendragon](https://github.com/tpendragon)
+
 # v1.1.1 2018-05-31
 
 ## Changes since last release
