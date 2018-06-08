@@ -43,7 +43,9 @@ module Valkyrie::Persistence::Postgres
       class RDFMetadata
         attr_reader :metadata
         def initialize(metadata)
-          @metadata = metadata
+          # nil hash values are handled by the default state in dry-types
+          # anyways, so don't bother processing them here.
+          @metadata = metadata.compact
         end
 
         def result
@@ -107,6 +109,20 @@ module Valkyrie::Persistence::Postgres
           end
         end
 
+        # Handles iterating over arrays of values and converting each value.
+        class EnumeratorValue < ::Valkyrie::ValueMapper
+          PostgresValue.register(self)
+          def self.handles?(value)
+            value.respond_to?(:each)
+          end
+
+          def result
+            value.map do |value|
+              calling_mapper.for(value).result
+            end
+          end
+        end
+
         # Converts Date strings to `DateTime`
         class DateValue < ::Valkyrie::ValueMapper
           PostgresValue.register(self)
@@ -122,20 +138,6 @@ module Valkyrie::Persistence::Postgres
 
           def result
             DateTime.iso8601(value).utc
-          end
-        end
-
-        # Handles iterating over arrays of values and converting each value.
-        class EnumeratorValue < ::Valkyrie::ValueMapper
-          PostgresValue.register(self)
-          def self.handles?(value)
-            value.respond_to?(:each)
-          end
-
-          def result
-            value.map do |value|
-              calling_mapper.for(value).result
-            end
           end
         end
       end
