@@ -17,6 +17,29 @@ RSpec.describe Valkyrie::Resource do
     end
   end
 
+  describe ".constructor_type" do
+    it "throws a deprecation warning" do
+      allow(Resource).to receive(:warn)
+
+      Resource.constructor_type :schema
+      expect(Resource).to have_received(:warn)
+    end
+  end
+
+  describe "[]" do
+    it "works as an accessor for properties" do
+      expect(resource[:title]).to eq []
+    end
+    it "throws a deprecation warning if accessed via a string" do
+      # rubocop:disable RSpec/SubjectStub
+      allow(resource).to receive(:warn)
+      # rubocop:enable RSpec/SubjectStub
+      expect(resource["title"]).to eq []
+
+      expect(resource).to have_received(:warn)
+    end
+  end
+
   describe "#has_attribute?" do
     it "returns true for fields that exist" do
       expect(resource.has_attribute?(:title)).to eq true

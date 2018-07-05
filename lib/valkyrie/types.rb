@@ -87,7 +87,17 @@ module Valkyrie
       end
 
       def member(type)
-        super.default([].freeze)
+        warn "[DEPRECATION] .member has been removed by dry-types and will be removed in the next " \
+             "major version of Valkyrie. Please use .of instead. " \
+             "Called from #{Gem.location_of_caller.join(':')}"
+        of(type).default([].freeze)
+      end
+
+      # Override optional to provide a default because without it an
+      # instantiated Valkyrie::Resource's internal hash does not have values for
+      # every possible attribute, resulting in `MissingAttributeError`.
+      def optional
+        super.default(nil)
       end
     end
     Array.singleton_class.include(ArrayDefault)

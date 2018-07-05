@@ -15,18 +15,44 @@ module Valkyrie
   # @see lib/valkyrie/specs/shared_specs/resource.rb
   class Resource < Dry::Struct
     include Draper::Decoratable
-    constructor_type :schema
+    def self.constructor_type(type)
+      raise unless type == :schema
+      warn "[DEPRECATION] constructor_type has been removed by dry-struct and will be removed in the next " \
+           "major release of Valkyrie. Please use transform_types and transform_keys. " \
+           "This method will raise if you try an argument other than the supported :schema, " \
+           "and implements a replacement for :schema in the base class. You should be able to " \
+           "delete this line of code." \
+           "See https://github.com/dry-rb/dry-struct/releases/tag/v0.5.0." \
+           "Called from #{Gem.location_of_caller.join(':')}"
+      allow_nonexistent_keys
+    end
+
+    # Allows a Valkyrie::Resource to be instantiated without providing every
+    # available key, and makes sure the defaults are set up if no value is
+    # given.
+    def self.allow_nonexistent_keys
+      transform_types { |t| t.meta(omittable: true) }
+      nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
+      transform_types do |type|
+        type = type.meta(omittable: true)
+        if type.default?
+          type.constructor(nil_2_undef)
+        else
+          type
+        end
+      end
+    end
 
     # Overridden to provide default attributes.
     # @note The current theory is that we should use this sparingly.
     def self.inherited(subclass)
       super(subclass)
-      subclass.constructor_type :schema
+      subclass.allow_nonexistent_keys
       subclass.attribute :id, Valkyrie::Types::ID.optional, internal: true
-      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s), internal: true
-      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional, internal: true
-      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional, internal: true
-      subclass.attribute :new_record, Types::Bool.default(true), internal: true
+      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
+      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
+      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
+      subclass.attribute :new_record, Types::Bool.default(true)
     end
 
     # @return [Array<Symbol>] Array of fields defined for this class.
@@ -48,7 +74,7 @@ module Valkyrie
         schema.delete(name)
       end
       define_method("#{name}=") do |value|
-        instance_variable_set("@#{name}", self.class.schema[name].call(value))
+        @attributes[name] = self.class.schema[name].call(value)
       end
       type = type.meta(ordered: true) if name == :member_ids
       super(name, type)
@@ -106,11 +132,20 @@ module Valkyrie
 
     # @return [Boolean]
     def persisted?
-      @new_record == false
+      new_record == false
     end
 
     def to_key
       [id]
+    end
+
+    def [](name)
+      unless name.is_a?(Symbol)
+        warn "[DEPRECATION] #[] only accepts symbol arguments in dry-struct now. Support for string arguments " \
+             "will be removed in the next major release of Valkyrie. Please use symbols. " \
+             "Called from #{Gem.location_of_caller.join(':')}"
+      end
+      super(name.to_sym)
     end
 
     def to_param
