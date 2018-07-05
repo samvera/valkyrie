@@ -118,7 +118,7 @@ module Valkyrie
     end
 
     def self.new(attributes = default_attributes)
-      if attributes.keys.map(&:class).uniq.include?(String)
+      if attributes.is_a?(Hash) && attributes.keys.map(&:class).uniq.include?(String)
         warn "[DEPRECATION] Instantiating a Valkyrie::Resource with strings as keys has " \
              "been deprecated and will be removed in the next major release. " \
              "Please use symbols instead." \
