@@ -26,6 +26,15 @@ RSpec.describe Valkyrie::Resource do
     end
   end
 
+  describe "initialization with a string hash" do
+    it "works, but throws a deprecation warning" do
+      expect { Resource.new(title: "test") }.not_to output.to_stderr
+      expect { Resource.new("title" => "test") }.to output.to_stderr
+      resource = Resource.new("title" => "test")
+      expect(resource.title).to eq ["test"]
+    end
+  end
+
   describe "[]" do
     it "works as an accessor for properties" do
       expect(resource[:title]).to eq []
