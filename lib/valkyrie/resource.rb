@@ -74,7 +74,7 @@ module Valkyrie
         schema.delete(name)
       end
       define_method("#{name}=") do |value|
-        @attributes[name] = self.class.schema[name].call(value)
+        set_value(name, value)
       end
       type = type.meta(ordered: true) if name == :member_ids
       super(name, type)
@@ -126,6 +126,10 @@ module Valkyrie
         attributes = attributes.symbolize_keys
       end
       super
+    end
+
+    def set_value(key, value)
+      @attributes[key] = self.class.schema[key].call(value)
     end
 
     # @param name [Symbol] Attribute name
@@ -186,7 +190,7 @@ module Valkyrie
     def attributes
       output = super
       nil_keys = (self.class.schema.keys - output.keys).map { |x| [x, nil] }.to_h
-      output.merge(nil_keys)
+      output.merge(nil_keys).freeze
     end
   end
 end

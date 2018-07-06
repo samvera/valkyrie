@@ -46,6 +46,12 @@ RSpec.describe Valkyrie::Resource do
         new_record: true
       )
     end
+    it "can not mutate attributes" do
+      resource = Resource.new
+      expect do
+        resource.attributes[:title] = "bla"
+      end.to raise_error "can't modify frozen Hash"
+    end
   end
 
   describe "[]" do
