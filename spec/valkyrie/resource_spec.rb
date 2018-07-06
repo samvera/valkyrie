@@ -35,6 +35,19 @@ RSpec.describe Valkyrie::Resource do
     end
   end
 
+  describe "#attributes" do
+    it "returns all keys even if they're uninitialized" do
+      expect(Resource.new.attributes).to eq(
+        id: nil,
+        internal_resource: "Resource",
+        title: [],
+        created_at: nil,
+        updated_at: nil,
+        new_record: true
+      )
+    end
+  end
+
   describe "[]" do
     it "works as an accessor for properties" do
       expect(resource[:title]).to eq []

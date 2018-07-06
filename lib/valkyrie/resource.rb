@@ -157,6 +157,8 @@ module Valkyrie
              "Called from #{Gem.location_of_caller.join(':')}"
       end
       super(name.to_sym)
+    rescue Dry::Struct::MissingAttributeError
+      nil
     end
 
     def to_param
@@ -178,6 +180,13 @@ module Valkyrie
     # @return [String]
     def human_readable_type
       self.class.human_readable_type
+    end
+
+    # Override attributes to match old behavior of including nil keys.
+    def attributes
+      output = super
+      nil_keys = (self.class.schema.keys - output.keys).map { |x| [x, nil] }.to_h
+      output.merge(nil_keys)
     end
   end
 end

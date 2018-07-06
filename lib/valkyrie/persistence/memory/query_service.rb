@@ -113,11 +113,7 @@ module Valkyrie::Persistence::Memory
     def find_inverse_references_by(resource:, property:)
       ensure_persisted(resource)
       find_all.select do |obj|
-        begin
-          Array.wrap(obj[property]).include?(resource.id)
-        rescue
-          false
-        end
+        Array.wrap(obj[property]).include?(resource.id)
       end
     end
 
