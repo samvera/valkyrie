@@ -12,7 +12,7 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'valkyrie', github: 'samvera-labs/valkyrie'
+gem 'valkyrie'
 ```
 
 And then execute:
