@@ -6,6 +6,15 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
 [![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
 
+## Primary Contacts
+
+### Product Owner
+
+[Carolyn Cole](https://github.com/cam156)
+
+### Technical Lead
+
+[Trey Pendragon](https://github.com/tpendragon)
 
 ## Installation
 
@@ -203,6 +212,13 @@ Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
    * The test stack cleans up after itself on exit.
 
 The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
+
+## Get Help
+
+If you have any questions regarding Valkyrie you can send a message to [the
+Samvera community tech list](mailto:samvera-tech@googlegroups.com) or the `#valkyrie`
+channel in the [Samvera community Slack
+team](https://wiki.duraspace.org/pages/viewpage.action?pageId=87460391#Getintouch!-Slack).
 
 ## License
 
