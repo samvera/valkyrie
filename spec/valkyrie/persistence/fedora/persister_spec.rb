@@ -41,6 +41,25 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
     end
   end
 
+  context "when given multiple Times" do
+    before do
+      class CustomResource < Valkyrie::Resource
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :times
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+    it "works" do
+      resource = CustomResource.new(times: [Time.now, Time.now - 5])
+
+      output = persister.save(resource: resource)
+
+      expect(output.times).to be_a Array
+    end
+  end
+
   context "when given an alternate identifier" do
     before do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
