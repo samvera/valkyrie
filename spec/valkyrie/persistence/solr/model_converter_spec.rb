@@ -32,6 +32,9 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
                       creator: "Creator"
                     })
   end
+  before do
+    allow(resource).to receive(:optimistic_locking_enabled?).and_return(false)
+  end
 
   describe "#to_h" do
     it "maps all available properties to the solr record" do
