@@ -16,7 +16,9 @@ module Valkyrie::Persistence::Postgres
 
     # @return [Class] {Valkyrie::Persistence::Postgres::QueryService}
     def query_service
-      @query_service ||= Valkyrie::Persistence::Postgres::QueryService.new(adapter: self)
+      @query_service ||= Valkyrie::Persistence::Postgres::QueryService.new(
+        resource_factory: resource_factory
+      )
     end
 
     # @return [Class] {Valkyrie::Persistence::Postgres::ResourceFactory}
