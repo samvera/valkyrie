@@ -8,7 +8,6 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
   let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
   let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
   it_behaves_like "a Valkyrie::Persister"
-  it_behaves_like "it supports single values"
 
   context "when given additional persisters" do
     let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client, resource_indexer: indexer) }

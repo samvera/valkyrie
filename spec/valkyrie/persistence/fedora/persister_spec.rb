@@ -13,7 +13,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   it_behaves_like "a Valkyrie::Persister"
-  it_behaves_like "it supports single values"
 
   context "when given an id containing a slash" do
     before do
@@ -39,6 +38,25 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       reloaded = query_service.find_by(id: id)
       expect(reloaded.id).to eq id
       expect(reloaded).to be_persisted
+    end
+  end
+
+  context "when given multiple Times" do
+    before do
+      class CustomResource < Valkyrie::Resource
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :times
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+    it "works" do
+      resource = CustomResource.new(times: [Time.now, Time.now - 5])
+
+      output = persister.save(resource: resource)
+
+      expect(output.times).to be_a Array
     end
   end
 
