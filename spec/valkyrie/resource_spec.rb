@@ -101,4 +101,41 @@ RSpec.describe Valkyrie::Resource do
       end
     end
   end
+
+  describe "::enable_optimistic_locking" do
+    context "when it is enabled" do
+      before do
+        class MyLockingResource < Valkyrie::Resource
+          enable_optimistic_locking
+          attribute :id, Valkyrie::Types::ID.optional
+          attribute :title, Valkyrie::Types::Set
+        end
+      end
+
+      after do
+        Object.send(:remove_const, :MyLockingResource)
+      end
+
+      it "has an optimistic_lock_token attribute" do
+        expect(MyLockingResource.new).to respond_to(:optimistic_lock_token)
+      end
+    end
+
+    context "when it is not enabled" do
+      before do
+        class MyNonlockingResource < Valkyrie::Resource
+          attribute :id, Valkyrie::Types::ID.optional
+          attribute :title, Valkyrie::Types::Set
+        end
+      end
+
+      after do
+        Object.send(:remove_const, :MyNonlockingResource)
+      end
+
+      it "does not have an optimistic_lock_token attribute" do
+        expect(MyNonlockingResource.new).not_to respond_to(:optimistic_lock_token)
+      end
+    end
+  end
 end
