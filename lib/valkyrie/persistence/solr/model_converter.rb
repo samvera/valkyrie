@@ -40,10 +40,25 @@ module Valkyrie::Persistence::Solr
         "id": id,
         "join_id_ssi": "id-#{id}",
         "created_at_dtsi": created_at
-      }.merge(attribute_hash)
+      }.merge(add_single_values(attribute_hash))
     end
 
     private
+
+      def add_single_values(attribute_hash)
+        attribute_hash.select do |k, v|
+          field = k.to_s.split("_").last
+          property = k.to_s.gsub("_#{field}", "")
+          next true if multivalued?(field)
+          next false if property == "internal_resource"
+          next false if v.length > 1
+          true
+        end
+      end
+
+      def multivalued?(field)
+        field.end_with?('m', 'mv')
+      end
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
@@ -272,7 +287,7 @@ module Valkyrie::Persistence::Solr
           if value.value.length > 1000
             [:tsim]
           else
-            [:tsim, :ssim, :tesim]
+            [:tsim, :ssim, :tesim, :tsi, :ssi, :tesi]
           end
         end
       end
