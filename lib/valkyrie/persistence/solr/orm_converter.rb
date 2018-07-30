@@ -24,7 +24,11 @@ module Valkyrie::Persistence::Solr
     end
 
     def attributes
-      attribute_hash.merge("id" => id, internal_resource: internal_resource, created_at: created_at, updated_at: updated_at, optimistic_lock_token: version)
+      attribute_hash.merge("id" => id,
+                           internal_resource: internal_resource,
+                           created_at: created_at,
+                           updated_at: updated_at,
+                           Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => version)
     end
 
     def created_at

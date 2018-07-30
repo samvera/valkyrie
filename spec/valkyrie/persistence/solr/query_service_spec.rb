@@ -35,7 +35,7 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
       resource = persister.save(resource: CustomLockingResource.new(title: "My Title"))
       resource = query_service.find_by(id: resource.id)
       query_doc = (query_service.connection.get 'select', params: { q: "id:#{resource.id}" })["response"]["docs"].first
-      expect(resource.optimistic_lock_token.first).to eq query_doc["_version_"]
+      expect(resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first).to eq query_doc["_version_"]
     end
   end
 end

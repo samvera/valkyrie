@@ -22,6 +22,6 @@ RSpec.shared_examples 'a Valkyrie locking query provider' do
     resource = persister.save(resource: resource)
     resource = query_service.find_by(id: resource.id)
     # we can't know the value in the general case
-    expect(resource.optimistic_lock_token).not_to be_empty
+    expect(resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
   end
 end

@@ -63,7 +63,7 @@ module Valkyrie
     end
 
     def self.enable_optimistic_locking
-      attribute(:optimistic_lock_token, Valkyrie::Types::Set)
+      attribute(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, Valkyrie::Types::Set)
     end
 
     # @return [Hash] Hash of attributes

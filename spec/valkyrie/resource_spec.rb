@@ -117,7 +117,7 @@ RSpec.describe Valkyrie::Resource do
       end
 
       it "has an optimistic_lock_token attribute" do
-        expect(MyLockingResource.new).to respond_to(:optimistic_lock_token)
+        expect(MyLockingResource.new).to respond_to(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
       end
     end
 
