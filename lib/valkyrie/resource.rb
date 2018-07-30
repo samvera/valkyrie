@@ -62,6 +62,10 @@ module Valkyrie
       @_human_readable_type = val
     end
 
+    def self.enable_optimistic_locking
+      attribute(:optimistic_lock_token, Valkyrie::Types::Set)
+    end
+
     # @return [Hash] Hash of attributes
     def attributes
       to_h
