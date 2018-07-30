@@ -117,8 +117,14 @@ module Valkyrie::Persistence::Postgres
           end
 
           def result
-            value.map do |value|
-              calling_mapper.for(value).result
+            # Cast single-valued arrays to the first value, let Types::Set and
+            # Types::Array handle converting it back.
+            if value.length == 1
+              calling_mapper.for(value.first).result
+            else
+              value.map do |value|
+                calling_mapper.for(value).result
+              end
             end
           end
         end

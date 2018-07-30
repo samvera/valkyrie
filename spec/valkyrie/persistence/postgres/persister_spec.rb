@@ -8,7 +8,27 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
 
   let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
+  it_behaves_like "it supports single values"
 
+  context "single value behavior" do
+    before do
+      class SingleResource < Valkyrie::Resource
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :single_value, Valkyrie::Types::String
+      end
+    end
+    after do
+      Object.send(:remove_const, :SingleResource)
+    end
+    it "stores single values as multiple" do
+      resource = SingleResource.new(single_value: "Test")
+      output = persister.save(resource: resource)
+
+      orm_resource = query_service.resource_factory.from_resource(resource: output)
+
+      expect(orm_resource.metadata["single_value"]).to eq ["Test"]
+    end
+  end
   context "converting a DateTime" do
     before do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
