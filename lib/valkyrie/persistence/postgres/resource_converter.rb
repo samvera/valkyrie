@@ -13,8 +13,18 @@ module Valkyrie::Persistence::Postgres
     def convert!
       orm_class.find_or_initialize_by(id: resource.id && resource.id.to_s).tap do |orm_object|
         orm_object.internal_resource = resource.internal_resource
-        orm_object.metadata.merge!(resource.attributes.except(:id, :internal_resource, :created_at, :updated_at))
+        orm_object.metadata.merge!(attributes)
       end
+    end
+
+    # Convert attributes to all be arrays to better enable querying and
+    # "changing of minds" later on.
+    def attributes
+      Hash[
+        resource.attributes.except(:id, :internal_resource, :created_at, :updated_at).map do |k, v|
+          [k, Array.wrap(v)]
+        end
+      ]
     end
   end
 end
