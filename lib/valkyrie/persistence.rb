@@ -37,5 +37,9 @@ module Valkyrie
     end
     class UnsupportedDatatype < StandardError
     end
+
+    module Attributes
+      OPTIMISTIC_LOCK = :optimistic_lock_token
+    end
   end
 end
