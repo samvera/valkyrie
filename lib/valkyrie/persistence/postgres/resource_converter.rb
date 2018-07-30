@@ -21,7 +21,7 @@ module Valkyrie::Persistence::Postgres
     # "changing of minds" later on.
     def attributes
       Hash[
-        resource.attributes.except(:id, :internal_resource, :created_at, :updated_at).map do |k, v|
+        resource.attributes.except(:id, :internal_resource, :created_at, :updated_at).compact.map do |k, v|
           [k, Array.wrap(v)]
         end
       ]

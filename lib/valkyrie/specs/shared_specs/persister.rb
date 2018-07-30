@@ -54,6 +54,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(output.single_value).to eq "A single value"
   end
 
+  it "returns nil for an unset single value" do
+    output = persister.save(resource: resource_class.new)
+
+    expect(output.single_value).to be_nil
+  end
+
   it "can mix properties with nested resources" do
     pending "No support for mixed nesting." if flags.include?(:no_mixed_nesting)
     book2 = resource_class.new(title: "Nested", id: SecureRandom.uuid)
