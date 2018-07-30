@@ -24,7 +24,7 @@ module Valkyrie::Persistence::Solr
     end
 
     def attributes
-      attribute_hash.merge("id" => id, internal_resource: internal_resource, created_at: created_at, updated_at: updated_at)
+      attribute_hash.merge("id" => id, internal_resource: internal_resource, created_at: created_at, updated_at: updated_at, optimistic_lock_token: version)
     end
 
     def created_at
@@ -33,6 +33,10 @@ module Valkyrie::Persistence::Solr
 
     def updated_at
       DateTime.parse(solr_document["timestamp"] || solr_document.fetch("created_at_dtsi").to_s).utc
+    end
+
+    def version
+      solr_document.fetch('_version_', nil)
     end
 
     def id
