@@ -295,10 +295,17 @@ module Valkyrie::Persistence::Fedora
             @property = property
           end
 
+          # Apply as a single value by default, if there are multiple then
+          # create an array. Done to support single values - if the resource is
+          # a Set or Array then it'll cast the single value back to an array
+          # appropriately.
           def apply_to(hsh)
             return if blacklist?(key)
-            hsh[key.to_sym] ||= []
-            hsh[key.to_sym] += cast_array(values)
+            hsh[key.to_sym] = if hsh.key?(key.to_sym)
+                                Array.wrap(hsh[key.to_sym]) + cast_array(values)
+                              else
+                                values
+                              end
           end
 
           def key
