@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
+require 'valkyrie/specs/shared_specs/locking_persister'
 
 RSpec.describe Valkyrie::Persistence::Solr::Persister do
   let(:query_service) { adapter.query_service }
@@ -75,6 +76,31 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       reloaded = query_service.find_by(id: book.id)
 
       expect(reloaded.title.first[0, 19]).to eq("datetime-#{time1.to_s[0, 10]}")
+    end
+  end
+
+  describe "#save" do
+    # supplement specs from shared_specs/locking_persister with a solr-specific test
+    # The only error we catch is the 409 conflict
+    context "when updating a resource with an invalid token" do
+      before do
+        class MyLockingResource < Valkyrie::Resource
+          enable_optimistic_locking
+          attribute :id, Valkyrie::Types::ID.optional
+          attribute :title
+        end
+      end
+
+      after do
+        ActiveSupport::Dependencies.remove_constant("MyLockingResource")
+      end
+
+      it "raises an Rsolr 500 Error" do
+        resource = MyLockingResource.new(title: ["My Locked Resource"])
+        initial_resource = persister.save(resource: resource)
+        initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", ["NOT_EVEN_A_VALID_TOKEN"])
+        expect { persister.save(resource: initial_resource) }.to raise_error(RSolr::Error::Http)
+      end
     end
   end
 end

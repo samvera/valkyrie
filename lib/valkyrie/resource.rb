@@ -67,6 +67,10 @@ module Valkyrie
       attribute(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, Valkyrie::Types::Set)
     end
 
+    def optimistic_locking_enabled?
+      respond_to?(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+    end
+
     # @return [Hash] Hash of attributes
     def attributes
       to_h

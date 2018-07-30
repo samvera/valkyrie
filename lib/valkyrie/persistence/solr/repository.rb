@@ -3,7 +3,7 @@ module Valkyrie::Persistence::Solr
   # Responsible for handling the logic for persisting or deleting multiple
   # objects into or out of solr.
   class Repository
-    COMMIT_PARAMS = { softCommit: true }.freeze
+    COMMIT_PARAMS = { softCommit: true, versions: true }.freeze
 
     attr_reader :resources, :connection, :resource_factory
     def initialize(resources:, connection:, resource_factory:)
@@ -17,11 +17,27 @@ module Valkyrie::Persistence::Solr
         generate_id(resource) if resource.id.blank?
         solr_document(resource)
       end
-      connection.add documents, params: COMMIT_PARAMS
+      results = add_documents(documents)
+      versions = results["adds"].each_slice(2).to_h
       documents.map do |document|
+        document["_version_"] = versions.fetch(document[:id])
         resource_factory.to_resource(object: document.stringify_keys)
       end
     end
+
+    # @param [Array<Hash>] array of Solr documents
+    # @return [RSolr::HashWithResponse]
+    # rubocop:disable Style/IfUnlessModifier
+    def add_documents(documents)
+      connection.add documents, params: COMMIT_PARAMS
+    rescue RSolr::Error::Http => exception
+      # Error 409 conflict is returned when versions do not match
+      if exception.response[:status] == 409
+        raise Valkyrie::Persistence::StaleObjectError, resources.map(&:id).join(", ")
+      end
+      raise exception
+    end
+    # rubocop:enable Style/IfUnlessModifier
 
     def delete
       connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: COMMIT_PARAMS
