@@ -49,11 +49,15 @@ module Valkyrie::Persistence::Solr
         attribute_hash.select do |k, v|
           field = k.to_s.split("_").last
           property = k.to_s.gsub("_#{field}", "")
-          next true if field.include?("m")
+          next true if multivalued?(field)
           next false if property == "internal_resource"
           next false if v.length > 1
           true
         end
+      end
+
+      def multivalued?(field)
+        field.end_with?('m', 'mv')
       end
 
       def attribute_hash
