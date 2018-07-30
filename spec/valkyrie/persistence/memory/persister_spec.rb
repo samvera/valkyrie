@@ -7,5 +7,4 @@ RSpec.describe Valkyrie::Persistence::Memory::Persister do
   let(:query_service) { adapter.query_service }
   let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
-  it_behaves_like "it supports single values"
 end

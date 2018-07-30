@@ -9,7 +9,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :author
       attribute :member_ids
       attribute :nested_resource
-      attribute :single_value, Valkyrie::Types::String
+      attribute :single_value, Valkyrie::Types::String.optional
     end
   end
   after do
@@ -44,6 +44,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
     reloaded = query_service.find_by(id: book3.id)
     expect(reloaded.nested_resource.first.title).to eq ["Nested"]
+  end
+
+  it "can persist single values" do
+    resource.single_value = "A single value"
+
+    output = persister.save(resource: resource)
+
+    expect(output.single_value).to eq "A single value"
   end
 
   it "can mix properties with nested resources" do
