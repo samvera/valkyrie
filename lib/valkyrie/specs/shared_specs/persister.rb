@@ -31,11 +31,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(saved.id).not_to be_blank
   end
 
-  it "does not save non-array properties" do
-    resource.single_value = "A Single Value"
-    expect { persister.save(resource: resource) }.to raise_error ::Valkyrie::Persistence::UnsupportedDatatype
-  end
-
   it "can save multiple resources at once" do
     resource2 = resource_class.new
     results = persister.save_all(resources: [resource, resource2])

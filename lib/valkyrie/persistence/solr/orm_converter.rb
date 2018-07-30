@@ -122,8 +122,12 @@ module Valkyrie::Persistence::Solr
       end
 
       def result
-        value.map do |element|
-          calling_mapper.for(element).result
+        if value.length == 1
+          calling_mapper.for(value.first).result
+        else
+          value.map do |element|
+            calling_mapper.for(element).result
+          end
         end
       end
     end
