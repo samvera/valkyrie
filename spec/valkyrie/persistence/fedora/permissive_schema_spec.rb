@@ -19,4 +19,10 @@ RSpec.describe Valkyrie::Persistence::Fedora::PermissiveSchema do
       expect(described_class.optimistic_lock_token).to eq RDF::URI("http://example.com/predicate/optimistic_lock_token")
     end
   end
+
+  describe ".member_ids" do
+    it "returns the expected temporary URI" do
+      expect(described_class.member_ids).to eq RDF::URI("http://example.com/predicate/member_ids")
+    end
+  end
 end
