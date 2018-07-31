@@ -49,11 +49,19 @@ module Valkyrie::Persistence::Fedora
     end
 
     def target_uri
-      adapter.id_to_uri(target_id.to_s)
+      if target_id.is_a?(Valkyrie::ID)
+        adapter.id_to_uri(target_id.to_s)
+      else
+        target_id
+      end
     end
 
     def target_id
-      adapter.uri_to_id(proxy_for)
+      if proxy_for.to_s.include?("/")
+        adapter.uri_to_id(proxy_for)
+      else
+        proxy_for
+      end
     end
 
     private

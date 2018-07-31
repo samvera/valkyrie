@@ -96,11 +96,18 @@ module Valkyrie::Persistence::Fedora
       class FedoraValue < ::Valkyrie::ValueMapper
       end
 
-      class OrderedMembers < ::Valkyrie::ValueMapper
+      class OrderedProperties < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
-          value.is_a?(Property) && value.key == :member_ids && Array(value.value).present?
+          value.is_a?(Property) && ordered?(value) && Array(value.value).present?
         end
+
+        def self.ordered?(value)
+          return false unless value.resource.class.schema[value.key]
+          value.resource.class.schema[value.key].meta.try(:[], :ordered)
+        end
+
+        delegate :subject, to: :value
 
         def result
           initialize_list
@@ -114,13 +121,22 @@ module Valkyrie::Persistence::Fedora
 
         def apply_first_and_last
           return if ordered_list.to_a.empty?
-          graph << RDF::Statement.new(value.subject, ::RDF::Vocab::IANA.first, ordered_list.head.next.rdf_subject)
-          graph << RDF::Statement.new(value.subject, ::RDF::Vocab::IANA.last, ordered_list.tail.prev.rdf_subject)
+          graph << RDF::Statement.new(subject, predicate, node_id)
+          graph << RDF::Statement.new(node_id, ::RDF::Vocab::IANA.first, ordered_list.head.next.rdf_subject)
+          graph << RDF::Statement.new(node_id, ::RDF::Vocab::IANA.last, ordered_list.tail.prev.rdf_subject)
+        end
+
+        def node_id
+          @node_id ||= ordered_list.send(:new_node_subject)
+        end
+
+        def predicate
+          value.schema.predicate_for(resource: value.resource, property: value.key)
         end
 
         def initialize_list
           Array(value.value).each_with_index do |val, index|
-            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, :member_id, val, value.adapter, value.resource)).result.value)
+            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, value.key.to_s.singularize.to_sym, val, value.adapter, value.resource)).result.value)
           end
         end
 
