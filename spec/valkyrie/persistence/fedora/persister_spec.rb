@@ -13,6 +13,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   it_behaves_like "a Valkyrie::Persister"
+  it_behaves_like "it supports persisting ordered properties"
 
   context "when given an id containing a slash" do
     before do

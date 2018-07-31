@@ -43,6 +43,7 @@ module Valkyrie
       define_method("#{name}=") do |value|
         instance_variable_set("@#{name}", self.class.schema[name].call(value))
       end
+      type = type.meta(ordered: true) if name == :member_ids
       super
     end
 
