@@ -87,6 +87,9 @@ RSpec.describe Valkyrie::Types do
       resource = Resource.new(authors: {})
       expect(resource.authors).to eq []
     end
+    it "can use .member" do
+      expect { Valkyrie::Types::Array.member(Valkyrie::Types::String) }.not_to raise_error
+    end
   end
 
   describe "the DateTime type" do
@@ -112,6 +115,9 @@ RSpec.describe Valkyrie::Types do
     it "returns an empty array if given an empty hash" do
       resource = Resource.new(set_of_values: {})
       expect(resource.set_of_values).to eq []
+    end
+    it "can use .member" do
+      expect { Valkyrie::Types::Set.member(Valkyrie::Types::String) }.not_to raise_error
     end
   end
 
