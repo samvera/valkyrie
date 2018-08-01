@@ -39,4 +39,11 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter do
       expect(adapter.pair_path('admin_set/default')).to eq('ad/mi/n_/se/t')
     end
   end
+
+  describe "#id" do
+    it "creates an md5 hash from the connection_prefix" do
+      expected = Digest::MD5.hexdigest adapter.connection_prefix
+      expect(adapter.id.to_s).to eq expected
+    end
+  end
 end
