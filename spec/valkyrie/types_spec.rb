@@ -63,6 +63,14 @@ RSpec.describe Valkyrie::Types do
     end
   end
 
+  describe Valkyrie::Types::OptimisticLockToken do
+    it "casts from a string" do
+      serialized_token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: "adapter_id", token: Valkyrie::ID.new("token")).serialize
+
+      expect(described_class[serialized_token]).to be_a Valkyrie::Persistence::OptimisticLockToken
+    end
+  end
+
   describe "Single Valued String" do
     it "returns the first of a set of values" do
       resource = Resource.new(title: ["one", "two"])
