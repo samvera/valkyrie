@@ -37,6 +37,14 @@ module Valkyrie
       end
     end
 
+    # Optimistic Lock Token
+    OptimisticLockToken =
+      Dry::Types::Definition
+      .new(::Valkyrie::Persistence::OptimisticLockToken)
+      .constructor do |input|
+        Valkyrie::Persistence::OptimisticLockToken.deserialize(input)
+      end
+
     # Used for casting {Valkyrie::Resources} if possible.
     Anything = Valkyrie::Types::Any.constructor do |value|
       if value.respond_to?(:fetch) && value.fetch(:internal_resource, nil)
