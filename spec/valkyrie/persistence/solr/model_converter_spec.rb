@@ -9,7 +9,6 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
   let(:created_at) { Time.now.utc }
   before do
     class Resource < Valkyrie::Resource
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
       attribute :author, Valkyrie::Types::Set
       attribute :birthday, Valkyrie::Types::DateTime.optional

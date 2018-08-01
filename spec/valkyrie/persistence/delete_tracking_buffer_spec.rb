@@ -12,7 +12,6 @@ RSpec.describe Valkyrie::Persistence::DeleteTrackingBuffer do
   before do
     class Resource < Valkyrie::Resource
       include Valkyrie::Resource::AccessControls
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
       attribute :nested_resource

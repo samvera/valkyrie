@@ -53,7 +53,6 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
   describe "#human_readable_type" do
     before do
       class MyCustomResource < Valkyrie::Resource
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title, Valkyrie::Types::Set
       end
     end

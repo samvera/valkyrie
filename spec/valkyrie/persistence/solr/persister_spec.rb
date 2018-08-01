@@ -28,7 +28,6 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
         end
       end
       class Resource < Valkyrie::Resource
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title, Valkyrie::Types::Set
         attribute :other_title, Valkyrie::Types::Set
       end
@@ -55,7 +54,6 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
       class CustomResource < Valkyrie::Resource
         include Valkyrie::Resource::AccessControls
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title
         attribute :author
         attribute :member_ids
@@ -86,7 +84,6 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       before do
         class MyLockingResource < Valkyrie::Resource
           enable_optimistic_locking
-          attribute :id, Valkyrie::Types::ID.optional
           attribute :title
         end
       end

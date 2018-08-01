@@ -5,7 +5,6 @@ module Valkyrie
   #
   # @example Use types in property definitions on a resource
   #   class Book < Valkyrie::Resource
-  #     attribute :id, Valkyrie::Types::ID.optional
   #     attribute :title, Valkyrie::Types::Set.optional  # default type if none is specified
   #     attribute :member_ids, Valkyrie::Types::Array
   #   end
