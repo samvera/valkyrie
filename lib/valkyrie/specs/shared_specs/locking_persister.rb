@@ -3,7 +3,6 @@ RSpec.shared_examples 'a Valkyrie locking persister' do
   before do
     class MyLockingResource < Valkyrie::Resource
       enable_optimistic_locking
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
     end
   end

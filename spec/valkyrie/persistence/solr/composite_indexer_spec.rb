@@ -24,7 +24,6 @@ RSpec.describe Valkyrie::Persistence::Solr::CompositeIndexer do
       end
     end
     class Resource < Valkyrie::Resource
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
       attribute :other_title, Valkyrie::Types::Set
     end

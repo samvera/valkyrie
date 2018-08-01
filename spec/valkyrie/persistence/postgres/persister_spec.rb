@@ -12,7 +12,6 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
   context "single value behavior" do
     before do
       class SingleResource < Valkyrie::Resource
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :single_value, Valkyrie::Types::String
       end
     end
@@ -33,7 +32,6 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
       class CustomResource < Valkyrie::Resource
         include Valkyrie::Resource::AccessControls
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title
         attribute :author
         attribute :member_ids

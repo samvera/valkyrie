@@ -20,7 +20,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
       class CustomResource < Valkyrie::Resource
         include Valkyrie::Resource::AccessControls
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title
         attribute :author
         attribute :member_ids
@@ -45,7 +44,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   context "when given multiple Times" do
     before do
       class CustomResource < Valkyrie::Resource
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :times
       end
     end
@@ -66,7 +64,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       raise 'persister must be set with `let(:persister)`' unless defined? persister
       class CustomResource < Valkyrie::Resource
         include Valkyrie::Resource::AccessControls
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :alternate_ids, Valkyrie::Types::Array
         attribute :title
         attribute :author
