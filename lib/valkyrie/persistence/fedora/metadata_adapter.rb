@@ -24,6 +24,10 @@ module Valkyrie::Persistence::Fedora
       Valkyrie::Persistence::Fedora::Persister.new(adapter: self)
     end
 
+    def id
+      @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(connection_prefix))
+    end
+
     def resource_factory
       Valkyrie::Persistence::Fedora::Persister::ResourceFactory.new(adapter: self)
     end

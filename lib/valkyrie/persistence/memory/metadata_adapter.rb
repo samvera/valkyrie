@@ -23,5 +23,9 @@ module Valkyrie::Persistence::Memory
     def cache
       @cache ||= {}
     end
+
+    def id
+      @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(self.class.to_s))
+    end
   end
 end
