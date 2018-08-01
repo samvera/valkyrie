@@ -50,6 +50,10 @@ module Valkyrie::Persistence::Solr
       )
     end
 
+    def id
+      @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(connection.base_uri.to_s))
+    end
+
     # @return [Valkyrie::Persistence::Solr::ResourceFactory] A resource factory
     #   to convert a resource to a solr document and back.
     def resource_factory
