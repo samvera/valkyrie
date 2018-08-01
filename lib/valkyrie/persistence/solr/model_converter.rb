@@ -40,7 +40,7 @@ module Valkyrie::Persistence::Solr
         "id": id,
         "join_id_ssi": "id-#{id}",
         "created_at_dtsi": created_at
-      }.merge(add_single_values(attribute_hash))
+      }.merge(add_single_values(attribute_hash)).merge(lock_hash)
     end
 
     private
@@ -58,6 +58,15 @@ module Valkyrie::Persistence::Solr
 
       def multivalued?(field)
         field.end_with?('m', 'mv')
+      end
+
+      def lock_hash
+        return {} unless resource.optimistic_locking_enabled? && lock_token.present?
+        { _version_: lock_token }
+      end
+
+      def lock_token
+        @lock_token ||= resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first
       end
 
       def attribute_hash
