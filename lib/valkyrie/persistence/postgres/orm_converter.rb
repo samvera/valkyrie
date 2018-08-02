@@ -3,9 +3,10 @@ module Valkyrie::Persistence::Postgres
   # Responsible for converting a
   # {Valkyrie::Persistence::Postgres::ORM::Resource} to a {Valkyrie::Resource}
   class ORMConverter
-    attr_reader :orm_object
-    def initialize(orm_object)
+    attr_reader :orm_object, :resource_factory
+    def initialize(orm_object, resource_factory:)
       @orm_object = orm_object
+      @resource_factory = resource_factory
     end
 
     # Create a new instance of the class described in attributes[:internal_resource]
@@ -17,7 +18,30 @@ module Valkyrie::Persistence::Postgres
     private
 
       def resource
-        resource_klass.new(attributes.merge(new_record: false))
+        resource_klass.new(
+          attributes.merge(
+            new_record: false,
+            Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => lock_token
+          )
+        )
+      end
+
+      def lock_token
+        return lock_token_warning unless orm_object.class.column_names.include?("lock_version")
+        @lock_token ||=
+          Valkyrie::Persistence::OptimisticLockToken.new(
+            adapter_id: resource_factory.adapter_id,
+            token: orm_object.lock_version
+          )
+      end
+
+      def lock_token_warning
+        return nil unless resource_klass.optimistic_locking_enabled?
+        warn "[MIGRATION REQUIRED] You have loaded a resource from the Postgres adapter with " \
+             "optimistic locking enabled, but the necessary migrations have not been run. \n" \
+             "Please run `bin/rails valkyrie_engine:install:migrations && bin/rails db:migrate` " \
+             "to enable this feature for Postgres."
+        nil
       end
 
       def resource_klass
