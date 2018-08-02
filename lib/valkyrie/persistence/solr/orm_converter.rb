@@ -2,9 +2,10 @@
 module Valkyrie::Persistence::Solr
   # Responsible for converting hashes from Solr into a {Valkyrie::Resource}
   class ORMConverter
-    attr_reader :solr_document
-    def initialize(solr_document)
+    attr_reader :solr_document, :resource_factory
+    def initialize(solr_document, resource_factory:)
       @solr_document = solr_document
+      @resource_factory = resource_factory
     end
 
     def convert!
@@ -28,7 +29,7 @@ module Valkyrie::Persistence::Solr
                            internal_resource: internal_resource,
                            created_at: created_at,
                            updated_at: updated_at,
-                           Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => version)
+                           Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => token)
     end
 
     def created_at
@@ -37,6 +38,10 @@ module Valkyrie::Persistence::Solr
 
     def updated_at
       DateTime.parse(solr_document["timestamp"] || solr_document.fetch("created_at_dtsi").to_s).utc
+    end
+
+    def token
+      Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: resource_factory.adapter_id, token: version)
     end
 
     def version

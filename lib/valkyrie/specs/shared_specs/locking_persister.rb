@@ -45,10 +45,27 @@ RSpec.shared_examples 'a Valkyrie locking persister' do
       it "successfully saves the resource and returns the updated value of the optimistic locking attribute" do
         resource = MyLockingResource.new(title: ["My Locked Resource"])
         initial_resource = persister.save(resource: resource)
-        initial_token = initial_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+        initial_token = initial_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first
         initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [])
         updated_resource = persister.save(resource: initial_resource)
-        expect(initial_token).not_to eq updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+        expect(initial_token.serialize)
+          .not_to eq(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first.serialize)
+        expect(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+      end
+    end
+
+    context "when there is a token, but it's for a different adapter (migration use case)" do
+      it "successfully saves the resource and returns a token for the adapter that was saved to" do
+        resource = MyLockingResource.new(title: ["My Locked Resource"])
+        initial_resource = persister.save(resource: resource)
+        new_token = Valkyrie::Persistence::OptimisticLockToken.new(
+          adapter_id: Valkyrie::ID.new("fake_adapter"),
+          token: "token"
+        )
+        initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [new_token])
+        updated_resource = persister.save(resource: initial_resource)
+        expect(new_token.serialize)
+          .not_to eq(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first.serialize)
         expect(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
       end
     end

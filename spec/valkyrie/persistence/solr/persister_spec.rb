@@ -95,7 +95,8 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
       it "raises an Rsolr 500 Error" do
         resource = MyLockingResource.new(title: ["My Locked Resource"])
         initial_resource = persister.save(resource: resource)
-        initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", ["NOT_EVEN_A_VALID_TOKEN"])
+        invalid_token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: "NOT_EVEN_A_VALID_TOKEN")
+        initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [invalid_token])
         expect { persister.save(resource: initial_resource) }.to raise_error(RSolr::Error::Http)
       end
     end
