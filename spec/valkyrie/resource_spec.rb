@@ -130,6 +130,7 @@ RSpec.describe Valkyrie::Resource do
 
         expect(resource).to respond_to(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
         expect(resource.optimistic_locking_enabled?).to be true
+        expect(resource.class.optimistic_locking_enabled?).to be true
       end
 
       describe ".#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}" do
@@ -165,6 +166,7 @@ RSpec.describe Valkyrie::Resource do
       it "does not have an optimistic_lock_token attribute" do
         expect(MyNonlockingResource.new).not_to respond_to(:optimistic_lock_token)
         expect(MyNonlockingResource.new.optimistic_locking_enabled?).to be false
+        expect(MyNonlockingResource.optimistic_locking_enabled?).to be false
       end
     end
   end

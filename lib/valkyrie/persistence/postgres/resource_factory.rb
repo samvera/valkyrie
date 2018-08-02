@@ -5,26 +5,30 @@ module Valkyrie::Persistence::Postgres
   # Provides access to generic methods for converting to/from
   # {Valkyrie::Resource} and {Valkyrie::Persistence::Postgres::ORM::Resource}.
   class ResourceFactory
-    class << self
-      # @param object [Valkyrie::Persistence::Postgres::ORM::Resource] AR
-      #   record to be converted.
-      # @return [Valkyrie::Resource] Model representation of the AR record.
-      def to_resource(object:)
-        ::Valkyrie::Persistence::Postgres::ORMConverter.new(object).convert!
-      end
+    attr_reader :adapter
+    delegate :id, to: :adapter, prefix: true
+    def initialize(adapter:)
+      @adapter = adapter
+    end
 
-      # @param resource [Valkyrie::Resource] Model to be converted to ActiveRecord.
-      # @return [Valkyrie::Persistence::Postgres::ORM::Resource] ActiveRecord
-      #   resource for the Valkyrie resource.
-      def from_resource(resource:)
-        ::Valkyrie::Persistence::Postgres::ResourceConverter.new(resource, resource_factory: self).convert!
-      end
+    # @param object [Valkyrie::Persistence::Postgres::ORM::Resource] AR
+    #   record to be converted.
+    # @return [Valkyrie::Resource] Model representation of the AR record.
+    def to_resource(object:)
+      ::Valkyrie::Persistence::Postgres::ORMConverter.new(object, resource_factory: self).convert!
+    end
 
-      # Accessor for the ActiveRecord class which all Postgres resources are an
-      # instance of.
-      def orm_class
-        ::Valkyrie::Persistence::Postgres::ORM::Resource
-      end
+    # @param resource [Valkyrie::Resource] Model to be converted to ActiveRecord.
+    # @return [Valkyrie::Persistence::Postgres::ORM::Resource] ActiveRecord
+    #   resource for the Valkyrie resource.
+    def from_resource(resource:)
+      ::Valkyrie::Persistence::Postgres::ResourceConverter.new(resource, resource_factory: self).convert!
+    end
+
+    # Accessor for the ActiveRecord class which all Postgres resources are an
+    # instance of.
+    def orm_class
+      ::Valkyrie::Persistence::Postgres::ORM::Resource
     end
   end
 end

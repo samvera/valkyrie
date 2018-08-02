@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
+require 'valkyrie/specs/shared_specs/locking_persister'
 
 RSpec.describe Valkyrie::Persistence::Postgres::Persister do
   let(:query_service) { adapter.query_service }
@@ -8,6 +9,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
 
   let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
+  it_behaves_like "a Valkyrie locking persister"
 
   context "single value behavior" do
     before do
@@ -79,6 +81,27 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
 
       expect { persister.save_all(resources: [resource1, resource2]) }.to raise_error RuntimeError
       expect(query_service.find_by(id: resource1.id).author).to be_nil
+    end
+  end
+
+  context "when using an optimistically locked resource" do
+    before do
+      class MyLockingResource < Valkyrie::Resource
+        enable_optimistic_locking
+      end
+    end
+    after do
+      Object.send(:remove_const, :MyLockingResource)
+    end
+    context "and the migrations haven't been run" do
+      before do
+        allow(adapter.resource_factory.orm_class).to receive(:column_names)
+          .and_return(adapter.resource_factory.orm_class.column_names - ["lock_version"])
+      end
+      it "loads the object, but sends a warning with instructions" do
+        resource = MyLockingResource.new
+        expect { adapter.persister.save(resource: resource) }.to output(/\[MIGRATION REQUIRED\]/).to_stderr
+      end
     end
   end
 end
