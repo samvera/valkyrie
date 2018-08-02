@@ -54,4 +54,31 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       expect(reloaded.title.first[0, 18]).to eq(time1.to_s[0, 18])
     end
   end
+
+  describe "save_all" do
+    before do
+      class CustomResource < Valkyrie::Resource
+        include Valkyrie::Resource::AccessControls
+        attribute :title
+        attribute :author
+        attribute :member_ids
+        attribute :nested_resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+    let(:resource_class) { CustomResource }
+
+    it "rolls back a transaction if something blows up" do
+      resource1 = persister.save(resource: resource_class.new)
+      resource1.author = "test"
+      resource2 = resource_class.new
+      allow(persister).to receive(:save).and_call_original
+      allow(persister).to receive(:save).with(resource: resource2).and_raise
+
+      expect { persister.save_all(resources: [resource1, resource2]) }.to raise_error RuntimeError
+      expect(query_service.find_by(id: resource1.id).author).to be_nil
+    end
+  end
 end
