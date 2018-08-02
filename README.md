@@ -121,7 +121,6 @@ Define a custom work class:
 # frozen_string_literal: true
 class MyModel < Valkyrie::Resource
   include Valkyrie::Resource::AccessControls
-  attribute :id, Valkyrie::Types::ID.optional  # Optional to allow auto-generation of IDs
   attribute :title, Valkyrie::Types::Set       # Sets are unordered
   attribute :authors, Valkyrie::Types::Array   # Arrays are ordered
 end

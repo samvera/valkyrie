@@ -6,7 +6,6 @@ module Valkyrie
     # @example
     #     class CustomResource < Valkyrie::Resource
     #       include Valkyrie::Resource::AccessControls
-    #       attribute :id, Valkyrie::Types::ID.optional
     #       attribute :title
     #       attribute :member_ids
     #       attribute :nested_resource

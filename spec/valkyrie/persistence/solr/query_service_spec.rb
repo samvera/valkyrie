@@ -22,7 +22,6 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
     before do
       class CustomLockingResource < Valkyrie::Resource
         enable_optimistic_locking
-        attribute :id, Valkyrie::Types::ID.optional
         attribute :title
       end
     end

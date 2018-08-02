@@ -4,7 +4,6 @@ module Valkyrie
   # The base resource class for all Valkyrie metadata objects.
   # @example Define a resource
   #   class Book < Valkyrie::Resource
-  #     attribute :id, Valkyrie::Types::ID.optional
   #     attribute :member_ids, Valkyrie::Types::Array
   #     attribute :author
   #   end
@@ -23,6 +22,7 @@ module Valkyrie
     def self.inherited(subclass)
       super(subclass)
       subclass.constructor_type :schema
+      subclass.attribute :id, Valkyrie::Types::ID.optional
       subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
       subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
@@ -40,10 +40,20 @@ module Valkyrie
     # @note Overridden from {Dry::Struct} to make the default type
     #   {Valkyrie::Types::Set}
     def self.attribute(name, type = Valkyrie::Types::Set.optional)
+      if reserved_attributes.include?(name.to_sym) && schema[name]
+        warn "#{name} is a reserved attribute in Valkyrie::Resource and defined by it. You can remove your definition of `attribute :#{name}`. " \
+             "Called from #{Gem.location_of_caller.join(':')}"
+        return
+      end
+      return if reserved_attributes.include?(name.to_sym) && schema[name]
       define_method("#{name}=") do |value|
         instance_variable_set("@#{name}", self.class.schema[name].call(value))
       end
       super
+    end
+
+    def self.reserved_attributes
+      [:id, :internal_resource, :created_at, :updated_at, :new_record]
     end
 
     # @return [ActiveModel::Name]

@@ -4,7 +4,6 @@ RSpec.shared_examples 'a Valkyrie::ChangeSetPersister' do |*_flags|
     raise 'adapter must be set with `let(:change_set_persister)`' unless defined? change_set_persister
     class CustomResource < Valkyrie::Resource
       include Valkyrie::Resource::AccessControls
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
       attribute :nested_resource

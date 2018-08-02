@@ -4,7 +4,6 @@ require 'spec_helper'
 RSpec.describe Valkyrie::Resource do
   before do
     class Resource < Valkyrie::Resource
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title, Valkyrie::Types::Set
     end
   end
@@ -14,7 +13,7 @@ RSpec.describe Valkyrie::Resource do
   subject(:resource) { Resource.new }
   describe "#fields" do
     it "returns all configured fields as an array of symbols" do
-      expect(Resource.fields).to eq [:internal_resource, :created_at, :updated_at, :id, :title]
+      expect(Resource.fields).to eq [:id, :internal_resource, :created_at, :updated_at, :title]
     end
   end
 
@@ -97,7 +96,7 @@ RSpec.describe Valkyrie::Resource do
     subject(:resource) { MyResource.new }
     describe "#fields" do
       it "returns all configured parent fields as an array of symbols" do
-        expect(MyResource.fields).to eq [:internal_resource, :created_at, :updated_at, :id, :title]
+        expect(MyResource.fields).to eq [:id, :internal_resource, :created_at, :updated_at, :title]
       end
     end
   end
@@ -107,7 +106,6 @@ RSpec.describe Valkyrie::Resource do
       before do
         class MyLockingResource < Valkyrie::Resource
           enable_optimistic_locking
-          attribute :id, Valkyrie::Types::ID.optional
           attribute :title, Valkyrie::Types::Set
         end
       end
@@ -125,7 +123,6 @@ RSpec.describe Valkyrie::Resource do
     context "when it is not enabled" do
       before do
         class MyNonlockingResource < Valkyrie::Resource
-          attribute :id, Valkyrie::Types::ID.optional
           attribute :title, Valkyrie::Types::Set
         end
       end

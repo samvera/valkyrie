@@ -4,7 +4,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     raise 'persister must be set with `let(:persister)`' unless defined? persister
     class CustomResource < Valkyrie::Resource
       include Valkyrie::Resource::AccessControls
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :author
       attribute :member_ids

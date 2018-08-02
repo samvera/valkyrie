@@ -12,7 +12,6 @@ RSpec.describe Valkyrie::Persistence::BufferedPersister do
   end
   before do
     class Resource < Valkyrie::Resource
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
       attribute :member_ids
       attribute :nested_resource

@@ -16,7 +16,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
   before do
     class SampleResource < Valkyrie::Resource
       include Valkyrie::Resource::AccessControls
-      attribute :id, Valkyrie::Types::ID.optional
       attribute :title
     end
   end
