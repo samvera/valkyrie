@@ -105,9 +105,9 @@ RSpec.describe Valkyrie::Resource do
       end
     end
     describe "defining an internal attribute" do
-      it "warns you and doesn't change the type" do
+      it "warns you and changes the type" do
         expect { MyResource.attribute(:id) }.to output(/is a reserved attribute/).to_stderr
-        expect(MyResource.schema[:id].right).to eq Valkyrie::Types::ID
+        expect(MyResource.schema[:id]).to eq Valkyrie::Types::Set.optional
       end
     end
   end
