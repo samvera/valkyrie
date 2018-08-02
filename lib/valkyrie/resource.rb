@@ -22,11 +22,11 @@ module Valkyrie
     def self.inherited(subclass)
       super(subclass)
       subclass.constructor_type :schema
-      subclass.attribute :id, Valkyrie::Types::ID.optional
-      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s)
-      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional
-      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional
-      subclass.attribute :new_record, Types::Bool.default(true)
+      subclass.attribute :id, Valkyrie::Types::ID.optional, internal: true
+      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s), internal: true
+      subclass.attribute :created_at, Valkyrie::Types::DateTime.optional, internal: true
+      subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional, internal: true
+      subclass.attribute :new_record, Types::Bool.default(true), internal: true
     end
 
     # @return [Array<Symbol>] Array of fields defined for this class.
@@ -39,17 +39,16 @@ module Valkyrie
     # @param type [Dry::Types::Type]
     # @note Overridden from {Dry::Struct} to make the default type
     #   {Valkyrie::Types::Set}
-    def self.attribute(name, type = Valkyrie::Types::Set.optional)
-      if reserved_attributes.include?(name.to_sym) && schema[name]
+    def self.attribute(name, type = Valkyrie::Types::Set.optional, internal: false)
+      if reserved_attributes.include?(name.to_sym) && schema[name] && !internal
         warn "#{name} is a reserved attribute in Valkyrie::Resource and defined by it. You can remove your definition of `attribute :#{name}`. " \
              "Called from #{Gem.location_of_caller.join(':')}"
         return
       end
-      return if reserved_attributes.include?(name.to_sym) && schema[name]
       define_method("#{name}=") do |value|
         instance_variable_set("@#{name}", self.class.schema[name].call(value))
       end
-      super
+      super(name, type)
     end
 
     def self.reserved_attributes
