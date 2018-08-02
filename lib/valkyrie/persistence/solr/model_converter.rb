@@ -66,11 +66,17 @@ module Valkyrie::Persistence::Solr
       end
 
       def lock_token
-        @lock_token ||= resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first
+        @lock_token ||= begin
+          found_token = resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+                                .find { |token| token.adapter_id == resource_factory.adapter_id }
+          return if found_token.nil?
+          found_token.token
+        end
       end
 
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
+          next if property == Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK
           attr = resource_attributes[property]
           mapper_val = SolrMapperValue.for(Property.new(property, attr)).result
           unless mapper_val.respond_to?(:apply_to)

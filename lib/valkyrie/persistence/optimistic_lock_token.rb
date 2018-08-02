@@ -13,6 +13,7 @@ module Valkyrie::Persistence
     def serialize
       "lock_token:#{adapter_id}:#{token}"
     end
+    alias to_s serialize
 
     def self.deserialize(serialized_token)
       token_parts = serialized_token.to_s.split(":", 3)
