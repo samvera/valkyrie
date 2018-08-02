@@ -13,10 +13,8 @@ require 'rdf'
 require 'valkyrie/rdf_patches'
 require 'json/ld'
 require 'logger'
-require 'active_triples'
 require 'rdf/vocab'
 require 'rails'
-require 'active_fedora'
 
 module Valkyrie
   require 'valkyrie/id'
