@@ -19,8 +19,10 @@ module Valkyrie::Persistence::Postgres
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
     def save_all(resources:)
-      resources.map do |resource|
-        save(resource: resource)
+      resource_factory.orm_class.transaction do
+        resources.map do |resource|
+          save(resource: resource)
+        end
       end
     end
 
