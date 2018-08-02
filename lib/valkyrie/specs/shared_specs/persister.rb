@@ -35,6 +35,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     results = persister.save_all(resources: [resource, resource2])
 
     expect(results.map(&:id).uniq.length).to eq 2
+    expect(persister.save_all(resources: [])).to eq []
   end
 
   it "can save nested resources" do

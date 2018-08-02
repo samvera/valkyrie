@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Solr
         solr_document(resource)
       end
       results = add_documents(documents)
-      versions = results["adds"].each_slice(2).to_h
+      versions = results["adds"]&.each_slice(2)&.to_h
       documents.map do |document|
         document["_version_"] = versions.fetch(document[:id])
         resource_factory.to_resource(object: document.stringify_keys)
