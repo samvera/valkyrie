@@ -27,7 +27,7 @@ module Valkyrie::Persistence::Postgres
         end
       end
     rescue Valkyrie::Persistence::StaleObjectError
-      raise Valkyrie::Persistence::StaleObjectError, resources.map(&:id).join(", ")
+      raise Valkyrie::Persistence::StaleObjectError
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
