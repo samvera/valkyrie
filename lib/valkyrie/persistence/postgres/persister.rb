@@ -15,6 +15,8 @@ module Valkyrie::Persistence::Postgres
       orm_object = resource_factory.from_resource(resource: resource)
       orm_object.save!
       resource_factory.to_resource(object: orm_object)
+    rescue ActiveRecord::StaleObjectError
+      raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -24,6 +26,8 @@ module Valkyrie::Persistence::Postgres
           save(resource: resource)
         end
       end
+    rescue Valkyrie::Persistence::StaleObjectError
+      raise Valkyrie::Persistence::StaleObjectError, resources.map(&:id).join(", ")
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)

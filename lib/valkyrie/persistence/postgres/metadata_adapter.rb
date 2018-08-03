@@ -23,7 +23,7 @@ module Valkyrie::Persistence::Postgres
 
     # @return [Class] {Valkyrie::Persistence::Postgres::ResourceFactory}
     def resource_factory
-      Valkyrie::Persistence::Postgres::ResourceFactory
+      @resource_factory ||= Valkyrie::Persistence::Postgres::ResourceFactory.new(adapter: self)
     end
 
     def id
