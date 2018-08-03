@@ -33,7 +33,7 @@ module Valkyrie::Persistence::Solr
     rescue RSolr::Error::Http => exception
       # Error 409 conflict is returned when versions do not match
       if exception.response[:status] == 409
-        raise Valkyrie::Persistence::StaleObjectError, resources.map(&:id).join(", ")
+        handle_409
       end
       raise exception
     end
@@ -51,6 +51,11 @@ module Valkyrie::Persistence::Solr
     def generate_id(resource)
       Valkyrie.logger.warn "The Solr adapter is not meant to persist new resources, but is now generating an ID."
       resource.id = SecureRandom.uuid
+    end
+
+    def handle_409
+      raise Valkyrie::Persistence::StaleObjectError if resources.count > 1
+      raise Valkyrie::Persistence::StaleObjectError, resources.first.id.to_s
     end
   end
 end
