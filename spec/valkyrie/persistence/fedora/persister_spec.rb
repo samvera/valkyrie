@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
+require 'valkyrie/specs/shared_specs/locking_persister'
 
 RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:adapter) do
