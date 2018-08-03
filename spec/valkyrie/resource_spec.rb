@@ -126,8 +126,28 @@ RSpec.describe Valkyrie::Resource do
       end
 
       it "has an optimistic_lock_token attribute" do
-        expect(MyLockingResource.new).to respond_to(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
-        expect(MyLockingResource.new.optimistic_locking_enabled?).to be true
+        resource = MyLockingResource.new(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => "lock_token:adapter_id:a_tok:en")
+
+        expect(resource).to respond_to(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+        expect(resource.optimistic_locking_enabled?).to be true
+      end
+
+      describe ".#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}" do
+        it "returns an empty array by default" do
+          expect(MyLockingResource.new[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).to eq []
+        end
+
+        it "casts serialized tokens to OptimisticLockTokens" do
+          resource = MyLockingResource.new(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => "lock_token:adapter_id:a_tok:en")
+
+          expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK][0]).to be_a Valkyrie::Persistence::OptimisticLockToken
+        end
+
+        it "returns a token if given a token" do
+          resource = MyLockingResource.new(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => Valkyrie::Persistence::OptimisticLockToken.deserialize("lock_token:adapter_id:a_tok:en"))
+
+          expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK][0]).to be_a Valkyrie::Persistence::OptimisticLockToken
+        end
       end
     end
 

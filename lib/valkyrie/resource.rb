@@ -74,7 +74,7 @@ module Valkyrie
     end
 
     def self.enable_optimistic_locking
-      attribute(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, Valkyrie::Types::Set)
+      attribute(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, Valkyrie::Types::Set.of(Valkyrie::Types::OptimisticLockToken))
     end
 
     def optimistic_locking_enabled?

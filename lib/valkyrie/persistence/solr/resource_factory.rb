@@ -5,16 +5,19 @@ module Valkyrie::Persistence::Solr
   class ResourceFactory
     require 'valkyrie/persistence/solr/orm_converter'
     require 'valkyrie/persistence/solr/model_converter'
-    attr_reader :resource_indexer
-    def initialize(resource_indexer:)
+    attr_reader :resource_indexer, :adapter
+    delegate :id, to: :adapter, prefix: true
+
+    def initialize(resource_indexer:, adapter:)
       @resource_indexer = resource_indexer
+      @adapter = adapter
     end
 
     # @param object [Hash] The solr document in a hash to convert to a
     #   resource.
     # @return [Valkyrie::Resource]
     def to_resource(object:)
-      ORMConverter.new(object).convert!
+      ORMConverter.new(object, resource_factory: self).convert!
     end
 
     # @param resource [Valkyrie::Resource] The resource to convert to a solr hash.

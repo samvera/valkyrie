@@ -30,11 +30,12 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
       Object.send(:remove_const, :CustomLockingResource)
     end
 
-    it "retrieves the lock token and casts it to optimistic_lock_token attribute" do
+    it "populates the lock token into the optimistic_lock_token attribute" do
       resource = persister.save(resource: CustomLockingResource.new(title: "My Title"))
       resource = query_service.find_by(id: resource.id)
       query_doc = (query_service.connection.get 'select', params: { q: "id:#{resource.id}" })["response"]["docs"].first
-      expect(resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first).to eq query_doc["_version_"]
+      token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: query_doc["_version_"])
+      expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first.serialize).to eq token.serialize
     end
   end
 end
