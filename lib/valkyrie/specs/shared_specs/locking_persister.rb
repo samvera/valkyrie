@@ -111,7 +111,7 @@ RSpec.shared_examples 'a Valkyrie locking persister' do
         persister.save(resource: resource2)
 
         expect { persister.save_all(resources: [resource1, resource2, resource3]) }
-          .to raise_error(Valkyrie::Persistence::StaleObjectError, [resource1, resource2, resource3].map(&:id).join(", "))
+          .to raise_error(Valkyrie::Persistence::StaleObjectError, "Valkyrie::Persistence::StaleObjectError")
       end
     end
   end
