@@ -63,6 +63,11 @@ module Valkyrie::Persistence::Fedora
       uri_for(:valkyrie_time)
     end
 
+    # @return [RDF::URI]
+    def self.optimistic_lock_token
+      uri_for(:optimistic_lock_token)
+    end
+
     # Cast the property to a URI in the namespace
     # @param property [Symbol]
     # @return [RDF::URI]
