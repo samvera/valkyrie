@@ -23,7 +23,7 @@ module Valkyrie::Persistence::Fedora
       end
 
       def properties
-        resource_attributes.keys - [:new_record]
+        resource_attributes.keys - [:new_record, :last_modified]
       end
 
       delegate :attributes, to: :resource, prefix: true

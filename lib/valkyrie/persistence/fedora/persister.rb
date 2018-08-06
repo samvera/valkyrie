@@ -23,13 +23,15 @@ module Valkyrie::Persistence::Fedora
 
       if !orm.new? || internal_resource.id
         cleanup_alternate_resources(internal_resource) if alternate_resources
-        orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
+        orm.update { |req| update_request_headers(req, internal_resource) }
       else
         orm.create
       end
-      persisted_resource = resource_factory.to_resource(object: orm)
+      persisted_resource = resource_factory.to_resource(object: orm, optimistic_locking_enabled: internal_resource.optimistic_locking_enabled?)
 
       alternate_resources ? save_reference_to_resource(persisted_resource, alternate_resources) : persisted_resource
+    rescue Ldp::PreconditionFailed
+      raise Valkyrie::Persistence::StaleObjectError, internal_resource.id.to_s
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -128,6 +130,16 @@ module Valkyrie::Persistence::Fedora
         return if retrieved_lock_token.blank?
 
         raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token.serialize == retrieved_lock_token.serialize
+      end
+
+      def should_set_last_modified?(resource)
+        return unless resource.optimistic_locking_enabled?
+        resource.respond_to?(:last_modified) && !resource.last_modified.blank?
+      end
+
+      def update_request_headers(request, resource)
+        request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
+        request.headers["If-Unmodified-Since"] = resource.last_modified.first.httpdate if should_set_last_modified?(resource)
       end
   end
 end

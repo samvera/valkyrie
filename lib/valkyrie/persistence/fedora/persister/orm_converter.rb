@@ -5,9 +5,10 @@ module Valkyrie::Persistence::Fedora
     class OrmConverter
       attr_reader :object, :adapter
       delegate :graph, to: :object
-      def initialize(object:, adapter:)
+      def initialize(object:, adapter:, optimistic_locking_enabled: false)
         @object = object
         @adapter = adapter
+        @optimistic_locking_enabled = optimistic_locking_enabled
       end
 
       def convert
@@ -17,7 +18,13 @@ module Valkyrie::Persistence::Fedora
       def attributes
         GraphToAttributes.new(graph: graph, adapter: adapter)
                          .convert
-                         .merge(id: id, new_record: false)
+                         .merge(id: id, new_record: false, last_modified: extract_last_modified)
+      end
+
+      def extract_last_modified
+        return unless @optimistic_locking_enabled
+        lastmod = object.response_graph.first_object([nil, RDF::URI("http://fedora.info/definitions/v4/repository#lastModified"), nil])
+        ::DateTime.iso8601(lastmod.to_s).utc if lastmod
       end
 
       def id

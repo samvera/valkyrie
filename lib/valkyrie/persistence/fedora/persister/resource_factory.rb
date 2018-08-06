@@ -15,8 +15,8 @@ module Valkyrie::Persistence::Fedora
         ModelConverter.new(resource: resource, adapter: adapter).convert
       end
 
-      def to_resource(object:)
-        OrmConverter.new(object: object, adapter: adapter).convert
+      def to_resource(object:, optimistic_locking_enabled: false)
+        OrmConverter.new(object: object, adapter: adapter, optimistic_locking_enabled: optimistic_locking_enabled).convert
       end
     end
   end
