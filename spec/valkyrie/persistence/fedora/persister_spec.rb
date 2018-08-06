@@ -138,4 +138,35 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       expect { query_service.find_by(id: second_alternate_identifier) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
     end
   end
+
+  context "using Fedora's builtin optimistic locking" do
+    before do
+      class FedoraLockingResource < Valkyrie::Resource
+        enable_optimistic_locking
+        attribute :title
+      end
+    end
+
+    after do
+      ActiveSupport::Dependencies.remove_constant("FedoraLockingResource")
+    end
+
+    it "does not raise an error when the object hasn't been updated by another client" do
+      resource = persister.save(resource: FedoraLockingResource.new(title: ["Fedora Locking Resource"]))
+      expect { persister.save(resource: resource) }.not_to raise_error
+    end
+    it "raises an error when saving an object that has been updated by another client" do
+      resource = persister.save(resource: FedoraLockingResource.new(title: ["Fedora Locking Resource"]))
+
+      # update a copy of the resource directly with orm to make sure our last-modified date is stale
+      # but without invalidating our optimistic lock token
+      sleep 1
+      other_resource = resource.dup
+      other_resource.title = ["Updated Locking Resource"]
+      orm = adapter.resource_factory.from_resource(resource: other_resource)
+      orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
+
+      expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError)
+    end
+  end
 end

@@ -17,19 +17,22 @@ module Valkyrie::Persistence::Fedora
       internal_resource.created_at ||= Time.current
       internal_resource.updated_at ||= Time.current
       validate_lock_token(internal_resource)
+      native_lock = native_lock_token(internal_resource)
       generate_lock_token(internal_resource)
       orm = resource_factory.from_resource(resource: internal_resource)
       alternate_resources = find_or_create_alternate_ids(internal_resource)
 
       if !orm.new? || internal_resource.id
         cleanup_alternate_resources(internal_resource) if alternate_resources
-        orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
+        orm.update { |req| update_request_headers(req, native_lock) }
       else
         orm.create
       end
-      persisted_resource = resource_factory.to_resource(object: orm)
+      persisted_resource = resource_factory.to_resource(object: orm, optimistic_locking_enabled: internal_resource.optimistic_locking_enabled?)
 
       alternate_resources ? save_reference_to_resource(persisted_resource, alternate_resources) : persisted_resource
+    rescue Ldp::PreconditionFailed
+      raise Valkyrie::Persistence::StaleObjectError, internal_resource.id.to_s
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -128,6 +131,20 @@ module Valkyrie::Persistence::Fedora
         return if retrieved_lock_token.blank?
 
         raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token == retrieved_lock_token
+      end
+
+      # Retrieve the lock token that holds Fedora's system-managed last-modified date
+      def native_lock_token(resource)
+        return unless resource.optimistic_locking_enabled?
+        resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == "native-#{adapter.id}" }
+      end
+
+      # Set Fedora request headers:
+      # * `Prefer: handling=lenient; received="minimal"` allows us to avoid sending all server-managed triples
+      # * `If-Unmodified-Since` triggers Fedora's server-side optimistic locking
+      def update_request_headers(request, lock_token)
+        request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
+        request.headers["If-Unmodified-Since"] = lock_token.token if lock_token
       end
   end
 end
