@@ -110,6 +110,7 @@ For each environment, you must set two values:
 
 The values are the short names used in your initializer.
 
+Further details can be found on the [the Wiki](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
 
 ## Usage
 
@@ -125,6 +126,8 @@ class MyModel < Valkyrie::Resource
   attribute :authors, Valkyrie::Types::Array   # Arrays are ordered
 end
 ```
+
+Defining resource attributes is explained in greater detail within the [Wiki](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
 
 #### Work Types Generator
 
@@ -161,6 +164,10 @@ objects = adapter.query_service.find_all
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
+The usage of `ChangeSets` in writing data are further documented [here](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
+
+### Concurrency Support (Optimistic Locking)
+By default, it is assumed that a Valkyrie repository implementation shall use a solution supporting concurrent updates for resources (multiple resources can be updated simultaneously using a Gem such as [Sidekiq](https://github.com/mperham/sidekiq)).  In order to handle the possibility of multiple updates applied to the same resource corrupting data, Valkyrie supports optimistic locking.  For further details, please reference the [overview of optimistic locking for Valkyrie resources](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
 
 ## Installing a Development environment
 
