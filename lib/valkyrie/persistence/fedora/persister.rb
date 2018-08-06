@@ -13,13 +13,16 @@ module Valkyrie::Persistence::Fedora
     # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
       initialize_repository
-      resource.created_at ||= Time.current
-      resource.updated_at ||= Time.current
-      orm = resource_factory.from_resource(resource: resource)
-      alternate_resources = find_or_create_alternate_ids(resource)
+      internal_resource = resource.dup
+      internal_resource.created_at ||= Time.current
+      internal_resource.updated_at ||= Time.current
+      validate_lock_token(internal_resource)
+      generate_lock_token(internal_resource)
+      orm = resource_factory.from_resource(resource: internal_resource)
+      alternate_resources = find_or_create_alternate_ids(internal_resource)
 
-      if !orm.new? || resource.id
-        cleanup_alternate_resources(resource) if alternate_resources
+      if !orm.new? || internal_resource.id
+        cleanup_alternate_resources(internal_resource) if alternate_resources
         orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
       else
         orm.create
@@ -34,6 +37,9 @@ module Valkyrie::Persistence::Fedora
       resources.map do |resource|
         save(resource: resource)
       end
+    rescue Valkyrie::Persistence::StaleObjectError
+      # blank out the message / id
+      raise Valkyrie::Persistence::StaleObjectError
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
@@ -98,6 +104,30 @@ module Valkyrie::Persistence::Fedora
         end
 
         resource
+      end
+
+      # @note Fedora's last modified response is not granular enough to produce an effective lock token
+      #   therefore, we use the same implementation as the memory adapter. This could fail to lock a
+      #   resource if Fedora updated this resource between the time it was saved and Valkyrie created
+      #   the token.
+      def generate_lock_token(resource)
+        return unless resource.optimistic_locking_enabled?
+        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
+        resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
+      end
+
+      def validate_lock_token(resource)
+        return unless resource.optimistic_locking_enabled?
+        return if resource.id.blank?
+
+        current_lock_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
+        return if current_lock_token.blank?
+
+        retrieved_lock_tokens = adapter.query_service.find_by(id: resource.id)[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
+        retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
+        return if retrieved_lock_token.blank?
+
+        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token.serialize == retrieved_lock_token.serialize
       end
   end
 end
