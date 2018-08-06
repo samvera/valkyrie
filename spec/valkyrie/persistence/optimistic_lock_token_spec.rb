@@ -27,4 +27,32 @@ RSpec.describe Valkyrie::Persistence::OptimisticLockToken do
       expect(deserialized_token.adapter_id).to be_a Valkyrie::ID
     end
   end
+
+  describe "#==" do
+    subject(:token_a) { described_class.new(adapter_id: "adapter1", token: "token1") }
+
+    context "two tokens have different adapters" do
+      let(:token_b) { described_class.new(adapter_id: "adapter2", token: "token1") }
+
+      it { is_expected.not_to eq(token_b) }
+    end
+
+    context "two tokens have the same adapters and different tokens" do
+      let(:token_b) { described_class.new(adapter_id: "adapter1", token: "token2") }
+
+      it { is_expected.not_to eq(token_b) }
+    end
+
+    context "two tokens have the same adapters and the same tokens" do
+      let(:token_b) { described_class.new(adapter_id: "adapter1", token: "token1") }
+
+      it { is_expected.to eq(token_b) }
+    end
+
+    context "when the other token is not a Valkyrie::Persistence::OptimisticLockToken" do
+      let(:token_b) { "token1" }
+
+      it { is_expected.not_to eq(token_b) }
+    end
+  end
 end

@@ -15,6 +15,12 @@ module Valkyrie::Persistence
     end
     alias to_s serialize
 
+    def ==(other)
+      return false unless other.is_a?(self.class)
+      return false unless adapter_id == other.adapter_id
+      token == other.token
+    end
+
     def self.deserialize(serialized_token)
       token_parts = serialized_token.to_s.split(":", 3)
       adapter_id = token_parts[1]
