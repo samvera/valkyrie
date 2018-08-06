@@ -3,6 +3,9 @@ module Valkyrie
   # Namespace for Dry::Types types.
   #  Includes Dry::Types built-in types and defines custom Valkyrie types
   #
+  # Types allow your models to automatically cast attributes to the appropriate type
+  # or even fail to instantiate should you give an inappropriate type.
+  #
   # @example Use types in property definitions on a resource
   #   class Book < Valkyrie::Resource
   #     attribute :title, Valkyrie::Types::Set.optional  # default type if none is specified

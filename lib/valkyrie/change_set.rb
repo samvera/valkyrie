@@ -24,12 +24,15 @@ module Valkyrie
     property :append_id, virtual: true
 
     # Set ID of record this one should be appended to.
+    # We use append_id to add a member/child onto an existing list of members.
     # @param append_id [Valkyrie::ID]
     def append_id=(append_id)
       super(Valkyrie::ID.new(append_id))
     end
 
     # Returns whether or not a given field has multiple values.
+    # Multiple values are useful for fields like creator, author, title, etc.
+    # where there may be more than one value for a field that is stored and returned in the UI
     # @param field_name [Symbol]
     # @return [Boolean]
     def multiple?(field_name)
@@ -37,6 +40,7 @@ module Valkyrie
     end
 
     # Returns whether or not a given field is required.
+    # Useful for distinguishing required fields in a form and for validation
     # @param field_name [Symbol]
     # @return [Boolean]
     def required?(field_name)

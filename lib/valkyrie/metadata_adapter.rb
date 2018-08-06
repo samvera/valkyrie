@@ -8,6 +8,7 @@ module Valkyrie
     self.adapters = {}
     class << self
       # Register an adapter by a short name.
+      # Registering an adapter by a short name makes the adapter easier to find and reference.
       # @param adapter [#persister,#query_service] Adapter to register.
       # @param short_name [Symbol] Name to register it under.
       def register(adapter, short_name)
