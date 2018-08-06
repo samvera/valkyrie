@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Fedora
       internal_resource.created_at ||= Time.current
       internal_resource.updated_at ||= Time.current
       validate_lock_token(internal_resource)
-      previous_lock = current_lock_token(internal_resource)
+      current_lock = current_lock_timestamp
       generate_lock_token(internal_resource)
       orm = resource_factory.from_resource(resource: internal_resource)
       alternate_resources = find_or_create_alternate_ids(internal_resource)
@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Fedora
         cleanup_alternate_resources(internal_resource) if alternate_resources
         orm.update do |req|
           req.headers["Prefer"] = "handling=lenient; received=\"minimal\""
-          req.headers["If-Unmodified-Since"] = Time.at(previous_lock.token.to_f).httpdate unless previous_lock.blank?
+          req.headers["If-Unmodified-Since"] = current_lock if current_lock
         end
       else
         orm.create
@@ -135,8 +135,12 @@ module Valkyrie::Persistence::Fedora
       end
 
       def current_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
         resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
+      end
+
+      def current_lock_timestamp(resource)
+        return unless resource.optimistic_locking_enabled?
+        Time.at(current_lock_token.token.to_f).httpdate
       end
   end
 end
