@@ -18,5 +18,8 @@ RSpec.shared_examples 'it supports persisting ordered properties' do
     resource.authors = ["a", "b", "a"]
     output = persister.save(resource: resource)
     expect(output.authors).to eq ["a", "b", "a"]
+
+    reloaded = query_service.find_by(id: output.id)
+    expect(reloaded.authors).to eq ["a", "b", "a"]
   end
 end
