@@ -5,6 +5,9 @@ module Valkyrie::Persistence::Fedora
     class OrmConverter
       attr_reader :object, :adapter
       delegate :graph, to: :object
+
+      # @note Passing the `optimistic_locking_enabled` value to trigger making Fedora's lastModified property
+      # available for optimistic locking at the persister level.
       def initialize(object:, adapter:, optimistic_locking_enabled: false)
         @object = object
         @adapter = adapter
@@ -21,6 +24,7 @@ module Valkyrie::Persistence::Fedora
                          .merge(id: id, new_record: false, last_modified: extract_last_modified)
       end
 
+      # Get Fedora's lastModified value from the LDP response
       def extract_last_modified
         return unless @optimistic_locking_enabled
         lastmod = object.response_graph.first_object([nil, RDF::URI("http://fedora.info/definitions/v4/repository#lastModified"), nil])

@@ -22,6 +22,9 @@ module Valkyrie::Persistence::Fedora
         graph_resource
       end
 
+      # Filter resource properties to remove properties that should not be persisted to Fedora.
+      # * new_record is a virtual property for marking unsaved objects
+      # * last_modified is a read-only property exposed to allow using Fedora's server-side optimistic locking
       def properties
         resource_attributes.keys - [:new_record, :last_modified]
       end

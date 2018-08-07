@@ -132,11 +132,15 @@ module Valkyrie::Persistence::Fedora
         raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token.serialize == retrieved_lock_token.serialize
       end
 
+      # Check whether we should use Fedora's last_modified date for server-side optimistic locking
       def should_set_last_modified?(resource)
-        return unless resource.optimistic_locking_enabled?
+        return false unless resource.optimistic_locking_enabled?
         resource.respond_to?(:last_modified) && !resource.last_modified.blank?
       end
 
+      # Set Fedora request headers:
+      # * `Prefer: handling=lenient; received="minimal"` allows us to avoid sending all server-managed triples
+      # * `If-Unmodified-Since` triggers Fedora's server-side optimistic locking
       def update_request_headers(request, resource)
         request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
         request.headers["If-Unmodified-Since"] = resource.last_modified.first.httpdate if should_set_last_modified?(resource)
