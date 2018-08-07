@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Fedora
       internal_resource.created_at ||= Time.current
       internal_resource.updated_at ||= Time.current
       validate_lock_token(internal_resource)
-      current_lock = current_lock_timestamp
+      current_lock = current_lock_timestamp(internal_resource)
       generate_lock_token(internal_resource)
       orm = resource_factory.from_resource(resource: internal_resource)
       alternate_resources = find_or_create_alternate_ids(internal_resource)
@@ -140,7 +140,8 @@ module Valkyrie::Persistence::Fedora
 
       def current_lock_timestamp(resource)
         return unless resource.optimistic_locking_enabled?
-        Time.at(current_lock_token.token.to_f).httpdate
+        lock_token = current_lock_token(resource)
+        Time.at(lock_token.token.to_f).httpdate if lock_token
       end
   end
 end
