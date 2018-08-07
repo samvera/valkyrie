@@ -17,13 +17,17 @@ module Valkyrie::Persistence::Fedora
       internal_resource.created_at ||= Time.current
       internal_resource.updated_at ||= Time.current
       validate_lock_token(internal_resource)
+      current_lock = current_lock_timestamp(internal_resource)
       generate_lock_token(internal_resource)
       orm = resource_factory.from_resource(resource: internal_resource)
       alternate_resources = find_or_create_alternate_ids(internal_resource)
 
       if !orm.new? || internal_resource.id
         cleanup_alternate_resources(internal_resource) if alternate_resources
-        orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
+        orm.update do |req|
+          req.headers["Prefer"] = "handling=lenient; received=\"minimal\""
+          req.headers["If-Unmodified-Since"] = current_lock if current_lock
+        end
       else
         orm.create
       end
@@ -112,7 +116,7 @@ module Valkyrie::Persistence::Fedora
       #   the token.
       def generate_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
-        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
+        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_f)
         resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
       end
 
@@ -120,14 +124,24 @@ module Valkyrie::Persistence::Fedora
         return unless resource.optimistic_locking_enabled?
         return if resource.id.blank?
 
-        current_lock_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
-        return if current_lock_token.blank?
+        current_lock = current_lock_token(resource)
+        return if current_lock.blank?
 
         retrieved_lock_tokens = adapter.query_service.find_by(id: resource.id)[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
         retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
         return if retrieved_lock_token.blank?
 
-        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token.serialize == retrieved_lock_token.serialize
+        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock.serialize == retrieved_lock_token.serialize
+      end
+
+      def current_lock_token(resource)
+        resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
+      end
+
+      def current_lock_timestamp(resource)
+        return unless resource.optimistic_locking_enabled?
+        lock_token = current_lock_token(resource)
+        Time.at(lock_token.token.to_f).httpdate if lock_token
       end
   end
 end
