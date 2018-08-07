@@ -89,6 +89,31 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class MemberID < ::Valkyrie::ValueMapper
+          delegate :scope, :adapter, to: :value
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.predicate == ::RDF::Vocab::IANA.first
+          end
+
+          def result
+            value.statement.predicate = PermissiveSchema.member_ids
+            values = OrderedList.new(scope, head, tail, adapter).to_a.map(&:proxy_for)
+            values = values.map do |val|
+              calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
+            end
+            CompositeApplicator.new(values)
+          end
+
+          def head
+            scope.query([value.statement.subject, RDF::Vocab::IANA.first]).to_a.first.object
+          end
+
+          def tail
+            scope.query([value.statement.subject, RDF::Vocab::IANA.last]).to_a.first.object
+          end
+        end
+
         class OrderedProperty < ::Valkyrie::ValueMapper
           delegate :scope, :adapter, to: :value
           FedoraValue.register(self)
