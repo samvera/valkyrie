@@ -289,4 +289,24 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(query_service.custom_queries.find_by_user_id).to eq 1
     end
   end
+
+  context "optimistic locking" do
+    before do
+      class CustomLockingQueryResource < Valkyrie::Resource
+        enable_optimistic_locking
+        attribute :title
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomLockingQueryResource)
+    end
+
+    it "retrieves the lock token and casts it to optimistic_lock_token attribute" do
+      resource = CustomLockingQueryResource.new(title: "My Title")
+      resource = persister.save(resource: resource)
+      resource = query_service.find_by(id: resource.id)
+      # we can't know the value in the general case
+      expect(resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+    end
+  end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
-require 'valkyrie/specs/shared_specs/locking_persister'
 
 RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:adapter) do
@@ -14,7 +13,6 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
   it_behaves_like "a Valkyrie::Persister"
-  it_behaves_like "a Valkyrie locking persister"
 
   context "when given an id containing a slash" do
     before do

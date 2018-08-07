@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
-require 'valkyrie/specs/shared_specs/locking_query'
 
 RSpec.describe Valkyrie::Persistence::Solr::QueryService do
   before do
@@ -13,7 +12,6 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
   let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
   let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
   it_behaves_like "a Valkyrie query provider"
-  it_behaves_like "a Valkyrie locking query provider"
 
   describe "optimistic locking" do
     let(:query_service) { adapter.query_service } unless defined? query_service
