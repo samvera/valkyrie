@@ -127,7 +127,7 @@ module Valkyrie::Persistence::Fedora
         retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
         return if retrieved_lock_token.blank?
 
-        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token.serialize == retrieved_lock_token.serialize
+        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token == retrieved_lock_token
       end
   end
 end
