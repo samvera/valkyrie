@@ -67,8 +67,8 @@ module Valkyrie::Persistence::Solr
 
       def lock_token
         @lock_token ||= begin
-          found_token = resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
-                                .find { |token| token.adapter_id == resource_factory.adapter_id }
+          found_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
+                        .find { |token| token.adapter_id == resource_factory.adapter_id }
           return if found_token.nil?
           found_token.token
         end

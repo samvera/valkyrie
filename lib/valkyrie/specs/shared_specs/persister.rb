@@ -308,7 +308,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
         it "returns the value of the system-generated optimistic locking attribute on the resource" do
           resource = MyLockingResource.new(title: ["My Locked Resource"])
           saved_resource = persister.save(resource: resource)
-          expect(saved_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+          expect(saved_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
         end
       end
 
@@ -317,8 +317,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           resource = MyLockingResource.new(title: ["My Locked Resource"])
           initial_resource = persister.save(resource: resource)
           updated_resource = persister.save(resource: initial_resource)
-          expect(initial_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK))
-            .not_to eq updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+          expect(initial_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK])
+            .not_to eq updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
         end
       end
 
@@ -337,12 +337,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
         it "successfully saves the resource and returns the updated value of the optimistic locking attribute" do
           resource = MyLockingResource.new(title: ["My Locked Resource"])
           initial_resource = persister.save(resource: resource)
-          initial_token = initial_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first
+          initial_token = initial_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first
           initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [])
           updated_resource = persister.save(resource: initial_resource)
           expect(initial_token.serialize)
-            .not_to eq(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first.serialize)
-          expect(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+            .not_to eq(updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first.serialize)
+          expect(updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
         end
       end
 
@@ -357,8 +357,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [new_token])
           updated_resource = persister.save(resource: initial_resource)
           expect(new_token.serialize)
-            .not_to eq(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK).first.serialize)
-          expect(updated_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+            .not_to eq(updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first.serialize)
+          expect(updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
         end
       end
     end
@@ -371,7 +371,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           resource3 = MyLockingResource.new(title: ["My Locked Resource 3"])
           saved_resources = persister.save_all(resources: [resource1, resource2, resource3])
           saved_resources.each do |saved_resource|
-            expect(saved_resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)).not_to be_empty
+            expect(saved_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
           end
         end
       end
@@ -383,11 +383,11 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           resource3 = MyLockingResource.new(title: ["My Locked Resource 3"])
           saved_resources = persister.save_all(resources: [resource1, resource2, resource3])
           initial_lock_tokens = saved_resources.map do |r|
-            r.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+            r[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
           end
           updated_resources = persister.save_all(resources: saved_resources)
           updated_lock_tokens = updated_resources.map do |r|
-            r.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+            r[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
           end
           expect(initial_lock_tokens & updated_lock_tokens).to be_empty
         end
