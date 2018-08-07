@@ -7,12 +7,16 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
     delegate :connection, :base_path, :resource_factory, to: :adapter
 
-    # @note (see Valkyrie::Persistence::Memory::Persister#initialize)
+    # Constructor
+    # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
     def initialize(adapter:)
       @adapter = adapter
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
+    # Save a Valkyrie::Resource into a Fedora LDP basic container
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource]
     def save(resource:)
       initialize_repository
       internal_resource = resource.dup
@@ -38,6 +42,9 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
+    # Save a set of Valkyrie::Resources into Fedora LDP basic containers
+    # @param [Array<Valkyrie::Resource>] resources
+    # @return [Array<Valkyrie::Resource>]
     def save_all(resources:)
       resources.map do |resource|
         save(resource: resource)
@@ -48,6 +55,9 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
+    # Delete a Fedora LDP basic container containing a Valkyrie::Resource
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource]
     def delete(resource:)
       if resource.try(:alternate_ids)
         resource.alternate_ids.each do |alternate_identifier|
@@ -62,13 +72,18 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#wipe!)
+    # Deletes Fedora repository resource *and* the tombstone resources which remain
+    # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-RedDELETEDeletearesource
     def wipe!
       connection.delete(base_path)
       connection.delete("#{base_path}/fcr:tombstone")
     rescue => error
-      Valkyrie.logger.debug("Failed to wipe Fedora for some reason.") unless error.is_a?(::Ldp::NotFound)
+      Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}") unless error.is_a?(::Ldp::NotFound)
     end
 
+    # Initializes the basic LDP Container within Fedora for the new Valkyrie::Resource
+    # @see https://www.w3.org/TR/ldp/#ldpc
+    # @return [Ldp::Container::Basic]
     def initialize_repository
       @initialized ||=
         begin
@@ -80,6 +95,9 @@ module Valkyrie::Persistence::Fedora
 
     private
 
+      # Ensure that all alternate IDs for a given resource are persisted
+      # @param [Valkyrie::Resource] resource
+      # @return [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>]
       def find_or_create_alternate_ids(resource)
         return nil unless resource.try(:alternate_ids)
 
@@ -93,6 +111,8 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      # Ensure that any Resources referenced by alternate IDs are deleted when a Resource has these IDs deleted
+      # @param [Valkyrie::Resource] updated_resource
       def cleanup_alternate_resources(updated_resource)
         persisted_resource = adapter.query_service.find_by(id: updated_resource.id)
         removed_identifiers = persisted_resource.alternate_ids - updated_resource.alternate_ids
@@ -102,6 +122,10 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      # Ensure that any Resources referenced by alternate IDs are persisted when a Resource has these IDs added
+      # @param [Valkyrie::Resource] resource
+      # @param [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>] alternate_resources
+      # @return [Valkyrie::Resource]
       def save_reference_to_resource(resource, alternate_resources)
         alternate_resources.each do |alternate_resource|
           alternate_resource.references = resource.id
@@ -111,6 +135,10 @@ module Valkyrie::Persistence::Fedora
         resource
       end
 
+      # Generate the lock token for a Resource, and set it for attribute
+      # @param [Valkyrie::Resource] resource
+      # @return [Valkyrie::Persistence::OptimisticLockToken]
+      # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
       # @note Fedora's last modified response is not granular enough to produce an effective lock token
       #   therefore, we use the same implementation as the memory adapter. This could fail to lock a
       #   resource if Fedora updated this resource between the time it was saved and Valkyrie created
@@ -121,6 +149,12 @@ module Valkyrie::Persistence::Fedora
         resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
       end
 
+      # Determine whether or not a lock token is still valid for a persisted Resource
+      #   If the persisted Resource has been updated since it was last read into memory,
+      #   then the resouce in memory has been invalidated and Valkyrie::Persistence::StaleObjectError
+      #   is raised.
+      # @param [Valkyrie::Resource] resource
+      # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
       def validate_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
         return if resource.id.blank?

@@ -81,10 +81,18 @@ module Valkyrie::Persistence::Fedora
     end
 
     attr_reader :schema
+
+    # Constructor
+    # @param schema [Hash] the structure used to store the mapping between property names and predicates
     def initialize(schema = {})
       @schema = schema
     end
 
+    # Find the predicate in the schema for the Valkyrie property
+    # If this does not exist, a URI using the property name prefixed by URI_PREFIX generates it
+    # @param resource [Valkyrie::Resource]
+    # @param property [String]
+    # @return [RDF::URI]
     def predicate_for(resource:, property:)
       schema.fetch(property) { self.class.uri_for(property) }
     end
@@ -94,8 +102,15 @@ module Valkyrie::Persistence::Fedora
     # @example:
     #   property_for(resource: nil, predicate: "http://example.com/predicate/internal_resource")
     #   #=> 'internal_resource'
+    # @param resource [Valkyrie::Resource]
+    # @param predicate [RDF::URI, String]
+    # @return [String]
     def property_for(resource:, predicate:)
-      (schema.find { |_k, v| v == RDF::URI(predicate.to_s) } || []).first || predicate.to_s.gsub(URI_PREFIX, '')
+      existing_predicates = schema.find { |_k, v| v == RDF::URI(predicate.to_s) }
+      predicate_name = predicate.to_s.gsub(URI_PREFIX, '')
+
+      return predicate_name if existing_predicates.nil? || existing_predicates.empty?
+      existing_predicates.first
     end
   end
 end

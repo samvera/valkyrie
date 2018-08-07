@@ -6,10 +6,15 @@ module Valkyrie::Persistence::Fedora
   class OrderedReader
     include Enumerable
     attr_reader :root
+
+    # Constructor
+    # @param root [Valkyrie::Persistence::Fedora::OrderedList]
     def initialize(root)
       @root = root
     end
 
+    # Enumerates through each node in the RDF linked list
+    # @yield [Valkyrie::Persistence::Fedora::OrderedList::HeadSentinel, Valkyrie::Persistence::Fedora::ListNode]
     def each
       proxy = first_head
       while proxy
@@ -22,6 +27,8 @@ module Valkyrie::Persistence::Fedora
 
     private
 
+      # Access the "first" (head) node for the linked list
+      # @return [Valkyrie::Persistence::Fedora::OrderedList::HeadSentinel]
       def first_head
         root.head
       end

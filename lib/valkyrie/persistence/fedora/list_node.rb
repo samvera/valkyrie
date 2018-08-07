@@ -1,7 +1,20 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Fedora
   # Represents a node in an ORE List. Used for persisting ordered members into
-  # an RDF Graph for Fedora, to keep order maintained.
+  # an Resource Description Framework (RDF) Graph for Fedora, to keep order maintained.
+  #
+  # RDF graph nodes are used to implement a linked list
+  # An RDF blank node is referenced for the list itself
+  # <http://www.iana.org/assignments/relation/first> is the predicate which links to the first element in the list
+  # <http://www.iana.org/assignments/relation/last> is the predicate which links to the last element
+  # Each element is also referenced using a blank node
+  # <http://www.iana.org/assignments/relation/next> is the predicate which links one element to the next element in the list
+  # (This permits unidirectional traversal)
+  # <http://www.openarchives.org/ore/terms/proxyFor> is the predicate which links any given element to its value
+  # (These can be IRIs or XML literals supported by a graph store)
+  #
+  # @see http://www.openarchives.org/ore/1.0/datamodel#Proxies
+  # @see https://www.iana.org/assignments/link-relations/link-relations.xhtml#link-relations-1
   class ListNode
     attr_reader :rdf_subject, :graph
     attr_writer :next, :prev
@@ -9,6 +22,12 @@ module Valkyrie::Persistence::Fedora
     attr_writer :next_uri, :prev_uri
     attr_accessor :proxy_in, :proxy_for
     attr_reader :adapter
+
+    # Constructor
+    # @param node_cache [Hash] structure used to cache the nodes of the graph
+    # @param rdf_subject [RDF::URI] the URI for the linked list in the graph store (usually a blank node)
+    # @param adapter []
+    # @param graph [RDF::Repository] the RDF graph storing the structure of the RDF statements
     def initialize(node_cache, rdf_subject, adapter, graph = RDF::Repository.new)
       @rdf_subject = rdf_subject
       @graph = graph
@@ -48,6 +67,8 @@ module Valkyrie::Persistence::Fedora
       g
     end
 
+    # Resolves the URI for the value of the list expression
+    # @return [RDF::URI]
     def target_uri
       if target_id.is_a?(Valkyrie::ID)
         adapter.id_to_uri(target_id.to_s)
@@ -56,6 +77,8 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # Generates the string ID value for the value in the list expression
+    # @return [String]
     def target_id
       if proxy_for.to_s.include?("/") && proxy_for.to_s.start_with?(adapter.connection_prefix)
         adapter.uri_to_id(proxy_for)
@@ -68,13 +91,20 @@ module Valkyrie::Persistence::Fedora
 
       attr_reader :next_uri, :prev_uri, :node_cache
 
+      # Class used to populate the RDF graph structure for the linked lists
       class Builder
         attr_reader :uri, :graph
+
+        # Constructor
+        # @param uri [RDF::URI] the URI for the linked list in the graph store
+        # @param graph [RDF::Repository] the RDF graph to be populated
         def initialize(uri, graph)
           @uri = uri
           @graph = graph
         end
 
+        # Populates attributes for the LinkedNode
+        # @param instance [ListNode]
         def populate(instance)
           instance.proxy_for = resource.proxy_for.first
           instance.proxy_in = resource.proxy_in.first
@@ -84,11 +114,14 @@ module Valkyrie::Persistence::Fedora
 
         private
 
+          # Constructs a set of triples using ActiveTriples as objects
+          # @return [Valkyrie::Persistence::Fedora::ListNode::Resource]
           def resource
             @resource ||= Resource.new(uri, data: graph)
           end
       end
 
+      # Class for providing a set of triples modeling linked list nodes
       class Resource < ActiveTriples::Resource
         property :proxy_for, predicate: ::RDF::Vocab::ORE.proxyFor, cast: false
         property :proxy_in, predicate: ::RDF::Vocab::ORE.proxyIn, cast: false
