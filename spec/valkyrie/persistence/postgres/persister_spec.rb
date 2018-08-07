@@ -8,6 +8,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
 
   let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
+  it_behaves_like "it supports persisting ordered properties"
 
   context "single value behavior" do
     before do
