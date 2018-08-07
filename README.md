@@ -136,9 +136,16 @@ Define a custom work class:
 # frozen_string_literal: true
 class MyModel < Valkyrie::Resource
   include Valkyrie::Resource::AccessControls
-  attribute :title, Valkyrie::Types::Set       # Sets are unordered
-  attribute :authors, Valkyrie::Types::Array   # Arrays are ordered
+  attribute :title, Valkyrie::Types::Set    # Sets deduplicate values
+  attribute :date, Valkyrie::Types::Array   # Arrays can contain duplicate values
 end
+```
+
+Attributes are unordered by default.  Adding `ordered: true` to an attribute definition will preserve the
+order of multiple values.
+
+```
+attribute :authors, Valkyrie::Types::Set.meta(ordered: true)
 ```
 
 Defining resource attributes is explained in greater detail within the [Wiki](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
