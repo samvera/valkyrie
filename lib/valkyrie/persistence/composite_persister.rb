@@ -19,7 +19,15 @@ module Valkyrie::Persistence
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
-      persisters.inject(resource) { |m, persister| persister.save(resource: m) }
+      # Assume the first persister is the canonical data store; that's the optlock we want
+      first, *rest = *persisters
+      cached_resource = first.save(resource: resource)
+      # Don't pass opt lock tokens to other persisters
+      internal_resource = resource.dup
+      internal_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", []) if internal_resource.optimistic_locking_enabled?
+      rest.inject(internal_resource) { |m, persister| persister.save(resource: m) }
+      # return the one with the desired opt lock token
+      cached_resource
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -27,6 +35,9 @@ module Valkyrie::Persistence
       resources.map do |resource|
         save(resource: resource)
       end
+    rescue Valkyrie::Persistence::StaleObjectError
+      # clear out any IDs returned to reduce potential confusion
+      raise Valkyrie::Persistence::StaleObjectError
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
