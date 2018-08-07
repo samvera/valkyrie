@@ -23,7 +23,7 @@ module Valkyrie::Persistence
       first, *rest = *persisters
       cached_resource = first.save(resource: resource)
       # Don't pass opt lock tokens to other persisters
-      internal_resource = resource.dup
+      internal_resource = cached_resource.dup
       internal_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", []) if internal_resource.optimistic_locking_enabled?
       rest.inject(internal_resource) { |m, persister| persister.save(resource: m) }
       # return the one with the desired opt lock token
