@@ -25,7 +25,7 @@ RSpec/MultipleExpectations:
   Enabled: false
 Rails/TimeZone:
   Enabled: false
-Style/PredicateName:
+Naming/PredicateName:
   Exclude:
     - "lib/valkyrie/resource.rb"
     - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
