@@ -98,10 +98,43 @@ module Valkyrie::Persistence::Fedora
       class FedoraValue < ::Valkyrie::ValueMapper
       end
 
+      class OrderedMembers < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.key == :member_ids && Array(value.value).present?
+        end
+
+        def result
+          initialize_list
+          apply_first_and_last
+          GraphProperty.new(value.subject, value.key, graph, value.adapter, value.resource)
+        end
+
+        def graph
+          @graph ||= ordered_list.to_graph
+        end
+
+        def apply_first_and_last
+          return if ordered_list.to_a.empty?
+          graph << RDF::Statement.new(value.subject, ::RDF::Vocab::IANA.first, ordered_list.head.next.rdf_subject)
+          graph << RDF::Statement.new(value.subject, ::RDF::Vocab::IANA.last, ordered_list.tail.prev.rdf_subject)
+        end
+
+        def initialize_list
+          Array(value.value).each_with_index do |val, index|
+            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, :member_id, val, value.adapter, value.resource)).result.value)
+          end
+        end
+
+        def ordered_list
+          @ordered_list ||= OrderedList.new(RDF::Graph.new, nil, nil, value.adapter)
+        end
+      end
+
       class OrderedProperties < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
-          value.is_a?(Property) && ordered?(value) && Array(value.value).present?
+          value.is_a?(Property) && ordered?(value) && !OrderedMembers.handles?(value) && Array(value.value).present?
         end
 
         def self.ordered?(value)
