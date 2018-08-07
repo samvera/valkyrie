@@ -10,6 +10,8 @@ module Valkyrie::Persistence
       @token = token
     end
 
+    # Serializing lock tokens makes them easy to cast to strings and back.
+    # Primary use case is for embedding one in a form as a hidden field
     def serialize
       "lock_token:#{adapter_id}:#{token}"
     end
@@ -21,6 +23,7 @@ module Valkyrie::Persistence
       token == other.token
     end
 
+    # Deserializing lock tokens means that we can then use the adapter id and the lock token value
     def self.deserialize(serialized_token)
       token_parts = serialized_token.to_s.split(":", 3)
       adapter_id = token_parts[1]

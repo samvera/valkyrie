@@ -34,7 +34,7 @@ module Valkyrie
       schema.keys.without(:new_record)
     end
 
-    # Define an attribute.
+    # Define an attribute. Attributes are used to describe resources.
     # @param name [Symbol]
     # @param type [Dry::Types::Type]
     # @note Overridden from {Dry::Struct} to make the default type
