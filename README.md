@@ -78,7 +78,7 @@ The initializer registers two `Valkyrie::MetadataAdapter` instances for storing 
 
 Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
 updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
-at once, and `Valkyrie::Persistence::Solr` for storing in Solr.
+at once, `Valkyrie::Persistence::Solr` for storing in Solr, and `Valkyrie::Persistence::Fedora` for storing in Fedora.
 
 The initializer also registers three `Valkyrie::StorageAdapter` instances for storing files:
 * `:disk` which stores files on disk
