@@ -408,4 +408,29 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       end
     end
   end
+
+  context 'ordered properties' do
+    before do
+      raise 'persister must be set with `let(:persister)`' unless defined? persister
+      class OrderedCustomResource < Valkyrie::Resource
+        include Valkyrie::Resource::AccessControls
+        attribute :id, Valkyrie::Types::ID.optional
+        attribute :authors, Valkyrie::Types::Array.optional.meta(ordered: true)
+      end
+    end
+    after do
+      Object.send(:remove_const, :OrderedCustomResource)
+    end
+    subject { persister }
+    let(:resource_class) { OrderedCustomResource }
+    let(:resource) { resource_class.new }
+    it "saves ordered properties and returns them in the appropriate order" do
+      resource.authors = ["a", "b", "a"]
+      output = persister.save(resource: resource)
+      expect(output.authors).to eq ["a", "b", "a"]
+
+      reloaded = query_service.find_by(id: output.id)
+      expect(reloaded.authors).to eq ["a", "b", "a"]
+    end
+  end
 end
