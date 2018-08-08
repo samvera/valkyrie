@@ -50,6 +50,9 @@ module Valkyrie::Persistence::Solr
       )
     end
 
+    # Generate the Valkyrie ID for this unique metadata adapter
+    # This uses an MD5 hash of the URL endpoint to ensure that this is unique
+    # @return [Valkyrie::ID]
     def id
       @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(connection.base_uri.to_s))
     end
@@ -60,9 +63,13 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer, adapter: self)
     end
 
+    # Class modeling the indexer for cases where indexing is *not* performed
     class NullIndexer
+      # @note this is a no-op
       def initialize(_); end
 
+      # Generate the Solr hash
+      # @return [Hash] this will be empty
       def to_solr
         {}
       end

@@ -24,25 +24,35 @@ module Valkyrie::Persistence::Solr
     #     'title_tsim'
     #     'title_ssim'
     #     'title_tesim'
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource] the persisted resource
     def save(resource:)
       repository([resource]).persist.first
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
+    # @param [Array<Valkyrie::Resource>] resources
+    # @return [Valkyrie::Resource] the set of persisted resources
     def save_all(resources:)
       repository(resources).persist
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource] the deleted resource
     def delete(resource:)
       repository([resource]).delete.first
     end
 
+    # Delete the Solr index of all Documents
     def wipe!
       connection.delete_by_query("*:*")
       connection.commit
     end
 
+    # Constructs a Solr::Repository object for a set of Valkyrie Resources
+    # @param [Array<Valkyrie::Resource>] resources
+    # @return [Valkyrie::Persistence::Solr::Repository]
     def repository(resources)
       Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection, resource_factory: resource_factory)
     end

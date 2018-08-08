@@ -4,6 +4,11 @@ module Valkyrie::Persistence::Solr::Queries
   # reference a {Valkyrie::Resource} in a given property.
   class FindInverseReferencesQuery
     attr_reader :resource, :property, :connection, :resource_factory
+
+    # @param [Valkyrie::Resource] resource
+    # @param [String] property
+    # @param [RSolr::Client] connection
+    # @param [ResourceFactory] resource_factory
     def initialize(resource:, property:, connection:, resource_factory:)
       @resource = resource
       @property = property
@@ -11,10 +16,15 @@ module Valkyrie::Persistence::Solr::Queries
       @resource_factory = resource_factory
     end
 
+    # Iterate over each Solr Document and convert each Document into a Valkyrie Resource
+    # @return [Array<Valkyrie::Resource>]
     def run
       enum_for(:each)
     end
 
+    # Queries for all Documents in the Solr index
+    # For each Document, it yields the Valkyrie Resource which was converted from it
+    # @yield [Valkyrie::Resource]
     def each
       docs = DefaultPaginator.new
       while docs.has_next?
@@ -25,6 +35,9 @@ module Valkyrie::Persistence::Solr::Queries
       end
     end
 
+    # Query Solr for for all documents with the ID in the requested field
+    # @note the field used here is a _ssim dynamic field and the value is prefixed by "id-"
+    # @return [Hash]
     def query
       "#{property}_ssim:id-#{resource.id}"
     end

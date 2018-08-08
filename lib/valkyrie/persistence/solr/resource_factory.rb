@@ -8,6 +8,8 @@ module Valkyrie::Persistence::Solr
     attr_reader :resource_indexer, :adapter
     delegate :id, to: :adapter, prefix: true
 
+    # @param [Valkyrie::Persistence::Solr::MetadataAdapter::NullIndexer] resource_indexer
+    # @param [Valkyrie::Persistence::Solr::MetadataAdapter] adapter
     def initialize(resource_indexer:, adapter:)
       @resource_indexer = resource_indexer
       @adapter = adapter
