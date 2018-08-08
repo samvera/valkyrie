@@ -15,8 +15,10 @@ module Valkyrie::Persistence::Fedora
         ModelConverter.new(resource: resource, adapter: adapter).convert
       end
 
-      def to_resource(object:)
-        OrmConverter.new(object: object, adapter: adapter).convert
+      # @note Passing the `optimistic_locking_enabled` value to trigger making Fedora's lastModified property
+      # available for optimistic locking at the persister level.
+      def to_resource(object:, optimistic_locking_enabled: false)
+        OrmConverter.new(object: object, adapter: adapter, optimistic_locking_enabled: optimistic_locking_enabled).convert
       end
     end
   end

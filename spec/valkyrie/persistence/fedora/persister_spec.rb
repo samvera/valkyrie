@@ -7,7 +7,8 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
     Valkyrie::Persistence::Fedora::MetadataAdapter.new(
       connection: ::Ldp::Client.new("http://localhost:8988/rest"),
       base_path: "test_fed",
-      schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+      schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"),
+                                                                  last_modified: RDF::URI("http://fedora.info/definitions/v4/repository#lastModified"))
     )
   end
   let(:persister) { adapter.persister }
@@ -136,6 +137,38 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       expect(alternate).to be_persisted
 
       expect { query_service.find_by(id: second_alternate_identifier) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+    end
+  end
+
+  context "using Fedora's builtin optimistic locking" do
+    before do
+      class FedoraLockingResource < Valkyrie::Resource
+        enable_optimistic_locking
+        attribute :title
+        attribute :last_modified
+      end
+    end
+
+    after do
+      ActiveSupport::Dependencies.remove_constant("FedoraLockingResource")
+    end
+
+    it "populates last_modified from Fedora's system-managed fcrepo:lastModified property" do
+      resource = persister.save(resource: FedoraLockingResource.new(title: ["Fedora Locking Resource"]))
+      expect(resource.last_modified).not_to eq nil
+    end
+    it "raises an error when saving an object that has been updated by another client" do
+      resource = persister.save(resource: FedoraLockingResource.new(title: ["Fedora Locking Resource"]))
+
+      # update a copy of the resource directly with orm to make sure our last-modified date is stale
+      # but without invalidating our optimistic lock token
+      sleep 1
+      other_resource = resource.dup
+      other_resource.title = ["Updated Locking Resource"]
+      orm = adapter.resource_factory.from_resource(resource: other_resource)
+      orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
+
+      expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError)
     end
   end
 end
