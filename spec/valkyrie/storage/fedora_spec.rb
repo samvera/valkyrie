@@ -12,8 +12,8 @@ RSpec.describe Valkyrie::Storage::Fedora do
     ).persister.wipe!
   end
 
-  let(:connection) { ::Ldp::Client.new("http://localhost:8988/rest/test") }
-  let(:storage_adapter) { described_class.new(connection: connection) }
+  let(:connection) { ::Ldp::Client.new("http://localhost:8988/rest") }
+  let(:storage_adapter) { described_class.new(connection: connection, base_path: 'test') }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
   it_behaves_like "a Valkyrie::StorageAdapter"
