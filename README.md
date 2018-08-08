@@ -20,14 +20,13 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 
 Add this line to your application's Gemfile:
 
-```ruby
+```
 gem 'valkyrie'
 ```
 
 And then execute:
 
     $ bundle
-
 
 ## Configuration
 
@@ -38,6 +37,7 @@ configuration file that sets which options are used by default in which environm
 
 Here is a sample initializer that registers a couple adapters and storage adapters, in each case linking an
 instance with a short name that can be used to refer to it in your application:
+
 
 ```
 # frozen_string_literal: true
@@ -113,6 +113,19 @@ The values are the short names used in your initializer.
 Further details can be found on the [the Wiki](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
 
 ## Usage
+
+### The Public API
+
+Valkyrie's public API is defined by the shared specs that are used to test each of its core classes.
+This include change sets, resources, persisters, adapters, and queries. When creating your own kinds of
+these kinds of classes, you should use these shared specs to test your classes for conformance to
+Valkyrie's API.
+
+When breaking changes are introduced, necessitating a major version change, the shared specs will reflect
+this. Likewise, non-breaking changes to Valkyrie can be defined as code changes that do not cause any
+errors with the current shared specs.
+
+Using the shared specs in your own models is described in more [detail](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
 
 ### Define a Custom Work
 
@@ -198,7 +211,7 @@ By default, it is assumed that a Valkyrie repository implementation shall use a 
 
 1. `docker-machine create default`
 1. `docker-machine start default`
-1. `eval "$(docker-machine env)"
+1. `eval "$(docker-machine env)"`
 
 #### Starting the development mode dependencies
 1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
