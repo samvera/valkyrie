@@ -2,12 +2,13 @@
 module Valkyrie::Storage
   # Implements the DataMapper Pattern to store binary data in fedora
   class Fedora
-    attr_reader :connection
+    attr_reader :connection, :base_path
     PROTOCOL = 'fedora://'
 
     # @param [Ldp::Client] connection
-    def initialize(connection:)
+    def initialize(connection:, base_path: "/")
       @connection = connection
+      @base_path = base_path
     end
 
     # @param id [Valkyrie::ID]
@@ -31,7 +32,7 @@ module Valkyrie::Storage
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:)
-      identifier = resource.id.to_uri + '/original'
+      identifier = id_to_uri(resource.id) + '/original'
       connection.http.put do |request|
         request.url identifier
         request.headers['Content-Type'] = file.content_type
@@ -79,6 +80,14 @@ module Valkyrie::Storage
       def fedora_identifier(id:)
         identifier = id.to_s.sub(PROTOCOL, "#{connection.http.scheme}://")
         RDF::URI(identifier)
+      end
+
+      def id_to_uri(id)
+        RDF::URI("#{connection_prefix}/#{CGI.escape(id.to_s)}")
+      end
+
+      def connection_prefix
+        "#{connection.http.url_prefix}/#{base_path}"
       end
   end
 end
