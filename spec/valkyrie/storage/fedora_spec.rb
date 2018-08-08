@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
-require 'active_fedora/cleaner'
 include ActionDispatch::TestProcess
 
 RSpec.describe Valkyrie::Storage::Fedora do
   before(:all) do
     # Start from a clean fedora
-    ActiveFedora::Cleaner.clean!
+    Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+      connection: ::Ldp::Client.new("http://localhost:8988/rest"),
+      base_path: "test"
+    ).persister.wipe!
   end
-  it_behaves_like "a Valkyrie::StorageAdapter"
-  let(:storage_adapter) { described_class.new(connection: ActiveFedora.fedora.connection) }
+
+  let(:connection) { ::Ldp::Client.new("http://localhost:8988/rest/test") }
+  let(:storage_adapter) { described_class.new(connection: connection) }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+
+  it_behaves_like "a Valkyrie::StorageAdapter"
 end

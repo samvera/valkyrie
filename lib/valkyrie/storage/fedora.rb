@@ -4,6 +4,8 @@ module Valkyrie::Storage
   class Fedora
     attr_reader :connection
     PROTOCOL = 'fedora://'
+
+    # @param [Ldp::Client] connection
     def initialize(connection:)
       @connection = connection
     end
@@ -29,14 +31,13 @@ module Valkyrie::Storage
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:)
-      # TODO: this is a very naive aproach. Change to PCDM
       identifier = resource.id.to_uri + '/original'
-      ActiveFedora::File.new(identifier) do |af|
-        af.content = file
-        af.original_name = original_filename
-        af.save!
-        af.metadata.set_value(:type, af.metadata.type + [::RDF::URI('http://pcdm.org/use#OriginalFile')])
-        af.metadata.save
+      connection.http.put do |request|
+        request.url identifier
+        request.headers['Content-Type'] = file.content_type
+        request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
+        request.headers['digest'] = "sha1=#{Digest::SHA1.file(file)}"
+        request.body = file.tempfile.read
       end
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
     end
@@ -44,22 +45,22 @@ module Valkyrie::Storage
     # Delete the file in Fedora associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
-      ActiveFedora::File.new(active_fedora_identifier(id: id)).ldp_source.delete
+      connection.http.delete(fedora_identifier(id: id))
     end
 
     class IOProxy
       # @param response [Ldp::Resource::BinarySource]
       attr_reader :size
-      def initialize(source, size)
+      def initialize(source)
         @source = source
-        @size = size
+        @size = source.size
       end
       delegate :each, :read, :rewind, to: :io
 
       # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
       # @return [StringIO]
       def io
-        @io ||= StringIO.new(@source.get.response.body)
+        @io ||= StringIO.new(@source)
       end
     end
     private_constant :IOProxy
@@ -68,16 +69,15 @@ module Valkyrie::Storage
 
       # @return [IOProxy]
       def response(id:)
-        af_file = ActiveFedora::File.new(active_fedora_identifier(id: id))
-        raise Valkyrie::StorageAdapter::FileNotFound if af_file.ldp_source.new?
-        IOProxy.new(af_file.ldp_source, af_file.size)
+        response = connection.http.get(fedora_identifier(id: id))
+        raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
+        IOProxy.new(response.body)
       end
 
       # Translate the Valkrie ID into a URL for the fedora file
       # @return [RDF::URI]
-      def active_fedora_identifier(id:)
-        scheme = URI(ActiveFedora.config.credentials[:url]).scheme
-        identifier = id.to_s.sub(PROTOCOL, "#{scheme}://")
+      def fedora_identifier(id:)
+        identifier = id.to_s.sub(PROTOCOL, "#{connection.http.scheme}://")
         RDF::URI(identifier)
       end
   end
