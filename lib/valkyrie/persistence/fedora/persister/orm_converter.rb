@@ -114,6 +114,33 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class OrderedProperty < ::Valkyrie::ValueMapper
+          delegate :scope, :adapter, to: :value
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::URI) && value.statement.object.to_s.include?("#") &&
+              (value.statement.object.to_s.start_with?("#") ||
+               value.statement.object.to_s.start_with?(value.adapter.connection_prefix)) &&
+              value.scope.query([value.statement.object, nil, nil]).map(&:predicate).include?(::RDF::Vocab::IANA.first)
+          end
+
+          def result
+            values = OrderedList.new(scope, head, tail, adapter).to_a.map(&:proxy_for)
+            values = values.map do |val|
+              calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
+            end
+            CompositeApplicator.new(values)
+          end
+
+          def head
+            scope.query([value.statement.object, RDF::Vocab::IANA.first]).to_a.first.object
+          end
+
+          def tail
+            scope.query([value.statement.object, RDF::Vocab::IANA.last]).to_a.first.object
+          end
+        end
+
         class NestedValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
