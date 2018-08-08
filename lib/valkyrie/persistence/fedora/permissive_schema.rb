@@ -54,6 +54,11 @@ module Valkyrie::Persistence::Fedora
     end
 
     # @return [RDF::URI]
+    def self.valkyrie_symbol
+      uri_for(:valkyrie_symbol)
+    end
+
+    # @return [RDF::URI]
     def self.valkyrie_int
       uri_for(:valkyrie_int)
     end

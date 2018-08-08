@@ -218,6 +218,20 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      class SymbolValue < MappedFedoraValue
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Symbol)
+        end
+
+        def result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_symbol
+          ))
+        end
+      end
+
       class DateTimeValue < MappedFedoraValue
         FedoraValue.register(self)
         def self.handles?(value)

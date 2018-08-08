@@ -248,6 +248,18 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Casts {Symbol} values into a recognizable string in Solr.
+      class SymbolPropertyValue < ::Valkyrie::ValueMapper
+        SolrMapperValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Symbol)
+        end
+
+        def result
+          calling_mapper.for(Property.new(value.key, "symbol-#{value.value}")).result
+        end
+      end
+
       # Casts {DateTime} values into a recognizable string in Solr.
       class DateTimePropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)

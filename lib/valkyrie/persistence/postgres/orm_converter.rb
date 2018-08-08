@@ -91,6 +91,7 @@ module Valkyrie::Persistence::Postgres
           end
 
           def result
+            return value["@value"].to_sym if value["@type"] == "http://example.com/predicate/valkyrie_symbol"
             RDF::Literal.new(value["@value"],
                              language: value["@language"],
                              datatype: value["@type"])

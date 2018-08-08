@@ -197,6 +197,18 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class SymbolValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == PermissiveSchema.valkyrie_symbol
+          end
+
+          def result
+            value.statement.object = value.statement.object.value.to_sym
+            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
+          end
+        end
+
         class LiteralValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)

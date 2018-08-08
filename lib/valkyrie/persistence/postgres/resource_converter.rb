@@ -32,9 +32,19 @@ module Valkyrie::Persistence::Postgres
     def attributes
       Hash[
         resource.attributes.except(:id, :internal_resource, :created_at, :updated_at).compact.map do |k, v|
-          [k, Array.wrap(v)]
+          [k, symbols_to_literals(Array.wrap(v))]
         end
       ]
+    end
+
+    def symbols_to_literals(arr)
+      arr.map do |val|
+        if val.is_a?(Symbol)
+          RDF::Literal.new(val.to_s, datatype: "http://example.com/predicate/valkyrie_symbol")
+        else
+          val
+        end
+      end
     end
   end
 end

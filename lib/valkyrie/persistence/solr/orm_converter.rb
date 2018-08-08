@@ -274,6 +274,18 @@ module Valkyrie::Persistence::Solr
       end
     end
 
+    # Converts a symbol in solr into a {Symbol}
+    class SymbolValue < ::Valkyrie::ValueMapper
+      SolrValue.register(self)
+      def self.handles?(value)
+        value.to_s.start_with?("symbol-")
+      end
+
+      def result
+        value.sub(/^symbol-/, '').to_sym
+      end
+    end
+
     # Converts a datetime in Solr into a {DateTime}
     class DateTimeValue < ::Valkyrie::ValueMapper
       SolrValue.register(self)
