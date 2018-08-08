@@ -9,6 +9,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :member_ids
       attribute :nested_resource
       attribute :single_value, Valkyrie::Types::String.optional
+      attribute :ordered_authors, Valkyrie::Types::Array.optional.meta(ordered: true)
+      attribute :ordered_nested, Valkyrie::Types::Set.member(CustomResource).meta(ordered: true)
     end
   end
   after do
@@ -410,27 +412,64 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   context 'ordered properties' do
-    before do
-      raise 'persister must be set with `let(:persister)`' unless defined? persister
-      class OrderedCustomResource < Valkyrie::Resource
-        include Valkyrie::Resource::AccessControls
-        attribute :id, Valkyrie::Types::ID.optional
-        attribute :authors, Valkyrie::Types::Array.optional.meta(ordered: true)
-      end
+    it "orders string values and returns them in the appropriate order" do
+      validate_order ["a", "b", "a"]
     end
-    after do
-      Object.send(:remove_const, :OrderedCustomResource)
+
+    it "orders boolean values and returns them in the appropriate order" do
+      validate_order [true, false, true]
     end
-    subject { persister }
-    let(:resource_class) { OrderedCustomResource }
-    let(:resource) { resource_class.new }
-    it "saves ordered properties and returns them in the appropriate order" do
-      resource.authors = ["a", "b", "a"]
+
+    it "orders integer values and returns them in the appropriate order" do
+      validate_order [1, 2, 1]
+    end
+
+    it "orders date values and returns them in the appropriate order" do
+      now = Time.now.round(3).utc
+      validate_order [now, now - 3.hours, now - 1.hour]
+    end
+
+    it "orders URIs and returns them in the appropriate order" do
+      uri1 = RDF::URI("http://example.com/foo")
+      uri2 = RDF::URI("http://example.com/bar")
+      uri3 = RDF::URI("http://example.com/baz")
+      validate_order [uri1, uri2, uri3]
+    end
+
+    it "orders IDs and returns them in the appropriate order" do
+      page1 = persister.save(resource: resource_class.new(authors: ["Page 1"]))
+      page2 = persister.save(resource: resource_class.new(authors: ["Page 2"]))
+      page3 = persister.save(resource: resource_class.new(authors: ["Page 3"]))
+      validate_order [page1.id, page2.id, page3.id]
+    end
+
+    it "orders floating point values and returns them in the appropriate order" do
+      validate_order [1.123, 2.222, 1.123]
+    end
+
+    # does not work in fedora
+    xit "orders nested objects" do
+      nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"), authors: ["Resource 1"])
+      nested2 = resource_class.new(id: Valkyrie::ID.new("resource2"), authors: ["Resource 2"])
+      nested3 = resource_class.new(id: Valkyrie::ID.new("resource3"), authors: ["Resource 3"])
+      values = [nested1, nested2, nested3]
+
+      resource.ordered_nested = values
+
       output = persister.save(resource: resource)
-      expect(output.authors).to eq ["a", "b", "a"]
+      expect(output.ordered_nested).to eq(values)
 
       reloaded = query_service.find_by(id: output.id)
-      expect(reloaded.authors).to eq ["a", "b", "a"]
+      expect(reloaded.ordered_nested).to eq(values)
+    end
+
+    def validate_order(values)
+      resource.ordered_authors = values
+      output = persister.save(resource: resource)
+      expect(output.ordered_authors).to eq(values)
+
+      reloaded = query_service.find_by(id: output.id)
+      expect(reloaded.ordered_authors).to eq(values)
     end
   end
 end
