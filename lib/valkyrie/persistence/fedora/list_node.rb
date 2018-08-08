@@ -57,7 +57,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     def target_id
-      if proxy_for.to_s.include?("/")
+      if proxy_for.to_s.include?("/") && proxy_for.to_s.start_with?(adapter.connection_prefix)
         adapter.uri_to_id(proxy_for)
       else
         proxy_for
