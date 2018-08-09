@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Postgres
       orm_object.save!
       resource_factory.to_resource(object: orm_object)
     rescue ActiveRecord::StaleObjectError
-      raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s
+      raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -29,7 +29,7 @@ module Valkyrie::Persistence::Postgres
         end
       end
     rescue Valkyrie::Persistence::StaleObjectError
-      raise Valkyrie::Persistence::StaleObjectError
+      raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)

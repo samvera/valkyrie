@@ -329,7 +329,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           # update the resource in the datastore to make its token stale
           persister.save(resource: resource)
 
-          expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError, resource.id.to_s)
+          expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process.")
         end
       end
 
@@ -403,7 +403,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           persister.save(resource: resource2)
 
           expect { persister.save_all(resources: [resource1, resource2, resource3]) }
-            .to raise_error(Valkyrie::Persistence::StaleObjectError, "Valkyrie::Persistence::StaleObjectError")
+            .to raise_error(Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process.")
         end
       end
     end

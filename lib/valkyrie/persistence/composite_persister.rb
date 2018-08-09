@@ -37,7 +37,7 @@ module Valkyrie::Persistence
       end
     rescue Valkyrie::Persistence::StaleObjectError
       # clear out any IDs returned to reduce potential confusion
-      raise Valkyrie::Persistence::StaleObjectError
+      raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
