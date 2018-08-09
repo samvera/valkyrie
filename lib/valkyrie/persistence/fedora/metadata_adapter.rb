@@ -11,7 +11,6 @@ module Valkyrie::Persistence::Fedora
   class MetadataAdapter
     attr_reader :connection, :base_path, :schema
 
-    # Constructor
     # @param connection
     # @param base_path [String]
     # @param schema [Valkyrie::Persistence::Fedora::PermissiveSchema]

@@ -6,7 +6,6 @@ module Valkyrie::Persistence::Fedora
       attr_reader :resource, :adapter, :subject_uri
       delegate :connection, :connection_prefix, :base_path, to: :adapter
 
-      # Constructor
       # @param [Valkyrie::Resource] resource
       # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
       # @param [RDF::URI] subject_uri
@@ -65,7 +64,6 @@ module Valkyrie::Persistence::Fedora
         attr_reader :key, :value, :subject, :adapter, :resource
         delegate :schema, to: :adapter
 
-        # Constructor
         # @param [RDF::URI] subject RDF URI referencing the LDP container in the graph store
         # @param [Symbol] key attribute key used to map to the RDF predicate
         # @param [Object] value
@@ -102,7 +100,6 @@ module Valkyrie::Persistence::Fedora
       class CompositeProperty
         attr_reader :properties
 
-        # Constructor
         # @param [Array<Property>] properties
         def initialize(properties)
           @properties = properties
@@ -124,7 +121,6 @@ module Valkyrie::Persistence::Fedora
       class GraphProperty
         attr_reader :key, :graph, :subject, :adapter, :resource
 
-        # Constructor
         # @param [RDF::URI] subject RDF URI referencing the LDP container in the graph store
         # @param [Symbol] key attribute key used to map to the RDF predicate
         # @param [RDF::Graph] graph RDF graph for the existing property

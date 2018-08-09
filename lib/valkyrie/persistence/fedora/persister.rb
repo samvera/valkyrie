@@ -7,7 +7,6 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
     delegate :connection, :base_path, :resource_factory, to: :adapter
 
-    # Constructor
     # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
     def initialize(adapter:)
       @adapter = adapter

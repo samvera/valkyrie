@@ -6,7 +6,6 @@ module Valkyrie::Persistence::Fedora
       attr_reader :object, :adapter
       delegate :graph, to: :object
 
-      # Constructor
       # @param [Ldp::Container::Basic] object
       # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
       def initialize(object:, adapter:)
@@ -66,7 +65,6 @@ module Valkyrie::Persistence::Fedora
       class GraphToAttributes
         attr_reader :graph, :adapter
 
-        # Constructor
         # @param [RDF::Graph] graph
         # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
         def initialize(graph:, adapter:)
@@ -139,7 +137,6 @@ module Valkyrie::Persistence::Fedora
         class CompositeApplicator
           attr_reader :applicators
 
-          # Constructor
           # @param [Array<Applicator>] applicators
           def initialize(applicators)
             @applicators = applicators
@@ -279,7 +276,6 @@ module Valkyrie::Persistence::Fedora
           class GraphContainer
             attr_reader :graph, :subject_uri
 
-            # Constructor
             # @param [RDF::Graph] graph
             # @param [RDF::URI] subject_uri
             def initialize(graph, subject_uri)
@@ -534,7 +530,6 @@ module Valkyrie::Persistence::Fedora
           delegate :statement, :adapter, to: :property
           delegate :schema, to: :adapter
 
-          # Constructor
           # @param [Property] property
           def initialize(property)
             @property = property
@@ -637,7 +632,6 @@ module Valkyrie::Persistence::Fedora
         class Property
           attr_reader :statement, :scope, :adapter
 
-          # Constructor
           # @param [RDF::Statement] statement
           # @param [RDF::Graph] scope
           # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter

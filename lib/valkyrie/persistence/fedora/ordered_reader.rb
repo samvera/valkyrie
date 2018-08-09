@@ -7,7 +7,6 @@ module Valkyrie::Persistence::Fedora
     include Enumerable
     attr_reader :root
 
-    # Constructor
     # @param root [Valkyrie::Persistence::Fedora::OrderedList]
     def initialize(root)
       @root = root

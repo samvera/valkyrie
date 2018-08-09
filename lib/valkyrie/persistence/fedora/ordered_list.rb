@@ -9,7 +9,6 @@ module Valkyrie::Persistence::Fedora
     delegate :each, to: :ordered_reader
     delegate :length, to: :to_a
 
-    # Constructor
     # @param [::RDF::Enumerable] graph Enumerable where ORE statements are
     #   stored.
     # @param [::RDF::URI] head_subject URI of head node in list.
@@ -108,7 +107,6 @@ module Valkyrie::Persistence::Fedora
 
       # Class used for caching LinkedNode objects mapped to URIs
       class NodeCache
-        # Constructor
         def initialize
           @cache ||= {}
         end
@@ -135,7 +133,6 @@ module Valkyrie::Persistence::Fedora
         attr_reader :parent, :next, :prev
         attr_writer :next, :prev
 
-        # Constructor
         # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
         # @param next_node [ListNode]
         # @param prev_node [ListNode]
@@ -159,7 +156,6 @@ module Valkyrie::Persistence::Fedora
       end
 
       class HeadSentinel < Sentinel
-        # Constructor
         # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
         # @param next_node [ListNode]
         # @param prev_node [ListNode]
@@ -170,7 +166,6 @@ module Valkyrie::Persistence::Fedora
       end
 
       class TailSentinel < Sentinel
-        # Constructor
         # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
         # @param next_node [ListNode]
         # @param prev_node [ListNode]

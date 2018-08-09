@@ -8,7 +8,6 @@ module Valkyrie::Persistence::Fedora
       require 'valkyrie/persistence/fedora/persister/orm_converter'
       attr_reader :adapter
 
-      # Constructor
       # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
       def initialize(adapter:)
         @adapter = adapter

@@ -82,7 +82,6 @@ module Valkyrie::Persistence::Fedora
 
     attr_reader :schema
 
-    # Constructor
     # @param schema [Hash] the structure used to store the mapping between property names and predicates
     def initialize(schema = {})
       @schema = schema

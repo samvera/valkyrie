@@ -23,7 +23,6 @@ module Valkyrie::Persistence::Fedora
     attr_accessor :proxy_in, :proxy_for
     attr_reader :adapter
 
-    # Constructor
     # @param node_cache [Hash] structure used to cache the nodes of the graph
     # @param rdf_subject [RDF::URI] the URI for the linked list in the graph store (usually a blank node)
     # @param adapter []
@@ -95,7 +94,6 @@ module Valkyrie::Persistence::Fedora
       class Builder
         attr_reader :uri, :graph
 
-        # Constructor
         # @param uri [RDF::URI] the URI for the linked list in the graph store
         # @param graph [RDF::Repository] the RDF graph to be populated
         def initialize(uri, graph)
