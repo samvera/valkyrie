@@ -26,6 +26,8 @@ module Valkyrie::Persistence::Postgres
       @resource_factory ||= Valkyrie::Persistence::Postgres::ResourceFactory.new(adapter: self)
     end
 
+    # Construct a Valkyrie ID object using an MD5 hash generated from the database URL
+    # @return [Valkyrie::ID]
     def id
       @id ||= begin
         to_hash = "#{resource_factory.orm_class.connection_config['host']}:#{resource_factory.orm_class.connection_config['database']}"
