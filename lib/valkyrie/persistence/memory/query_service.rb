@@ -15,6 +15,7 @@ module Valkyrie::Persistence::Memory
       @query_handlers = []
     end
 
+    # Get a single resource by ID.
     # @param id [Valkyrie::ID] The ID to query for.
     # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the ID
     #   isn't in the persistence backend.
@@ -26,6 +27,7 @@ module Valkyrie::Persistence::Memory
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
+    # Get a single resource by `alternate_identifier`.
     # @param alternate_identifier [Valkyrie::ID] The alternate identifier to query for.
     # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the alternate identifier
     #   isn't in the persistence backend.
@@ -37,6 +39,7 @@ module Valkyrie::Persistence::Memory
       cache.select { |_key, resource| resource['alternate_ids'].include?(alternate_identifier) }.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
+    # Get a batch of resources by ID.
     # @param ids [Array<Valkyrie::ID, String>] The IDs to query for.
     # @raise [ArgumentError] Raised when any ID is not a String or a Valkyrie::ID
     # @return [Array<Valkyrie::Resource>] All requested objects that were found
@@ -50,11 +53,13 @@ module Valkyrie::Persistence::Memory
       end.reject(&:nil?)
     end
 
+    # Get all objects.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend.
     def find_all
       cache.values
     end
 
+    # Get all objects of a given model.
     # @param model [Class] Class to query for.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend
     #   with the given class.
@@ -64,6 +69,7 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Get all members of a given resource.
     # @param resource [Valkyrie::Resource] Model whose members are being searched for.
     # @param model [Class] Class to query for. (optional)
     # @return [Array<Valkyrie::Resource>] child objects of type `model` referenced by
@@ -76,6 +82,7 @@ module Valkyrie::Persistence::Memory
       result.select { |obj| obj.is_a?(model) }
     end
 
+    # Get all resources referenced from a resource with a given property.
     # @param resource [Valkyrie::Resource] Model whose property is being searched.
     # @param property [Symbol] Property which, on the `resource`, contains {Valkyrie::ID}s which are
     #   to be de-referenced.
@@ -87,6 +94,7 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Get all resources which link to a resource with a given property.
     # @param resource [Valkyrie::Resource] The resource which is being referenced by
     #   other resources.
     # @param property [Symbol] The property which, on other resources, is
@@ -106,6 +114,7 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Find all parents of a given resource.
     # @param resource [Valkyrie::Resource] The resource whose parents are being searched
     #   for.
     # @return [Array<Valkyrie::Resource>] All resources which are parents of the given
@@ -117,6 +126,8 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Get the set of custom queries configured for this query service.
+    # @return [Valkyrie::Persistence::CustomQueryContainer] Container of custom queries
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end

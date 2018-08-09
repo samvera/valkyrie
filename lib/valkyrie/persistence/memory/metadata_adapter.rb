@@ -20,10 +20,12 @@ module Valkyrie::Persistence::Memory
       @query_service ||= Valkyrie::Persistence::Memory::QueryService.new(adapter: self)
     end
 
+    # @return [Hash] The in-memory data cache.
     def cache
       @cache ||= {}
     end
 
+    # @return [Valkyrie::ID] Identifier for this metadata adapter.
     def id
       @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(self.class.to_s))
     end
