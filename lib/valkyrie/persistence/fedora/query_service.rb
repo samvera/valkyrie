@@ -151,6 +151,7 @@ module Valkyrie::Persistence::Fedora
 
       # Ensures that an object is (or can be cast into a) Valkyrie::ID
       # @return [Valkyrie::ID]
+      # @raise [ArgumentError]
       def validate_id(id)
         id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
@@ -159,6 +160,7 @@ module Valkyrie::Persistence::Fedora
       # Resolve a URI for an LDP resource in Fedora and construct a Valkyrie::Resource
       # @param uri [RDF::URI]
       # @return [Valkyrie::Resource]
+      # @raise [Valkyrie::Persistence::ObjectNotFoundError]
       def resource_from_uri(uri)
         resource = Ldp::Resource.for(connection, uri, connection.get(uri))
         resource_factory.to_resource(object: resource)
@@ -168,6 +170,7 @@ module Valkyrie::Persistence::Fedora
 
       # Ensures that a Valkyrie::Resource has been persisted
       # @param resource [Valkyrie::Resource]
+      # @raise [ArgumentError]
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end

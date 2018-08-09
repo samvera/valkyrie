@@ -16,6 +16,7 @@ module Valkyrie::Persistence::Fedora
     # Save a Valkyrie::Resource into a Fedora LDP basic container
     # @param [Valkyrie::Resource] resource
     # @return [Valkyrie::Resource]
+    # @raise [Valkyrie::Persistence::StaleObjectError]
     def save(resource:)
       initialize_repository
       internal_resource = resource.dup
@@ -44,6 +45,7 @@ module Valkyrie::Persistence::Fedora
     # Save a set of Valkyrie::Resources into Fedora LDP basic containers
     # @param [Array<Valkyrie::Resource>] resources
     # @return [Array<Valkyrie::Resource>]
+    # @raise [Valkyrie::Persistence::StaleObjectError]
     def save_all(resources:)
       resources.map do |resource|
         save(resource: resource)
@@ -154,6 +156,7 @@ module Valkyrie::Persistence::Fedora
       #   is raised.
       # @param [Valkyrie::Resource] resource
       # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
+      # @raise [Valkyrie::Persistence::StaleObjectError]
       def validate_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
         return if resource.id.blank?
@@ -169,6 +172,8 @@ module Valkyrie::Persistence::Fedora
       end
 
       # Retrieve the lock token that holds Fedora's system-managed last-modified date
+      # @param [Valkyrie::Resource] resource
+      # @return [Valkyrie::Persistence::OptimisticLockToken]
       def native_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
         resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == "native-#{adapter.id}" }
@@ -177,6 +182,8 @@ module Valkyrie::Persistence::Fedora
       # Set Fedora request headers:
       # * `Prefer: handling=lenient; received="minimal"` allows us to avoid sending all server-managed triples
       # * `If-Unmodified-Since` triggers Fedora's server-side optimistic locking
+      # @param request [Faraday::Request]
+      # @param lock_token [Valkyrie::Persistence::OptimisticLockToken]
       def update_request_headers(request, lock_token)
         request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
         request.headers["If-Unmodified-Since"] = lock_token.token if lock_token
