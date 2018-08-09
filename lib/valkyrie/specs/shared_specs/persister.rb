@@ -187,6 +187,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.author.first.zone).to eq('UTC')
   end
 
+  it "can store Floats" do
+    decimal = 5.5
+    book = persister.save(resource: resource_class.new(title: [decimal]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly decimal
+  end
+
   # Pending decimals support in Valkyrie
   #  https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types
   xit "can store Decimals" do
@@ -447,7 +454,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       validate_order [1.123, 2.222, 1.123]
     end
 
-    # does not work in fedora
     it "orders nested objects" do
       pending "No support for ordering nested objects." if flags.include?(:no_ordered_nesting)
       nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"), authors: ["Resource 1"])
