@@ -54,8 +54,8 @@ module Valkyrie::Persistence::Solr
     end
 
     def handle_409
-      raise Valkyrie::Persistence::StaleObjectError if resources.count > 1
-      raise Valkyrie::Persistence::StaleObjectError, resources.first.id.to_s
+      raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process." if resources.count > 1
+      raise Valkyrie::Persistence::StaleObjectError, "The object #{resources.first.id} has been updated by another process."
     end
   end
 end

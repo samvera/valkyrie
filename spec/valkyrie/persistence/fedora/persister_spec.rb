@@ -166,7 +166,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
       orm = adapter.resource_factory.from_resource(resource: other_resource)
       orm.update { |req| req.headers["Prefer"] = "handling=lenient; received=\"minimal\"" }
 
-      expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError)
+      expect { persister.save(resource: resource) }.to raise_error(Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process.")
     end
   end
 end

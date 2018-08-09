@@ -34,7 +34,7 @@ module Valkyrie::Persistence::Fedora
 
       alternate_resources ? save_reference_to_resource(persisted_resource, alternate_resources) : persisted_resource
     rescue Ldp::PreconditionFailed
-      raise Valkyrie::Persistence::StaleObjectError, internal_resource.id.to_s
+      raise Valkyrie::Persistence::StaleObjectError, "The object #{internal_resource.id} has been updated by another process."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -44,7 +44,7 @@ module Valkyrie::Persistence::Fedora
       end
     rescue Valkyrie::Persistence::StaleObjectError
       # blank out the message / id
-      raise Valkyrie::Persistence::StaleObjectError
+      raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#delete)
@@ -132,7 +132,7 @@ module Valkyrie::Persistence::Fedora
         retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
         return if retrieved_lock_token.blank?
 
-        raise Valkyrie::Persistence::StaleObjectError, resource.id.to_s unless current_lock_token == retrieved_lock_token
+        raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process." unless current_lock_token == retrieved_lock_token
       end
 
       # Retrieve the lock token that holds Fedora's system-managed last-modified date
