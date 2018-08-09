@@ -64,7 +64,7 @@ module Valkyrie::Persistence::Memory
         resource.new(id: SecureRandom.uuid)
       end
 
-      # Covert all dates to DateTime in the UTC time zone for consistency.
+      # Convert all dates to DateTime in the UTC time zone for consistency.
       def normalize_dates!(resource)
         resource.attributes.each { |k, v| resource.send("#{k}=", normalize_date_values(v)) }
       end
