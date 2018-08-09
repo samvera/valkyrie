@@ -75,7 +75,12 @@ module Valkyrie::Persistence::Postgres
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
       return [] if resource.id.blank? || resource[property].blank?
-      run_query(find_references_query, property, resource.id.to_s)
+      # only return ordered if needed to avoid performance penalties
+      if ordered_property?(resource: resource, property: property)
+        run_query(find_ordered_references_query, property, resource.id.to_s)
+      else
+        run_query(find_references_query, property, resource.id.to_s)
+      end
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
@@ -125,6 +130,15 @@ module Valkyrie::Persistence::Postgres
       SQL
     end
 
+    def find_ordered_references_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
+        ORDER BY b.member_pos
+      SQL
+    end
+
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
@@ -141,6 +155,10 @@ module Valkyrie::Persistence::Postgres
 
       def id_type
         @id_type ||= orm_class.columns_hash["id"].type
+      end
+
+      def ordered_property?(resource:, property:)
+        resource.class.schema[property].meta.try(:[], :ordered)
       end
   end
 end
