@@ -1,3 +1,31 @@
+# v1.2.0.RC1 2018-08-09
+
+## Changes since last release
+
+* Support for single values.
+  [Documentation](https://github.com/samvera-labs/valkyrie/wiki/Using-Types#singular-values)
+* Optimistic Locking.
+  [Documentation](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking)
+* Remove reliance on ActiveFedora for Fedora Storage Adapter.
+* Only load adapters if referenced.
+* Postgres Adapter uses transactions for `save_all`
+* Resources now include `id` attribute by default.
+
+## Special Thanks
+
+This release was made possible by a community sprint undertaken between Penn
+State University Libraries & Princeton University Library. Thanks to the
+following participants who made it happen:
+
+* [awead](https://github.com/awead)
+* [cam156](https://github.com/cam156)
+* [DanCoughlin](https://github.com/DanCoughlin)
+* [escowles](https://github.com/escowles)
+* [hackmastera](https://github.com/hackmastera)
+* [jrgriffiniii](https://github.com/jrgriffiniii)
+* [mtribone](https://github.com/mtribone)
+* [tpendragon](https://github.com/tpendragon)
+
 # v1.1.2 2018-06-08
 
 ## Changes since last release
