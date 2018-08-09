@@ -59,7 +59,7 @@ Rails.application.config.to_prepare do
   )
 
   Valkyrie::StorageAdapter.register(
-    Valkyrie::Storage::Fedora.new(connection: ActiveFedora.fedora.connection),
+    Valkyrie::Storage::Fedora.new(connection: Ldp::Client.new("http://localhost:8988/rest")),
     :fedora
   )
 
