@@ -448,7 +448,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     end
 
     # does not work in fedora
-    xit "orders nested objects" do
+    it "orders nested objects" do
+      pending "No support for ordering nested objects." if flags.include?(:no_ordered_nesting)
       nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"), authors: ["Resource 1"])
       nested2 = resource_class.new(id: Valkyrie::ID.new("resource2"), authors: ["Resource 2"])
       nested3 = resource_class.new(id: Valkyrie::ID.new("resource3"), authors: ["Resource 3"])
