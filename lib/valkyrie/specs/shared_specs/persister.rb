@@ -9,8 +9,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :member_ids
       attribute :nested_resource
       attribute :single_value, Valkyrie::Types::String.optional
-      attribute :ordered_authors, Valkyrie::Types::Array.optional.meta(ordered: true)
-      attribute :ordered_nested, Valkyrie::Types::Set.member(CustomResource).meta(ordered: true)
+      attribute :ordered_authors, Valkyrie::Types::Array.of(Valkyrie::Types::Anything).meta(ordered: true)
+      attribute :ordered_nested, Valkyrie::Types::Array.of(CustomResource).meta(ordered: true)
     end
   end
   after do
@@ -454,8 +454,27 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       validate_order [1.123, 2.222, 1.123]
     end
 
+    it "orders different types of objects together" do
+      validate_order [
+        RDF::URI("http://example.com/foo", language: :ita),
+        RDF::URI("http://example.com/foo", datatype: RDF::URI("http://datatype")),
+        1,
+        1.01,
+        "Test"
+      ]
+    end
+
+    it "orders nested objects with strings" do
+      nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"))
+
+      resource.ordered_authors = [nested1, "test"]
+
+      output = persister.save(resource: resource)
+      expect(output.ordered_authors[0].id).to eq nested1.id
+      expect(output.ordered_authors[1]).to eq "test"
+    end
+
     it "orders nested objects" do
-      pending "No support for ordering nested objects." if flags.include?(:no_ordered_nesting)
       nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"), authors: ["Resource 1"])
       nested2 = resource_class.new(id: Valkyrie::ID.new("resource2"), authors: ["Resource 2"])
       nested3 = resource_class.new(id: Valkyrie::ID.new("resource3"), authors: ["Resource 3"])
@@ -464,10 +483,10 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       resource.ordered_nested = values
 
       output = persister.save(resource: resource)
-      expect(output.ordered_nested).to eq(values)
+      expect(output.ordered_nested.map(&:id)).to eq values.map(&:id)
 
       reloaded = query_service.find_by(id: output.id)
-      expect(reloaded.ordered_nested).to eq(values)
+      expect(reloaded.ordered_nested.map(&:id)).to eq values.map(&:id)
     end
 
     def validate_order(values)

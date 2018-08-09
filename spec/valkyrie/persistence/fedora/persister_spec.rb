@@ -12,7 +12,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   end
   let(:persister) { adapter.persister }
   let(:query_service) { adapter.query_service }
-  it_behaves_like "a Valkyrie::Persister", :no_ordered_nesting
+  it_behaves_like "a Valkyrie::Persister"
 
   context "when given an id containing a slash" do
     before do
