@@ -144,9 +144,17 @@ module Valkyrie::Persistence::Fedora
         delegate :subject, to: :value
 
         def result
-          initialize_list
-          apply_first_and_last
-          GraphProperty.new(value.subject, value.key, graph, value.adapter, value.resource)
+          first = Array.wrap(value.value).first
+          if first.is_a?(Hash) && first[:internal_resource] # nested object here
+            subject_uri = ::RDF::URI(RDF::Node.new.to_s.gsub("_:", "#"))
+            nested_graph = ModelConverter.new(resource: Valkyrie::Types::Anything[value.value], adapter: value.adapter, subject_uri: subject_uri).convert.graph
+            nested_graph << RDF::Statement.new(value.subject, value.predicate, subject_uri)
+            GraphProperty.new(value.subject, value.key, nested_graph, value.adapter, value.resource)
+          else
+            initialize_list
+            apply_first_and_last
+            GraphProperty.new(value.subject, value.key, graph, value.adapter, value.resource)
+          end
         end
 
         def graph
@@ -170,7 +178,8 @@ module Valkyrie::Persistence::Fedora
 
         def initialize_list
           Array(value.value).each_with_index do |val, index|
-            ordered_list.insert_proxy_for_at(index, calling_mapper.for(Property.new(value.subject, value.key.to_s.singularize.to_sym, val, value.adapter, value.resource)).result.value)
+            obj = calling_mapper.for(Property.new(value.subject, value.key.to_s.singularize.to_sym, val, value.adapter, value.resource)).result
+            ordered_list.insert_proxy_for_at(index, obj.value) if obj.respond_to?(:value)
           end
         end
 

@@ -1,3 +1,7 @@
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/valkyrie/persistence/fedora/persister/model_converter.rb'
+
 Metrics/ClassLength:
   Exclude:
     - 'lib/valkyrie/persistence/postgres/query_service.rb'
