@@ -28,7 +28,7 @@ module Valkyrie::Persistence::Fedora
       else
         orm.create
       end
-      persisted_resource = resource_factory.to_resource(object: orm, optimistic_locking_enabled: internal_resource.optimistic_locking_enabled?)
+      persisted_resource = resource_factory.to_resource(object: orm)
 
       alternate_resources ? save_reference_to_resource(persisted_resource, alternate_resources) : persisted_resource
     rescue Ldp::PreconditionFailed
