@@ -10,7 +10,7 @@ module Valkyrie::Persistence::Solr
 
     # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
-    # (see Valkyrie::Persistence::Memory::Persister#initialize)
+    # @note (see Valkyrie::Persistence::Memory::Persister#initialize)
     def initialize(adapter:)
       @adapter = adapter
     end

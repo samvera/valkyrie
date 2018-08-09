@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Solr
 
     # @param connection [RSolr::Client]
     # @param resource_factory [Valkyrie::Persistence::Solr::ResourceFactory]
-    # (see Valkyrie::Persistence::Memory::QueryService#initialize)
+    # @note (see Valkyrie::Persistence::Memory::QueryService#initialize)
     def initialize(connection:, resource_factory:)
       @connection = connection
       @resource_factory = resource_factory

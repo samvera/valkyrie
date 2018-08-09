@@ -5,7 +5,7 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
     delegate :connection, :resource_factory, to: :adapter
 
-    # (see Valkyrie::Persistence::Memory::QueryService#initialize)
+    # @note (see Valkyrie::Persistence::Memory::QueryService#initialize)
     def initialize(adapter:)
       @adapter = adapter
     end
