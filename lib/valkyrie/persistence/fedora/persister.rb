@@ -80,7 +80,7 @@ module Valkyrie::Persistence::Fedora
       Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}") unless error.is_a?(::Ldp::NotFound)
     end
 
-    # Initializes the basic LDP Container within Fedora for the new Valkyrie::Resource
+    # Creates the root LDP Container for the connection with Fedora
     # @see https://www.w3.org/TR/ldp/#ldpc
     # @return [Ldp::Container::Basic]
     def initialize_repository

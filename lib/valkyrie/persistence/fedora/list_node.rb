@@ -4,10 +4,10 @@ module Valkyrie::Persistence::Fedora
   # an Resource Description Framework (RDF) Graph for Fedora, to keep order maintained.
   #
   # RDF graph nodes are used to implement a linked list
-  # An RDF blank node is referenced for the list itself
+  # An RDF hash URI is referenced for the list itself
   # <http://www.iana.org/assignments/relation/first> is the predicate which links to the first element in the list
   # <http://www.iana.org/assignments/relation/last> is the predicate which links to the last element
-  # Each element is also referenced using a blank node
+  # Each element is also referenced using a hash URI
   # <http://www.iana.org/assignments/relation/next> is the predicate which links one element to the next element in the list
   # (This permits unidirectional traversal)
   # <http://www.openarchives.org/ore/terms/proxyFor> is the predicate which links any given element to its value
@@ -24,7 +24,7 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
 
     # @param node_cache [Hash] structure used to cache the nodes of the graph
-    # @param rdf_subject [RDF::URI] the URI for the linked list in the graph store (usually a blank node)
+    # @param rdf_subject [RDF::URI] the URI for the linked list in the graph store (usually a hash URI)
     # @param adapter []
     # @param graph [RDF::Repository] the RDF graph storing the structure of the RDF statements
     def initialize(node_cache, rdf_subject, adapter, graph = RDF::Repository.new)
