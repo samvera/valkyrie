@@ -11,13 +11,24 @@ module Valkyrie::Persistence::Fedora
       end
 
       def convert
-        Valkyrie::Types::Anything[attributes]
+        populate_native_lock(Valkyrie::Types::Anything[attributes])
       end
 
       def attributes
         GraphToAttributes.new(graph: graph, adapter: adapter)
                          .convert
                          .merge(id: id, new_record: false)
+      end
+
+      # Get Fedora's lastModified value from the LDP response
+      def populate_native_lock(resource)
+        return resource unless resource.respond_to?(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK)
+        lastmod = object.response_graph.first_object([nil, RDF::URI("http://fedora.info/definitions/v4/repository#lastModified"), nil])
+        return resource unless lastmod
+
+        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: "native-#{adapter.id}", token: DateTime.parse(lastmod.to_s).httpdate)
+        resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK) << token
+        resource
       end
 
       def id
