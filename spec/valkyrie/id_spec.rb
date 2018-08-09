@@ -6,16 +6,8 @@ RSpec.describe Valkyrie::ID do
 
   describe "#to_uri" do
     context "when given a plain ID" do
-      before do
-        ENV['FCREPO_TEST_PORT'] = '8988'
-      end
-
-      after do
-        ENV.delete('FCREPO_TEST_PORT')
-      end
-
       it "delegates down to AF" do
-        expect(id.to_uri).to eq RDF::URI("http://localhost:8988/rest/test/test")
+        expect(id.to_uri).to eq RDF::URI("http://localhost:8986/rest/test/test")
       end
     end
     context "when given an external ID protocol" do
