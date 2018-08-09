@@ -276,18 +276,6 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
-        class ValkyrieOptimisticLockToken < ::Valkyrie::ValueMapper
-          FedoraValue.register(self)
-          def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == PermissiveSchema.optimistic_lock_token
-          end
-
-          def result
-            value.statement.object = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: value.adapter.id, token: value.statement.object.to_s)
-            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
-          end
-        end
-
         class InternalURI < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
