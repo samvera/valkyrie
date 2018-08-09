@@ -21,9 +21,5 @@ require 'action_dispatch'
 
 SOLR_TEST_URL = "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8984}/solr/blacklight-core-test"
 
-# Setup to use the fedora.yml in the test app
-ActiveFedora.init(environment: ENV['RACK_ENV'],
-                  fedora_config_path: File.expand_path("../../config/fedora.yml", __FILE__))
-
 ROOT_PATH = Pathname.new(Dir.pwd)
 Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }

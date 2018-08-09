@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     # Returns the next proxy or a tail sentinel.
-    # @return [ActiveFedora::Orders::ListNode]
+    # @return [RDF::URI]
     def next
       @next ||=
         if next_uri
@@ -31,13 +31,13 @@ module Valkyrie::Persistence::Fedora
     end
 
     # Returns the previous proxy or a head sentinel.
-    # @return [ActiveFedora::Orders::ListNode]
+    # @return [RDF::URI]
     def prev
       @prev ||= node_cache.fetch(prev_uri) if prev_uri
     end
 
     # Graph representation of node.
-    # @return [ActiveFedora::Orders::ListNode::Resource]
+    # @return [Valkyrie::Persistence::Fedora::ListNode::Resource]
     def to_graph
       return RDF::Graph.new if target_id.blank?
       g = Resource.new(rdf_subject)
