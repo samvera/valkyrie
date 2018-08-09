@@ -10,7 +10,6 @@ module Valkyrie::Persistence::Fedora
       @adapter = adapter
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     # Find a resource using its Valkyrie::ID
     # @param id [Valkyrie::ID]
     def find_by(id:)
@@ -20,7 +19,6 @@ module Valkyrie::Persistence::Fedora
       resource_from_uri(uri)
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_by_alternate_identifier)
     # Find a resource using its Valkyrie::ID
     # @param alternate_identifier [Valkyrie::ID]
     # @return [Valkyrie::Resource]
@@ -32,7 +30,6 @@ module Valkyrie::Persistence::Fedora
       find_by(id: alternate_id)
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
     # Find a set of resources using Valkyrie::IDs
     # @param ids [Array<Valkyrie::ID>]
     # @return [Array<Valkyrie::Resource>]
@@ -46,7 +43,6 @@ module Valkyrie::Persistence::Fedora
       end.reject(&:nil?)
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
     # Find all parent resources for any given resource
     # @param resource [Valkyrie::Resource]
     # @return [Array<Valkyrie::Resource>]
@@ -67,7 +63,6 @@ module Valkyrie::Persistence::Fedora
       ]
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     # Retrieve all member resources for any given resource
     # *This is done by iterating through each member ID, and requesting each resource over the HTTP*
     # @param resource [Valkyrie::Resource]
@@ -82,8 +77,7 @@ module Valkyrie::Persistence::Fedora
       result.select { |obj| obj.is_a?(model) }
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_all)
-    #
+    # Retrieves all Valkyrie Resources stored in Fedora
     # @note This requires iterating over every resource in Fedora.
     # @return [Array<Valkyrie::Resource>]
     def find_all
@@ -96,8 +90,7 @@ module Valkyrie::Persistence::Fedora
       []
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
-    #
+    # Retrieves all Valkyrie Resources stored in Fedora of a specific model (i. e. a Valkyrie Resource type)
     # @note This requires iterating over every resource in Fedora.
     # @param model [Class]
     # @return [Array<Valkyrie::Resource>]
@@ -107,7 +100,6 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     # Find all resources referenced by a given resource
     # *This is done by iterating through each referenced ID, and requesting each resource over the HTTP*
     # @param resource [Valkyrie::Resource]
@@ -133,7 +125,6 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
-    # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     # Find all resources referencing a given resource (e. g. parents)
     # *This is done by iterating through the ID of each resource referencing the resource in the query, and requesting each resource over the HTTP*
     # *Also, an initial request is made to find the URIs of the resources referencing the resource in the query*
