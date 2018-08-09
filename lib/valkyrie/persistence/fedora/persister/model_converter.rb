@@ -132,6 +132,7 @@ module Valkyrie::Persistence::Fedora
       class OrderedProperties < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
+          return false if value.value.is_a?(Hash) && value.value[:internal_resource]
           value.is_a?(Property) && ordered?(value) && !OrderedMembers.handles?(value) && Array(value.value).present?
         end
 
@@ -263,6 +264,20 @@ module Valkyrie::Persistence::Fedora
           map_value(converted_value: RDF::Literal.new(
             value.value,
             datatype: PermissiveSchema.valkyrie_int
+          ))
+        end
+      end
+
+      class FloatValue < MappedFedoraValue
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Float)
+        end
+
+        def result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_float
           ))
         end
       end
