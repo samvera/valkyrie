@@ -7,7 +7,7 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
     delegate :connection, :base_path, :resource_factory, to: :adapter
 
-    # (see Valkyrie::Persistence::Memory::Persister#initialize)
+    # @note (see Valkyrie::Persistence::Memory::Persister#initialize)
     def initialize(adapter:)
       @adapter = adapter
     end

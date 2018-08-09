@@ -10,7 +10,7 @@ module Valkyrie::Persistence::Postgres
     attr_reader :resource_factory
     delegate :orm_class, to: :resource_factory
 
-    # (see Valkyrie::Persistence::Memory::QueryService#initialize)
+    # @note (see Valkyrie::Persistence::Memory::QueryService#initialize)
     def initialize(resource_factory:)
       @resource_factory = resource_factory
     end
