@@ -6,8 +6,10 @@ module Valkyrie::Persistence::Memory
     # @note Documentation for Query Services in general is maintained here.
     attr_reader :adapter, :query_handlers
     delegate :cache, to: :adapter
+
     # @param adapter [Valkyrie::Persistence::Memory::MetadataAdapter] The adapter which
     #   has the cache to query.
+    # @note Many query service methods are part of Valkyrie's public API, but instantiation itself is not
     def initialize(adapter:)
       @adapter = adapter
       @query_handlers = []

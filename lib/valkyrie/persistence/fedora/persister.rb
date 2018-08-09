@@ -6,6 +6,8 @@ module Valkyrie::Persistence::Fedora
     require 'valkyrie/persistence/fedora/persister/alternate_identifier'
     attr_reader :adapter
     delegate :connection, :base_path, :resource_factory, to: :adapter
+
+    # (see Valkyrie::Persistence::Memory::Persister#initialize)
     def initialize(adapter:)
       @adapter = adapter
     end

@@ -6,8 +6,10 @@ module Valkyrie::Persistence::Memory
   class Persister
     attr_reader :adapter
     delegate :cache, to: :adapter
+
     # @param adapter [Valkyrie::Persistence::Memory::MetadataAdapter] The memory adapter which
     #   holds the cache for this persister.
+    # @note Many persister methods are part of Valkyrie's public API, but instantiation itself is not
     def initialize(adapter)
       @adapter = adapter
     end
