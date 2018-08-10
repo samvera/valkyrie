@@ -58,7 +58,7 @@ module Valkyrie::Persistence::Solr
     end
 
     # Construct the OptimisticLockToken object using the "_version_" field value in the Solr Document
-    # @see https://lucene.apache.org/solr/guide/7_4/updating-parts-of-documents.html#optimistic-concurrency
+    # @see https://lucene.apache.org/solr/guide/updating-parts-of-documents.html#optimistic-concurrency
     # @return [Valkyrie::Persistence::OptimisticLockToken]
     def token
       Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: resource_factory.adapter_id, token: version)
@@ -80,7 +80,7 @@ module Valkyrie::Persistence::Solr
     # Construct the Hash containing the Valkyrie Resource attributes using the Solr Document
     # @note this filters for attributes which have been indexed as stored multivalued texts (tsim)
     # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
-    # @see https://lucene.apache.org/solr/guide/7_4/defining-fields.html#defining-fields
+    # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
     # @return [Hash]
     def attribute_hash
       build_literals(strip_tsim(solr_document.select do |k, _v|
@@ -89,7 +89,7 @@ module Valkyrie::Persistence::Solr
     end
 
     # Removes the substring "_tsim" within Hash keys
-    # This is used when mapping Solr Document Hashs into Valkyrie Resource attributes
+    # This is used when mapping Solr Document Hashes into Valkyrie Resource attributes
     # @see #attribute_hash
     # @param [Hash] hsh
     # @return [Hash]

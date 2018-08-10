@@ -38,7 +38,7 @@ module Valkyrie::Persistence::Solr::Queries
     end
 
     # Generate the Solr join query using the id_ssi field
-    # @see https://lucene.apache.org/solr/guide/7_4/other-parsers.html#join-query-parser
+    # @see https://lucene.apache.org/solr/guide/other-parsers.html#join-query-parser
     # @return [String]
     def query
       "{!join from=#{property}_ssim to=join_id_ssi}id:#{id}"

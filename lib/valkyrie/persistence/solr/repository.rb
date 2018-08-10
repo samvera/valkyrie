@@ -39,7 +39,7 @@ module Valkyrie::Persistence::Solr
     rescue RSolr::Error::Http => exception
       # Error 409 conflict is returned when versions do not match
       if exception.response[:status] == 409
-        handle_409
+        handle_conflict
       end
       raise exception
     end
@@ -67,10 +67,10 @@ module Valkyrie::Persistence::Solr
       resource.id = SecureRandom.uuid
     end
 
-    # If a 409 error response is encountered when attempting to commit updates to Solr, raise a StaleObjectError
-    # @see https://lucene.apache.org/solr/guide/7_2/updating-parts-of-documents.html#optimistic-concurrency
+    # If a 409 conflict response is encountered when attempting to commit updates to Solr, raise a StaleObjectError
+    # @see https://lucene.apache.org/solr/guide/updating-parts-of-documents.html#optimistic-concurrency
     # @see https://tools.ietf.org/html/rfc7231#section-6.5.8
-    def handle_409
+    def handle_conflict
       raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process." if resources.count > 1
       raise Valkyrie::Persistence::StaleObjectError, "The object #{resources.first.id} has been updated by another process."
     end

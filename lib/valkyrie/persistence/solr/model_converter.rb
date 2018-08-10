@@ -19,7 +19,7 @@ module Valkyrie::Persistence::Solr
     def convert!
       # Appends the resource type to the Solr Document
       to_h.merge(Valkyrie::Persistence::Solr::Queries::MODEL.to_sym => [resource.internal_resource])
-      to_h.merge(indexer_solr(resource))
+          .merge(indexer_solr(resource))
     end
 
     # Generate the Solr Document for a Valkyrie Resource using the indexer
@@ -74,7 +74,7 @@ module Valkyrie::Persistence::Solr
       # Determines whether or not a field is multivalued
       # @note this is tied to conventions in the Solr Schema
       # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
-      # @see https://lucene.apache.org/solr/guide/7_4/defining-fields.html#defining-fields
+      # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
       # @param [String] field
       # @return [Boolean]
       def multivalued?(field)
@@ -228,7 +228,7 @@ module Valkyrie::Persistence::Solr
         # Constructs a SolrRow object for a Property with a Hash value
         # @note this prepends the string "serialized-" to the value indexed in Solr
         # This is indexed as a stored multivalued text
-        # @see https://lucene.apache.org/solr/guide/7_4/defining-fields.html#defining-fields
+        # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
         # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
         # @return [SolrRow]
         def result
@@ -414,7 +414,7 @@ module Valkyrie::Persistence::Solr
         #   - stored multivalued text
         #   - stored multivalued english text
         # If the string is greater than 1000 characters in length, it is only indexed as a stored multivalued text
-        # @see https://lucene.apache.org/solr/guide/7_4/defining-fields.html#defining-fields
+        # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
         # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
         # @return [Array<Symbol>]
         def fields
