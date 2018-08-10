@@ -7,12 +7,16 @@ module Valkyrie::Persistence::Postgres
     attr_reader :adapter
     delegate :resource_factory, to: :adapter
 
-    # @note (see Valkyrie::Persistence::Memory::Persister#initialize)
+    # @param [MetadataAdapter] adapter
     def initialize(adapter:)
       @adapter = adapter
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#save)
+    # Persists a resource within the database
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource] the persisted/updated resource
+    # @raise [Valkyrie::Persistence::StaleObjectError] raised if the resource
+    #   was modified in the database between been read into memory and persisted
     def save(resource:)
       orm_object = resource_factory.from_resource(resource: resource)
       orm_object.save!
@@ -21,7 +25,11 @@ module Valkyrie::Persistence::Postgres
       raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process."
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#save_all)
+    # Persists a set of resources within the database
+    # @param [Array<Valkyrie::Resource>] resources
+    # @return [Array<Valkyrie::Resource>] the persisted/updated resources
+    # @raise [Valkyrie::Persistence::StaleObjectError] raised if the resource
+    #   was modified in the database between been read into memory and persisted
     def save_all(resources:)
       resource_factory.orm_class.transaction do
         resources.map do |resource|
@@ -32,14 +40,17 @@ module Valkyrie::Persistence::Postgres
       raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#delete)
+    # Deletes a resource persisted within the database
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Resource] the deleted resource
     def delete(resource:)
       orm_object = resource_factory.from_resource(resource: resource)
       orm_object.delete
       resource
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
+    # Deletes all resources of a specific Valkyrie Resource type persisted in
+    #   the database
     def wipe!
       resource_factory.orm_class.delete_all
     end

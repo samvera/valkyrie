@@ -7,6 +7,8 @@ module Valkyrie::Persistence::Postgres
   class ResourceFactory
     attr_reader :adapter
     delegate :id, to: :adapter, prefix: true
+
+    # @param [MetadataAdapter] adapter
     def initialize(adapter:)
       @adapter = adapter
     end
@@ -27,6 +29,7 @@ module Valkyrie::Persistence::Postgres
 
     # Accessor for the ActiveRecord class which all Postgres resources are an
     # instance of.
+    # @return [Class]
     def orm_class
       ::Valkyrie::Persistence::Postgres::ORM::Resource
     end
