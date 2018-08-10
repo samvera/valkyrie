@@ -423,6 +423,18 @@ module Valkyrie::Persistence::Solr
       end
     end
 
+    # Converts a float in solr into a {Float}
+    class FloatValue < ::Valkyrie::ValueMapper
+      SolrValue.register(self)
+      def self.handles?(value)
+        value.to_s.start_with?("float-")
+      end
+
+      def result
+        value.sub(/^float-/, '').to_f
+      end
+    end
+
     # Converts a datetime in Solr into a {DateTime}
     class DateTimeValue < ::Valkyrie::ValueMapper
       SolrValue.register(self)

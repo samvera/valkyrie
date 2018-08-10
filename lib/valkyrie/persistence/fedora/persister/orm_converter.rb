@@ -125,6 +125,33 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class OrderedProperty < ::Valkyrie::ValueMapper
+          delegate :scope, :adapter, to: :value
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::URI) && value.statement.object.to_s.include?("#") &&
+              (value.statement.object.to_s.start_with?("#") ||
+               value.statement.object.to_s.start_with?(value.adapter.connection_prefix)) &&
+              value.scope.query([value.statement.object, nil, nil]).map(&:predicate).include?(::RDF::Vocab::IANA.first)
+          end
+
+          def result
+            values = OrderedList.new(scope, head, tail, adapter).to_a.map(&:proxy_for)
+            values = values.map do |val|
+              calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
+            end
+            CompositeApplicator.new(values)
+          end
+
+          def head
+            scope.query([value.statement.object, RDF::Vocab::IANA.first]).to_a.first.object
+          end
+
+          def tail
+            scope.query([value.statement.object, RDF::Vocab::IANA.last]).to_a.first.object
+          end
+        end
+
         class NestedValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
@@ -208,6 +235,18 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        class FloatValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.language.blank? && value.statement.object.datatype == PermissiveSchema.valkyrie_float
+          end
+
+          def result
+            value.statement.object = value.statement.object.value.to_f
+            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
+          end
+        end
+
         class LiteralValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
           def self.handles?(value)
@@ -244,18 +283,6 @@ module Valkyrie::Persistence::Fedora
 
           def result
             value.statement.object = Valkyrie::ID.new(value.statement.object.to_s)
-            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
-          end
-        end
-
-        class ValkyrieOptimisticLockToken < ::Valkyrie::ValueMapper
-          FedoraValue.register(self)
-          def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == PermissiveSchema.optimistic_lock_token
-          end
-
-          def result
-            value.statement.object = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: value.adapter.id, token: value.statement.object.to_s)
             calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
           end
         end

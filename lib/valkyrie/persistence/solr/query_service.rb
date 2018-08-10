@@ -73,7 +73,11 @@ module Valkyrie::Persistence::Solr
     # @param [Symbol, String] property
     # @return [Array<Valkyrie::Resource>] referenced resources
     def find_references_by(resource:, property:)
-      Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+      if ordered_property?(resource: resource, property: property)
+        Valkyrie::Persistence::Solr::Queries::FindOrderedReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+      else
+        Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+      end
     end
 
     # Find all of the resources referencing a given Valkyrie Resource using a specific property
@@ -105,6 +109,10 @@ module Valkyrie::Persistence::Solr
       # @param [Valkyrie::Resource] resource
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
+      end
+
+      def ordered_property?(resource:, property:)
+        resource.class.schema[property].meta.try(:[], :ordered)
       end
   end
 end
