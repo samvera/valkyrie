@@ -432,7 +432,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     end
 
     it "orders date values and returns them in the appropriate order" do
-      now = Time.now.round(3).utc
+      now = Time.now.round(0).utc
       validate_order [now, now - 3.hours, now - 1.hour]
     end
 
