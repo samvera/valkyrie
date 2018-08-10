@@ -123,8 +123,9 @@ these kinds of classes, you should use these shared specs to test your classes f
 Valkyrie's API.
 
 When breaking changes are introduced, necessitating a major version change, the shared specs will reflect
-this. Likewise, non-breaking changes to Valkyrie can be defined as code changes that do not cause any
-errors with the current shared specs.
+this. When new features are added and a minor version is released there will be no change to the existing shared
+specs, but there may be new ones. These new shared specs will fail in your
+application if you have custom adapters, but your application will still work.
 
 Using the shared specs in your own models is described in more [detail](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
 
