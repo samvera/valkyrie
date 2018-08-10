@@ -1,3 +1,11 @@
+# v1.2.0.RC2 2018-08-10
+
+## Changes since last release
+
+* Support for ordered properties.
+  [Documentation](https://github.com/samvera-labs/valkyrie/wiki/Using-Types#ordering-values)
+* Shared specs for Solr indexers.
+
 # v1.2.0.RC1 2018-08-09
 
 ## Changes since last release
