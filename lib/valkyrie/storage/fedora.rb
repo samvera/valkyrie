@@ -23,8 +23,6 @@ module Valkyrie::Storage
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
       Valkyrie::StorageAdapter::StreamFile.new(id: id, io: response(id: id))
-    rescue ::Ldp::Gone
-      raise Valkyrie::StorageAdapter::FileNotFound
     end
 
     # @param file [IO]
