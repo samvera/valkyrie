@@ -8,6 +8,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :title
       attribute :member_ids, Valkyrie::Types::Array
       attribute :a_member_of
+      attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
     end
     class SecondResource < Valkyrie::Resource
     end
@@ -216,6 +217,17 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     it "returns an empty array if there are none" do
       child = persister.save(resource: resource_class.new)
       expect(query_service.find_references_by(resource: child, property: :a_member_of).to_a).to eq []
+    end
+
+    context "when the property is ordered" do
+      it "returns all references in order" do
+        parent = persister.save(resource: resource_class.new)
+        parent2 = persister.save(resource: resource_class.new)
+        child = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id, parent2.id, parent.id]))
+        persister.save(resource: resource_class.new)
+
+        expect(query_service.find_references_by(resource: child, property: :an_ordered_member_of).map(&:id).to_a).to eq [parent.id, parent2.id, parent.id]
+      end
     end
   end
 
