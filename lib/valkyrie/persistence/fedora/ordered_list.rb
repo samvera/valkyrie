@@ -72,7 +72,6 @@ module Valkyrie::Persistence::Fedora
       # Append a node to a linked list
       # @param source [ListNode] the node being appended
       # @param append_node [ListNode] the node already in the existing list
-      # @return [TrueClass] whether or not the OrderedList has changed
       def append_to(source, append_node)
         source.prev = append_node
         append_node.next.prev = source
@@ -96,7 +95,7 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
-      # Generates blank node URIs for the subject of the LinkedList
+      # Generates hash URIs for the subject of the LinkedList
       # Should one of these URIs already be in use, a new URI will be generated
       # @return [RDF::URI]
       def new_node_subject

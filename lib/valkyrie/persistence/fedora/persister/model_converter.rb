@@ -304,8 +304,7 @@ module Valkyrie::Persistence::Fedora
           @nested_graph ||= ModelConverter.new(resource: Valkyrie::Types::Anything[value.value], adapter: value.adapter, subject_uri: subject_uri).convert.graph
         end
 
-        # Generate a new RDF blank node URI for the "child" graph for the ModelConverter::Property
-        # @note RDF blank node URIs have the "_:" prefix replaced with hash ("#") characters
+        # Generate a new RDF hash URI for the "child" graph for the ModelConverter::Property
         # @see https://github.com/fcrepo4/fcrepo4/blob/master/fcrepo-kernel-modeshape/src/main/java/org/fcrepo/kernel/modeshape/rdf/JcrRdfTools.java#L455
         # @return [RDF::Graph]
         def subject_uri
@@ -342,7 +341,7 @@ module Valkyrie::Persistence::Fedora
       class NestedInternalValkyrieID < MappedFedoraValue
         FedoraValue.register(self)
 
-        # Determines whether or not the value is a Property for Valkyrie ID with a blank node for the RDF graph
+        # Determines whether or not the value is a Property for Valkyrie ID with a hash URI for the RDF graph
         # @param [Object] value
         # @return [Boolean]
         def self.handles?(value)

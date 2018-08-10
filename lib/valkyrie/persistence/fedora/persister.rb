@@ -7,15 +7,12 @@ module Valkyrie::Persistence::Fedora
     attr_reader :adapter
     delegate :connection, :base_path, :resource_factory, to: :adapter
 
-    # @param [Valkyrie::Persistence::Fedora::MetadataAdapter] adapter
+    # @note (see Valkyrie::Persistence::Memory::Persister#initialize)
     def initialize(adapter:)
       @adapter = adapter
     end
 
-    # Save a Valkyrie::Resource into a Fedora LDP basic container
-    # @param [Valkyrie::Resource] resource
-    # @return [Valkyrie::Resource]
-    # @raise [Valkyrie::Persistence::StaleObjectError]
+    # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
       initialize_repository
       internal_resource = resource.dup
@@ -40,10 +37,7 @@ module Valkyrie::Persistence::Fedora
       raise Valkyrie::Persistence::StaleObjectError, "The object #{internal_resource.id} has been updated by another process."
     end
 
-    # Save a set of Valkyrie::Resources into Fedora LDP basic containers
-    # @param [Array<Valkyrie::Resource>] resources
-    # @return [Array<Valkyrie::Resource>]
-    # @raise [Valkyrie::Persistence::StaleObjectError]
+    # (see Valkyrie::Persistence::Memory::Persister#save_all)
     def save_all(resources:)
       resources.map do |resource|
         save(resource: resource)
@@ -53,9 +47,7 @@ module Valkyrie::Persistence::Fedora
       raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
-    # Delete a Fedora LDP basic container containing a Valkyrie::Resource
-    # @param [Valkyrie::Resource] resource
-    # @return [Valkyrie::Resource]
+    # (see Valkyrie::Persistence::Memory::Persister#delete)
     def delete(resource:)
       if resource.try(:alternate_ids)
         resource.alternate_ids.each do |alternate_identifier|
@@ -69,6 +61,7 @@ module Valkyrie::Persistence::Fedora
       resource
     end
 
+    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     # Deletes Fedora repository resource *and* the tombstone resources which remain
     # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-RedDELETEDeletearesource
     def wipe!
