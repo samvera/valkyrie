@@ -32,9 +32,8 @@ module Valkyrie::Persistence::Fedora
       Valkyrie::Persistence::Fedora::Persister.new(adapter: self)
     end
 
-    # Generate the ID for this adapter
-    # Currently, this is an MD5 hash of the URL to the Fedora API endpoint
-    # e.g. http://localhost.localdomain:8080/fedora => 0fb9f0605dcb2f1715d2d47fa68e7046
+    # Generate the Valkyrie ID for this unique metadata adapter
+    # This uses the URL of the Fedora endpoint to ensure that this is unique
     # @return [Valkyrie::ID]
     def id
       @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(connection_prefix))

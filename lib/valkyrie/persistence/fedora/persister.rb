@@ -12,7 +12,6 @@ module Valkyrie::Persistence::Fedora
       @adapter = adapter
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#save)
     # Save a Valkyrie::Resource into a Fedora LDP basic container
     # @param [Valkyrie::Resource] resource
     # @return [Valkyrie::Resource]
@@ -41,7 +40,6 @@ module Valkyrie::Persistence::Fedora
       raise Valkyrie::Persistence::StaleObjectError, "The object #{internal_resource.id} has been updated by another process."
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#save_all)
     # Save a set of Valkyrie::Resources into Fedora LDP basic containers
     # @param [Array<Valkyrie::Resource>] resources
     # @return [Array<Valkyrie::Resource>]
@@ -55,7 +53,6 @@ module Valkyrie::Persistence::Fedora
       raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process."
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#delete)
     # Delete a Fedora LDP basic container containing a Valkyrie::Resource
     # @param [Valkyrie::Resource] resource
     # @return [Valkyrie::Resource]
@@ -72,7 +69,6 @@ module Valkyrie::Persistence::Fedora
       resource
     end
 
-    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     # Deletes Fedora repository resource *and* the tombstone resources which remain
     # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-RedDELETEDeletearesource
     def wipe!
