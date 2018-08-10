@@ -11,10 +11,11 @@ RSpec.shared_examples 'a Valkyrie::Persistence::Solr::Indexer' do |*_flags|
     }
   end
   let(:resource) do
-    instance_double(Resource,
-                    id: "1",
-                    internal_resource: 'Resource',
-                    attributes: attributes)
+    Resource.new(
+      id: "1",
+      internal_resource: 'Resource',
+      attributes: attributes
+    )
   end
   let(:indexer) { described_class.new(resource: resource) }
 
