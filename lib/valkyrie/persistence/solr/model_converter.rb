@@ -5,20 +5,31 @@ module Valkyrie::Persistence::Solr
   class ModelConverter
     attr_reader :resource, :resource_factory
     delegate :resource_indexer, to: :resource_factory
+
+    # @param [Valkyrie::Resource] resource
+    # @param [ResourceFactory] resource_factory
     def initialize(resource, resource_factory:)
       @resource = resource
       @resource_factory = resource_factory
     end
 
+    # Converts the Valkyrie Resource to the Solr Document
+    # @note this modifies the Solr Document for the conversion
+    # @return [Hash] the Solr Document for the Valkyrie Resource
     def convert!
+      # Appends the resource type to the Solr Document
       to_h.merge(Valkyrie::Persistence::Solr::Queries::MODEL.to_sym => [resource.internal_resource])
           .merge(indexer_solr(resource))
     end
 
+    # Generate the Solr Document for a Valkyrie Resource using the indexer
+    # @param [Valkyrie::Resource] resource
+    # @return [Hash] the Solr Document as a Hash
     def indexer_solr(resource)
       resource_indexer.new(resource: resource).to_solr
     end
 
+    # Access the ID for the Valkyrie Resource being converted to a Solr Document
     # @return [String] The solr document ID
     def id
       resource.id.to_s
@@ -45,6 +56,10 @@ module Valkyrie::Persistence::Solr
 
     private
 
+      # Maps Solr Document fields to attributes with single values
+      # Filters for fields which store the Valkyrie resource type
+      # @param [Hash] attribute_hash
+      # @return [Hash]
       def add_single_values(attribute_hash)
         attribute_hash.select do |k, v|
           field = k.to_s.split("_").last
@@ -56,15 +71,25 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Determines whether or not a field is multivalued
+      # @note this is tied to conventions in the Solr Schema
+      # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+      # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
+      # @param [String] field
+      # @return [Boolean]
       def multivalued?(field)
         field.end_with?('m', 'mv')
       end
 
+      # If optimistic locking is enabled for this Valkyrie Resource, generates a Hash containing the locking token
+      # @return [Hash]
       def lock_hash
         return {} unless resource.optimistic_locking_enabled? && lock_token.present?
         { _version_: lock_token }
       end
 
+      # Retrieves the lock token from the resource attributes
+      # @return [String]
       def lock_token
         @lock_token ||= begin
           found_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
@@ -74,6 +99,8 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Generates the Valkyrie Resource attribute Hash
+      # @return [Hash]
       def attribute_hash
         properties.each_with_object({}) do |property, hsh|
           next if property == Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK
@@ -87,10 +114,14 @@ module Valkyrie::Persistence::Solr
         end
       end
 
+      # Accesses the keys for the attributes on the Valkyrie Resource
+      # @return [Array<Symbol>]
       def properties
         resource_attributes.keys - [:id, :created_at, :updated_at, :new_record]
       end
 
+      # Access the attributes for the Valkyrie resources
+      # @return [Hash]
       def resource_attributes
         @resource_attributes ||= resource.attributes
       end
@@ -143,10 +174,14 @@ module Valkyrie::Persistence::Solr
       # just one.
       class CompositeSolrRow
         attr_reader :solr_rows
+
+        # @param [Array<Valkyrie::Persistence::Solr::Mapper::SolrRow>] solr_rows
         def initialize(solr_rows)
           @solr_rows = solr_rows
         end
 
+        # Merge a Hash of attribute values into a logical row of Solr fields
+        # @param [Hash] hsh
         # @see Valkyrie::Persistence::Solr::Mapper::SolrRow#apply_to
         def apply_to(hsh)
           solr_rows.each do |solr_row|
@@ -163,10 +198,17 @@ module Valkyrie::Persistence::Solr
       # Casts {Boolean} values into a recognizable string in Solr.
       class BooleanPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value behaves like a boolean value
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && ([true, false].include? value.value)
         end
 
+        # Constructs a SolrRow object for a Property with a Boolean value
+        # @note this prepends the string "boolean-" to the value indexed in Solr
+        # @return [SolrRow]
         def result
           calling_mapper.for(Property.new(value.key, "boolean-#{value.value}")).result
         end
@@ -175,10 +217,20 @@ module Valkyrie::Persistence::Solr
       # Casts nested resources into a JSON string in solr.
       class NestedObjectValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a Hash
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.value.is_a?(Hash)
         end
 
+        # Constructs a SolrRow object for a Property with a Hash value
+        # @note this prepends the string "serialized-" to the value indexed in Solr
+        # This is indexed as a stored multivalued text
+        # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
+        # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+        # @return [SolrRow]
         def result
           SolrRow.new(key: value.key, fields: ["tsim"], values: "serialized-#{value.value.to_json}")
         end
@@ -187,10 +239,16 @@ module Valkyrie::Persistence::Solr
       # Casts enumerable values one by one.
       class EnumerableValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is an Array
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Array)
         end
 
+        # Constructs a CompositeSolrRow object for a set of Property values
+        # @return [CompositeSolrRow]
         def result
           CompositeSolrRow.new(
             value.value.map do |val|
@@ -203,10 +261,16 @@ module Valkyrie::Persistence::Solr
       # Skips nil values.
       class NilPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value responds as nil
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.nil?
         end
 
+        # Constructs a SolrRow object for a Property with a nil value
+        # @return [SolrRow]
         def result
           SolrRow.new(key: value.key, fields: [], values: nil)
         end
@@ -215,10 +279,17 @@ module Valkyrie::Persistence::Solr
       # Casts {Valkyrie::ID} values into a recognizable string in solr.
       class IDPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a Valkyrie ID
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(::Valkyrie::ID)
         end
 
+        # Constructs a SolrRow object for the Property Valkyrie ID value
+        # @note this prepends the string "id-" to the value indexed in Solr
+        # @return [SolrRow]
         def result
           calling_mapper.for(Property.new(value.key, "id-#{value.value.id}")).result
         end
@@ -227,10 +298,17 @@ module Valkyrie::Persistence::Solr
       # Casts {RDF::URI} values into a recognizable string in solr.
       class URIPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a URI
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(::RDF::URI)
         end
 
+        # Constructs a SolrRow object for the Property URI value
+        # @note this prepends the string "uri-" to the value indexed in Solr
+        # @return [SolrRow]
         def result
           calling_mapper.for(Property.new(value.key, "uri-#{value.value}")).result
         end
@@ -239,10 +317,17 @@ module Valkyrie::Persistence::Solr
       # Casts {Integer} values into a recognizable string in Solr.
       class IntegerPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is an Integer
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(Integer)
         end
 
+        # Constructs a SolrRow object for the Property Integer value
+        # @note this prepends the string "integer-" to the value indexed in Solr
+        # @return [SolrRow]
         def result
           calling_mapper.for(Property.new(value.key, "integer-#{value.value}")).result
         end
@@ -251,16 +336,26 @@ module Valkyrie::Persistence::Solr
       # Casts {DateTime} values into a recognizable string in Solr.
       class DateTimePropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a DateTime or Time
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && (value.value.is_a?(Time) || value.value.is_a?(DateTime))
         end
 
+        # Constructs a SolrRow object for a datestamp derived from the value
+        # @note this prepends the string "datetime-" to the value indexed in Solr
+        # @return [SolrRow]
         def result
           calling_mapper.for(Property.new(value.key, "datetime-#{JSON.parse(to_datetime(value.value).to_json)}")).result
         end
 
         private
 
+          # Converts a value to a UTC timestamp if it is a DateTime or behaves like a Time value
+          # @param [Object] value
+          # @return [Time]
           def to_datetime(value)
             return value.utc if value.is_a?(DateTime)
             return value.to_datetime.utc if value.respond_to?(:to_datetime)
@@ -272,10 +367,16 @@ module Valkyrie::Persistence::Solr
       # for non-language-tagged strings.
       class SharedStringPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a String whether or not the Property has an RDF literal specifying the language tag
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(String) && value.scope.find { |x| x.is_a?(::RDF::Literal) }.present?
         end
 
+        # Constructs a CompositeSolrRow object with the language-tagged literal value
+        # @return [CompositeSolrRow]
         def result
           CompositeSolrRow.new(
             [
@@ -290,14 +391,32 @@ module Valkyrie::Persistence::Solr
       # Handles casting strings.
       class StringPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is a String
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(String)
         end
 
+        # Constructs a SolrRow object with the String values and Solr field settings
+        # @return [SolrRow]
         def result
           SolrRow.new(key: value.key, fields: fields, values: value.value)
         end
 
+        # Generates the Solr fields used during the indexing
+        # String are normally indexed using the following:
+        #   - stored text
+        #   - stored english text
+        #   - stored single string
+        #   - multivalued string
+        #   - stored multivalued text
+        #   - stored multivalued english text
+        # If the string is greater than 1000 characters in length, it is only indexed as a stored multivalued text
+        # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
+        # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+        # @return [Array<Symbol>]
         def fields
           if value.value.length > 1000
             [:tsim]
@@ -310,10 +429,16 @@ module Valkyrie::Persistence::Solr
       # Handles casting language-typed {RDF::Literal}s
       class LiteralPropertyValue < ::Valkyrie::ValueMapper
         SolrMapperValue.register(self)
+
+        # Determines whether or not a Property value is an RDF literal
+        # @param [Object] value
+        # @return [Boolean]
         def self.handles?(value)
           value.is_a?(Property) && value.value.is_a?(::RDF::Literal)
         end
 
+        # Constructs a CompositeSolrRow object with the language-tagged literal value
+        # @return [CompositeSolrRow]
         def result
           key = value.key
           val = value.value
