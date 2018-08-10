@@ -145,7 +145,7 @@ Attributes are unordered by default.  Adding `ordered: true` to an attribute def
 order of multiple values.
 
 ```
-attribute :authors, Valkyrie::Types::Set.meta(ordered: true)
+attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 ```
 
 Defining resource attributes is explained in greater detail within the [Wiki](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
