@@ -131,6 +131,91 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      class OrderedProperties < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && ordered?(value) && !OrderedMembers.handles?(value) && Array(value.value).present? && value.value.is_a?(Array)
+        end
+
+        def self.ordered?(value)
+          return false unless value.resource.class.schema[value.key]
+          value.resource.class.schema[value.key].meta.try(:[], :ordered)
+        end
+
+        delegate :subject, to: :value
+
+        def result
+          initialize_list
+          apply_first_and_last
+          GraphProperty.new(value.subject, value.key, graph, value.adapter, value.resource)
+        end
+
+        def graph
+          @graph ||= ordered_list.to_graph
+        end
+
+        def apply_first_and_last
+          return if ordered_list.to_a.empty?
+          graph << RDF::Statement.new(subject, predicate, node_id)
+          graph << RDF::Statement.new(node_id, ::RDF::Vocab::IANA.first, ordered_list.head.next.rdf_subject)
+          graph << RDF::Statement.new(node_id, ::RDF::Vocab::IANA.last, ordered_list.tail.prev.rdf_subject)
+        end
+
+        def node_id
+          @node_id ||= ordered_list.send(:new_node_subject)
+        end
+
+        def predicate
+          value.schema.predicate_for(resource: value.resource, property: value.key)
+        end
+
+        def initialize_list
+          Array(value.value).each_with_index do |val, index|
+            property = NestedProperty.new(value: val, scope: value)
+            obj = calling_mapper.for(property.property).result
+            # Append value directly if possible.
+            if obj.respond_to?(:value)
+              ordered_list.insert_proxy_for_at(index, obj.value)
+            # If value is a nested object, take its graph and append it.
+            elsif obj.respond_to?(:graph)
+              append_to_graph(obj: obj, index: index, property: property.property)
+            end
+            graph << ordered_list.to_graph
+          end
+        end
+
+        class NestedProperty
+          attr_reader :value, :scope
+          def initialize(value:, scope:)
+            @value = value
+            @scope = scope
+          end
+
+          def property
+            @property ||= Property.new(node, key, value, scope.adapter, scope.resource)
+          end
+
+          def key
+            scope.key.to_s.singularize.to_sym
+          end
+
+          def node
+            @node ||= ::RDF::URI("##{::RDF::Node.new.id}")
+          end
+        end
+
+        def append_to_graph(obj:, index:, property:)
+          proxy_node = obj.graph.query([nil, property.predicate, nil]).objects[0]
+          obj.graph.delete([nil, property.predicate, nil])
+          ordered_list.insert_proxy_for_at(index, proxy_node)
+          obj.to_graph(graph)
+        end
+
+        def ordered_list
+          @ordered_list ||= OrderedList.new(RDF::Graph.new, nil, nil, value.adapter)
+        end
+      end
+
       class NestedProperty < ::Valkyrie::ValueMapper
         FedoraValue.register(self)
         def self.handles?(value)
@@ -216,6 +301,20 @@ module Valkyrie::Persistence::Fedora
           map_value(converted_value: RDF::Literal.new(
             value.value,
             datatype: PermissiveSchema.valkyrie_int
+          ))
+        end
+      end
+
+      class FloatValue < MappedFedoraValue
+        FedoraValue.register(self)
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Float)
+        end
+
+        def result
+          map_value(converted_value: RDF::Literal.new(
+            value.value,
+            datatype: PermissiveSchema.valkyrie_float
           ))
         end
       end

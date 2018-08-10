@@ -9,6 +9,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :member_ids
       attribute :nested_resource
       attribute :single_value, Valkyrie::Types::String.optional
+      attribute :ordered_authors, Valkyrie::Types::Array.of(Valkyrie::Types::Anything).meta(ordered: true)
+      attribute :ordered_nested, Valkyrie::Types::Array.of(CustomResource).meta(ordered: true)
     end
   end
   after do
@@ -183,6 +185,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title.first.zone).to eq('UTC')
     expect(reloaded.author.first.to_i).to eq(time2.to_i)
     expect(reloaded.author.first.zone).to eq('UTC')
+  end
+
+  it "can store Floats" do
+    decimal = 5.5
+    book = persister.save(resource: resource_class.new(title: [decimal]))
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.title).to contain_exactly decimal
   end
 
   # Pending decimals support in Valkyrie
@@ -406,6 +415,87 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
             .to raise_error(Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process.")
         end
       end
+    end
+  end
+
+  context 'ordered properties' do
+    it "orders string values and returns them in the appropriate order" do
+      validate_order ["a", "b", "a"]
+    end
+
+    it "orders boolean values and returns them in the appropriate order" do
+      validate_order [true, false, true]
+    end
+
+    it "orders integer values and returns them in the appropriate order" do
+      validate_order [1, 2, 1]
+    end
+
+    it "orders date values and returns them in the appropriate order" do
+      now = Time.now.round(3).utc
+      validate_order [now, now - 3.hours, now - 1.hour]
+    end
+
+    it "orders URIs and returns them in the appropriate order" do
+      uri1 = RDF::URI("http://example.com/foo")
+      uri2 = RDF::URI("http://example.com/bar")
+      uri3 = RDF::URI("http://example.com/baz")
+      validate_order [uri1, uri2, uri3]
+    end
+
+    it "orders IDs and returns them in the appropriate order" do
+      page1 = persister.save(resource: resource_class.new(authors: ["Page 1"]))
+      page2 = persister.save(resource: resource_class.new(authors: ["Page 2"]))
+      page3 = persister.save(resource: resource_class.new(authors: ["Page 3"]))
+      validate_order [page1.id, page2.id, page3.id]
+    end
+
+    it "orders floating point values and returns them in the appropriate order" do
+      validate_order [1.123, 2.222, 1.123]
+    end
+
+    it "orders different types of objects together" do
+      validate_order [
+        RDF::URI("http://example.com/foo", language: :ita),
+        RDF::URI("http://example.com/foo", datatype: RDF::URI("http://datatype")),
+        1,
+        1.01,
+        "Test"
+      ]
+    end
+
+    it "orders nested objects with strings" do
+      nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"))
+
+      resource.ordered_authors = [nested1, "test"]
+
+      output = persister.save(resource: resource)
+      expect(output.ordered_authors[0].id).to eq nested1.id
+      expect(output.ordered_authors[1]).to eq "test"
+    end
+
+    it "orders nested objects" do
+      nested1 = resource_class.new(id: Valkyrie::ID.new("resource1"), authors: ["Resource 1"])
+      nested2 = resource_class.new(id: Valkyrie::ID.new("resource2"), authors: ["Resource 2"])
+      nested3 = resource_class.new(id: Valkyrie::ID.new("resource3"), authors: ["Resource 3"])
+      values = [nested1, nested2, nested3]
+
+      resource.ordered_nested = values
+
+      output = persister.save(resource: resource)
+      expect(output.ordered_nested.map(&:id)).to eq values.map(&:id)
+
+      reloaded = query_service.find_by(id: output.id)
+      expect(reloaded.ordered_nested.map(&:id)).to eq values.map(&:id)
+    end
+
+    def validate_order(values)
+      resource.ordered_authors = values
+      output = persister.save(resource: resource)
+      expect(output.ordered_authors).to eq(values)
+
+      reloaded = query_service.find_by(id: output.id)
+      expect(reloaded.ordered_authors).to eq(values)
     end
   end
 end
