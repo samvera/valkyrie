@@ -47,6 +47,9 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # Specify the URIs used in triples directly related to the requested resource
+    # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-GETRetrievethecontentoftheresource
+    # @return [Array<RDF::URI>]
     def include_uris
       [
         ::RDF::Vocab::Fcrepo4.InboundReferences
@@ -64,8 +67,6 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
-    #
-    # @note This requires iterating over every resource in Fedora.
     def find_all
       resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path))
       ids = resource.graph.query([nil, RDF::Vocab::LDP.contains, nil]).map(&:object).map { |x| adapter.uri_to_id(x) }
@@ -77,8 +78,6 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
-    #
-    # @note This requires iterating over every resource in Fedora.
     def find_all_of_model(model:)
       find_all.select do |m|
         m.is_a?(model)
@@ -92,6 +91,11 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # Retrieves the RDF graph for the LDP container for a resource
+    # This includes inbound links
+    # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-GETRetrievethecontentoftheresource
+    # @param id [Valkyrie::ID]
+    # @return [Faraday::Response]
     def content_with_inbound(id:)
       uri = adapter.id_to_uri(id)
       connection.get(uri) do |req|
@@ -102,6 +106,9 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
+    # Find all resources referencing a given resource (e. g. parents)
+    # *This is done by iterating through the ID of each resource referencing the resource in the query, and requesting each resource over the HTTP*
+    # *Also, an initial request is made to find the URIs of the resources referencing the resource in the query*
     def find_inverse_references_by(resource:, property:)
       ensure_persisted(resource)
       content = content_with_inbound(id: resource.id)
@@ -112,17 +119,25 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#custom_queries)
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
 
     private
 
+      # Ensures that an object is (or can be cast into a) Valkyrie::ID
+      # @return [Valkyrie::ID]
+      # @raise [ArgumentError]
       def validate_id(id)
         id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
       end
 
+      # Resolve a URI for an LDP resource in Fedora and construct a Valkyrie::Resource
+      # @param uri [RDF::URI]
+      # @return [Valkyrie::Resource]
+      # @raise [Valkyrie::Persistence::ObjectNotFoundError]
       def resource_from_uri(uri)
         resource = Ldp::Resource.for(connection, uri, connection.get(uri))
         resource_factory.to_resource(object: resource)
@@ -130,6 +145,9 @@ module Valkyrie::Persistence::Fedora
         raise ::Valkyrie::Persistence::ObjectNotFoundError
       end
 
+      # Ensures that a Valkyrie::Resource has been persisted
+      # @param resource [Valkyrie::Resource]
+      # @raise [ArgumentError]
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
