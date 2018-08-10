@@ -3,8 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Indexers::AccessControlsIndexer do
-  let(:indexer) { described_class }
-  it_behaves_like "a Valkyrie::Indexer"
+  it_behaves_like "a Valkyrie::Persistence::Solr::Indexer"
 
   describe ".to_solr" do
     before do
