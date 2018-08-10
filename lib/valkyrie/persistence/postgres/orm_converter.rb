@@ -53,7 +53,7 @@ module Valkyrie::Persistence::Postgres
         nil
       end
 
-      # Retrieve the Class use to construct the Valkyrie Resource
+      # Retrieve the Class used to construct the Valkyrie Resource
       # @return [Class]
       def resource_klass
         internal_resource.constantize

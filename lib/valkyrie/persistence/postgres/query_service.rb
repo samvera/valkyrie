@@ -199,14 +199,14 @@ module Valkyrie::Persistence::Postgres
 
       # Determines whether or not an Object is a Valkyrie ID
       # @param [Object] id
-      # @raise ArgumentError
+      # @raise [ArgumentError]
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
       end
 
       # Determines whether or not a resource has been persisted
       # @param [Object] resource
-      # @raise ArgumentError
+      # @raise [ArgumentError]
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
