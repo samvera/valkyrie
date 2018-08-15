@@ -87,9 +87,12 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       class MyLockingResource < Valkyrie::Resource
         enable_optimistic_locking
       end
+      class CustomResource < Valkyrie::Resource
+      end
     end
     after do
       Object.send(:remove_const, :MyLockingResource)
+      Object.send(:remove_const, :CustomResource)
     end
     context "and the migrations haven't been run" do
       before do
@@ -99,6 +102,17 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       it "loads the object, but sends a warning with instructions" do
         resource = MyLockingResource.new
         expect { adapter.persister.save(resource: resource) }.to output(/\[MIGRATION REQUIRED\]/).to_stderr
+      end
+    end
+    context "and locking isn't enabled" do
+      it "doesn't use the lock" do
+        resource = CustomResource.new
+        output = adapter.persister.save(resource: resource)
+        adapter.persister.save(resource: output)
+
+        expect { adapter.persister.save(resource: output) }.not_to raise_error
+        orm_resource = adapter.resource_factory.orm_class.find(output.id.to_s)
+        expect(orm_resource.lock_version).to eq 0
       end
     end
   end

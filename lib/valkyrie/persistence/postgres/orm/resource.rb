@@ -14,6 +14,14 @@ module Valkyrie::Persistence::Postgres
     #   @return [String] Name of {Valkyrie::Resource} model - used for casting.
     #
     class Resource < ActiveRecord::Base
+      def disable_optimistic_locking!
+        @disable_optimistic_locking = true
+      end
+
+      def locking_enabled?
+        return false if @disable_optimistic_locking
+        true
+      end
     end
   end
 end
