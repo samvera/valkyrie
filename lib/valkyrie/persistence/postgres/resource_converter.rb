@@ -19,6 +19,7 @@ module Valkyrie::Persistence::Postgres
       orm_class.find_or_initialize_by(id: resource.id && resource.id.to_s).tap do |orm_object|
         orm_object.internal_resource = resource.internal_resource
         process_lock_token(orm_object)
+        orm_object.disable_optimistic_locking! unless resource.optimistic_locking_enabled?
         orm_object.metadata.merge!(attributes)
       end
     end
