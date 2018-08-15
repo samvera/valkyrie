@@ -419,26 +419,6 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
-        # Casts the value of the RDF literal into an Applicator for Valkyrie::Persistence::OptimisticLockToken objects
-        # @return [Applicator]
-        class ValkyrieOptimisticLockToken < ::Valkyrie::ValueMapper
-          FedoraValue.register(self)
-
-          # Determines whether or not a Property statement is an RDF literal typed for Valkyrie Optimistic Lock Token literals
-          # @param [Property] value
-          # @return [Boolean]
-          def self.handles?(value)
-            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == PermissiveSchema.optimistic_lock_token
-          end
-
-          # Casts the value of the RDF literal into an Applicator for Valkyrie::Persistence::OptimisticLockToken objects
-          # @return [Applicator]
-          def result
-            value.statement.object = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: value.adapter.id, token: value.statement.object.to_s)
-            calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
-          end
-        end
-
         # Casts the value of the RDF literal into an Applicator for URIs referencing Valkyrie Resources
         # @return [Applicator]
         class InternalURI < ::Valkyrie::ValueMapper
