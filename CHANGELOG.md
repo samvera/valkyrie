@@ -1,3 +1,9 @@
+# v1.2.0.RC3 2018-08-15
+
+## Changes since last release
+
+* Fix for postgres optimistic locking.
+
 # v1.2.0.RC2 2018-08-10
 
 ## Changes since last release
