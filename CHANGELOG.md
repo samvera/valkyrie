@@ -1,3 +1,9 @@
+# v1.2.0 2018-08-29
+
+## Changes since last release
+
+* Added `optimistic_locking_enabled?` to ChangeSets.
+
 # v1.2.0.RC3 2018-08-15
 
 ## Changes since last release
