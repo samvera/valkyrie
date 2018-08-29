@@ -72,4 +72,10 @@ RSpec.shared_examples 'a Valkyrie::ChangeSet' do |*_flags|
       expect(described_class).to respond_to(:validators_on)
     end
   end
+
+  describe "#optimistic_locking_enabled?" do
+    it "delegates down to the resource" do
+      expect(change_set.optimistic_locking_enabled?).to eq false
+    end
+  end
 end
