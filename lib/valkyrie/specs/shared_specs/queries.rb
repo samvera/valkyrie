@@ -321,4 +321,79 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
     end
   end
+
+  context "ordered and unordered arrays" do
+    let(:o1) do
+      o1 = persister.save(resource: TestModel.new)
+      o1.unordered = [o2.id, o3.id, o2.id, "broken"]
+      o1.ordered = [o2.id, o3.id, o2.id, "broken"]
+      o1.unordered2 = [o2.id, o3.id, o2.id] # same without the broken bits
+      o1.ordered2 = [o2.id, o3.id, o2.id]
+      o1.member_ids = [o2.id, o3.id, o2.id]
+      persister.save(resource: o1)
+    end
+    let(:o2) { persister.save(resource: TestModel.new) }
+    let(:o3) do
+      o3 = persister.save(resource: TestModel.new)
+      o3.unordered = [o2.id, o2.id, "broken"]
+      o3.ordered = [o2.id, o2.id, "broken"]
+      o3.unordered2 = [o2.id, o2.id]
+      o3.ordered2 = [o2.id, o2.id]
+      o3.member_ids = [o2.id, o2.id]
+      persister.save(resource: o3)
+    end
+    let(:o4) do
+      o4 = persister.save(resource: TestModel.new)
+      o4.unordered = [o2.id, o3.id]
+      o4.ordered = [o2.id, o3.id]
+      o4.unordered2 = [o2.id, o3.id]
+      o4.ordered2 = [o2.id, o3.id]
+      o4.member_ids = [o2.id, o3.id]
+      persister.save(resource: o4)
+    end
+
+    before do
+      persister.wipe!
+
+      class TestModel < Valkyrie::Resource
+        attribute :unordered, Valkyrie::Types::Array
+        attribute :ordered, Valkyrie::Types::Array.meta(ordered: true)
+        attribute :unordered2, Valkyrie::Types::Array
+        attribute :ordered2, Valkyrie::Types::Array.meta(ordered: true)
+        attribute :member_ids, Valkyrie::Types::Array.of(Valkyrie::Types::ID)
+      end
+    end
+
+    after do
+      Object.send(:remove_const, :TestModel)
+    end
+
+    it "finds objects, ignoring duplicate and bogus ids" do
+      expect(query_service.find_many_by_ids(ids: [o1.id, o1.id, 'broken']).map(&:id)).to eq([o1.id])
+    end
+    it "finds unordered references, ignoring bogus ids" do
+      expect(query_service.find_references_by(resource: o1, property: :unordered).map(&:id).to_a).to contain_exactly(o2.id, o3.id)
+    end
+    it "finds unordered references" do
+      expect(query_service.find_references_by(resource: o1, property: :unordered2).map(&:id).to_a).to contain_exactly(o2.id, o3.id)
+    end
+    it "finds ordered references, ignoring bogus ids" do
+      expect(query_service.find_references_by(resource: o1, property: :ordered).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
+    end
+    it "finds ordered references" do
+      expect(query_service.find_references_by(resource: o1, property: :ordered2).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
+    end
+    it "finds inverse references by unordered property" do
+      expect(query_service.find_inverse_references_by(resource: o2, property: :unordered).map(&:id).to_a).to contain_exactly(o1.id, o3.id, o4.id)
+    end
+    it "finds inverse references by ordered property" do
+      expect(query_service.find_inverse_references_by(resource: o2, property: :ordered).map(&:id).to_a).to contain_exactly(o1.id, o3.id, o4.id)
+    end
+    it "finds members" do
+      expect(query_service.find_members(resource: o1).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
+    end
+    it "finds parents" do
+      expect(query_service.find_parents(resource: o2).map(&:id).to_a).to eq([o1.id, o3.id, o4.id])
+    end
+  end
 end
