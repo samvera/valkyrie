@@ -38,7 +38,7 @@ module Valkyrie::Persistence::Solr
       connection.add documents, params: COMMIT_PARAMS
     rescue RSolr::Error::Http => exception
       # Error 409 conflict is returned when versions do not match
-      if exception.response[:status] == 409
+      if exception.response&.fetch(:status) == 409
         handle_conflict
       end
       raise exception
