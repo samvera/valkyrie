@@ -1,3 +1,12 @@
+# v1.2.1 2018-09-25
+
+## Changes since last release
+
+* Fix solr persister to pass through exceptions on timeout
+  [hackmastera](https://github.com/hackmastera)
+* Fix generated specs to work with shared_specs expectation
+  [revgum](https://github.com/revgum)
+
 # v1.2.0 2018-08-29
 
 ## Changes since last release
