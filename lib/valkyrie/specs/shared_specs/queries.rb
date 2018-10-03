@@ -7,7 +7,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :alternate_ids, Valkyrie::Types::Array
       attribute :title
       attribute :member_ids, Valkyrie::Types::Array
-      attribute :a_member_of
+      attribute :a_member_of, Valkyrie::Types::Array
       attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
     end
     class SecondResource < Valkyrie::Resource
@@ -21,6 +21,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   let(:query_service) { adapter.query_service } unless defined? query_service
   let(:persister) { adapter.persister }
   subject { adapter.query_service }
+
+  before { allow(Valkyrie.config).to receive(:standardize_query_result).and_return(true) }
 
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
@@ -139,6 +141,11 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     it 'raises an error if any id is not a Valkyrie::ID or a string' do
       expect { query_service.find_many_by_ids(ids: [resource.id, 123]) }.to raise_error ArgumentError
     end
+
+    it "removes duplicates" do
+      found = query_service.find_many_by_ids(ids: [resource.id, resource2.id, resource.id])
+      expect(found.map(&:id)).to contain_exactly resource.id, resource2.id
+    end
   end
 
   describe ".find_members" do
@@ -152,6 +159,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
         it "returns all a resource's members in order" do
           expect(subject.map(&:id).to_a).to eq [child2.id, child1.id]
+        end
+
+        context "when something is member more than once" do
+          let(:parent) { persister.save(resource: resource_class.new(member_ids: [child1.id, child2.id, child1.id])) }
+          it "includes duplicates" do
+            expect(subject.map(&:id).to_a).to eq [child1.id, child2.id, child1.id]
+          end
         end
       end
 
@@ -207,20 +221,39 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   end
 
   describe ".find_references_by" do
-    it "returns all references given in a property" do
-      parent = persister.save(resource: resource_class.new)
-      child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
-      persister.save(resource: resource_class.new)
+    context "when the property is unordered" do
+      it "returns all references given in a property" do
+        parent = persister.save(resource: resource_class.new)
+        parent2 = persister.save(resource: resource_class.new)
+        child = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id]))
+        persister.save(resource: resource_class.new)
 
-      expect(query_service.find_references_by(resource: child, property: :a_member_of).map(&:id).to_a).to eq [parent.id]
-    end
-    it "returns an empty array if there are none" do
-      child = persister.save(resource: resource_class.new)
-      expect(query_service.find_references_by(resource: child, property: :a_member_of).to_a).to eq []
+        expect(query_service.find_references_by(resource: child, property: :a_member_of).map(&:id).to_a).to contain_exactly parent.id, parent2.id
+      end
+
+      it "returns an empty array if there are none" do
+        child = persister.save(resource: resource_class.new)
+        expect(query_service.find_references_by(resource: child, property: :a_member_of).to_a).to eq []
+      end
+
+      it "removes duplicates" do
+        parent = persister.save(resource: resource_class.new)
+        child = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent.id]))
+        persister.save(resource: resource_class.new)
+
+        expect(query_service.find_references_by(resource: child, property: :a_member_of).map(&:id).to_a).to contain_exactly parent.id
+      end
+
+      it "returns nothing if reference not found" do
+        child = persister.save(resource: resource_class.new(a_member_of: ["123123123"]))
+        persister.save(resource: resource_class.new)
+
+        expect(query_service.find_references_by(resource: child, property: :a_member_of).map(&:id).to_a).to eq []
+      end
     end
 
     context "when the property is ordered" do
-      it "returns all references in order" do
+      it "returns all references in order including duplicates" do
         parent = persister.save(resource: resource_class.new)
         parent2 = persister.save(resource: resource_class.new)
         child = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id, parent2.id, parent.id]))
@@ -228,23 +261,47 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
         expect(query_service.find_references_by(resource: child, property: :an_ordered_member_of).map(&:id).to_a).to eq [parent.id, parent2.id, parent.id]
       end
+
+      it "returns nothing if reference not found" do
+        child = persister.save(resource: resource_class.new(an_ordered_member_of: ["123123123"]))
+        persister.save(resource: resource_class.new)
+
+        expect(query_service.find_references_by(resource: child, property: :an_ordered_member_of).map(&:id).to_a).to eq []
+      end
     end
   end
 
   describe ".find_inverse_references_by" do
     context "when the resource is saved" do
-      it "returns everything which references the given resource by the given property" do
-        parent = persister.save(resource: resource_class.new)
-        child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
-        persister.save(resource: resource_class.new)
-        persister.save(resource: SecondResource.new)
+      context "when the property is unordered" do
+        it "returns everything which references the given resource by the given property" do
+          parent = persister.save(resource: resource_class.new)
+          parent2 = persister.save(resource: resource_class.new)
+          child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
+          child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
+          persister.save(resource: resource_class.new)
+          persister.save(resource: SecondResource.new)
 
-        expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to eq [child.id]
+          expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
+        end
+
+        it "returns an empty array if there are none" do
+          parent = persister.save(resource: resource_class.new)
+
+          expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).to_a).to eq []
+        end
       end
-      it "returns an empty array if there are none" do
-        parent = persister.save(resource: resource_class.new)
 
-        expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).to_a).to eq []
+      context "when the property is ordered" do
+        it "returns everything which references the given resource by the given property" do
+          parent = persister.save(resource: resource_class.new)
+          child = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id]))
+          child2 = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id, parent.id]))
+          persister.save(resource: resource_class.new)
+          persister.save(resource: SecondResource.new)
+
+          expect(query_service.find_inverse_references_by(resource: parent, property: :an_ordered_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
+        end
       end
     end
     context "when the resource is not saved" do
@@ -265,10 +322,19 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       expect(query_service.find_parents(resource: child1).map(&:id).to_a).to contain_exactly parent.id, parent2.id
     end
+
     it "returns an empty array if there are none" do
       child1 = persister.save(resource: resource_class.new)
 
       expect(query_service.find_parents(resource: child1).to_a).to eq []
+    end
+
+    it "doesn't return same parent twice" do
+      child1 = persister.save(resource: resource_class.new)
+      parent = persister.save(resource: resource_class.new(member_ids: [child1.id, child1.id]))
+      parent2 = persister.save(resource: resource_class.new(member_ids: [child1.id]))
+
+      expect(query_service.find_parents(resource: child1).map(&:id).to_a).to contain_exactly parent.id, parent2.id
     end
 
     context "when the model doesn't have member_ids" do
@@ -319,81 +385,6 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       resource = query_service.find_by(id: resource.id)
       # we can't know the value in the general case
       expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
-    end
-  end
-
-  context "ordered and unordered arrays" do
-    let(:o1) do
-      o1 = persister.save(resource: TestModel.new)
-      o1.unordered = [o2.id, o3.id, o2.id, "broken"]
-      o1.ordered = [o2.id, o3.id, o2.id, "broken"]
-      o1.unordered2 = [o2.id, o3.id, o2.id] # same without the broken bits
-      o1.ordered2 = [o2.id, o3.id, o2.id]
-      o1.member_ids = [o2.id, o3.id, o2.id]
-      persister.save(resource: o1)
-    end
-    let(:o2) { persister.save(resource: TestModel.new) }
-    let(:o3) do
-      o3 = persister.save(resource: TestModel.new)
-      o3.unordered = [o2.id, o2.id, "broken"]
-      o3.ordered = [o2.id, o2.id, "broken"]
-      o3.unordered2 = [o2.id, o2.id]
-      o3.ordered2 = [o2.id, o2.id]
-      o3.member_ids = [o2.id, o2.id]
-      persister.save(resource: o3)
-    end
-    let(:o4) do
-      o4 = persister.save(resource: TestModel.new)
-      o4.unordered = [o2.id, o3.id]
-      o4.ordered = [o2.id, o3.id]
-      o4.unordered2 = [o2.id, o3.id]
-      o4.ordered2 = [o2.id, o3.id]
-      o4.member_ids = [o2.id, o3.id]
-      persister.save(resource: o4)
-    end
-
-    before do
-      persister.wipe!
-
-      class TestModel < Valkyrie::Resource
-        attribute :unordered, Valkyrie::Types::Array
-        attribute :ordered, Valkyrie::Types::Array.meta(ordered: true)
-        attribute :unordered2, Valkyrie::Types::Array
-        attribute :ordered2, Valkyrie::Types::Array.meta(ordered: true)
-        attribute :member_ids, Valkyrie::Types::Array.of(Valkyrie::Types::ID)
-      end
-    end
-
-    after do
-      Object.send(:remove_const, :TestModel)
-    end
-
-    it "finds objects, ignoring duplicate and bogus ids" do
-      expect(query_service.find_many_by_ids(ids: [o1.id, o1.id, 'broken']).map(&:id)).to eq([o1.id])
-    end
-    it "finds unordered references, ignoring bogus ids" do
-      expect(query_service.find_references_by(resource: o1, property: :unordered).map(&:id).to_a).to contain_exactly(o2.id, o3.id)
-    end
-    it "finds unordered references" do
-      expect(query_service.find_references_by(resource: o1, property: :unordered2).map(&:id).to_a).to contain_exactly(o2.id, o3.id)
-    end
-    it "finds ordered references, ignoring bogus ids" do
-      expect(query_service.find_references_by(resource: o1, property: :ordered).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
-    end
-    it "finds ordered references" do
-      expect(query_service.find_references_by(resource: o1, property: :ordered2).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
-    end
-    it "finds inverse references by unordered property" do
-      expect(query_service.find_inverse_references_by(resource: o2, property: :unordered).map(&:id).to_a).to contain_exactly(o1.id, o3.id, o4.id)
-    end
-    it "finds inverse references by ordered property" do
-      expect(query_service.find_inverse_references_by(resource: o2, property: :ordered).map(&:id).to_a).to contain_exactly(o1.id, o3.id, o4.id)
-    end
-    it "finds members" do
-      expect(query_service.find_members(resource: o1).map(&:id).to_a).to eq([o2.id, o3.id, o2.id])
-    end
-    it "finds parents" do
-      expect(query_service.find_parents(resource: o2).map(&:id).to_a).to eq([o1.id, o3.id, o4.id])
     end
   end
 end
