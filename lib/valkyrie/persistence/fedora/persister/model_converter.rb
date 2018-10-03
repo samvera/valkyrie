@@ -238,12 +238,20 @@ module Valkyrie::Persistence::Fedora
             obj = calling_mapper.for(property.property).result
             # Append value directly if possible.
             if obj.respond_to?(:value)
-              ordered_list.insert_proxy_for_at(index, obj.value)
+              ordered_list.insert_proxy_for_at(index, proxy_for_value(obj.value))
             # If value is a nested object, take its graph and append it.
             elsif obj.respond_to?(:graph)
               append_to_graph(obj: obj, index: index, property: property.property)
             end
             graph << ordered_list.to_graph
+          end
+        end
+
+        def proxy_for_value(value)
+          if value.is_a?(RDF::Literal) && value.datatype == PermissiveSchema.valkyrie_id
+            ordered_list.adapter.id_to_uri(value)
+          else
+            value
           end
         end
 
