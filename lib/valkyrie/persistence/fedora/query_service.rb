@@ -29,6 +29,7 @@ module Valkyrie::Persistence::Fedora
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
     def find_many_by_ids(ids:)
+      ids = ids.uniq if adapter.standardize_query_result?
       ids.map do |id|
         begin
           find_by(id: id)
@@ -42,6 +43,7 @@ module Valkyrie::Persistence::Fedora
     def find_parents(resource:)
       content = content_with_inbound(id: resource.id)
       parent_ids = content.graph.query([nil, RDF::Vocab::ORE.proxyFor, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+      parent_ids.uniq! if adapter.standardize_query_result?
       parent_ids.lazy.map do |id|
         find_by(id: id)
       end
@@ -114,6 +116,7 @@ module Valkyrie::Persistence::Fedora
       content = content_with_inbound(id: resource.id)
       property_uri =  adapter.schema.predicate_for(property: property, resource: nil)
       ids = content.graph.query([nil, property_uri, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+      ids.uniq! if adapter.standardize_query_result?
       ids.lazy.map do |id|
         find_by(id: id)
       end

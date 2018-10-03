@@ -46,7 +46,8 @@ module Valkyrie::Persistence::Solr
     def query_service
       @query_service ||= Valkyrie::Persistence::Solr::QueryService.new(
         connection: connection,
-        resource_factory: resource_factory
+        resource_factory: resource_factory,
+        adapter: self
       )
     end
 
@@ -61,6 +62,10 @@ module Valkyrie::Persistence::Solr
     #   to convert a resource to a solr document and back.
     def resource_factory
       Valkyrie::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer, adapter: self)
+    end
+
+    def standardize_query_result?
+      Valkyrie.config.standardize_query_result == true
     end
 
     # Class modeling the indexer for cases where indexing is *not* performed
