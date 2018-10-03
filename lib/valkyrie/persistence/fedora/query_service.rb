@@ -113,12 +113,10 @@ module Valkyrie::Persistence::Fedora
     # *Also, an initial request is made to find the URIs of the resources referencing the resource in the query*
     def find_inverse_references_by(resource:, property:)
       ensure_persisted(resource)
-      content = content_with_inbound(id: resource.id)
-      property_uri =  adapter.schema.predicate_for(property: property, resource: nil)
-      ids = content.graph.query([nil, property_uri, nil]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
-      ids.uniq! if adapter.standardize_query_result?
-      ids.lazy.map do |id|
-        find_by(id: id)
+      if ordered_property?(resource: resource, property: property)
+        find_inverse_references_by_ordered(resource: resource, property: property)
+      else
+        find_inverse_references_by_unordered(resource: resource, property: property)
       end
     end
 
@@ -128,6 +126,21 @@ module Valkyrie::Persistence::Fedora
     end
 
     private
+
+      def find_inverse_references_by_unordered(resource:, property:)
+        content = content_with_inbound(id: resource.id)
+        property_uri = adapter.schema.predicate_for(property: property, resource: nil)
+        ids = content.graph.query([nil, property_uri, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+        ids.uniq! if adapter.standardize_query_result?
+        ids.lazy.map { |id| find_by(id: id) }
+      end
+
+      def find_inverse_references_by_ordered(resource:, property:)
+        content = content_with_inbound(id: resource.id)
+        ids = content.graph.query([nil, ::RDF::Vocab::ORE.proxyFor, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+        ids.uniq! if adapter.standardize_query_result?
+        ids.lazy.map { |id| find_by(id: id) }.select { |o| o[property].include?(resource.id) }
+      end
 
       # Ensures that an object is (or can be cast into a) Valkyrie::ID
       # @return [Valkyrie::ID]
@@ -153,6 +166,10 @@ module Valkyrie::Persistence::Fedora
       # @raise [ArgumentError]
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
+      end
+
+      def ordered_property?(resource:, property:)
+        resource.class.schema[property].meta.try(:[], :ordered)
       end
   end
 end
