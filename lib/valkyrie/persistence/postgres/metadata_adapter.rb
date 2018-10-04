@@ -37,6 +37,7 @@ module Valkyrie::Persistence::Postgres
     end
 
     def standardize_query_result?
+      Valkyrie.warn_about_standard_queries! if Valkyrie.config.standardize_query_result != true
       Valkyrie.config.standardize_query_result == true
     end
   end

@@ -58,6 +58,11 @@ module Valkyrie
     @logger = logger
   end
 
+  def warn_about_standard_queries!
+    warn "[DEPRECATION] Please enable query normalization to avoid inconsistent results between different adapters by adding `standardize_query_results: true` to your environment block" \
+     " in config\/valkyrie.yml. This will be the behavior in Valkyrie 2.0."
+  end
+
   class Config < OpenStruct
     def metadata_adapter
       Valkyrie::MetadataAdapter.find(super.to_sym)
@@ -68,5 +73,5 @@ module Valkyrie
     end
   end
 
-  module_function :config, :logger, :logger=, :config_root_path, :environment
+  module_function :config, :logger, :logger=, :config_root_path, :environment, :warn_about_standard_queries!
 end
