@@ -31,14 +31,13 @@ module Valkyrie
     # available key, and makes sure the defaults are set up if no value is
     # given.
     def self.allow_nonexistent_keys
-      transform_types { |t| t.meta(omittable: true) }
       nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
       transform_types do |type|
-        type = type.meta(omittable: true)
+        current_meta = type.meta.merge(omittable: true)
         if type.default?
-          type.constructor(nil_2_undef)
+          type.constructor(nil_2_undef).meta(current_meta)
         else
-          type
+          type.meta(current_meta)
         end
       end
     end
@@ -186,6 +185,10 @@ module Valkyrie
       output = super
       nil_keys = (self.class.schema.keys - output.keys).map { |x| [x, nil] }.to_h
       output.merge(nil_keys).freeze
+    end
+
+    def dup
+      new({})
     end
   end
 end

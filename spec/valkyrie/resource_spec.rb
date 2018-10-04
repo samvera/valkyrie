@@ -147,7 +147,7 @@ RSpec.describe Valkyrie::Resource do
     subject(:resource) { MyResource.new }
     describe "#fields" do
       it "returns all configured parent fields as an array of symbols" do
-        expect(MyResource.fields).to eq [:id, :internal_resource, :created_at, :updated_at, :title]
+        expect(MyResource.fields).to contain_exactly :id, :internal_resource, :created_at, :updated_at, :title
       end
     end
     describe "#internal_resource" do
@@ -157,8 +157,9 @@ RSpec.describe Valkyrie::Resource do
     end
     describe "defining an internal attribute" do
       it "warns you and changes the type" do
-        expect { MyResource.attribute(:id) }.to output(/is a reserved attribute/).to_stderr
-        expect(MyResource.schema[:id]).to eq Valkyrie::Types::Set.optional
+        old_type = MyResource.schema[:id]
+        expect { MyResource.attribute(:id, Valkyrie::Types::Set) }.to output(/is a reserved attribute/).to_stderr
+        expect(MyResource.schema[:id]).not_to eq old_type
       end
     end
   end

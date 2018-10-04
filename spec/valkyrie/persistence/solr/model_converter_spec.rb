@@ -24,6 +24,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
                     internal_resource: 'Resource',
                     title: ["Test", RDF::Literal.new("French", language: :fr)],
                     author: ["Author"],
+                    creator: "Creator",
                     attributes:
                     {
                       created_at: created_at,
