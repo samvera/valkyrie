@@ -112,11 +112,6 @@ module Valkyrie
       self.class.optimistic_locking_enabled?
     end
 
-    # @return [Hash] Hash of attributes
-    def attributes
-      to_h
-    end
-
     def self.new(attributes = default_attributes)
       if attributes.is_a?(Hash) && attributes.keys.map(&:class).uniq.include?(String)
         warn "[DEPRECATION] Instantiating a Valkyrie::Resource with strings as keys has " \
