@@ -34,8 +34,18 @@ module Valkyrie
   require 'valkyrie/engine' if defined?(Rails)
   def config
     @config ||= Config.new(
-      YAML.safe_load(ERB.new(File.read(config_root_path.join("config", "valkyrie.yml"))).result)[environment]
+      config_hash
     )
+  end
+
+  def config_file
+    return unless File.exist?(config_root_path.join("config", "valkyrie.yml"))
+    File.read(config_root_path.join("config", "valkyrie.yml"))
+  end
+
+  def config_hash
+    return {} unless config_file
+    YAML.safe_load(ERB.new(config_file).result)[environment]
   end
 
   def environment
@@ -64,6 +74,10 @@ module Valkyrie
   end
 
   class Config < OpenStruct
+    def initialize(hsh = {})
+      super(defaults.merge(hsh))
+    end
+
     def metadata_adapter
       Valkyrie::MetadataAdapter.find(super.to_sym)
     end
@@ -71,7 +85,15 @@ module Valkyrie
     def storage_adapter
       Valkyrie::StorageAdapter.find(super.to_sym)
     end
+
+    private
+
+      def defaults
+        {
+          standardize_query_result: false
+        }
+      end
   end
 
-  module_function :config, :logger, :logger=, :config_root_path, :environment, :warn_about_standard_queries!
+  module_function :config, :logger, :logger=, :config_root_path, :environment, :warn_about_standard_queries!, :config_file, :config_hash
 end
