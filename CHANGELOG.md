@@ -1,3 +1,10 @@
+# v1.2.2 2018-10-05
+
+## Changes since last release
+
+* Fix consistency in adapter's responses to queries.
+  [ojlyytinen](https://github.com/ojlyytinen)
+
 # v1.2.1 2018-09-25
 
 ## Changes since last release
