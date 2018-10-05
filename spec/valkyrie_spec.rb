@@ -40,7 +40,7 @@ describe Valkyrie do
       described_class.instance_variable_set(:@config, nil)
       described_class.config
 
-      expect(Rails).to have_received(:root).exactly(2).times
+      expect(Rails).to have_received(:root).exactly(8).times
     end
   end
 end
