@@ -17,13 +17,13 @@ module Valkyrie::Persistence::Solr::Queries
 
     def each
       # map them off of the property to fix solr's deduplication
-      property_values.map { |id| unordered_members.find { |member| member.id == id } } .each do |value|
+      property_values.map { |id| unordered_members.find { |member| member.id == id } } .reject(&:nil?).each do |value|
         yield value
       end
     end
 
     def unordered_members
-      docs.map do |doc|
+      @unordered_members ||= docs.map do |doc|
         resource_factory.to_resource(object: doc)
       end
     end

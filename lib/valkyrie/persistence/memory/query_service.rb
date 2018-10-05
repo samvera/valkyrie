@@ -44,6 +44,7 @@ module Valkyrie::Persistence::Memory
     # @raise [ArgumentError] Raised when any ID is not a String or a Valkyrie::ID
     # @return [Array<Valkyrie::Resource>] All requested objects that were found
     def find_many_by_ids(ids:)
+      ids = ids.uniq if adapter.standardize_query_result?
       ids.map do |id|
         begin
           find_by(id: id)
@@ -89,9 +90,15 @@ module Valkyrie::Persistence::Memory
     # @return [Array<Valkyrie::Resource>] All objects which are referenced by the
     #   `property` property on `resource`. Not necessarily in order.
     def find_references_by(resource:, property:)
-      Array.wrap(resource[property]).map do |id|
-        find_by(id: id)
-      end
+      refs = Array.wrap(resource[property]).map do |id|
+        begin
+          find_by(id: id)
+        rescue ::Valkyrie::Persistence::ObjectNotFoundError
+          nil
+        end
+      end.reject(&:nil?)
+      refs.uniq! if adapter.standardize_query_result? && !ordered_property?(resource: resource, property: property)
+      refs
     end
 
     # Get all resources which link to a resource with a given property.
@@ -146,6 +153,10 @@ module Valkyrie::Persistence::Memory
 
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
+      end
+
+      def ordered_property?(resource:, property:)
+        resource.class.schema[property].meta.try(:[], :ordered)
       end
   end
 end

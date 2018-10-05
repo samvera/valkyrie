@@ -7,12 +7,13 @@ module Valkyrie::Persistence::Postgres
   #
   # @see Valkyrie::Persistence::Postgres::MetadataAdapter
   class QueryService
-    attr_reader :resource_factory
+    attr_reader :resource_factory, :adapter
     delegate :orm_class, to: :resource_factory
 
     # @param [ResourceFactory] resource_factory
-    def initialize(resource_factory:)
+    def initialize(adapter:, resource_factory:)
       @resource_factory = resource_factory
+      @adapter = adapter
     end
 
     # Retrieve all records for the resource and construct Valkyrie Resources
@@ -188,7 +189,7 @@ module Valkyrie::Persistence::Postgres
     # @return [String]
     def find_references_query
       <<-SQL
-        SELECT member.* FROM orm_resources a,
+        SELECT #{adapter.standardize_query_result? ? 'DISTINCT' : ''} member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->?) AS b(member)
         JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
       SQL

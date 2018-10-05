@@ -3,17 +3,18 @@ module Valkyrie::Persistence::Solr::Queries
   # Responsible for returning all members of a given resource as
   # {Valkyrie::Resource}s
   class FindMembersQuery
-    attr_reader :resource, :connection, :resource_factory, :model
+    attr_reader :resource, :connection, :resource_factory, :model, :standardize_query_result
 
     # @param [Valkyrie::Resource] resource
     # @param [RSolr::Client] connection
     # @param [ResourceFactory] resource_factory
     # @param [Class] model
-    def initialize(resource:, connection:, resource_factory:, model:)
+    def initialize(resource:, connection:, resource_factory:, model:, standardize_query_result:)
       @resource = resource
       @connection = connection
       @resource_factory = resource_factory
       @model = model
+      @standardize_query_result = standardize_query_result
     end
 
     # Iterate over each Solr Document and convert each Document into a Valkyrie Resource
@@ -28,15 +29,21 @@ module Valkyrie::Persistence::Solr::Queries
     # @yield [Valkyrie::Resource]
     def each
       return [] unless resource.id.present?
-      unordered_members.sort_by { |x| member_ids.index(x.id) }.each do |member|
-        yield member
+      if standardize_query_result
+        member_ids.map { |id| unordered_members.find { |member| member.id == id } }.reject(&:nil?).each do |member|
+          yield member
+        end
+      else
+        unordered_members.sort_by { |x| member_ids.index(x.id) }.each do |member|
+          yield member
+        end
       end
     end
 
     # Retrieving the Solr Documents for the member resources, construct Valkyrie Resources for each
     # @return [Array<Valkyrie::Resource>]
     def unordered_members
-      docs.map do |doc|
+      @unordered_members ||= docs.map do |doc|
         resource_factory.to_resource(object: doc)
       end
     end
@@ -55,7 +62,7 @@ module Valkyrie::Persistence::Solr::Queries
     # Access the IDs of the members for the Valkyrie Resource
     # @return [Array<Valkyrie::ID>]
     def member_ids
-      Array.wrap(resource.member_ids)
+      resource.respond_to?(:member_ids) ? Array.wrap(resource.member_ids) : []
     end
 
     # Generate the Solr join query using the id_ssi field

@@ -3,12 +3,13 @@ module Valkyrie::Persistence::Solr
   require 'valkyrie/persistence/solr/queries'
   # Query Service for Solr MetadataAdapter.
   class QueryService
-    attr_reader :connection, :resource_factory
+    attr_reader :connection, :resource_factory, :adapter
     # @param [RSolr::Client] connection
     # @param [Valkyrie::Persistence::Solr::ResourceFactory] resource_factory
-    def initialize(connection:, resource_factory:)
+    def initialize(connection:, resource_factory:, adapter:)
       @connection = connection
       @resource_factory = resource_factory
+      @adapter = adapter
     end
 
     # Find resources by Valkyrie ID
@@ -65,7 +66,13 @@ module Valkyrie::Persistence::Solr
     # @param [Valkyrie::Resource] parent resource
     # @return [Array<Valkyrie::Resource>] member resources
     def find_members(resource:, model: nil)
-      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(resource: resource, model: model, connection: connection, resource_factory: resource_factory).run
+      Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(
+        resource: resource,
+        model: model,
+        connection: connection,
+        resource_factory: resource_factory,
+        standardize_query_result: adapter.standardize_query_result?
+      ).run
     end
 
     # Find all of the resources referenced by a given Valkyrie Resource using a specific property
