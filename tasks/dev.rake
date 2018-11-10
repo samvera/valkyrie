@@ -50,8 +50,8 @@ namespace :server do
   end
 
   def shared_fedora_opts
-    opts = { managed: true, verbose: true, enable_jms: false, download_dir: "tmp" }
-    opts[:version] = ENV['FCREPO_VERSION'] if ENV['FCREPO_VERSION']
+    opts = { managed: true, verbose: true, enable_jms: false, download_dir: "tmp", validate: false }
+    opts[:version] = "5.0.0-RC1"
     opts
   end
 end
