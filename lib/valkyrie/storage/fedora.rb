@@ -2,13 +2,14 @@
 module Valkyrie::Storage
   # Implements the DataMapper Pattern to store binary data in fedora
   class Fedora
-    attr_reader :connection, :base_path
+    attr_reader :connection, :base_path, :fedora_version
     PROTOCOL = 'fedora://'
 
     # @param [Ldp::Client] connection
-    def initialize(connection:, base_path: "/")
+    def initialize(connection:, base_path: "/", fedora_version:)
       @connection = connection
       @base_path = base_path
+      @fedora_version = fedora_version
     end
 
     # @param id [Valkyrie::ID]
@@ -31,11 +32,13 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:)
       identifier = id_to_uri(resource.id) + '/original'
+      sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
         request.headers['Content-Type'] = file.content_type
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
-        request.headers['digest'] = "sha1=#{Digest::SHA1.file(file)}"
+        request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(file)}"
+        request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
         request.body = file.tempfile.read
       end
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))

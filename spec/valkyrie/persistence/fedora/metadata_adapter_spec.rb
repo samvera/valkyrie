@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter do
-  let(:adapter) { described_class.new(connection: ::Ldp::Client.new("http://localhost:8988/rest"), base_path: "test_fed") }
+  let(:adapter) { described_class.new(fedora_adapter_config(base_path: "test_fed")) }
   it_behaves_like "a Valkyrie::MetadataAdapter"
 
   describe "#schema" do
@@ -12,7 +12,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter do
     end
 
     context "with a custom schema" do
-      let(:adapter) { described_class.new(connection: ::Ldp::Client.new("http://localhost:8988/rest"), base_path: "test_fed", schema: "custom-schema") }
+      let(:adapter) { described_class.new(fedora_adapter_config(base_path: "test_fed", schema: "custom-schema")) }
       specify { expect(adapter.schema).to eq("custom-schema") }
     end
   end
@@ -20,7 +20,11 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter do
   describe "#id_to_uri" do
     it "converts ids with a slash" do
       id = "test/default"
-      expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8988/rest/test_fed/te/st/test%2Fdefault"
+      if adapter.fedora_version == 5
+        expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8988/rest/test_fed/test%2Fdefault"
+      else
+        expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8988/rest/test_fed/te/st/test%2Fdefault"
+      end
     end
   end
 

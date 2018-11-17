@@ -5,9 +5,10 @@ require 'valkyrie/specs/shared_specs'
 RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   let(:adapter) do
     Valkyrie::Persistence::Fedora::MetadataAdapter.new(
-      connection: ::Ldp::Client.new("http://localhost:8988/rest"),
-      base_path: "test_fed",
-      schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+      fedora_adapter_config(
+        base_path: "test_fed",
+        schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+      )
     )
   end
   let(:persister) { adapter.persister }

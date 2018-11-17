@@ -4,9 +4,7 @@ require 'spec_helper'
 RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
   let(:adapter) do
     Valkyrie::Persistence::Fedora::MetadataAdapter.new(
-      connection: ::Ldp::Client.new("http://localhost:8988/rest"),
-      base_path: "test_fed",
-      schema: schema
+      fedora_adapter_config(base_path: "test_fed", schema: schema)
     )
   end
 

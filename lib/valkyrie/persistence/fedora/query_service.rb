@@ -54,7 +54,7 @@ module Valkyrie::Persistence::Fedora
     # @return [Array<RDF::URI>]
     def include_uris
       [
-        ::RDF::Vocab::Fcrepo4.InboundReferences
+        adapter.fedora_version == 5 ? "http://fedora.info/definitions/fcrepo#PreferInboundReferences" : ::RDF::Vocab::Fcrepo4.InboundReferences
       ]
     end
 
