@@ -34,6 +34,17 @@ module Valkyrie
       schema.keys.without(:new_record)
     end
 
+    def self.new(attributes = default_attributes)
+      if attributes.is_a?(Hash) && attributes.keys.map(&:class).uniq.include?(String)
+        warn "[DEPRECATION] Instantiating a Valkyrie::Resource with strings as keys has " \
+             "been deprecated and will be removed in the next major release. " \
+             "Please use symbols instead." \
+             "Called from #{Gem.location_of_caller.join(':')}"
+        attributes = attributes.symbolize_keys
+      end
+      super
+    end
+
     # Define an attribute. Attributes are used to describe resources.
     # @param name [Symbol]
     # @param type [Dry::Types::Type]
@@ -88,7 +99,7 @@ module Valkyrie
 
     # @return [Hash] Hash of attributes
     def attributes
-      to_h
+      to_h.freeze
     end
 
     # @param name [Symbol] Attribute name
@@ -106,7 +117,7 @@ module Valkyrie
 
     # @return [Boolean]
     def persisted?
-      @new_record == false
+      new_record == false
     end
 
     def to_key
@@ -132,6 +143,23 @@ module Valkyrie
     # @return [String]
     def human_readable_type
       self.class.human_readable_type
+    end
+
+    ##
+    # Return an attribute's value.
+    # @param name [#to_sym] the name of the attribute to read
+    def [](name)
+      super(name.to_sym)
+    rescue NoMethodError
+      nil
+    end
+
+    ##
+    # Set an attribute's value.
+    # @param key [#to_sym] the name of the attribute to set
+    # @param value [] the value to set key to.
+    def set_value(key, value)
+      instance_variable_set(:"@#{key}", self.class.schema[key.to_sym].call(value))
     end
   end
 end

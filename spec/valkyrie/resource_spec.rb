@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'spec_helper'
+require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Resource do
   before do
@@ -11,9 +12,11 @@ RSpec.describe Valkyrie::Resource do
     Object.send(:remove_const, :Resource)
   end
   subject(:resource) { Resource.new }
+  let(:resource_klass) { Resource }
+  it_behaves_like "a Valkyrie::Resource"
   describe "#fields" do
     it "returns all configured fields as an array of symbols" do
-      expect(Resource.fields).to eq [:id, :internal_resource, :created_at, :updated_at, :title]
+      expect(Resource.fields).to contain_exactly :id, :internal_resource, :created_at, :updated_at, :title
     end
   end
 
@@ -106,8 +109,9 @@ RSpec.describe Valkyrie::Resource do
     end
     describe "defining an internal attribute" do
       it "warns you and changes the type" do
-        expect { MyResource.attribute(:id) }.to output(/is a reserved attribute/).to_stderr
-        expect(MyResource.schema[:id]).to eq Valkyrie::Types::Set.optional
+        old_type = MyResource.schema[:id]
+        expect { MyResource.attribute(:id, Valkyrie::Types::Set) }.to output(/is a reserved attribute/).to_stderr
+        expect(MyResource.schema[:id]).not_to eq old_type
       end
     end
   end
