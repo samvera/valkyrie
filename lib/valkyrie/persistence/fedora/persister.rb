@@ -165,7 +165,7 @@ module Valkyrie::Persistence::Fedora
       # @return [Valkyrie::Persistence::OptimisticLockToken]
       def native_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
-        resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == "native-#{adapter.id}" }
+        resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id.to_s == "native-#{adapter.id}" }
       end
 
       # Set Fedora request headers:
