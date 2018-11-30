@@ -135,4 +135,18 @@ RSpec.describe Valkyrie::Types do
       expect(resource.my_flag).to be true
     end
   end
+
+  describe "The INT type" do
+    it "works, but says it's deprecated" do
+      expect { Valkyrie::Types::Int[1] }.to output(/DEPRECATION/).to_stderr
+      expect { Valkyrie::Types::Coercible::Int[1] }.to output(/DEPRECATION/).to_stderr
+    end
+  end
+
+  describe "the INTEGER type" do
+    it "works and doesn't say it's deprecated" do
+      expect { Valkyrie::Types::Integer[1] }.not_to output(/DEPRECATION/).to_stderr
+      expect { Valkyrie::Types::Coercible::Integer[1] }.not_to output(/DEPRECATION/).to_stderr
+    end
+  end
 end
