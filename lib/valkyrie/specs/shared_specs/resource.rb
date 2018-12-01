@@ -90,7 +90,6 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource.other_property = "test"
 
       expect(resource["other_property"]).to eq ["test"]
-      expect { resource["other_property"] }.to output(/\[DEPRECATION\]/).to_stderr
       resource_klass.schema.delete(:other_property)
     end
   end
@@ -121,8 +120,8 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
     it "can set values with string properties, but will throw a deprecation error" do
       resource_klass.attribute :string_property
 
-      resource = resource_klass.new("string_property" => "bla")
-      expect { resource_klass.new("string_property" => "bla") }.to output(/\[DEPRECATION\]/).to_stderr
+      resource = nil
+      expect { resource = resource_klass.new("string_property" => "bla") }.to output(/\[DEPRECATION\]/).to_stderr
 
       expect(resource.string_property).to eq ["bla"]
       resource_klass.schema.delete(:string_property)
