@@ -97,9 +97,55 @@ module Valkyrie
       self.class.optimistic_locking_enabled?
     end
 
+    class DeprecatedHashWrite < Hash
+      def []=(_k, _v)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def delete(*_args)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def delete_if(*_args)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def soft_freeze!
+        @soft_frozen = true
+        self
+      end
+
+      def soft_thaw!
+        @soft_frozen = false
+        self
+      end
+
+      def dup
+        super.soft_thaw!
+      end
+    end
+
     # @return [Hash] Hash of attributes
     def attributes
-      to_h.freeze
+      DeprecatedHashWrite.new.merge(to_h).soft_freeze!
     end
 
     # @param name [Symbol] Attribute name
