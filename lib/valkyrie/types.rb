@@ -98,5 +98,21 @@ module Valkyrie
     SingleValuedString = Valkyrie::Types::String.constructor do |value|
       ::Array.wrap(value).first.to_s
     end
+    Valkyrie::Types::Integer = Dry::Types["int"]
+    Valkyrie::Types::Coercible::Integer = Dry::Types["coercible.int"]
+    Int = Dry::Types["int"].constructor do |value|
+      warn "[DEPRECATION] Valkyrie::Types::Int has been renamed in dry-types and this " \
+           "reference will be removed in the next major version of Valkyrie. Please use " \
+           "Valkyrie::Types::Integer instead. " \
+           "Called from #{Gem.location_of_caller.join(':')}"
+      Dry::Types["int"][value]
+    end
+    Coercible::Int = Dry::Types["coercible.int"].constructor do |value|
+      warn "[DEPRECATION] Valkyrie::Types::Coercible::Int has been renamed in dry-types and this " \
+           "reference will be removed in the next major version of Valkyrie. Please use " \
+           "Valkyrie::Types::Coercible::Integer instead. " \
+           "Called from #{Gem.location_of_caller.join(':')}"
+      Dry::Types["coercible.int"][value]
+    end
   end
 end

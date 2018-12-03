@@ -296,7 +296,7 @@ module Valkyrie::Persistence::Fedora
         # @param [Object] value
         # @return [Boolean]
         def self.handles?(value)
-          value.is_a?(Property) && value.value.is_a?(Hash) && value.value[:internal_resource]
+          value.is_a?(Property) && (value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource)) && value.value[:internal_resource]
         end
 
         # Generate a new parent graph containing the child graph generated from the ModelConverter::Property objects

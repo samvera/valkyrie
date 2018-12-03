@@ -13,6 +13,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
       attribute :author, Valkyrie::Types::Set
       attribute :birthday, Valkyrie::Types::DateTime.optional
       attribute :creator, Valkyrie::Types::String
+      attribute :birthdate, Valkyrie::Types::DateTime.optional
     end
   end
   after do
@@ -22,6 +23,9 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
     instance_double(Resource,
                     id: "1",
                     internal_resource: 'Resource',
+                    title: ["Test", RDF::Literal.new("French", language: :fr)],
+                    author: ["Author"],
+                    creator: "Creator",
                     attributes:
                     {
                       created_at: created_at,
@@ -74,6 +78,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
       instance_double(Resource,
                       id: "1",
                       internal_resource: 'Resource',
+                      birthdate: Date.parse('1930-10-20'),
                       attributes:
                       {
                         internal_resource: 'Resource',

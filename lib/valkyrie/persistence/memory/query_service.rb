@@ -36,7 +36,7 @@ module Valkyrie::Persistence::Memory
     def find_by_alternate_identifier(alternate_identifier:)
       alternate_identifier = Valkyrie::ID.new(alternate_identifier.to_s) if alternate_identifier.is_a?(String)
       validate_id(alternate_identifier)
-      cache.select { |_key, resource| resource['alternate_ids'].include?(alternate_identifier) }.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+      cache.select { |_key, resource| resource[:alternate_ids].include?(alternate_identifier) }.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
     # Get a batch of resources by ID.
@@ -113,11 +113,7 @@ module Valkyrie::Persistence::Memory
     def find_inverse_references_by(resource:, property:)
       ensure_persisted(resource)
       find_all.select do |obj|
-        begin
-          Array.wrap(obj[property]).include?(resource.id)
-        rescue
-          false
-        end
+        Array.wrap(obj[property]).include?(resource.id)
       end
     end
 

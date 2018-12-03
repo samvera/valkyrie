@@ -67,4 +67,81 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(my_custom_resource.human_readable_type).to eq "My Custom Resource"
     end
   end
+
+  describe "#[]" do
+    it "allows access to properties which are set" do
+      resource_klass.attribute :my_property
+      resource = resource_klass.new
+
+      resource.my_property = "test"
+
+      expect(resource[:my_property]).to eq ["test"]
+      resource_klass.schema.delete(:my_property)
+    end
+    it "returns nil for non-existent properties" do
+      resource = resource_klass.new
+
+      expect(resource[:bad_property]).to eq nil
+    end
+    it "can be accessed via a string" do
+      resource_klass.attribute :other_property
+      resource = resource_klass.new
+
+      resource.other_property = "test"
+
+      expect(resource["other_property"]).to eq ["test"]
+      resource_klass.schema.delete(:other_property)
+    end
+  end
+
+  describe "#set_value" do
+    it "can set a value" do
+      resource_klass.attribute :set_value_property
+      resource = resource_klass.new
+
+      resource.set_value(:set_value_property, "test")
+
+      expect(resource.set_value_property).to eq ["test"]
+      resource.set_value("set_value_property", "testing")
+      expect(resource.set_value_property).to eq ["testing"]
+      resource_klass.schema.delete(:set_value_property)
+    end
+  end
+
+  describe ".new" do
+    it "can set values with symbols" do
+      resource_klass.attribute :symbol_property
+
+      resource = resource_klass.new(symbol_property: "bla")
+
+      expect(resource.symbol_property).to eq ["bla"]
+      resource_klass.schema.delete(:symbol_property)
+    end
+    it "can set values with string properties, but will throw a deprecation error" do
+      resource_klass.attribute :string_property
+
+      resource = nil
+      expect { resource = resource_klass.new("string_property" => "bla") }.to output(/\[DEPRECATION\]/).to_stderr
+
+      expect(resource.string_property).to eq ["bla"]
+      resource_klass.schema.delete(:string_property)
+    end
+  end
+
+  describe "#attributes" do
+    it "returns all defined attributs, including nil keys" do
+      resource_klass.attribute :bla
+
+      resource = resource_klass.new
+
+      expect(resource.attributes).to have_key(:bla)
+      expect(resource.attributes[:internal_resource]).to eq resource_klass.to_s
+      expect { resource.attributes[:internal_resource] = "bla" }.to output(/\[DEPRECATION\]/).to_stderr
+      expect { resource.attributes.delete_if { true } }.to output(/\[DEPRECATION\]/).to_stderr
+      expect { resource.attributes.delete(:internal_resource) }.to output(/\[DEPRECATION\]/).to_stderr
+      expect { resource.attributes.dup[:internal_resource] = "bla" }.not_to output.to_stderr
+
+      resource_klass.schema.delete(:bla)
+    end
+  end
 end

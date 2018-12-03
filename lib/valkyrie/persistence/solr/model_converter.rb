@@ -222,7 +222,7 @@ module Valkyrie::Persistence::Solr
         # @param [Object] value
         # @return [Boolean]
         def self.handles?(value)
-          value.value.is_a?(Hash)
+          value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource)
         end
 
         # Constructs a SolrRow object for a Property with a Hash value
