@@ -1,3 +1,10 @@
+# v1.3.0 2018-12-03
+
+## Changes since last release
+
+* Add deprecations for known methods changing in 2.0
+* Add `set_value` method.
+
 # v1.2.2 2018-10-05
 
 ## Changes since last release
