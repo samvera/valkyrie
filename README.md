@@ -241,6 +241,12 @@ By default, it is assumed that a Valkyrie repository implementation shall use a 
 1. Run `rake docker:test:down` to stop the server stack
    * The test stack cleans up after itself on exit.
 
+## Fedora 5 Compatibility
+When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter config.  If Fedora requires auth, you can also include that in the URL, e.g.:
+   ```
+   Valkyrie::Storage::Fedora.new(connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"), fedora_version: 5)
+   ```
+
 The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
 
 ## Get Help

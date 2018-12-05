@@ -9,15 +9,19 @@ module Valkyrie::Persistence::Fedora
   #     schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
   #   )
   class MetadataAdapter
-    attr_reader :connection, :base_path, :schema
+    attr_reader :connection, :base_path, :schema, :fedora_version
 
     # @param [Ldp::Client] connection
     # @param [String] base_path
     # @param [Valkyrie::Persistence::Fedora::PermissiveSchema] schema
-    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new)
+    # @param [Integer] fedora_version
+    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new, fedora_version:)
       @connection = connection
       @base_path = base_path
       @schema = schema
+      @fedora_version = fedora_version
+
+      warn "[DEPRECATION] `fedora_version` will default to 5 in the next major release." unless fedora_version
     end
 
     # Construct the query service object using this adapter
@@ -56,7 +60,8 @@ module Valkyrie::Persistence::Fedora
     # @param [RDF::URI] id the Valkyrie ID
     # @return [RDF::URI]
     def id_to_uri(id)
-      RDF::URI("#{connection_prefix}/#{pair_path(id)}/#{CGI.escape(id.to_s)}")
+      prefix = fedora_version == 5 ? "" : "#{pair_path(id)}/"
+      RDF::URI("#{connection_prefix}/#{prefix}#{CGI.escape(id.to_s)}")
     end
 
     # Generate the pairtree path for a given Valkyrie ID

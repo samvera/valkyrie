@@ -1,17 +1,24 @@
 ---
 version: '3.4'
 volumes:
-  fedora:
+  fedora4:
+  fedora5:
   db:
   solr_repo:
   solr_index:
 services:
-  fedora:
-    image: nulib/fcrepo4
+  fedora4:
+    image: nulib/fcrepo4:4.7.5
     volumes:
-    - fedora:/data
+    - fedora4:/data
     ports:
     - 8986:8080
+  fedora5:
+    image: nulib/fcrepo4:5.0.0-RC-2
+    volumes:
+    - fedora5:/data
+    ports:
+    - 8996:8080
   db:
     image: healthcheck/postgres:alpine
     volumes:
