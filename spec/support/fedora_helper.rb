@@ -4,11 +4,15 @@ module FedoraHelper
     port = fedora_version == 4 ? 8988 : 8998
     opts = {
       base_path: base_path,
-      connection: ::Ldp::Client.new("http://localhost:#{port}/rest"),
+      connection: ::Ldp::Client.new("http://#{fedora_auth}localhost:#{port}/rest"),
       fedora_version: fedora_version
     }
     opts[:schema] = schema if schema
     opts
+  end
+
+  def fedora_auth
+    "fedoraAdmin:fedoraAdmin@"
   end
 
   def wipe_fedora!(base_path:, fedora_version: 4)

@@ -242,19 +242,9 @@ By default, it is assumed that a Valkyrie repository implementation shall use a 
    * The test stack cleans up after itself on exit.
 
 ## Fedora 5 Compatibility
-When running tests:
-* Specify a Fedora 5 release when running test servers:
+When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter config.  If Fedora requires auth, you can also include that in the URL, e.g.:
    ```
-   FCREPO_VERSION=5.0.0-RC-1 rake server:test
-   ```
-* Enable Fedora 5 compatibility when running tests:
-   ```
-   FEDORA5_COMPAT=true rspec
-   ```
-When configuring your adapter:
-* Include the `fedora_version` paramter in your metadata or storage adapter config, e.g.:
-   ```
-   Valkyrie::Storage::Fedora.new(connection: Ldp::Client.new("http://localhost:8988/rest"), fedora_version: 5)
+   Valkyrie::Storage::Fedora.new(connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"), fedora_version: 5)
    ```
 
 The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
