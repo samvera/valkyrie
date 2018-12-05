@@ -5,14 +5,14 @@ require 'valkyrie/specs/shared_specs'
 RSpec.describe Valkyrie::Persistence::Fedora::Persister do
   [4, 5].each do |fedora_version|
     context "fedora #{fedora_version}" do
-      let(:fedora_version) { 4 }
+      let(:version) { 4 }
 
       let(:adapter) do
         Valkyrie::Persistence::Fedora::MetadataAdapter.new(
           fedora_adapter_config(
             base_path: "test_fed",
             schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title")),
-            fedora_version: fedora_version
+            fedora_version: version
           )
         )
       end
