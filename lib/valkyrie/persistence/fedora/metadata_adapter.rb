@@ -20,6 +20,8 @@ module Valkyrie::Persistence::Fedora
       @base_path = base_path
       @schema = schema
       @fedora_version = fedora_version
+
+      warn "[DEPRECATION] `fedora_version` will default to 5 in the next major release." unless fedora_version
     end
 
     # Construct the query service object using this adapter

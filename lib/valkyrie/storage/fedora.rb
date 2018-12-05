@@ -10,6 +10,8 @@ module Valkyrie::Storage
       @connection = connection
       @base_path = base_path
       @fedora_version = fedora_version
+
+      warn "[DEPRECATION] `fedora_version` will default to 5 in the next major release." unless fedora_version
     end
 
     # @param id [Valkyrie::ID]
