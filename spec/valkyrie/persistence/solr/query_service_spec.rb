@@ -36,4 +36,26 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
       expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first.serialize).to eq token.serialize
     end
   end
+
+  describe "find_members" do
+    before do
+      class CustomResource < Valkyrie::Resource
+        attribute :member_ids, Valkyrie::Types::Array
+      end
+      allow(Valkyrie.config).to receive(:standardize_query_result).and_return(false)
+    end
+
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+
+    let(:members) { adapter.query_service.find_members(resource: parent) }
+    let!(:child1) { adapter.persister.save(resource: CustomResource.new) }
+    let!(:child2) { adapter.persister.save(resource: CustomResource.new) }
+    let(:parent) { adapter.persister.save(resource: CustomResource.new(member_ids: [child2.id, child1.id])) }
+
+    it "returns all a resource's members in order" do
+      expect(members.map(&:id).to_a).to eq [child2.id, child1.id]
+    end
+  end
 end
