@@ -47,17 +47,6 @@ module Valkyrie
       schema.keys.without(:new_record)
     end
 
-    def self.new(attributes = default_attributes)
-      if attributes.is_a?(Hash) && attributes.keys.map(&:class).uniq.include?(String)
-        warn "[DEPRECATION] Instantiating a Valkyrie::Resource with strings as keys has " \
-             "been deprecated and will be removed in the next major release. " \
-             "Please use symbols instead." \
-             "Called from #{Gem.location_of_caller.join(':')}"
-        attributes = attributes.symbolize_keys
-      end
-      super
-    end
-
     # Define an attribute. Attributes are used to describe resources.
     # @param name [Symbol]
     # @param type [Dry::Types::Type]
