@@ -59,7 +59,7 @@ module Valkyrie
         schema.delete(name)
       end
       define_method("#{name}=") do |value|
-        instance_variable_set("@#{name}", self.class.schema[name].call(value))
+        set_value(name, value)
       end
       type = type.meta(ordered: true) if name == :member_ids
       super(name, type)
