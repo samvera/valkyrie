@@ -15,13 +15,26 @@ module Valkyrie
   # @see lib/valkyrie/specs/shared_specs/resource.rb
   class Resource < Dry::Struct
     include Draper::Decoratable
-    constructor_type :schema
+    # Allows a Valkyrie::Resource to be instantiated without providing every
+    # available key, and makes sure the defaults are set up if no value is
+    # given.
+    def self.allow_nonexistent_keys
+      nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
+      transform_types do |type|
+        current_meta = type.meta.merge(omittable: true)
+        if type.default?
+          type.constructor(nil_2_undef).meta(current_meta)
+        else
+          type.meta(current_meta)
+        end
+      end
+    end
 
     # Overridden to provide default attributes.
     # @note The current theory is that we should use this sparingly.
     def self.inherited(subclass)
       super(subclass)
-      subclass.constructor_type :schema
+      subclass.allow_nonexistent_keys
       subclass.attribute :id, Valkyrie::Types::ID.optional, internal: true
       subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s), internal: true
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional, internal: true
@@ -97,55 +110,12 @@ module Valkyrie
       self.class.optimistic_locking_enabled?
     end
 
-    class DeprecatedHashWrite < Hash
-      def []=(_k, _v)
-        if @soft_frozen
-          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
-            " Please use #set_value(k, v) instead or #dup first." \
-            " In the next major version, this hash will be frozen. \n" \
-            "Called from #{Gem.location_of_caller.join(':')}"
-        end
-        super
-      end
-
-      def delete(*_args)
-        if @soft_frozen
-          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
-            " Please use #set_value(k, v) instead or #dup first." \
-            " In the next major version, this hash will be frozen. \n" \
-            "Called from #{Gem.location_of_caller.join(':')}"
-        end
-        super
-      end
-
-      def delete_if(*_args)
-        if @soft_frozen
-          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
-            " Please use #set_value(k, v) instead or #dup first." \
-            " In the next major version, this hash will be frozen. \n" \
-            "Called from #{Gem.location_of_caller.join(':')}"
-        end
-        super
-      end
-
-      def soft_freeze!
-        @soft_frozen = true
-        self
-      end
-
-      def soft_thaw!
-        @soft_frozen = false
-        self
-      end
-
-      def dup
-        super.soft_thaw!
-      end
+    def attributes
+      super.dup.freeze
     end
 
-    # @return [Hash] Hash of attributes
-    def attributes
-      DeprecatedHashWrite.new.merge(to_h).soft_freeze!
+    def dup
+      new({})
     end
 
     # @param name [Symbol] Attribute name
@@ -196,7 +166,7 @@ module Valkyrie
     # @param name [#to_sym] the name of the attribute to read
     def [](name)
       super(name.to_sym)
-    rescue NoMethodError
+    rescue Dry::Struct::MissingAttributeError
       nil
     end
 
@@ -205,7 +175,7 @@ module Valkyrie
     # @param key [#to_sym] the name of the attribute to set
     # @param value [] the value to set key to.
     def set_value(key, value)
-      instance_variable_set(:"@#{key}", self.class.schema[key.to_sym].call(value))
+      @attributes[key.to_sym] = self.class.schema[key.to_sym].call(value)
     end
   end
 end
