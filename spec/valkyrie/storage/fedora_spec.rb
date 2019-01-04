@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 include ActionDispatch::TestProcess
 
-RSpec.describe Valkyrie::Storage::Fedora do
+RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
   context "fedora 4" do
     before(:all) do
       # Start from a clean fedora

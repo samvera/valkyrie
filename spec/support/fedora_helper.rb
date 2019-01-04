@@ -21,7 +21,7 @@ module FedoraHelper
 end
 
 RSpec.configure do |config|
-  config.before do
+  config.before(:example, :wipe_fedora) do
     wipe_fedora!(base_path: "test_fed", fedora_version: 4)
     wipe_fedora!(base_path: "test_fed", fedora_version: 5)
   end

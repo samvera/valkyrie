@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
-RSpec.describe Valkyrie::Persistence::Fedora::QueryService do
+RSpec.describe Valkyrie::Persistence::Fedora::QueryService, :wipe_fedora do
   [4, 5].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
