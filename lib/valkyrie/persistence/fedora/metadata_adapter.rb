@@ -15,7 +15,7 @@ module Valkyrie::Persistence::Fedora
     # @param [String] base_path
     # @param [Valkyrie::Persistence::Fedora::PermissiveSchema] schema
     # @param [Integer] fedora_version
-    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new, fedora_version:)
+    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new, fedora_version: 4)
       @connection = connection
       @base_path = base_path
       @schema = schema
