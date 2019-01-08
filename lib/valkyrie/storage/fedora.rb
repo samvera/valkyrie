@@ -6,7 +6,7 @@ module Valkyrie::Storage
     PROTOCOL = 'fedora://'
 
     # @param [Ldp::Client] connection
-    def initialize(connection:, base_path: "/", fedora_version:)
+    def initialize(connection:, base_path: "/", fedora_version: 4)
       @connection = connection
       @base_path = base_path
       @fedora_version = fedora_version
