@@ -87,6 +87,10 @@ module Valkyrie
       end
 
       def member(type)
+        warn "[DEPRECATION] .member has been renamed to .of in dry-types and this " \
+          "method will be removed in the next major version of Valkyrie. Please use " \
+          ".of instead. " \
+          "Called from #{Gem.location_of_caller.join(':')}"
         super.default([].freeze)
       end
     end
