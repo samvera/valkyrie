@@ -1,3 +1,10 @@
+# v1.4.0 2018-01-08
+
+## Changes since last release.
+
+* Add support for Fedora 5
+  [escowles](https://github.com/escowles)
+
 # v1.3.0 2018-12-03
 
 ## Changes since last release
