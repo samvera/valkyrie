@@ -95,8 +95,9 @@ RSpec.describe Valkyrie::Types do
       resource = Resource.new(authors: {})
       expect(resource.authors).to eq []
     end
-    it "can use .member" do
+    it "can use .member, but yells that it's deprecated" do
       expect { Valkyrie::Types::Array.member(Valkyrie::Types::String) }.not_to raise_error
+      expect { Valkyrie::Types::Array.member(Valkyrie::Types::String) }.to output(/DEPRECATION/).to_stderr
     end
   end
 
@@ -124,8 +125,9 @@ RSpec.describe Valkyrie::Types do
       resource = Resource.new(set_of_values: {})
       expect(resource.set_of_values).to eq []
     end
-    it "can use .member" do
+    it "can use .member, but outputs a deprecation" do
       expect { Valkyrie::Types::Set.member(Valkyrie::Types::String) }.not_to raise_error
+      expect { Valkyrie::Types::Set.member(Valkyrie::Types::String) }.to output(/DEPRECATION/).to_stderr
     end
   end
 
