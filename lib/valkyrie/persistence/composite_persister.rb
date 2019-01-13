@@ -7,7 +7,13 @@ module Valkyrie::Persistence
   #   persister = Valkyrie.config.metadata_adapter
   #   index_persister = Valkyrie::MetadataAdapter.find(:index_solr)
   #   Valkyrie::MetadataAdapter.register(
-  #     Valkyrie::Persistence::CompositePersister.new(persister, index_persister),
+  #     Valkyrie::AdapterContainer.new(
+  #       persister: Valkyrie::Persistence::CompositePersister.new(
+  #         persister,
+  #         index_persister
+  #         )
+  #       query_service: Valkyrie.config.metadata_adapter.query_service
+  #     )
   #     :my_composite_persister
   #   )
   #
