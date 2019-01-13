@@ -29,6 +29,16 @@ module Valkyrie
       end
     end
 
+    module Params
+      ID = Valkyrie::Types::ID.constructor do |input|
+        if input.blank?
+          nil
+        else
+          Valkyrie::Types::ID[input]
+        end
+      end
+    end
+
     # Valkyrie::URI
     URI = Dry::Types::Definition
           .new(RDF::URI)
