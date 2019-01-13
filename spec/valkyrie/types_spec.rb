@@ -49,6 +49,19 @@ RSpec.describe Valkyrie::Types do
     end
   end
 
+  describe "Valkyrie::Types::Params::ID" do
+    context "when a blank string is passed in" do
+      it "returns nil" do
+        expect(Valkyrie::Types::Params::ID[""]).to eq nil
+      end
+    end
+    context "when passed a string" do
+      it "returns a Valkyrie::Types::ID" do
+        expect(Valkyrie::Types::Params::ID["test"]).to be_a Valkyrie::ID
+      end
+    end
+  end
+
   describe 'The URI Type' do
     it 'returns an RDF::URI' do
       # We don't want to modify the defaults in the schema.
