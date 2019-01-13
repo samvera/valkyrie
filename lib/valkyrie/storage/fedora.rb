@@ -41,7 +41,8 @@ module Valkyrie::Storage
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
         request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(file)}"
         request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
-        request.body = file.tempfile.read
+        io = Faraday::UploadIO.new(file.tempfile.path, file.content_type)
+        request.body = io
       end
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
     end
