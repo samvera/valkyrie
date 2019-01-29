@@ -70,8 +70,7 @@ module Valkyrie::Persistence::Solr
         resource: resource,
         model: model,
         connection: connection,
-        resource_factory: resource_factory,
-        standardize_query_result: adapter.standardize_query_result?
+        resource_factory: resource_factory
       ).run
     end
 
@@ -121,7 +120,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def ordered_property?(resource:, property:)
-        resource.class.schema[property].meta.try(:[], :ordered)
+        resource.ordered_attribute?(property)
       end
   end
 end
