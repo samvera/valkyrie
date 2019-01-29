@@ -54,7 +54,7 @@ module Valkyrie::Persistence::Solr
     # Construct a Time object from the datestamp for the date of the last resource update indexed in Solr
     # @return [Time]
     def updated_at
-      DateTime.parse(solr_document["timestamp"] || solr_document.fetch("created_at_dtsi").to_s).utc
+      DateTime.parse(solr_document.fetch("updated_at_dtsi").to_s || solr_document["timestamp"] || solr_document.fetch("created_at_dtsi").to_s).utc
     end
 
     # Construct the OptimisticLockToken object using the "_version_" field value in the Solr Document

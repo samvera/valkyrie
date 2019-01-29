@@ -92,6 +92,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(book.updated_at).not_to be_blank
     expect(book.created_at).not_to be_kind_of Array
     expect(book.updated_at).not_to be_kind_of Array
+    expect(book.updated_at > book.created_at).to eq true
   end
 
   it "can handle Boolean RDF properties" do
