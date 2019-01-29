@@ -121,9 +121,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource_klass.attribute :string_property
 
       resource = nil
-      expect { resource = resource_klass.new("string_property" => "bla") }.to output(/\[DEPRECATION\]/).to_stderr
-
-      expect(resource.string_property).to eq ["bla"]
+      expect(resource).not_to respond_to :string_property
       resource_klass.schema.delete(:string_property)
     end
   end
