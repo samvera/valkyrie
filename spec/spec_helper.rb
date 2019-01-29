@@ -14,7 +14,6 @@ SimpleCov.start do
   add_filter 'vendor'
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require 'active_fedora'
 require "valkyrie"
 require 'pry'
 require 'action_dispatch'

@@ -22,8 +22,6 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   let(:persister) { adapter.persister }
   subject { adapter.query_service }
 
-  before { allow(Valkyrie.config).to receive(:standardize_query_result).and_return(true) }
-
   it { is_expected.to respond_to(:find_all).with(0).arguments }
   it { is_expected.to respond_to(:find_all_of_model).with_keywords(:model) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }

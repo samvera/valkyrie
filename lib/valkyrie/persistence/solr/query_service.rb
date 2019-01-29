@@ -70,8 +70,7 @@ module Valkyrie::Persistence::Solr
         resource: resource,
         model: model,
         connection: connection,
-        resource_factory: resource_factory,
-        standardize_query_result: adapter.standardize_query_result?
+        resource_factory: resource_factory
       ).run
     end
 
