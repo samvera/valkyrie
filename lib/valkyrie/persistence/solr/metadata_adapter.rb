@@ -64,6 +64,11 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::ResourceFactory.new(resource_indexer: resource_indexer, adapter: self)
     end
 
+    def standardize_query_result?
+      Valkyrie.warn_about_standard_queries! if Valkyrie.config.standardize_query_result != true
+      Valkyrie.config.standardize_query_result == true
+    end
+
     # Class modeling the indexer for cases where indexing is *not* performed
     class NullIndexer
       # @note this is a no-op

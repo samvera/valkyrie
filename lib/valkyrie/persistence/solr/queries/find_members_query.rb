@@ -3,17 +3,18 @@ module Valkyrie::Persistence::Solr::Queries
   # Responsible for returning all members of a given resource as
   # {Valkyrie::Resource}s
   class FindMembersQuery
-    attr_reader :resource, :connection, :resource_factory, :model
+    attr_reader :resource, :connection, :resource_factory, :model, :standardize_query_result
 
     # @param [Valkyrie::Resource] resource
     # @param [RSolr::Client] connection
     # @param [ResourceFactory] resource_factory
     # @param [Class] model
-    def initialize(resource:, connection:, resource_factory:, model:)
+    def initialize(resource:, connection:, resource_factory:, model:, standardize_query_result:)
       @resource = resource
       @connection = connection
       @resource_factory = resource_factory
       @model = model
+      @standardize_query_result = standardize_query_result
     end
 
     # Iterate over each Solr Document and convert each Document into a Valkyrie Resource
@@ -28,8 +29,14 @@ module Valkyrie::Persistence::Solr::Queries
     # @yield [Valkyrie::Resource]
     def each
       return [] unless resource.id.present?
-      member_ids.map { |id| unordered_members.find { |member| member.id == id } }.reject(&:nil?).each do |member|
-        yield member
+      if standardize_query_result
+        member_ids.map { |id| unordered_members.find { |member| member.id == id } }.reject(&:nil?).each do |member|
+          yield member
+        end
+      else
+        unordered_members.sort_by { |x| member_ids.index(x.id) }.each do |member|
+          yield member
+        end
       end
     end
 

@@ -15,11 +15,13 @@ module Valkyrie::Persistence::Fedora
     # @param [String] base_path
     # @param [Valkyrie::Persistence::Fedora::PermissiveSchema] schema
     # @param [Integer] fedora_version
-    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new, fedora_version: 5)
+    def initialize(connection:, base_path: "/", schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new, fedora_version: 4)
       @connection = connection
       @base_path = base_path
       @schema = schema
       @fedora_version = fedora_version
+
+      warn "[DEPRECATION] `fedora_version` will default to 5 in the next major release." unless fedora_version
     end
 
     # Construct the query service object using this adapter
@@ -75,6 +77,11 @@ module Valkyrie::Persistence::Fedora
     # @return [String]
     def connection_prefix
       "#{connection.http.url_prefix}/#{base_path}"
+    end
+
+    def standardize_query_result?
+      Valkyrie.warn_about_standard_queries! if Valkyrie.config.standardize_query_result != true
+      Valkyrie.config.standardize_query_result == true
     end
   end
 end

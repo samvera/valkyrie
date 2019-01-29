@@ -15,26 +15,13 @@ module Valkyrie
   # @see lib/valkyrie/specs/shared_specs/resource.rb
   class Resource < Dry::Struct
     include Draper::Decoratable
-    # Allows a Valkyrie::Resource to be instantiated without providing every
-    # available key, and makes sure the defaults are set up if no value is
-    # given.
-    def self.allow_nonexistent_keys
-      nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
-      transform_types do |type|
-        current_meta = type.meta.merge(omittable: true)
-        if type.default?
-          type.constructor(nil_2_undef).meta(current_meta)
-        else
-          type.meta(current_meta)
-        end
-      end
-    end
+    constructor_type :schema
 
     # Overridden to provide default attributes.
     # @note The current theory is that we should use this sparingly.
     def self.inherited(subclass)
       super(subclass)
-      subclass.allow_nonexistent_keys
+      subclass.constructor_type :schema
       subclass.attribute :id, Valkyrie::Types::ID.optional, internal: true
       subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s), internal: true
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional, internal: true
@@ -45,6 +32,17 @@ module Valkyrie
     # @return [Array<Symbol>] Array of fields defined for this class.
     def self.fields
       schema.keys.without(:new_record)
+    end
+
+    def self.new(attributes = default_attributes)
+      if attributes.is_a?(Hash) && attributes.keys.map(&:class).uniq.include?(String)
+        warn "[DEPRECATION] Instantiating a Valkyrie::Resource with strings as keys has " \
+             "been deprecated and will be removed in the next major release. " \
+             "Please use symbols instead." \
+             "Called from #{Gem.location_of_caller.join(':')}"
+        attributes = attributes.symbolize_keys
+      end
+      super
     end
 
     # Define an attribute. Attributes are used to describe resources.
@@ -99,12 +97,55 @@ module Valkyrie
       self.class.optimistic_locking_enabled?
     end
 
-    def attributes
-      super.dup.freeze
+    class DeprecatedHashWrite < Hash
+      def []=(_k, _v)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def delete(*_args)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def delete_if(*_args)
+        if @soft_frozen
+          warn "[DEPRECATION] Writing directly to attributes has been deprecated." \
+            " Please use #set_value(k, v) instead or #dup first." \
+            " In the next major version, this hash will be frozen. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+        super
+      end
+
+      def soft_freeze!
+        @soft_frozen = true
+        self
+      end
+
+      def soft_thaw!
+        @soft_frozen = false
+        self
+      end
+
+      def dup
+        super.soft_thaw!
+      end
     end
 
-    def dup
-      new({})
+    # @return [Hash] Hash of attributes
+    def attributes
+      DeprecatedHashWrite.new.merge(to_h).soft_freeze!
     end
 
     # @param name [Symbol] Attribute name
@@ -155,7 +196,7 @@ module Valkyrie
     # @param name [#to_sym] the name of the attribute to read
     def [](name)
       super(name.to_sym)
-    rescue Dry::Struct::MissingAttributeError
+    rescue NoMethodError
       nil
     end
 
@@ -164,7 +205,7 @@ module Valkyrie
     # @param key [#to_sym] the name of the attribute to set
     # @param value [] the value to set key to.
     def set_value(key, value)
-      @attributes[key.to_sym] = self.class.schema[key.to_sym].call(value)
+      instance_variable_set(:"@#{key}", self.class.schema[key.to_sym].call(value))
     end
   end
 end

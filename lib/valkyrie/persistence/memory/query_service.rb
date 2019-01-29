@@ -44,7 +44,7 @@ module Valkyrie::Persistence::Memory
     # @raise [ArgumentError] Raised when any ID is not a String or a Valkyrie::ID
     # @return [Array<Valkyrie::Resource>] All requested objects that were found
     def find_many_by_ids(ids:)
-      ids = ids.uniq
+      ids = ids.uniq if adapter.standardize_query_result?
       ids.map do |id|
         begin
           find_by(id: id)
@@ -97,7 +97,7 @@ module Valkyrie::Persistence::Memory
           nil
         end
       end.reject(&:nil?)
-      refs.uniq! unless ordered_property?(resource: resource, property: property)
+      refs.uniq! if adapter.standardize_query_result? && !ordered_property?(resource: resource, property: property)
       refs
     end
 
