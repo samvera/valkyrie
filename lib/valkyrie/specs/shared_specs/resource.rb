@@ -122,6 +122,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
       resource = nil
       expect(resource).not_to respond_to :string_property
+      resource_klass.schema.delete(:string_property)
     end
   end
 
