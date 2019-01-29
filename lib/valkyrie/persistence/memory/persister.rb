@@ -86,7 +86,7 @@ module Valkyrie::Persistence::Memory
       def generate_lock_token(resource)
         return unless resource.optimistic_locking_enabled?
         token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
-        resource.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, token)
+        resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
       end
 
       # Check whether a resource is current.
