@@ -50,4 +50,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'fcrepo_wrapper'
   spec.add_development_dependency 'docker-stack', '~> 0.2.6'
   spec.add_development_dependency 'activerecord', '~> 5.1.0'
+  spec.add_development_dependency 'timecop'
 end

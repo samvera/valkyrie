@@ -40,6 +40,12 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
   end
 
   describe "#to_h" do
+    before do
+      Timecop.freeze
+    end
+    after do
+      Timecop.return
+    end
     it "maps all available properties to the solr record" do
       expect(mapper.convert!).to eq(
         id: resource.id.to_s,
@@ -60,6 +66,7 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
         author_tesi: ["Author"],
         author_tsi: ["Author"],
         created_at_dtsi: created_at.iso8601,
+        updated_at_dtsi: Time.current.utc.iso8601(6),
         internal_resource_ssim: ["Resource"],
         internal_resource_tesim: ["Resource"],
         internal_resource_tsim: ["Resource"],

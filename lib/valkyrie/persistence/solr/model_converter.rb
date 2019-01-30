@@ -41,8 +41,16 @@ module Valkyrie::Persistence::Solr
       if resource_attributes[:created_at]
         DateTime.parse(resource_attributes[:created_at].to_s).utc.iso8601
       else
-        Time.current.utc.iso8601
+        Time.current.utc.iso8601(6)
       end
+    end
+
+    # @return [String] ISO-8601 timestamp in UTC of the updated_at for solr
+    # @note Solr stores its own updated_at timestamp, but for performance
+    # reasons we're generating our own. Without doing so, every time we add a
+    # new document we'd have to do a GET to find out the timestamp.
+    def updated_at
+      Time.current.utc.iso8601(6)
     end
 
     # @return [Hash] Solr document to index.
@@ -50,7 +58,8 @@ module Valkyrie::Persistence::Solr
       {
         "id": id,
         "join_id_ssi": "id-#{id}",
-        "created_at_dtsi": created_at
+        "created_at_dtsi": created_at,
+        "updated_at_dtsi": updated_at
       }.merge(add_single_values(attribute_hash)).merge(lock_hash)
     end
 
