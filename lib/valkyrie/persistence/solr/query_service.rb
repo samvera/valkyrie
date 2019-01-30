@@ -92,9 +92,11 @@ module Valkyrie::Persistence::Solr
     # @param [Valkyrie::Resource] referenced resource
     # @param [Symbol, String] property
     # @return [Array<Valkyrie::Resource>] related resources
-    def find_inverse_references_by(resource:, property:)
-      ensure_persisted(resource)
-      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+    def find_inverse_references_by(resource: nil, id: nil, property:)
+      raise ArgumentError, "Provide resource or id" unless resource || id
+      ensure_persisted(resource) if resource
+      id ||= resource.id
+      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(id: id, property: property, connection: connection, resource_factory: resource_factory).run
     end
 
     # Construct the Valkyrie::Persistence::CustomQueryContainer object using this query service

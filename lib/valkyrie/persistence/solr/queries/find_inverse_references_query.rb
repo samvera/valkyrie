@@ -3,14 +3,14 @@ module Valkyrie::Persistence::Solr::Queries
   # Responsible for efficiently returning all {Valkyrie::Resource}s which
   # reference a {Valkyrie::Resource} in a given property.
   class FindInverseReferencesQuery
-    attr_reader :resource, :property, :connection, :resource_factory
+    attr_reader :id, :property, :connection, :resource_factory
 
     # @param [Valkyrie::Resource] resource
     # @param [String] property
     # @param [RSolr::Client] connection
     # @param [ResourceFactory] resource_factory
-    def initialize(resource:, property:, connection:, resource_factory:)
-      @resource = resource
+    def initialize(resource: nil, id: nil, property:, connection:, resource_factory:)
+      @id = id ? id : resource.id
       @property = property
       @connection = connection
       @resource_factory = resource_factory
@@ -39,7 +39,7 @@ module Valkyrie::Persistence::Solr::Queries
     # @note the field used here is a _ssim dynamic field and the value is prefixed by "id-"
     # @return [Hash]
     def query
-      "#{property}_ssim:id-#{resource.id}"
+      "#{property}_ssim:id-#{id}"
     end
   end
 end

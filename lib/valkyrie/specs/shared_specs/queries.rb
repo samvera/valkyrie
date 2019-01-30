@@ -32,6 +32,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_members).with_keywords(:resource, :model) }
   it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property) }
+  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:id, :property) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:resource) }
 
   describe ".find_all" do
@@ -304,6 +305,26 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         end
       end
     end
+
+    context "when id is passed instead of resource" do
+      it "returns everything which references the given resource by the given property" do
+        parent = persister.save(resource: resource_class.new)
+        parent2 = persister.save(resource: resource_class.new)
+        child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
+        child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
+        persister.save(resource: resource_class.new)
+        persister.save(resource: SecondResource.new)
+
+        expect(query_service.find_inverse_references_by(id: parent.id, property: :a_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
+      end
+    end
+
+    context "when neither id nor resource is passed" do
+      it "raises an error" do
+        expect { query_service.find_inverse_references_by(property: :a_member_of) }.to raise_error ArgumentError
+      end
+    end
+
     context "when the resource is not saved" do
       it "raises an error" do
         parent = resource_class.new

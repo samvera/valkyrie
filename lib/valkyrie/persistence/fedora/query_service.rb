@@ -111,8 +111,10 @@ module Valkyrie::Persistence::Fedora
     # Find all resources referencing a given resource (e. g. parents)
     # *This is done by iterating through the ID of each resource referencing the resource in the query, and requesting each resource over the HTTP*
     # *Also, an initial request is made to find the URIs of the resources referencing the resource in the query*
-    def find_inverse_references_by(resource:, property:)
-      ensure_persisted(resource)
+    def find_inverse_references_by(resource: nil, id: nil, property:)
+      raise ArgumentError, "Provide resource or id" unless resource || id
+      ensure_persisted(resource) if resource
+      resource ||= find_by(id: id)
       if ordered_property?(resource: resource, property: property)
         find_inverse_references_by_ordered(resource: resource, property: property)
       else
