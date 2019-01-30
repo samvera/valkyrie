@@ -70,7 +70,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   describe "#[]" do
     it "allows access to properties which are set" do
-      resource_klass.attribute :my_property
+      resource_klass.attribute :my_property unless resource_klass.schema.key?(:my_property)
       resource = resource_klass.new
 
       resource.my_property = "test"
@@ -84,7 +84,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(resource[:bad_property]).to eq nil
     end
     it "can be accessed via a string" do
-      resource_klass.attribute :other_property
+      resource_klass.attribute :other_property unless resource_klass.schema.key?(:other_property)
       resource = resource_klass.new
 
       resource.other_property = "test"
@@ -96,7 +96,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   describe "#set_value" do
     it "can set a value" do
-      resource_klass.attribute :set_value_property
+      resource_klass.attribute :set_value_property unless resource_klass.schema.key?(:set_value_property)
       resource = resource_klass.new
 
       resource.set_value(:set_value_property, "test")
@@ -110,7 +110,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   describe ".new" do
     it "can set values with symbols" do
-      resource_klass.attribute :symbol_property
+      resource_klass.attribute :symbol_property unless resource_klass.schema.key?(:symbol_property)
 
       resource = resource_klass.new(symbol_property: "bla")
 
@@ -118,7 +118,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource_klass.schema.delete(:symbol_property)
     end
     it "can not set values with string properties" do
-      resource_klass.attribute :string_property
+      resource_klass.attribute :string_property unless resource_klass.schema.key?(:string_property)
 
       resource = nil
       expect(resource).not_to respond_to :string_property
@@ -128,7 +128,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   describe "#attributes" do
     it "returns all defined attributs, including nil keys" do
-      resource_klass.attribute :bla
+      resource_klass.attribute :bla unless resource_klass.schema.key?(:bla)
 
       resource = resource_klass.new
 
