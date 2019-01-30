@@ -89,6 +89,17 @@ The initializer also registers three `Valkyrie::StorageAdapter` instances for st
 * `:memory` which stores files in an in-memory cache (again, not persistent, so this is only appropriate for
   testing)
 
+### Sample configuration with custom `Valkyrie.config.resource_class_resolver`:
+
+```
+require 'valkyrie'
+Rails.application.config.to_prepare do
+  Valkyrie.config.resource_class_resolver = lambda do |resource_klass_name|
+    # Do complicated lookup based on the string
+  end
+end
+```
+
 ### Sample configuration: `config/valkyrie.yml`:
 
 A sample configuration file that configures your application to use different adapters:

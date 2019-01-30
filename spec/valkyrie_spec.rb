@@ -43,4 +43,29 @@ describe Valkyrie do
       expect(Rails).to have_received(:root).exactly(8).times
     end
   end
+  describe ".config" do
+    describe '.resource_class_resolver' do
+      subject(:resolver) { described_class.config.resource_class_resolver }
+      it { is_expected.to respond_to(:call).with(1).argument }
+      context 'when called' do
+        it 'will by default constantize the given string' do
+          expect(resolver.call('Valkyrie')).to eq(described_class)
+        end
+      end
+      context 'when configured' do
+        around do |example|
+          original = described_class.config.resource_class_resolver
+          example.run
+          described_class.config.resource_class_resolver = original
+        end
+        it 'will use the configured lambda' do
+          # Yes. This does not conform to the expected output, but
+          # I'm looking to demonstrate how this works
+          new_resolver = ->(string) { string.to_sym }
+          described_class.config.resource_class_resolver = new_resolver
+          expect(described_class.config.resource_class_resolver.call('hello')).to eq(:hello)
+        end
+      end
+    end
+  end
 end

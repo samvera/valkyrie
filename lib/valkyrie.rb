@@ -86,12 +86,38 @@ module Valkyrie
       Valkyrie::StorageAdapter.find(super.to_sym)
     end
 
+    # @api public
+    #
+    # The returned anonymous method (e.g. responds to #call) has a signature of
+    # an unamed parameter that is a string. Calling the anonymous method should
+    # return a Valkyrie::Resource from which Valkyrie will map the persisted
+    # data into.
+    #
+    # @return [#call] with method signature of 1
+    #
+    # @see #default_resource_class_resolver for full interface
+    def resource_class_resolver
+      super
+    end
+
+    # @!attribute [w] resource_class_resolver=
+    #   The setter for #resource_class_resolver; see it's implementation
+
     private
 
       def defaults
         {
-          standardize_query_result: false
+          standardize_query_result: false,
+          resource_class_resolver: method(:default_resource_class_resolver)
         }
+      end
+
+      # String constantize is a "by convention" factory. This works, but assumes
+      # the ruby class once used to persist is the model used to now reify.
+      #
+      # @param [String] class_name
+      def default_resource_class_resolver(class_name)
+        class_name.constantize
       end
   end
 
