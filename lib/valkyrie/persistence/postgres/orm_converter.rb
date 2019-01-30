@@ -56,7 +56,7 @@ module Valkyrie::Persistence::Postgres
       # Retrieve the Class used to construct the Valkyrie Resource
       # @return [Class]
       def resource_klass
-        internal_resource.constantize
+        Valkyrie.config.resource_class_resolver.call(internal_resource)
       end
 
       # Access the String for the Valkyrie Resource type within the attributes

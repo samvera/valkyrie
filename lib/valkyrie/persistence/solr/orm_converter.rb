@@ -26,7 +26,7 @@ module Valkyrie::Persistence::Solr
     # Access the Class for the Valkyrie Resource
     # @return [Class]
     def resource_klass
-      internal_resource.constantize
+      Valkyrie.config.resource_class_resolver.call(internal_resource)
     end
 
     # Access the String specifying the Valkyrie Resource type in the Solr Document
