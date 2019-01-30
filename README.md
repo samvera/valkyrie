@@ -51,7 +51,11 @@ instance with a short name that can be used to refer to it in your application:
 ```
 # frozen_string_literal: true
 require 'valkyrie'
+
+
 Rails.application.config.to_prepare do
+
+  # To use the postgres adapter you must add `gem 'pg'` to your Gemfile
   Valkyrie::MetadataAdapter.register(
     Valkyrie::Persistence::Postgres::MetadataAdapter.new,
     :postgres
