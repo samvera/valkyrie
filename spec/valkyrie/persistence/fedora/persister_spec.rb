@@ -69,7 +69,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
           raise 'persister must be set with `let(:persister)`' unless defined? persister
           class CustomResource < Valkyrie::Resource
             include Valkyrie::Resource::AccessControls
-            attribute :alternate_ids, Valkyrie::Types::Array
+            attribute :alternate_ids, Valkyrie::Types::Set.of(Valkyrie::Types::ID)
             attribute :title
             attribute :author
             attribute :member_ids
