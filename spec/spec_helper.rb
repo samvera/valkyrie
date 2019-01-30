@@ -3,6 +3,8 @@ ENV['RACK_ENV'] = 'test'
 ENV['RAILS_ENV'] = 'test'
 ENV['environment'] = 'test'
 require 'simplecov'
+require 'valkyrie'
+
 SimpleCov.start do
   add_filter 'spec'
   add_filter 'vendor'
