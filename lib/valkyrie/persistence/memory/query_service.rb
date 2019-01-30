@@ -36,7 +36,10 @@ module Valkyrie::Persistence::Memory
     def find_by_alternate_identifier(alternate_identifier:)
       alternate_identifier = Valkyrie::ID.new(alternate_identifier.to_s) if alternate_identifier.is_a?(String)
       validate_id(alternate_identifier)
-      cache.select { |_key, resource| resource[:alternate_ids].include?(alternate_identifier) }.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+      cache.select do |_key, resource|
+        next unless resource[:alternate_ids]
+        resource[:alternate_ids].include?(alternate_identifier)
+      end.values.first || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
     # Get a batch of resources by ID.
