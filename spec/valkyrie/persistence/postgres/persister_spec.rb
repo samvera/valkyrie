@@ -115,5 +115,22 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
         expect(orm_resource.lock_version).to eq 0
       end
     end
+
+    context 'no postgres gem' do
+      let(:error) { Gem::LoadError.new.tap { |err| err.name = 'pg' } }
+      let(:error_message) do
+        "You are using the Postgres adapter without installing the pg gem.  "\
+      "Add `gem 'pg'` to your Gemfile."
+      end
+
+      before do
+        allow(Gem::Dependency).to receive(:new).with('pg', []).and_raise error
+      end
+
+      it 'raises an error' do
+        expect { load 'lib/valkyrie/persistence/postgres.rb' }.to raise_error(Gem::LoadError,
+                                                                              error_message)
+      end
+    end
   end
 end

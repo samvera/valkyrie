@@ -3,6 +3,9 @@ ENV['RACK_ENV'] = 'test'
 ENV['RAILS_ENV'] = 'test'
 require 'simplecov'
 require 'coveralls'
+
+require 'valkyrie'
+
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
   [
     SimpleCov::Formatter::HTMLFormatter,

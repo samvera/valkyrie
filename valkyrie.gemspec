@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'railties' # To use generators and engines
   spec.add_dependency 'reform'
   spec.add_dependency 'reform-rails'
-  spec.add_dependency 'pg'
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
   spec.add_dependency 'active-triples'
