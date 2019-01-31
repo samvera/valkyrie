@@ -236,7 +236,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   it "can store Valkyrie::IDs" do
-    shared_title = persister.save(resource: resource_class.new(id: "test"))
+    shared_title = persister.save(resource: resource_class.new)
     book = persister.save(resource: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]))
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly(shared_title.id, Valkyrie::ID.new("adapter://1"), "test")

@@ -19,7 +19,15 @@ module Valkyrie::Persistence::Postgres
     #   was modified in the database between been read into memory and persisted
     def save(resource:)
       orm_object = resource_factory.from_resource(resource: resource)
-      orm_object.save!
+      orm_object.transaction do
+        orm_object.save!
+        if resource.id && resource.id.to_s != orm_object.id
+          warn "[DEPRECATION] Postgres' primary key column can not save with the given ID #{resource.id}. " \
+            "For now a new ID has been assigned (#{orm_object.id}), but in the next major version this will throw an exception and not save. " \
+            "To avoid this warning, set the ID to be nil via `resource.id = nil` before you save it. \n" \
+            "Called from #{Gem.location_of_caller.join(':')}"
+        end
+      end
       resource_factory.to_resource(object: orm_object)
     rescue ActiveRecord::StaleObjectError
       raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process."
