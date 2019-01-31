@@ -24,7 +24,7 @@ module Valkyrie::Persistence
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(resource:)
+    def save(resource:, force: nil)
       # Assume the first persister is the canonical data store; that's the optlock we want
       first, *rest = *persisters
       cached_resource = first.save(resource: resource)
@@ -37,7 +37,7 @@ module Valkyrie::Persistence
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
-    def save_all(resources:)
+    def save_all(resources:, force: nil)
       resources.map do |resource|
         save(resource: resource)
       end

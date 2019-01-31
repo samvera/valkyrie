@@ -23,15 +23,17 @@ module Valkyrie::Persistence::Solr
     #     'title_ssim'
     #     'title_tesim'
     # @param [Valkyrie::Resource] resource
+    # @param [TrueClass || FalseClass] force This flag is a NOOP
     # @return [Valkyrie::Resource] the persisted resource
-    def save(resource:)
+    def save(resource:, force: nil)
       repository([resource]).persist.first
     end
 
     # Persists a set of Valkyrie Resources into a Solr index
     # @param [Array<Valkyrie::Resource>] resources
+    # @param [TrueClass || FalseClass] force This flag is a NOOP
     # @return [Valkyrie::Resource] the set of persisted resources
-    def save_all(resources:)
+    def save_all(resources:, force: nil)
       repository(resources).persist
     end
 

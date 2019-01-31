@@ -24,11 +24,13 @@ module Valkyrie::Persistence
       @buffer_class = buffer_class
     end
 
-    def save(resource:)
+    # (see Valkyrie::Persistence::Memory::Persister#save)
+    def save(resource:, force: nil)
       persister.save(resource: resource)
     end
 
-    def save_all(resources:)
+    # (see Valkyrie::Persistence::Memory::Persister#save_all)
+    def save_all(resources:, force: nil)
       persister.save_all(resources: resources)
     end
 

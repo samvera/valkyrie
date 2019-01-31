@@ -75,10 +75,38 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       resource1.author = "test"
       resource2 = resource_class.new
       allow(persister).to receive(:save).and_call_original
-      allow(persister).to receive(:save).with(resource: resource2).and_raise
+      allow(persister).to receive(:save).with(resource: resource2, force: nil).and_raise
 
       expect { persister.save_all(resources: [resource1, resource2]) }.to raise_error RuntimeError
       expect(query_service.find_by(id: resource1.id).author).to be_nil
+    end
+
+    context "it is passed a uuid" do
+      let(:uuid) { SecureRandom.uuid }
+      let(:uuid2) { SecureRandom.uuid }
+      it "saves the uuid" do
+        resource1 =  CustomResource.new(id: uuid, title: "resource one with id")
+        resource2 =  CustomResource.new(id: uuid2, title: "resource two with id")
+        output = adapter.persister.save_all(resources: [resource1, resource2])
+        expect(output.map(&:id).map(&:to_s)).to contain_exactly(uuid2, uuid)
+      end
+    end
+
+    context "it is passed an arbitrary string" do
+      let(:id) { 'blarg' }
+      let(:id2) { 'blarg too' }
+      it "raises an exception when not forced" do
+        resource1 =  CustomResource.new(id: id, title: "resource without id")
+        resource2 =  CustomResource.new(id: id2, title: "resource without id")
+        expect { adapter.persister.save_all(resources: [resource1, resource2], force: false) }.to raise_error(Valkyrie::Persistence::UnsupportedDatatype)
+      end
+
+      it "overwrites the bad id" do
+        resource1 =  CustomResource.new(id: id, title: "resource without id")
+        resource2 =  CustomResource.new(id: id2, title: "resource without id")
+        output = adapter.persister.save_all(resources: [resource1, resource2])
+        expect(output.map(&:id).map(&:to_s)).not_to include(id, id2)
+      end
     end
   end
 
@@ -136,6 +164,57 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
         expect do
           load "lib/valkyrie/persistence/postgres.rb"
         end.not_to output(message).to_stderr
+      end
+    end
+  end
+
+  describe "save" do
+    before do
+      class CustomResource < Valkyrie::Resource
+        attribute :title
+      end
+    end
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+    let(:resource_class) { CustomResource }
+
+    context "it is passed a uuid" do
+      let(:uuid) { SecureRandom.uuid }
+      it "saves the uuid" do
+        resource =  CustomResource.new(id: uuid, title: "resource with id")
+        output = adapter.persister.save(resource: resource)
+        expect(output.id.to_s).to eq(uuid)
+      end
+    end
+
+    context "it is passed an arbitrary string" do
+      let(:id) { 'blarg' }
+      let(:message) { 'Postgres ids must be UUIDs. To overwrite this id use force: true' }
+      it "raises an exception when not forced" do
+        resource =  CustomResource.new(id: id, title: "resource without id")
+        expect { adapter.persister.save(resource: resource, force: false) }.to raise_error(
+          Valkyrie::Persistence::UnsupportedDatatype,
+          message
+        )
+      end
+
+      it "overwrites the bad id and outputs a deprecation error" do
+        resource = CustomResource.new(id: id, title: "resource without id")
+        output = nil
+        expect do
+          output = adapter.persister.save(resource: resource)
+        end.to output(/\[DEPRECATION\]/).to_stderr
+        expect(output.id.to_s).not_to eq(id)
+      end
+
+      it "overwrites the bad id" do
+        resource = CustomResource.new(id: id, title: "resource without id")
+        output = nil
+        expect do
+          output = adapter.persister.save(resource: resource, force: true)
+        end.not_to output(/\[DEPRECATION\]/).to_stderr
+        expect(output.id.to_s).not_to eq(id)
       end
     end
   end

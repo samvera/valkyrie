@@ -23,6 +23,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
   it { is_expected.to respond_to(:save).with_keywords(:resource) }
   it { is_expected.to respond_to(:save_all).with_keywords(:resources) }
+  it { is_expected.to respond_to(:save).with_keywords(:resource, :force) }
+  it { is_expected.to respond_to(:save_all).with_keywords(:resources, :force) }
   it { is_expected.to respond_to(:delete).with_keywords(:resource) }
 
   it "can save a resource" do
@@ -236,11 +238,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   end
 
   it "can store Valkyrie::IDs" do
-    shared_title = persister.save(resource: resource_class.new(id: "test"))
-    book = persister.save(resource: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]))
+    id = SecureRandom.uuid
+    shared_title = persister.save(resource: resource_class.new(id: id))
+    book = persister.save(resource: resource_class.new(title: [shared_title.id, Valkyrie::ID.new("adapter://1"), id]))
     reloaded = query_service.find_by(id: book.id)
-    expect(reloaded.title).to contain_exactly(shared_title.id, Valkyrie::ID.new("adapter://1"), "test")
-    expect([shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]).to contain_exactly(*reloaded.title)
+    expect(reloaded.title).to contain_exactly(shared_title.id, Valkyrie::ID.new("adapter://1"), id)
+    expect([shared_title.id, Valkyrie::ID.new("adapter://1"), id]).to contain_exactly(*reloaded.title)
   end
 
   it "can override default id generation with a provided id" do
