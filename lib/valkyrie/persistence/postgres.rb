@@ -12,10 +12,6 @@ module Valkyrie::Persistence
     # :nocov:
     # Deprecation to allow us to make pg an optional dependency
     path = Bundler.definition.gemfiles.first
-    matches = File.readlines(path).select { |l| l =~ /gem ['"]pg\b/ }
-    if matches.empty?
-      warn "[DEPRECATION] pg will not be included as a dependency in Valkyrie's gemspec as of the next major release. Please add the gem directly to your Gemfile if you use a postgres adapter."
-    end
     matches = File.readlines(path).select { |l| l =~ /gem ['"]activerecord\b/ }
     if matches.empty?
       warn "[DEPRECATION] activerecord will not be included as a dependency in Valkyrie's gemspec as of the next major release." \
