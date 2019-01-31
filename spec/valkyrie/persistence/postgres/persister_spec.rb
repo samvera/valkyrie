@@ -9,6 +9,33 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
   let(:persister) { adapter.persister }
   it_behaves_like "a Valkyrie::Persister"
 
+  context "saving with a given ID" do
+    before do
+      class MyResource < Valkyrie::Resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :MyResource)
+    end
+    context "when given a UUID" do
+      it "saves it, maintaining the ID" do
+        uuid = SecureRandom.uuid
+        output = persister.save(resource: MyResource.new(id: uuid))
+
+        expect(output.id.to_s).to eq uuid
+      end
+    end
+    context "when given an ID it can't save" do
+      it "gives a warning and saves it anyways" do
+        resource = MyResource.new(id: "nonsense")
+
+        expect { persister.save(resource: resource) }.to output(/DEPRECATION/).to_stderr
+        expect { persister.save_all(resources: [resource]) }.to output(/DEPRECATION/).to_stderr
+        expect(query_service.find_all.to_a.length).to eq 2
+      end
+    end
+  end
+
   context "single value behavior" do
     before do
       class SingleResource < Valkyrie::Resource
