@@ -92,7 +92,12 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(found).to be_persisted
     end
 
-    it "returns a Valkyrie::Persistence::ObjectNotFoundError for a non-found alternate identifier" do
+    it 'raises a Valkyrie::Persistence::ObjectNotFoundError when persisted objects do not have alternate_ids' do
+      persister.save(resource: SecondResource.new)
+      expect { query_service.find_by_alternate_identifier(alternate_identifier: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+
+    it "raises a Valkyrie::Persistence::ObjectNotFoundError for a non-found alternate identifier" do
       expect { query_service.find_by_alternate_identifier(alternate_identifier: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
 
