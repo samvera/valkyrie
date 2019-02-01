@@ -4,10 +4,16 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 
 ![Valkyrie Logo](valkyrie_logo.png)
 
-[![CircleCI](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
+Code: [![Version](https://badge.fury.io/rb/valkyrie.png)](http://badge.fury.io/rb/valkyrie)
+[![Build Status](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
 [![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
 [![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
+
+Docs: [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
+[![Apache 2.0 License](http://img.shields.io/badge/APACHE2-license-blue.svg)](./LICENSE)
 [![Yard Docs](http://img.shields.io/badge/yard-docs-blue.svg)](http://rubydoc.info/github/samvera-labs/valkyrie)
+
+Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samvera.org/)
 
 ## Primary Contacts
 
@@ -19,7 +25,11 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 
 [Trey Pendragon](https://github.com/tpendragon)
 
-## Installation
+## Help
+
+The Samvera community is here to help. Please see our [support guide](./SUPPORT.md).
+
+## Getting Started
 
 Add this line to your application's Gemfile:
 
@@ -260,17 +270,12 @@ When configuring your adapter, include the `fedora_version` parameter in your me
 
 The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
 
-## Get Help
+## Acknowledgments
 
-If you have any questions regarding Valkyrie you can send a message to [the
-Samvera community tech list](mailto:samvera-tech@googlegroups.com) or the `#valkyrie`
-channel in the [Samvera community Slack
-team](https://wiki.duraspace.org/pages/viewpage.action?pageId=87460391#Getintouch!-Slack).
+This software has been developed by and is brought to you by the Samvera community.  Learn more at the
+[Samvera website](http://samvera.org/).
 
-## License
-
-Valkyrie is available under [the Apache 2.0 license](../LICENSE).
-
+![Samvera Logo](https://wiki.duraspace.org/download/thumbnails/87459292/samvera-fall-font2-200w.png?version=1&modificationDate=1498550535816&api=v2)
 
 ## Contributing
 
