@@ -112,9 +112,11 @@ module Valkyrie::Persistence::Postgres
     # @param [Valkyrie::Resource] resource
     # @param [String] property
     # @return [Array<Valkyrie::Resource>]
-    def find_inverse_references_by(resource:, property:)
-      ensure_persisted(resource)
-      internal_array = "{\"#{property}\": [{\"id\": \"#{resource.id}\"}]}"
+    def find_inverse_references_by(resource: nil, id: nil, property:)
+      raise ArgumentError, "Provide resource or id" unless resource || id
+      ensure_persisted(resource) if resource
+      id ||= resource.id
+      internal_array = "{\"#{property}\": [{\"id\": \"#{id}\"}]}"
       run_query(find_inverse_references_query, internal_array)
     end
 

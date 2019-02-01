@@ -113,10 +113,12 @@ module Valkyrie::Persistence::Memory
     # @return [Array<Valkyrie::Resource>] All resources in the persistence backend
     #   which have the ID of the given `resource` in their `property` property. Not
     #   in order.
-    def find_inverse_references_by(resource:, property:)
-      ensure_persisted(resource)
+    def find_inverse_references_by(resource: nil, id: nil, property:)
+      raise ArgumentError, "Provide resource or id" unless resource || id
+      ensure_persisted(resource) if resource
+      id ||= resource.id
       find_all.select do |obj|
-        Array.wrap(obj[property]).include?(resource.id)
+        Array.wrap(obj[property]).include?(id)
       end
     end
 
