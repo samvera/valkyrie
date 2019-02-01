@@ -1,3 +1,14 @@
+# v1.5.0 RC2 2018-02-01
+
+## Changes since last release
+
+* Fix solr casting when an updated_at key isn't present in the solr document.
+  [tpendragon](https://github.com/tpendragon)
+
+Additional thanks to the following for code review:
+
+[mjgiarlo](https://github.com/mjgiarlo)
+
 # v1.5.0 RC1 2018-02-01
 
 ## Changes since last release
