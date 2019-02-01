@@ -26,12 +26,12 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       end
     end
     context "when given an ID it can't save" do
-      it "gives a warning and saves it anyways" do
+      it "raises an UnsupportedDatatype exception" do
         resource = MyResource.new(id: "nonsense")
 
-        expect { persister.save(resource: resource) }.to output(/DEPRECATION/).to_stderr
-        expect { persister.save_all(resources: [resource]) }.to output(/DEPRECATION/).to_stderr
-        expect(query_service.find_all.to_a.length).to eq 2
+        expect { persister.save(resource: resource) }.to raise_error Valkyrie::Persistence::UnsupportedDatatype
+        expect { persister.save_all(resources: [resource]) }.to raise_error Valkyrie::Persistence::UnsupportedDatatype
+        expect(query_service.find_all.to_a.length).to eq 0
       end
     end
   end
