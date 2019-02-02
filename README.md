@@ -191,8 +191,9 @@ objects = adapter.query_service.find_all
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
-The usage of `ChangeSets` in writing data are further documented on the [ChangeSets and Dirty Tracking Wiki
-page](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
+The Wiki documents the usage of [Queries](https://github.com/samvera-labs/valkyrie/wiki/Queries),
+[Persistence](https://github.com/samvera-labs/valkyrie/wiki/Persistence), and
+[ChangeSets and Dirty Tracking](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
 
 ### Concurrency Support
 A Valkyrie repository may have concurrent updates, for example, from a load-balanced Rails application, or
@@ -218,6 +219,7 @@ page](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
 ### Fedora 5 Compatibility
 When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter
 config.  If Fedora requires auth, you can also include that in the URL, e.g.:
+
    ```
    Valkyrie::Storage::Fedora.new(
      connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"),
@@ -225,12 +227,11 @@ config.  If Fedora requires auth, you can also include that in the URL, e.g.:
    )
    ```
 
-The development and test stacks use fully contained virtual volumes and bind all services to different ports,
-so they can be running at the same time without issue.
-
 ## Installing a Development environment
 
 ### With Docker
+The development and test stacks use fully contained virtual volumes and bind all services to different ports,
+so they can be running at the same time without issue.
 
 #### External Requirements
 * [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
@@ -246,7 +247,8 @@ so they can be running at the same time without issue.
 1. `eval "$(docker-machine env)"`
 
 #### Starting the development mode dependencies
-1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate shell to run them in the foreground)
+1. Start Solr, Fedora, and PostgreSQL with `rake docker:dev:daemon` (or `rake docker:dev:up` in a separate
+   shell to run them in the foreground)
 1. Run `rake db:create db:migrate` to initialize the database
 1. Develop!
 1. Run `rake docker:dev:down` to stop the server stack
@@ -256,12 +258,12 @@ so they can be running at the same time without issue.
 1. `rake docker:spec`
 
 #### To run the test suite manually
-1. Start Solr, Fedora, and PostgreSQL with `rake docker:test:daemon` (or `rake docker:test:up` in a separate shell to run them in the foreground)
+1. Start Solr, Fedora, and PostgreSQL with `rake docker:test:daemon` (or `rake docker:test:up` in a separate
+   shell to run them in the foreground)
 1. Run `rake db:create db:migrate` to initialize the database
 1. Run the gem's RSpec test suite with `rspec spec` or `rake`
 1. Run `rake docker:test:down` to stop the server stack
    * The test stack cleans up after itself on exit.
-
 
 ### Without Docker
 
