@@ -134,23 +134,10 @@ For each environment, you must set two values:
 
 The values are the short names used in your initializer.
 
-Further details can be found on the [the Wiki](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
+Further details can be found on the [Persistence Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
 
 ## Usage
 
-### The Public API
-
-Valkyrie's public API is defined by the shared specs that are used to test each of its core classes.
-This include change sets, resources, persisters, adapters, and queries. When creating your own kinds of
-these kinds of classes, you should use these shared specs to test your classes for conformance to
-Valkyrie's API.
-
-When breaking changes are introduced, necessitating a major version change, the shared specs will reflect
-this. When new features are added and a minor version is released there will be no change to the existing shared
-specs, but there may be new ones. These new shared specs will fail in your
-application if you have custom adapters, but your application will still work.
-
-Using the shared specs in your own models is described in more [detail](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
 
 ### Define a Custom Work
 
@@ -172,7 +159,7 @@ order of multiple values.
 attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 ```
 
-Defining resource attributes is explained in greater detail within the [Wiki](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
+Defining resource attributes is explained in greater detail on the [Using Types Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
 
 #### Work Types Generator
 
@@ -209,30 +196,45 @@ objects = adapter.query_service.find_all
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
-The usage of `ChangeSets` in writing data are further documented [here](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
+The usage of `ChangeSets` in writing data are further documented on the [ChangeSets and Dirty Tracking Wiki page](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
 
-### Concurrency Support (Optimistic Locking)
-By default, it is assumed that a Valkyrie repository implementation shall use a solution supporting concurrent updates for resources (multiple resources can be updated simultaneously using a Gem such as [Sidekiq](https://github.com/mperham/sidekiq)).  In order to handle the possibility of multiple updates applied to the same resource corrupting data, Valkyrie supports optimistic locking.  For further details, please reference the [overview of optimistic locking for Valkyrie resources](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
+### Concurrency Support
+A Valkyrie repository may have concurrent updates, for example, from a load-balanced Rails application, or
+from multiple [Sidekiq](https://github.com/mperham/sidekiq) background workers).  In order to prevent multiple
+simultaneous updates applied to the same resource from losing or corrupting data, Valkyrie supports optimistic
+locking.  How to use optimistic locking with Valkyrie is documented on the [Optimistic Locking Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
+
+### The Public API
+Valkyrie's public API is defined by the shared specs that are used to test each of its core classes.
+This include change sets, resources, persisters, adapters, and queries. When creating your own kinds of
+these kinds of classes, you should use these shared specs to test your classes for conformance to
+Valkyrie's API.
+
+When breaking changes are introduced, necessitating a major version change, the shared specs will reflect
+this. When new features are added and a minor version is released there will be no change to the existing shared
+specs, but there may be new ones. These new shared specs will fail in your
+application if you have custom adapters, but your application will still work.
+
+Using the shared specs in your own models is described in more detail on the [Shared Specs Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
+
+### Fedora 5 Compatibility
+When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter config.  If Fedora requires auth, you can also include that in the URL, e.g.:
+   ```
+   Valkyrie::Storage::Fedora.new(
+     connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"),
+     fedora_version: 5
+   )
+   ```
+
+The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
 
 ## Installing a Development environment
-
-### Without Docker
-
-#### External Requirements
-* PostgreSQL with the uuid-ossp extension.
-  * Note: Enabling uuid-ossp requires database superuser privileges.
-    * From `psql`: `alter user [username] with superuser;`
-
-#### To run the test suite
-1. Start Solr and Fedora servers for testing with `rake server:test`
-1. Run `rake db:create` (First time only)
-1. Run `rake db:migrate`
 
 ### With Docker
 
 #### External Requirements
 * [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
-*
+
 ### Dependency Setup (Mac OSX)
 
 1. `brew install docker`
@@ -262,13 +264,18 @@ By default, it is assumed that a Valkyrie repository implementation shall use a 
 1. Run `rake docker:test:down` to stop the server stack
    * The test stack cleans up after itself on exit.
 
-## Fedora 5 Compatibility
-When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter config.  If Fedora requires auth, you can also include that in the URL, e.g.:
-   ```
-   Valkyrie::Storage::Fedora.new(connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"), fedora_version: 5)
-   ```
 
-The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
+### Without Docker
+
+#### External Requirements
+* PostgreSQL with the uuid-ossp extension.
+  * Note: Enabling uuid-ossp requires database superuser privileges.
+    * From `psql`: `alter user [username] with superuser;`
+
+#### To run the test suite
+1. Start Solr and Fedora servers for testing with `rake server:test`
+1. Run `rake db:create` (First time only)
+1. Run `rake db:migrate`
 
 ## Acknowledgments
 
