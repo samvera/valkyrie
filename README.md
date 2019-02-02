@@ -18,11 +18,9 @@ Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samv
 ## Primary Contacts
 
 ### Product Owner
-
 [Carolyn Cole](https://github.com/cam156)
 
 ### Technical Lead
-
 [Trey Pendragon](https://github.com/tpendragon)
 
 ## Help
@@ -47,7 +45,6 @@ Valkyrie is configured in two places: an initializer that registers the persiste
 configuration file that sets which options are used by default in which environments.
 
 ### Sample initializer: `config/initializers/valkyrie.rb`:
-
 Here is a sample initializer that registers a couple adapters and storage adapters, in each case linking an
 instance with a short name that can be used to refer to it in your application:
 
@@ -91,7 +88,8 @@ The initializer registers two `Valkyrie::MetadataAdapter` instances for storing 
 
 Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
 updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
-at once, `Valkyrie::Persistence::Solr` for storing in Solr, and `Valkyrie::Persistence::Fedora` for storing in Fedora.
+at once, `Valkyrie::Persistence::Solr` for storing in Solr, and `Valkyrie::Persistence::Fedora` for storing
+in Fedora.
 
 The initializer also registers three `Valkyrie::StorageAdapter` instances for storing files:
 * `:disk` which stores files on disk
@@ -100,7 +98,6 @@ The initializer also registers three `Valkyrie::StorageAdapter` instances for st
   testing)
 
 ### Sample configuration with custom `Valkyrie.config.resource_class_resolver`:
-
 ```
 require 'valkyrie'
 Rails.application.config.to_prepare do
@@ -111,7 +108,6 @@ end
 ```
 
 ### Sample configuration: `config/valkyrie.yml`:
-
 A sample configuration file that configures your application to use different adapters:
 
 ```
@@ -134,13 +130,12 @@ For each environment, you must set two values:
 
 The values are the short names used in your initializer.
 
-Further details can be found on the [Persistence Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
+Further details can be found on the [Persistence Wiki
+page](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
 
 ## Usage
 
-
 ### Define a Custom Work
-
 Define a custom work class:
 
 ```
@@ -159,7 +154,8 @@ order of multiple values.
 attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 ```
 
-Defining resource attributes is explained in greater detail on the [Using Types Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
+Defining resource attributes is explained in greater detail on the [Using Types Wiki
+page](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
 
 #### Work Types Generator
 
@@ -177,7 +173,6 @@ rails generate valkyrie:resource Foo/Bar title member_ids:array
 ```
 
 ### Read and Write Data
-
 ```
 # initialize a metadata adapter
 adapter = Valkyrie::MetadataAdapter.find(:postgres)
@@ -196,13 +191,15 @@ objects = adapter.query_service.find_all
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
-The usage of `ChangeSets` in writing data are further documented on the [ChangeSets and Dirty Tracking Wiki page](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
+The usage of `ChangeSets` in writing data are further documented on the [ChangeSets and Dirty Tracking Wiki
+page](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
 
 ### Concurrency Support
 A Valkyrie repository may have concurrent updates, for example, from a load-balanced Rails application, or
 from multiple [Sidekiq](https://github.com/mperham/sidekiq) background workers).  In order to prevent multiple
 simultaneous updates applied to the same resource from losing or corrupting data, Valkyrie supports optimistic
-locking.  How to use optimistic locking with Valkyrie is documented on the [Optimistic Locking Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
+locking.  How to use optimistic locking with Valkyrie is documented on the [Optimistic Locking Wiki
+page](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
 
 ### The Public API
 Valkyrie's public API is defined by the shared specs that are used to test each of its core classes.
@@ -211,14 +208,16 @@ these kinds of classes, you should use these shared specs to test your classes f
 Valkyrie's API.
 
 When breaking changes are introduced, necessitating a major version change, the shared specs will reflect
-this. When new features are added and a minor version is released there will be no change to the existing shared
-specs, but there may be new ones. These new shared specs will fail in your
-application if you have custom adapters, but your application will still work.
+this. When new features are added and a minor version is released there will be no change to the existing
+shared specs, but there may be new ones. These new shared specs will fail in your application if you have
+custom adapters, but your application will still work.
 
-Using the shared specs in your own models is described in more detail on the [Shared Specs Wiki page](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
+Using the shared specs in your own models is described in more detail on the [Shared Specs Wiki
+page](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
 
 ### Fedora 5 Compatibility
-When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter config.  If Fedora requires auth, you can also include that in the URL, e.g.:
+When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter
+config.  If Fedora requires auth, you can also include that in the URL, e.g.:
    ```
    Valkyrie::Storage::Fedora.new(
      connection: Ldp::Client.new("http://fedoraAdmin:fedoraAdmin@localhost:8988/rest"),
@@ -226,7 +225,8 @@ When configuring your adapter, include the `fedora_version` parameter in your me
    )
    ```
 
-The development and test stacks use fully contained virtual volumes and bind all services to different ports, so they can be running at the same time without issue.
+The development and test stacks use fully contained virtual volumes and bind all services to different ports,
+so they can be running at the same time without issue.
 
 ## Installing a Development environment
 
@@ -236,13 +236,11 @@ The development and test stacks use fully contained virtual volumes and bind all
 * [Docker](https://store.docker.com/search?offering=community&type=edition) version >= 17.09.0
 
 ### Dependency Setup (Mac OSX)
-
 1. `brew install docker`
 1. `brew install docker-machine`
 1. `brew install docker-compose`
 
 ### Starting Docker (Mac OSX)
-
 1. `docker-machine create default`
 1. `docker-machine start default`
 1. `eval "$(docker-machine env)"`
