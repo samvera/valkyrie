@@ -1,3 +1,50 @@
+# v1.5.0 2018-02-06
+
+## Changes since last release
+
+* Fix solr casting when an updated_at key isn't present in the solr document.
+  [tpendragon](https://github.com/tpendragon)
+* Add missing query service requirement to persister shared specs
+  [cjcolvar](https://github.com/cjcolvar)
+* Provide a warning when postgres adapter overwrites an ID, deprecate this
+  behavior so it will throw an exception in the future.
+  [cam156](https://github.com/cam156)
+  [hackmastera](https://github.com/hackmastera)
+  [tpendragon](https://github.com/tpendragon)
+* Add support for passing just an ID to find_inverse_references_by
+  [cam156](https://github.com/cam156)
+  [hackmastera](https://github.com/hackmastera)
+* Fix memory adapter raising an exception in find_by_alternate_identifier when
+  there are resources without the alternate_identifier attribute.
+  [jeremyf](https://github.com/jeremyf)
+* Provide a warning when using the postgres adapter without manually providing
+  the pg gem, so it can be an optional dependency in 2.0.0.
+  [hackmastera](https://github.com/hackmastera)
+* Provide guidance in specs on how to define alternate_ids
+  [cjcolvar](https://github.com/cjcolvar)
+* Upload files to Fedora using form/multipart.
+  [tpendragon](https://github.com/tpendragon)
+* Improve CompositePersister documentation.
+  [tpendragon](https://github.com/tpendragon)
+* Add a Valkyrie::Types::Params::ID type which handles when an HTML form passes
+  an empty string value.
+  [tpendragon](https://github.com/tpendragon)
+* Deprecate .member on Valkyrie::Types::Array & Set
+  [tpendragon](https://github.com/tpendragon)
+* Fix updated_at not being set correctly for the Solr adapter, fix shared specs.
+  [tpendragon](https://github.com/tpendragon)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[awead](https://github.com/awead)
+[escowles](https://github.com/escowles)
+[kelynch](https://github.com/kelynch)
+[mbklein](https://github.com/mbklein)
+[mjgiarlo](https://github.com/mjgiarlo)
+[no-reply](https://github.com/no-reply)
+[revgum](https://github.com/revgum)
+
 # v1.5.0 RC2 2018-02-01
 
 ## Changes since last release
