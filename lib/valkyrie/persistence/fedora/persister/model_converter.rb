@@ -488,9 +488,10 @@ module Valkyrie::Persistence::Fedora
         # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
         def result
           # cast it to datetime for storage, to preserve milliseconds and date
+          # @todo Remove strftime when https://github.com/ruby-rdf/rdf/issues/394 is closed.
           map_value(converted_value:
               RDF::Literal.new(
-                value.value.to_datetime,
+                value.value.to_datetime.strftime("%Y-%m-%dT%H:%M:%S.%N%z"),
                 datatype: PermissiveSchema.valkyrie_time
               ))
         end
