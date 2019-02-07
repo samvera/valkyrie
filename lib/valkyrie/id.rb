@@ -21,14 +21,6 @@ module Valkyrie
     end
     alias == eql?
 
-    # @deprecated Please use {.uri_for} instead
-    def to_uri
-      return RDF::Literal.new(id.to_s, datatype: RDF::URI("http://example.com/valkyrie_id")) if id.to_s.include?("://")
-      warn "[DEPRECATION] `to_uri` is deprecated and will be removed in the next major release. " \
-           "Called from #{Gem.location_of_caller.join(':')}"
-      ::RDF::URI(ActiveFedora::Base.id_to_uri(id))
-    end
-
     protected
 
       def state
