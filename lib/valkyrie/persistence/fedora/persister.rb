@@ -17,7 +17,7 @@ module Valkyrie::Persistence::Fedora
       initialize_repository
       internal_resource = resource.dup
       internal_resource.created_at ||= Time.current
-      internal_resource.updated_at ||= Time.current
+      internal_resource.updated_at = Time.current
       validate_lock_token(internal_resource)
       native_lock = native_lock_token(internal_resource)
       generate_lock_token(internal_resource)
