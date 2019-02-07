@@ -42,7 +42,6 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
       class CustomResource < Valkyrie::Resource
         attribute :member_ids, Valkyrie::Types::Array
       end
-      allow(Valkyrie.config).to receive(:standardize_query_result).and_return(false)
     end
 
     after do

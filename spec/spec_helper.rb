@@ -11,7 +11,6 @@ SimpleCov.start do
   minimum_coverage 100
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require 'active_fedora'
 require "valkyrie"
 require 'pry'
 require 'action_dispatch'
