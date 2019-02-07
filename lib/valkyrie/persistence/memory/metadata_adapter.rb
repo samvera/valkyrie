@@ -29,10 +29,5 @@ module Valkyrie::Persistence::Memory
     def id
       @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(self.class.to_s))
     end
-
-    def standardize_query_result?
-      Valkyrie.warn_about_standard_queries! if Valkyrie.config.standardize_query_result != true
-      Valkyrie.config.standardize_query_result == true
-    end
   end
 end

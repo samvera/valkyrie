@@ -132,11 +132,9 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
       resource = resource_klass.new
 
+      expect(resource.attributes).to be_frozen
       expect(resource.attributes).to have_key(:bla)
       expect(resource.attributes[:internal_resource]).to eq resource_klass.to_s
-      expect { resource.attributes[:internal_resource] = "bla" }.to output(/\[DEPRECATION\]/).to_stderr
-      expect { resource.attributes.delete_if { true } }.to output(/\[DEPRECATION\]/).to_stderr
-      expect { resource.attributes.delete(:internal_resource) }.to output(/\[DEPRECATION\]/).to_stderr
       expect { resource.attributes.dup[:internal_resource] = "bla" }.not_to output.to_stderr
 
       resource_klass.schema.delete(:bla)
