@@ -11,7 +11,7 @@ RSpec.shared_examples 'a Valkyrie::Persistence::Solr::Indexer' do |*_flags|
     }
   end
   let(:resource) do
-    Resource.new(
+    Valkyrie::Specs::Resource.new(
       id: "1",
       internal_resource: 'Resource',
       attributes: attributes
@@ -20,7 +20,7 @@ RSpec.shared_examples 'a Valkyrie::Persistence::Solr::Indexer' do |*_flags|
   let(:indexer) { described_class.new(resource: resource) }
 
   before do
-    class Resource < Valkyrie::Resource
+    class Valkyrie::Specs::Resource < Valkyrie::Resource
       attribute :title, Valkyrie::Types::Set
       attribute :author, Valkyrie::Types::Set
       attribute :birthday, Valkyrie::Types::DateTime.optional
@@ -29,7 +29,7 @@ RSpec.shared_examples 'a Valkyrie::Persistence::Solr::Indexer' do |*_flags|
   end
 
   after do
-    Object.send(:remove_const, :Resource)
+    Valkyrie::Specs.send(:remove_const, :Resource)
   end
 
   describe '#to_solr' do

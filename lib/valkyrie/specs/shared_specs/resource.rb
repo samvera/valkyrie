@@ -52,16 +52,16 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   describe "#human_readable_type" do
     before do
-      class MyCustomResource < Valkyrie::Resource
+      class Valkyrie::Specs::MyCustomResource < Valkyrie::Resource
         attribute :title, Valkyrie::Types::Set
       end
     end
 
     after do
-      Object.send(:remove_const, :MyCustomResource)
+      Valkyrie::Specs.send(:remove_const, :MyCustomResource)
     end
 
-    subject(:my_custom_resource) { MyCustomResource.new }
+    subject(:my_custom_resource) { Valkyrie::Specs::MyCustomResource.new }
 
     it "returns a human readable rendering of the resource class" do
       expect(my_custom_resource.human_readable_type).to eq "My Custom Resource"

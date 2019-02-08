@@ -5,11 +5,11 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
       defined? storage_adapter
     raise 'file must be set with `let(:file)`' unless
       defined? file
-    class CustomResource < Valkyrie::Resource
+    class Valkyrie::Specs::CustomResource < Valkyrie::Resource
     end
   end
   after do
-    Object.send(:remove_const, :CustomResource)
+    Valkyrie::Specs.send(:remove_const, :CustomResource)
   end
   subject { storage_adapter }
   it { is_expected.to respond_to(:handles?).with_keywords(:id) }
@@ -18,7 +18,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
 
   it "can upload, validate, re-fetch, and delete a file" do
-    resource = CustomResource.new(id: "test")
+    resource = Valkyrie::Specs::CustomResource.new(id: "test")
     sha1 = Digest::SHA1.file(file).to_s
     size = file.size
     expect(uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
