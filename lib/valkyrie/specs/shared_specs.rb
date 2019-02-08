@@ -1,4 +1,9 @@
 # frozen_string_literal: true
+module Valkyrie
+  # Define a wrapper namespace for test resources.
+  module Specs
+  end
+end
 require 'valkyrie/specs/shared_specs/persister.rb'
 require 'valkyrie/specs/shared_specs/queries.rb'
 require 'valkyrie/specs/shared_specs/metadata_adapter'

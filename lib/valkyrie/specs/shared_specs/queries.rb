@@ -3,21 +3,21 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
       defined? adapter
-    class CustomResource < Valkyrie::Resource
+    class Valkyrie::Specs::CustomResource < Valkyrie::Resource
       attribute :alternate_ids, Valkyrie::Types::Set.of(Valkyrie::Types::ID)
       attribute :title
       attribute :member_ids, Valkyrie::Types::Array
       attribute :a_member_of, Valkyrie::Types::Array
       attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
     end
-    class SecondResource < Valkyrie::Resource
+    class Valkyrie::Specs::SecondResource < Valkyrie::Resource
     end
   end
   after do
-    Object.send(:remove_const, :CustomResource)
-    Object.send(:remove_const, :SecondResource)
+    Valkyrie::Specs.send(:remove_const, :CustomResource)
+    Valkyrie::Specs.send(:remove_const, :SecondResource)
   end
-  let(:resource_class) { CustomResource }
+  let(:resource_class) { Valkyrie::Specs::CustomResource }
   let(:query_service) { adapter.query_service } unless defined? query_service
   let(:persister) { adapter.persister }
   subject { adapter.query_service }
@@ -47,12 +47,12 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   describe ".find_all_of_model" do
     it "returns all of that model" do
       persister.save(resource: resource_class.new)
-      resource2 = persister.save(resource: SecondResource.new)
+      resource2 = persister.save(resource: Valkyrie::Specs::SecondResource.new)
 
-      expect(query_service.find_all_of_model(model: SecondResource).map(&:id)).to contain_exactly resource2.id
+      expect(query_service.find_all_of_model(model: Valkyrie::Specs::SecondResource).map(&:id)).to contain_exactly resource2.id
     end
     it "returns an empty array if there are none" do
-      expect(query_service.find_all_of_model(model: SecondResource).to_a).to eq []
+      expect(query_service.find_all_of_model(model: Valkyrie::Specs::SecondResource).to_a).to eq []
     end
   end
 
@@ -94,7 +94,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
 
     it 'raises a Valkyrie::Persistence::ObjectNotFoundError when persisted objects do not have alternate_ids' do
-      persister.save(resource: SecondResource.new)
+      persister.save(resource: Valkyrie::Specs::SecondResource.new)
       expect { query_service.find_by_alternate_identifier(alternate_identifier: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
 
@@ -193,7 +193,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       end
 
       context "when the model doesn't have member_ids" do
-        let(:parent) { persister.save(resource: SecondResource.new) }
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
 
         it "returns an empty array" do
           expect(subject.to_a).to eq []
@@ -202,12 +202,12 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
 
     context "filtering by model" do
-      subject { query_service.find_members(resource: parent, model: SecondResource) }
+      subject { query_service.find_members(resource: parent, model: Valkyrie::Specs::SecondResource) }
 
       context "when the object has members" do
-        let(:child1) { persister.save(resource: SecondResource.new) }
+        let(:child1) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
         let(:child2) { persister.save(resource: resource_class.new) }
-        let(:child3) { persister.save(resource: SecondResource.new) }
+        let(:child3) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
         let(:parent) { persister.save(resource: resource_class.new(member_ids: [child3.id, child2.id, child1.id])) }
 
         it "returns all a resource's members in order" do
@@ -286,7 +286,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
           child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
           child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
           persister.save(resource: resource_class.new)
-          persister.save(resource: SecondResource.new)
+          persister.save(resource: Valkyrie::Specs::SecondResource.new)
 
           expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
         end
@@ -304,7 +304,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
           child = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id]))
           child2 = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id, parent.id]))
           persister.save(resource: resource_class.new)
-          persister.save(resource: SecondResource.new)
+          persister.save(resource: Valkyrie::Specs::SecondResource.new)
 
           expect(query_service.find_inverse_references_by(resource: parent, property: :an_ordered_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
         end
@@ -318,7 +318,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
         child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
         persister.save(resource: resource_class.new)
-        persister.save(resource: SecondResource.new)
+        persister.save(resource: Valkyrie::Specs::SecondResource.new)
 
         expect(query_service.find_inverse_references_by(id: parent.id, property: :a_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
       end
@@ -364,7 +364,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
 
     context "when the model doesn't have member_ids" do
-      let(:child1) { persister.save(resource: SecondResource.new) }
+      let(:child1) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
 
       it "returns an empty array if there are none" do
         expect(query_service.find_parents(resource: child1).to_a).to eq []
