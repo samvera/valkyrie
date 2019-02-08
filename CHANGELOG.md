@@ -1,3 +1,16 @@
+# v1.5.1 2018-02-08
+
+## Changes since last release
+
+* Namespace shared-spec resources to avoid conflict in apps.
+  [tpendragon](https://github.com/tpendragon)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[cjcolvar](https://github.com/cjcolvar)
+[escowles](https://github.com/escowles)
+
 # v1.5.0 2018-02-06
 
 ## Changes since last release
