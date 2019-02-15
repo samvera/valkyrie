@@ -70,6 +70,16 @@ Rails.application.config.to_prepare do
     :solr
   )
 
+  # To use the fedora adapter you must add `gem 'ldp'` to your Gemfile
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+      connection: ::Ldp::Client.new("http://localhost:8988/rest"),
+      base_path: "test_fed",
+      schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+    ),
+    :fedora
+  )
+
   Valkyrie::MetadataAdapter.register(
     Valkyrie::Persistence::Memory::MetadataAdapter.new,
     :memory
@@ -93,9 +103,10 @@ Rails.application.config.to_prepare do
 end
 ```
 
-The initializer registers three `Valkyrie::MetadataAdapter` instances for storing metadata:
+The initializer registers four `Valkyrie::MetadataAdapter` instances for storing metadata:
 * `:postgres` which stores metadata in a PostgreSQL database
 * `:solr` which stores metadata in a Solr Index
+* `:fedora` which stores metadata in a Fedora server.
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
   appropriate for testing)
 
