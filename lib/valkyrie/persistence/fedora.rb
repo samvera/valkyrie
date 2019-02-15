@@ -3,7 +3,6 @@
 module Valkyrie::Persistence
   # Implements the DataMapper Pattern to store metadata into Fedora
   module Fedora
-    require 'active_triples'
     require 'active_fedora'
     require 'valkyrie/persistence/fedora/permissive_schema'
     require 'valkyrie/persistence/fedora/metadata_adapter'
