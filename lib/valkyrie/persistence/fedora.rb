@@ -1,5 +1,11 @@
 # frozen_string_literal: true
-#
+begin
+  gem 'ldp'
+rescue Gem::LoadError => e
+  raise Gem::LoadError,
+        "You are using the Fedora adapter without installing the #{e.name} gem.  "\
+        "Add `gem '#{e.name}'` to your Gemfile."
+end
 module Valkyrie::Persistence
   # Implements the DataMapper Pattern to store metadata into Fedora
   module Fedora
