@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 ENV['RACK_ENV'] = 'test'
 ENV['RAILS_ENV'] = 'test'
+ENV['environment'] = 'test'
 require 'simplecov'
 SimpleCov.start do
   add_filter 'spec'
