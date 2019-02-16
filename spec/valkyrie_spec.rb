@@ -36,11 +36,13 @@ describe Valkyrie do
   context "when Rails is defined and configured" do
     it "uses that path" do
       allow(Rails).to receive(:root).and_return(ROOT_PATH)
+      allow(Rails).to receive(:env).and_return("test")
 
       described_class.instance_variable_set(:@config, nil)
       described_class.config
 
-      expect(Rails).to have_received(:root).exactly(8).times
+      expect(Rails).to have_received(:root).exactly(4).times
+      expect(described_class.environment).to eq "test"
     end
   end
   describe ".config" do

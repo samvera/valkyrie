@@ -14,7 +14,6 @@ require 'valkyrie/rdf_patches'
 require 'json/ld'
 require 'logger'
 require 'rdf/vocab'
-require 'rails'
 
 module Valkyrie
   require 'valkyrie/id'
@@ -49,11 +48,15 @@ module Valkyrie
   end
 
   def environment
-    Rails.env
+    if const_defined?(:Rails) && Rails.respond_to?(:env)
+      Rails.env
+    else
+      ENV["RAILS_ENV"] || ENV["RACK_ENV"] || "development"
+    end
   end
 
   def config_root_path
-    if const_defined?(:Rails) && Rails.root
+    if const_defined?(:Rails) && Rails.respond_to?(:root)
       Rails.root
     else
       Pathname.new(Dir.pwd)
