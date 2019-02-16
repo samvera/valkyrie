@@ -61,6 +61,14 @@ Rails.application.config.to_prepare do
     :postgres
   )
 
+  # To use the solr adapter you must add gem 'rsolr' to your Gemfile
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Solr::MetadataAdapter.new(
+      connection: Blacklight.default_index.connection
+    ),
+    :solr
+  )
+
   Valkyrie::MetadataAdapter.register(
     Valkyrie::Persistence::Memory::MetadataAdapter.new,
     :memory
@@ -84,8 +92,9 @@ Rails.application.config.to_prepare do
 end
 ```
 
-The initializer registers two `Valkyrie::MetadataAdapter` instances for storing metadata:
+The initializer registers three `Valkyrie::MetadataAdapter` instances for storing metadata:
 * `:postgres` which stores metadata in a PostgreSQL database
+* `:solr` which stores metadata in a Solr Index
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
   appropriate for testing)
 
