@@ -32,6 +32,9 @@ jobs:
       - run:
           name: Run Specs
           command: bundle exec rake docker:spec
+      - store_artifacts:
+          path: coverage
+          destination: coverage
 workflows:
   version: 2
   build:

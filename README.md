@@ -6,7 +6,7 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 
 Code: [![Version](https://badge.fury.io/rb/valkyrie.png)](http://badge.fury.io/rb/valkyrie)
 [![Build Status](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
-[![Coverage Status](https://coveralls.io/repos/github/samvera-labs/valkyrie/badge.svg?branch=master)](https://coveralls.io/github/samvera-labs/valkyrie?branch=master)
+![Coverage Status](https://img.shields.io/badge/Coverage-100-brightgreen.svg)
 [![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
 
 Docs: [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)

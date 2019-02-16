@@ -2,16 +2,10 @@
 ENV['RACK_ENV'] = 'test'
 ENV['RAILS_ENV'] = 'test'
 require 'simplecov'
-require 'coveralls'
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
-  [
-    SimpleCov::Formatter::HTMLFormatter,
-    Coveralls::SimpleCov::Formatter
-  ]
-)
 SimpleCov.start do
   add_filter 'spec'
   add_filter 'vendor'
+  minimum_coverage 100
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require 'active_fedora'
