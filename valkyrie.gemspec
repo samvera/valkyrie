@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
   spec.add_dependency 'active-triples'
+  spec.add_dependency 'ldp'
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
