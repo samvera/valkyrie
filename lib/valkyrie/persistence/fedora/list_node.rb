@@ -63,7 +63,7 @@ module Valkyrie::Persistence::Fedora
       g.proxy_in = proxy_in.try(:uri)
       g.next = self.next.try(:rdf_subject)
       g.prev = prev.try(:rdf_subject)
-      g
+      g.graph
     end
 
     # Resolves the URI for the value of the list expression
@@ -104,10 +104,10 @@ module Valkyrie::Persistence::Fedora
         # Populates attributes for the LinkedNode
         # @param instance [ListNode]
         def populate(instance)
-          instance.proxy_for = resource.proxy_for.first
-          instance.proxy_in = resource.proxy_in.first
-          instance.next_uri = resource.next.first
-          instance.prev_uri = resource.prev.first
+          instance.proxy_for = resource.proxy_for
+          instance.proxy_in = resource.proxy_in
+          instance.next_uri = resource.next
+          instance.prev_uri = resource.prev
         end
 
         private
@@ -115,16 +115,33 @@ module Valkyrie::Persistence::Fedora
           # Constructs a set of triples using ActiveTriples as objects
           # @return [Valkyrie::Persistence::Fedora::ListNode::Resource]
           def resource
-            @resource ||= Resource.new(uri, data: graph)
+            @resource ||= Resource.new(uri, graph: graph)
           end
       end
 
       # Class for providing a set of triples modeling linked list nodes
-      class Resource < ActiveTriples::Resource
-        property :proxy_for, predicate: ::RDF::Vocab::ORE.proxyFor, cast: false
-        property :proxy_in, predicate: ::RDF::Vocab::ORE.proxyIn, cast: false
-        property :next, predicate: ::RDF::Vocab::IANA.next, cast: false
-        property :prev, predicate: ::RDF::Vocab::IANA.prev, cast: false
+      class Resource
+        def self.property(property, predicate:)
+          define_method property do
+            graph.query([uri, predicate, nil]).objects.first
+          end
+
+          define_method "#{property}=" do |val|
+            return if val.nil?
+            graph << [uri, predicate, val]
+          end
+        end
+
+        property :proxy_for, predicate: ::RDF::Vocab::ORE.proxyFor
+        property :proxy_in, predicate: ::RDF::Vocab::ORE.proxyIn
+        property :next, predicate: ::RDF::Vocab::IANA.next
+        property :prev, predicate: ::RDF::Vocab::IANA.prev
+
+        attr_reader :graph, :uri
+        def initialize(uri, graph: RDF::Graph.new)
+          @uri = uri
+          @graph = graph
+        end
       end
   end
 end
