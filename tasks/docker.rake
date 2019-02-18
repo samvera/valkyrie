@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'valkyrie'
 
-if Rails.env.development? || Rails.env.test?
+if Valkyrie.environment == "development" || Valkyrie.environment == "test"
   begin
     require 'docker/stack/rake_task'
 
@@ -17,7 +17,7 @@ if Rails.env.development? || Rails.env.test?
 
       desc 'Spin up test stack and run specs'
       task :spec do
-        Rails.env = 'test'
+        ENV["RACK_ENV"] = "test"
         Docker::Stack::Controller.new(project: 'valkyrie', cleanup: true).with_containers do
           Rake::Task['db:create'].invoke
           Rake::Task['db:migrate'].invoke
