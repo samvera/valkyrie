@@ -1,10 +1,23 @@
 ---
-version: 2
+version: 2.1
 jobs:
   build:
     machine: true
+    parameters:
+      gemfile:
+        description: "Gemfile to run"
+        default: "Gemfile"
+        type: "string"
+    environment:
+      BUNDLE_GEMFILE: << parameters.gemfile >>
     steps:
       - checkout
+      - run:
+          name: Set ruby version to 2.6.1
+          command: |
+            rvm install 2.6.1
+            echo . $(rvm 2.6.1 do rvm env --path) >> $BASH_ENV
+      - run: rvm use 2.6.1
       - run:
           name: Install Docker Compose
           command: |
@@ -13,19 +26,23 @@ jobs:
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - run:
           name: Update bundler
-          command: gem install bundler -v 1.16.2
+          command: gem install bundler -v 1.17.2
       - restore_cache:
          keys:
-           - bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+           - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-4
            - bundle- # used if checksum fails
       - run: sudo apt-get update && sudo apt-get install -y libpq-dev
+      - run:
+          name: Set BUNDLE_GEMFILE
+          command: export BUNDLE_GEMFILE=~/project/<< parameters.gemfile >>
       - run:
           name: Install dependencies
           command: bundle install --path=vendor/bundle --jobs 4 --retry 3
       - save_cache:
-          key: bundle-{{ checksum "Gemfile" }}-{{ checksum "valkyrie.gemspec" }}
+          key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-4
           paths:
             - "vendor/bundle"
+            - "gemfiles/vendor/bundle"
       - run:
           name: Run Rubocop
           command: bundle exec rake rubocop
@@ -39,7 +56,12 @@ workflows:
   version: 2
   build:
     jobs:
-      - build
+      - build:
+          gemfile: "gemfiles/activerecord_5_2.gemfile"
+      - build:
+          gemfile: "gemfiles/activerecord_6.gemfile"
+      - build:
+          gemfile: "gemfiles/activerecord_5_1.gemfile"
   nightly:
     triggers:
       - schedule:
