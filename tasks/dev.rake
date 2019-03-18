@@ -3,6 +3,7 @@
 namespace :server do
   desc "Start solr and fedora servers for testing"
   task :test do
+    require 'rails'
     require 'solr_wrapper'
     require 'fcrepo_wrapper'
     SolrWrapper.wrap(shared_solr_opts.merge(port: 8984, instance_dir: 'tmp/blacklight-core-test')) do |solr|
@@ -21,6 +22,7 @@ namespace :server do
 
   desc "Cleanup test servers"
   task :clean_test do
+    require 'rails'
     require 'solr_wrapper'
     require 'fcrepo_wrapper'
     SolrWrapper.instance(shared_solr_opts.merge(port: 8984, instance_dir: 'tmp/blacklight-core-test')).remove_instance_dir!
@@ -31,6 +33,7 @@ namespace :server do
 
   desc "Start solr and fedora servers for development"
   task :development do
+    require 'rails'
     require 'solr_wrapper'
     require 'fcrepo_wrapper'
 

@@ -9,6 +9,7 @@ AllCops:
     - 'bin/*'
     - 'db/schema.rb'
     - 'vendor/**/*'
+    - 'gemfiles/vendor/**/*'
 RSpec/ScatteredSetup:
   Enabled: false
 Metrics/BlockLength:
@@ -31,3 +32,7 @@ Naming/PredicateName:
     - "lib/valkyrie/persistence/solr/queries/default_paginator.rb"
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
+Naming/FileName:
+  Exclude:
+    - 'Appraisals'
+    - 'Gemfile'

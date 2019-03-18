@@ -57,8 +57,14 @@ namespace :db do
       scope   = ENV['SCOPE']
       verbose_was = ActiveRecord::Migration.verbose
       ActiveRecord::Migration.verbose = verbose
-      ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
-        scope.blank? || scope == migration.scope
+      if ActiveRecord::Migrator.respond_to?(:migrate)
+        ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
+          scope.blank? || scope == migration.scope
+        end
+      else
+        ActiveRecord::Base.connection.migration_context.migrate(version) do |migration|
+          scope.blank? || scope == migration.scope
+        end
       end
       ActiveRecord::Base.clear_cache!
     ensure
