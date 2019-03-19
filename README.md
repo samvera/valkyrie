@@ -5,13 +5,12 @@ Valkyrie is a gem for enabling multiple backends for storage of files and metada
 ![Valkyrie Logo](valkyrie_logo.png)
 
 Code: [![Version](https://badge.fury.io/rb/valkyrie.png)](http://badge.fury.io/rb/valkyrie)
-[![Build Status](https://circleci.com/gh/samvera-labs/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera-labs/valkyrie)
+[![Build Status](https://circleci.com/gh/samvera/valkyrie.svg?style=svg)](https://circleci.com/gh/samvera/valkyrie)
 ![Coverage Status](https://img.shields.io/badge/Coverage-100-brightgreen.svg)
-[![Stories in Ready](https://badge.waffle.io/samvera-labs/valkyrie.png?label=ready&title=Ready)](https://waffle.io/samvera-labs/valkyrie)
 
 Docs: [![Contribution Guidelines](http://img.shields.io/badge/CONTRIBUTING-Guidelines-blue.svg)](./CONTRIBUTING.md)
 [![Apache 2.0 License](http://img.shields.io/badge/APACHE2-license-blue.svg)](./LICENSE)
-[![Yard Docs](http://img.shields.io/badge/yard-docs-blue.svg)](http://rubydoc.info/github/samvera-labs/valkyrie)
+[![Yard Docs](http://img.shields.io/badge/yard-docs-blue.svg)](http://rubydoc.info/gems/valkyrie)
 
 Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samvera.org/)
 
@@ -131,7 +130,7 @@ For each environment, you must set two values:
 The values are the short names used in your initializer.
 
 Further details can be found on the [Persistence Wiki
-page](https://github.com/samvera-labs/valkyrie/wiki/Persistence).
+page](https://github.com/samvera/valkyrie/wiki/Persistence).
 
 ## Usage
 
@@ -155,7 +154,7 @@ attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 ```
 
 Defining resource attributes is explained in greater detail on the [Using Types Wiki
-page](https://github.com/samvera-labs/valkyrie/wiki/Using-Types).
+page](https://github.com/samvera/valkyrie/wiki/Using-Types).
 
 #### Work Types Generator
 
@@ -191,16 +190,16 @@ objects = adapter.query_service.find_all
 Valkyrie.config.metadata_adapter.query_service.find_all_of_model(model: MyModel)
 ```
 
-The Wiki documents the usage of [Queries](https://github.com/samvera-labs/valkyrie/wiki/Queries),
-[Persistence](https://github.com/samvera-labs/valkyrie/wiki/Persistence), and
-[ChangeSets and Dirty Tracking](https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
+The Wiki documents the usage of [Queries](https://github.com/samvera/valkyrie/wiki/Queries),
+[Persistence](https://github.com/samvera/valkyrie/wiki/Persistence), and
+[ChangeSets and Dirty Tracking](https://github.com/samvera/valkyrie/wiki/ChangeSets-and-Dirty-Tracking).
 
 ### Concurrency Support
 A Valkyrie repository may have concurrent updates, for example, from a load-balanced Rails application, or
 from multiple [Sidekiq](https://github.com/mperham/sidekiq) background workers).  In order to prevent multiple
 simultaneous updates applied to the same resource from losing or corrupting data, Valkyrie supports optimistic
 locking.  How to use optimistic locking with Valkyrie is documented on the [Optimistic Locking Wiki
-page](https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking).
+page](https://github.com/samvera/valkyrie/wiki/Optimistic-Locking).
 
 ### The Public API
 Valkyrie's public API is defined by the shared specs that are used to test each of its core classes.
@@ -214,7 +213,7 @@ shared specs, but there may be new ones. These new shared specs will fail in you
 custom adapters, but your application will still work.
 
 Using the shared specs in your own models is described in more detail on the [Shared Specs Wiki
-page](https://github.com/samvera-labs/valkyrie/wiki/Shared-Specs).
+page](https://github.com/samvera/valkyrie/wiki/Shared-Specs).
 
 ### Fedora 5 Compatibility
 When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter
@@ -286,4 +285,4 @@ This software has been developed by and is brought to you by the Samvera communi
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/samvera-labs/valkyrie/.
+Bug reports and pull requests are welcome on GitHub at https://github.com/samvera/valkyrie/.
