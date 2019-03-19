@@ -70,21 +70,27 @@ workflows:
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.2
+          name: "Ruby2-6_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.6.2
+          name: "Ruby2-6_Rails5-1"
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.5.5
+          name: "Ruby2-5_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.5.5
+          name: "Ruby2-5_Rails5-1"
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.4.5
+          name: "Ruby2-4_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.4.5
+          name: "Ruby2-4_Rails5-1"
   nightly:
     triggers:
       - schedule:
@@ -97,18 +103,24 @@ workflows:
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.2
+          name: "Ruby2-6_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.6.2
+          name: "Ruby2-6_Rails5-1"
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.5.5
+          name: "Ruby2-5_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.5.5
+          name: "Ruby2-5_Rails5-1"
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.4.5
+          name: "Ruby2-4_Rails5-2"
       - build:
           gemfile: "gemfiles/activerecord_5_1.gemfile"
           ruby: 2.4.5
+          name: "Ruby2-4_Rails5-1"
