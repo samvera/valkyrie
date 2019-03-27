@@ -2,6 +2,9 @@
 
 source "https://rubygems.org"
 
+gem "ldp"
+gem "pg"
+gem "rsolr"
 gem "activerecord", "~> 5.1.0"
 
 gemspec path: "../"
