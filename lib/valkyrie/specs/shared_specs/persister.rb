@@ -313,6 +313,33 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(query_service.find_all.to_a.length).to eq 0
   end
 
+  context "optimistic locking enabled later" do
+    before do
+      class MyLockingResource < Valkyrie::Resource
+        attribute :title
+      end
+    end
+    describe "#save" do
+      it "will error appropriately if optimistic locking is enabled later" do
+        resource = MyLockingResource.new
+        saved_resource = persister.save(resource: resource)
+
+        MyLockingResource.enable_optimistic_locking
+
+        saved_resource = query_service.find_by(id: saved_resource.id)
+        reloaded = query_service.find_by(id: saved_resource.id)
+        saved_resource.title = "Don't Save Me"
+        reloaded.title = "Save Me"
+
+        persister.save(resource: reloaded)
+        expect { persister.save(resource: saved_resource) }.to raise_error Valkyrie::Persistence::StaleObjectError
+      end
+    end
+    after do
+      Object.send(:remove_const, :MyLockingResource)
+    end
+  end
+
   context "optimistic locking" do
     before do
       class MyLockingResource < Valkyrie::Resource

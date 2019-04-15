@@ -131,6 +131,15 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
         expect { adapter.persister.save(resource: resource) }.to output(/\[MIGRATION REQUIRED\]/).to_stderr
       end
     end
+    context "and only some of the migrations have been run" do
+      before do
+        allow(adapter.resource_factory.orm_class.columns.find { |x| x.name == "lock_version" }).to receive(:default).and_return(nil)
+      end
+      it "loads the object, but sends a warning with instructions" do
+        resource = MyLockingResource.new
+        expect { adapter.persister.save(resource: resource) }.to output(/\[MIGRATION REQUIRED\]/).to_stderr
+      end
+    end
     context "and locking isn't enabled" do
       it "doesn't use the lock" do
         resource = CustomResource.new

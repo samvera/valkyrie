@@ -35,7 +35,7 @@ module Valkyrie::Persistence::Postgres
       # Construct the optimistic lock token using the adapter and lock version for the Resource
       # @return [Valkyrie::Persistence::OptimisticLockToken]
       def lock_token
-        return lock_token_warning unless orm_object.class.column_names.include?("lock_version")
+        return lock_token_warning unless orm_object.class.column_names.include?("lock_version") && orm_object.class.columns.find { |x| x.name == "lock_version" }.default == "0"
         @lock_token ||=
           Valkyrie::Persistence::OptimisticLockToken.new(
             adapter_id: resource_factory.adapter_id,

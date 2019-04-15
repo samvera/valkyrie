@@ -36,7 +36,15 @@ module Valkyrie::Persistence::Fedora
         resource_attributes.keys - [:new_record]
       end
 
-      delegate :attributes, to: :resource, prefix: true
+      # Always generate a token, in case it's enabled later.
+      def resource_attributes
+        @resource_attributes ||=
+          begin
+            attributes = resource.attributes.dup
+            attributes[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK] ||= [Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)]
+            attributes
+          end
+      end
 
       # Construct the LDP Basic Container modeling the Valkyrie Resource in Fedora
       # @see https://www.w3.org/TR/ldp/#ldpc
