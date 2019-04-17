@@ -13,7 +13,7 @@ module Valkyrie::Storage
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, original_filename:, resource: nil)
+    def upload(file:, original_filename:, resource: nil, **_extra_arguments)
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
