@@ -159,27 +159,22 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
                                                                               error_message)
       end
     end
-  end
 
-  describe "activerecord gem deprecation" do
-    let(:message) { /\[DEPRECATION\] activerecord will not be included/ }
-    let(:path) { Bundler.definition.gemfiles.first }
-
-    context "when the gemfile does not have an entry for activerecord" do
-      it "gives a warning when the module loads" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"pg\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.to output(message).to_stderr
+    context 'no activerecord gem' do
+      let(:error) { Gem::LoadError.new.tap { |err| err.name = 'activerecord' } }
+      let(:error_message) do
+        "You are using the Postgres adapter without installing the activerecord gem.  "\
+      "Add `gem 'activerecord'` to your Gemfile."
       end
-    end
 
-    context "when the gemfile does have an entry for activerecord" do
-      it "does not give a deprecation warning" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"activerecord\", \"~> 1.0\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.not_to output(message).to_stderr
+      before do
+        allow(Gem::Dependency).to receive(:new).with('pg', []).and_call_original
+        allow(Gem::Dependency).to receive(:new).with('activerecord', []).and_raise error
+      end
+
+      it 'raises an error' do
+        expect { load 'lib/valkyrie/persistence/postgres.rb' }.to raise_error(Gem::LoadError,
+                                                                              error_message)
       end
     end
   end
