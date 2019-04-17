@@ -166,4 +166,27 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       end
     end
   end
+
+  describe "activerecord gem deprecation" do
+    let(:message) { /\[DEPRECATION\] activerecord will not be included/ }
+    let(:path) { Bundler.definition.gemfiles.first }
+
+    context "when the gemfile does not have an entry for activerecord" do
+      it "gives a warning when the module loads" do
+        allow(File).to receive(:readlines).with(path).and_return(["gem \"pg\"\n"])
+        expect do
+          load "lib/valkyrie/persistence/postgres.rb"
+        end.to output(message).to_stderr
+      end
+    end
+
+    context "when the gemfile does have an entry for activerecord" do
+      it "does not give a deprecation warning" do
+        allow(File).to receive(:readlines).with(path).and_return(["gem \"activerecord\", \"~> 1.0\"\n"])
+        expect do
+          load "lib/valkyrie/persistence/postgres.rb"
+        end.not_to output(message).to_stderr
+      end
+    end
+  end
 end
