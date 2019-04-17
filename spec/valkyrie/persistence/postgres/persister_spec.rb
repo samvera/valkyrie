@@ -173,7 +173,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
 
     context "when the gemfile does not have an entry for activerecord" do
       it "gives a warning when the module loads" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"rsolr\"\n"])
+        allow(File).to receive(:readlines).with(path).and_return(["gem \"pg\"\n"])
         expect do
           load "lib/valkyrie/persistence/postgres.rb"
         end.to output(message).to_stderr
