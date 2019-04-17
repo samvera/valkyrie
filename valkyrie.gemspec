@@ -25,7 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-types', '~> 0.13.0'
   spec.add_dependency 'rdf'
   spec.add_dependency 'activesupport'
-  spec.add_dependency 'activerecord'
   spec.add_dependency 'railties' # To use generators and engines
   spec.add_dependency 'reform'
   spec.add_dependency 'reform-rails'
@@ -46,7 +45,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'solr_wrapper'
   spec.add_development_dependency 'fcrepo_wrapper'
   spec.add_development_dependency 'docker-stack', '~> 0.2.6'
-  spec.add_development_dependency 'activerecord'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'appraisal'
 end
