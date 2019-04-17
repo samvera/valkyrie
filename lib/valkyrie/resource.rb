@@ -52,14 +52,8 @@ module Valkyrie
     # @param type [Dry::Types::Type]
     # @note Overridden from {Dry::Struct} to make the default type
     #   {Valkyrie::Types::Set}
-    # @todo Remove ability to override built in attributes.
     def self.attribute(name, type = Valkyrie::Types::Set.optional, internal: false)
-      if reserved_attributes.include?(name.to_sym) && schema[name] && !internal
-        warn "#{name} is a reserved attribute in Valkyrie::Resource and defined by it. You can remove your definition of `attribute :#{name}`. " \
-             "For now your version will be used, but in the next major version the type will be overridden. " \
-             "Called from #{Gem.location_of_caller.join(':')}"
-        schema.delete(name)
-      end
+      raise ReservedAttributeError, "#{name} is a reserved attribute and defined by Valkyrie::Resource, do not redefine it." if reserved_attributes.include?(name.to_sym) && schema[name] && !internal
       define_method("#{name}=") do |value|
         set_value(name, value)
       end
@@ -166,5 +160,7 @@ module Valkyrie
     def set_value(key, value)
       @attributes[key.to_sym] = self.class.schema[key.to_sym].call(value)
     end
+
+    class ReservedAttributeError < StandardError; end
   end
 end
