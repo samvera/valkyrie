@@ -8,6 +8,11 @@ module Valkyrie::Persistence
     if matches.empty?
       warn "[DEPRECATION] pg will not be included as a dependency in Valkyrie's gemspec as of the next major release. Please add the gem directly to your Gemfile if you use a postgres adapter."
     end
+    matches = File.readlines(path).select { |l| l =~ /gem ['"]activerecord\b/ }
+    if matches.empty?
+      warn "[DEPRECATION] activerecord will not be included as a dependency in Valkyrie's gemspec as of the next major release." \
+        "Please add the gem directly to your Gemfile if you use a postgres adapter."
+    end
 
     require 'valkyrie/persistence/postgres/metadata_adapter'
   end
