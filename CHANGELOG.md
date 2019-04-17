@@ -1,3 +1,21 @@
+# v1.6.0 2018-04-17
+
+## Changes since last release
+
+* Deprecation in preparation for LDP to be optional
+* Deprecation in preparation for RSolr to be optional
+* Deprecation in preparation for ActiveRecord to be optional
+* Remove Rails requirement
+* Remove ActiveTriples dependency.
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[carolyncole](https://github.com/carolyncole)
+[dgcliff](https://github.com/dgcliff)
+[escowles](https://github.com/escowles)
+[no-reply](https://github.com/no-reply)
+
 # v1.5.1 2018-02-08
 
 ## Changes since last release
