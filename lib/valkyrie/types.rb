@@ -15,10 +15,10 @@ module Valkyrie
   # @note Not all Dry::Types built-in types are supported in Valkyrie
   # @see https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types List of types supported in Valkyrie
   module Types
-    include Dry::Types.module
+    include Dry.Types(default: :nominal)
 
     # Valkyrie::ID
-    ID = Dry::Types::Definition
+    ID = Dry::Types::Nominal
          .new(Valkyrie::ID)
          .constructor do |input|
       if input.respond_to?(:each)
@@ -40,7 +40,7 @@ module Valkyrie
     end
 
     # Valkyrie::URI
-    URI = Dry::Types::Definition
+    URI = Dry::Types::Nominal
           .new(RDF::URI)
           .constructor do |input|
       if input.present?
@@ -52,7 +52,7 @@ module Valkyrie
 
     # Optimistic Lock Token
     OptimisticLockToken =
-      Dry::Types::Definition
+      Dry::Types::Nominal
       .new(::Valkyrie::Persistence::OptimisticLockToken)
       .constructor do |input|
         Valkyrie::Persistence::OptimisticLockToken.deserialize(input)

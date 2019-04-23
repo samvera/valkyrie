@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'draper'
   spec.add_dependency 'activemodel'
-  spec.add_dependency 'dry-types', '~> 0.13.0'
+  spec.add_dependency 'dry-types', '~> 1.0'
   spec.add_dependency 'rdf'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'railties' # To use generators and engines
