@@ -201,8 +201,8 @@ module Valkyrie::Persistence::Fedora
         end
 
         def self.ordered?(value)
-          return false unless value.resource.class.schema[value.key]
-          value.resource.class.schema[value.key].meta.try(:[], :ordered)
+          return false unless value.resource.class.attribute_names.include?(value.key)
+          value.resource.class.schema.key(value.key).type.meta.try(:[], :ordered)
         end
 
         delegate :subject, to: :value
