@@ -120,7 +120,7 @@ module Valkyrie::Persistence::Solr
       end
 
       def ordered_property?(resource:, property:)
-        resource.class.schema[property].meta.try(:[], :ordered)
+        resource.class.schema.key(property).type.meta.try(:[], :ordered)
       end
   end
 end

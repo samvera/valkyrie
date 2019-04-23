@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'activerecord'
+gem 'disposable', github: 'seuros/disposable'
 gem 'ldp'
 gem 'pg'
 gem 'rsolr'

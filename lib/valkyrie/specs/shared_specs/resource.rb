@@ -76,7 +76,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource.my_property = "test"
 
       expect(resource[:my_property]).to eq ["test"]
-      resource_klass.schema.delete(:my_property)
+      resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :my_property }, meta: resource_klass.schema.meta))
     end
     it "returns nil for non-existent properties" do
       resource = resource_klass.new
@@ -90,7 +90,8 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource.other_property = "test"
 
       expect(resource["other_property"]).to eq ["test"]
-      resource_klass.schema.delete(:other_property)
+
+      resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :other_property }, meta: resource_klass.schema.meta))
     end
   end
 
@@ -104,7 +105,14 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(resource.set_value_property).to eq ["test"]
       resource.set_value("set_value_property", "testing")
       expect(resource.set_value_property).to eq ["testing"]
-      resource_klass.schema.delete(:set_value_property)
+      resource_klass.schema(
+        Dry::Types::Schema.new(
+          Hash,
+          **resource_klass.schema.options,
+          keys: resource_klass.schema.keys.select { |x| x.name != :set_value_property },
+          meta: resource_klass.schema.meta
+        )
+      )
     end
   end
 
@@ -115,14 +123,14 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource = resource_klass.new(symbol_property: "bla")
 
       expect(resource.symbol_property).to eq ["bla"]
-      resource_klass.schema.delete(:symbol_property)
+      resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :symbol_property }, meta: resource_klass.schema.meta))
     end
     it "can not set values with string properties" do
       resource_klass.attribute :string_property unless resource_klass.schema.key?(:string_property)
 
       resource = nil
       expect(resource).not_to respond_to :string_property
-      resource_klass.schema.delete(:string_property)
+      resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :string_property }, meta: resource_klass.schema.meta))
     end
   end
 
@@ -137,7 +145,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(resource.attributes[:internal_resource]).to eq resource_klass.to_s
       expect { resource.attributes.dup[:internal_resource] = "bla" }.not_to output.to_stderr
 
-      resource_klass.schema.delete(:bla)
+      resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :bla }, meta: resource_klass.schema.meta))
     end
   end
 end
