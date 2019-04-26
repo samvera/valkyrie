@@ -17,7 +17,7 @@ Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samv
 ## Primary Contacts
 
 ### Product Owner
-[Carolyn Cole](https://github.com/cam156)
+[Kate Lynch](https://github.com/kelynch)
 
 ### Technical Lead
 [Trey Pendragon](https://github.com/tpendragon)
