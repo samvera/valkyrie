@@ -17,7 +17,7 @@ Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samv
 ## Primary Contacts
 
 ### Product Owner
-[Katherine Lynch](https://github.com/kelynch)
+[Kate Lynch](https://github.com/kelynch)
 
 ### Technical Lead
 [Trey Pendragon](https://github.com/tpendragon)
