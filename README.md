@@ -103,11 +103,11 @@ end
 ```
 
 The initializer registers four `Valkyrie::MetadataAdapter` instances for storing metadata:
-* `:postgres` which stores metadata in a PostgreSQL database
-* `:solr` which stores metadata in a Solr Index
 * `:fedora` which stores metadata in a Fedora server.
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
-  appropriate for testing)
+  appropriate for testing).
+* `:postgres` which stores metadata in a PostgreSQL database.
+* `:solr` which stores metadata in a Solr Index.
 
 Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
 updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
