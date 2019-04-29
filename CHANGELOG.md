@@ -13,8 +13,7 @@
 * Remove deprecated `Valkyrie::Persistence::Fedora::PermissiveSchema.references`
 * Upgrade `dry-types` to `0.13.x`
 * Fedora Adapter default is now version 5.
-* Remove strings as a valid key when instantiating a `Valkyrie::Resource` (use
-  symbols)
+* Require a symbol key when instantiating a Valkyrie::Resource (string keys are no longer valid)
 * Remove deprecated `type.member()` method (use `type.of()`)
 * Remove deprecated `Valkyrie::Types::Int` (use `Valkyrie::Types::Integer`)
 
