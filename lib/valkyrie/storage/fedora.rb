@@ -31,8 +31,9 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
+    # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:)
+    def upload(file:, original_filename:, resource:, **_extra_arguments)
       identifier = id_to_uri(resource.id) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|

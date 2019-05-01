@@ -21,7 +21,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     resource = Valkyrie::Specs::CustomResource.new(id: "test")
     sha1 = Digest::SHA1.file(file).to_s
     size = file.size
-    expect(uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource)).to be_kind_of Valkyrie::StorageAdapter::File
+    expect(uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)).to be_kind_of Valkyrie::StorageAdapter::File
 
     expect(uploaded_file).to respond_to(:checksum).with_keywords(:digests)
     expect(uploaded_file).to respond_to(:valid?).with_keywords(:size, :digests)
