@@ -296,7 +296,7 @@ module Valkyrie::Persistence::Fedora
         # @param [Object] value
         # @return [Boolean]
         def self.handles?(value)
-          value.is_a?(Property) && (value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource)) && value.value[:internal_resource]
+          value.is_a?(Property) && (value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource))
         end
 
         # Generate a new parent graph containing the child graph generated from the ModelConverter::Property objects
@@ -306,10 +306,26 @@ module Valkyrie::Persistence::Fedora
           GraphProperty.new(value.subject, value.key, nested_graph, value.adapter, value.resource)
         end
 
+        class HashDummy
+          def self.schema
+            OpenStruct.new({})
+          end
+          attr_reader :hsh
+          delegate :[], to: :hsh
+          def initialize(hsh)
+            @hsh = hsh
+          end
+
+          def attributes
+            hsh
+          end
+        end
         # Generate the "child" graph from the value in the ModelConverter::Property
         # @return [RDF::Graph]
         def nested_graph
-          @nested_graph ||= ModelConverter.new(resource: Valkyrie::Types::Anything[value.value], adapter: value.adapter, subject_uri: subject_uri).convert.graph
+          value.value[:internal_resource] ||= "Valkyrie::InternalHash"
+          model = value.value[:internal_resource] == "Valkyrie::InternalHash" ? HashDummy.new(value.value) : Valkyrie::Types::Anything[value.value]
+          @nested_graph ||= ModelConverter.new(resource: model, adapter: value.adapter, subject_uri: subject_uri).convert.graph
         end
 
         # Generate a new RDF hash URI for the "child" graph for the ModelConverter::Property

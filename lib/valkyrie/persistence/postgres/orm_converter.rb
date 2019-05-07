@@ -103,6 +103,25 @@ module Valkyrie::Persistence::Postgres
         class PostgresValue < ::Valkyrie::ValueMapper
         end
 
+        class NativeHashValue < ::Valkyrie::ValueMapper
+          PostgresValue.register(self)
+
+          # Determines whether or not a value is a Hash containing the key "@value"
+          # @param [Object] value
+          # @return [Boolean]
+          def self.handles?(value)
+            value.is_a?(Hash) && value["hash_marker"] == true
+          end
+
+          # Constructs a RDF::Literal object using the Object keyed to "@value"
+          # in the value Hash, as well as the language keyed to "@language" and
+          # datatype keyed to "@type"
+          # @return [RDF::Literal]
+          def result
+            value.deep_symbolize_keys
+          end
+        end
+
         # Converts {RDF::Literal} typed-literals from JSON-LD stored into an
         #   {RDF::Literal}
         class HashValue < ::Valkyrie::ValueMapper

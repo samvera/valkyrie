@@ -60,7 +60,7 @@ module Valkyrie
 
     # Used for casting {Valkyrie::Resources} if possible.
     Anything = Valkyrie::Types::Any.constructor do |value|
-      if value.respond_to?(:fetch) && value.fetch(:internal_resource, nil)
+      if value.respond_to?(:fetch) && value.fetch(:internal_resource, nil) && value.fetch(:internal_resource, nil) != "Valkyrie::InternalHash"
         resource_klass = Valkyrie.config.resource_class_resolver.call(value.fetch(:internal_resource))
         resource_klass.new(value)
       else

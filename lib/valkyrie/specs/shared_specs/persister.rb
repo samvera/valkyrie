@@ -12,6 +12,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :single_value, Valkyrie::Types::String.optional
       attribute :ordered_authors, Valkyrie::Types::Array.of(Valkyrie::Types::Anything).meta(ordered: true)
       attribute :ordered_nested, Valkyrie::Types::Array.of(CustomResource).meta(ordered: true)
+      attribute :a_hash, Valkyrie::Types::Hash.optional
     end
   end
   after do
@@ -242,6 +243,13 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.title).to contain_exactly(shared_title.id, Valkyrie::ID.new("adapter://1"), "test")
     expect([shared_title.id, Valkyrie::ID.new("adapter://1"), "test"]).to contain_exactly(*reloaded.title)
+  end
+
+  it "can store hashes" do
+    book = persister.save(resource: resource_class.new(a_hash: { testing: "this" }))
+
+    reloaded = query_service.find_by(id: book.id)
+    expect(reloaded.a_hash[:testing]).to eq "this"
   end
 
   it "can override default id generation with a provided id" do
