@@ -237,7 +237,7 @@ module Valkyrie::Persistence::Postgres
       end
 
       def ordered_property?(resource:, property:)
-        resource.class.schema.key(property).type.meta.try(:[], :ordered)
+        resource.ordered_attribute?(property)
       end
   end
 end
