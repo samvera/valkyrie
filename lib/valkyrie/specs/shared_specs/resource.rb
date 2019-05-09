@@ -140,7 +140,6 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
       resource = resource_klass.new
 
-      expect(resource.attributes).to be_frozen
       expect(resource.attributes).to have_key(:bla)
       expect(resource.attributes[:internal_resource]).to eq resource_klass.to_s
       expect { resource.attributes.dup[:internal_resource] = "bla" }.not_to output.to_stderr

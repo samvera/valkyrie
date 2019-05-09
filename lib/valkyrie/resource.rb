@@ -88,7 +88,7 @@ module Valkyrie
     end
 
     def attributes
-      super.dup.freeze
+      super
     end
 
     def dup
