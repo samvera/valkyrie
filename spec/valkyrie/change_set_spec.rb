@@ -35,6 +35,12 @@ RSpec.describe Valkyrie::ChangeSet do
     end
   end
 
+  describe ".reflect_on_association" do
+    it "always returns nil" do
+      expect(change_set.class.reflect_on_association(:title)).to eq nil
+    end
+  end
+
   describe "#multiple?" do
     it "is not multiple for tagged items" do
       expect(change_set.multiple?(:files)).to eq false
