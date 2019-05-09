@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 require 'reform/form/coercion'
+require 'reform/form/orm'
+require 'reform/form/active_model'
 require 'reform/form/active_model/validations'
+require 'reform/form/active_model/model_reflections'
+require 'reform/form/active_model/form_builder_methods'
 module Valkyrie
   ##
   # Standard change set object for Valkyrie.
@@ -16,7 +20,9 @@ module Valkyrie
   class ChangeSet < Reform::Form
     include Reform::Form::ORM
     include Reform::Form::ModelReflections
+    include Reform::Form::ActiveModel
     include Reform::Form::ActiveModel::Validations
+    include Reform::Form::ActiveModel::FormBuilderMethods
     feature Coercion
     class_attribute :fields
     self.fields = []
@@ -61,6 +67,9 @@ module Valkyrie
       end
       fields
     end
+
+    # Override reflect_on_association so SimpleForm can work.
+    def self.reflect_on_association(*_args); end
 
     # Returns value for a given property.
     # @param key [Symbol]
