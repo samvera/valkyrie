@@ -19,15 +19,7 @@ module Valkyrie
     # available key, and makes sure the defaults are set up if no value is
     # given.
     def self.allow_nonexistent_keys
-      nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
-      transform_types do |type|
-        current_meta = type.meta.merge(omittable: true)
-        if type.default?
-          type.constructor(nil_2_undef).meta(current_meta)
-        else
-          type.meta(current_meta)
-        end
-      end
+      transform_types(&:omittable)
     end
 
     # Overridden to provide default attributes.
@@ -36,7 +28,7 @@ module Valkyrie
       super(subclass)
       subclass.allow_nonexistent_keys
       subclass.attribute :id, Valkyrie::Types::ID.optional, internal: true
-      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s), internal: true
+      subclass.attribute :internal_resource, Valkyrie::Types::Any.default(subclass.to_s.freeze), internal: true
       subclass.attribute :created_at, Valkyrie::Types::DateTime.optional, internal: true
       subclass.attribute :updated_at, Valkyrie::Types::DateTime.optional, internal: true
       subclass.attribute :new_record, Types::Bool.default(true), internal: true
@@ -44,7 +36,7 @@ module Valkyrie
 
     # @return [Array<Symbol>] Array of fields defined for this class.
     def self.fields
-      schema.keys.without(:new_record)
+      attribute_names.without(:new_record)
     end
 
     # Define an attribute. Attributes are used to describe resources.
@@ -53,7 +45,9 @@ module Valkyrie
     # @note Overridden from {Dry::Struct} to make the default type
     #   {Valkyrie::Types::Set}
     def self.attribute(name, type = Valkyrie::Types::Set.optional, internal: false)
-      raise ReservedAttributeError, "#{name} is a reserved attribute and defined by Valkyrie::Resource, do not redefine it." if reserved_attributes.include?(name.to_sym) && schema[name] && !internal
+      raise ReservedAttributeError, "#{name} is a reserved attribute and defined by Valkyrie::Resource, do not redefine it." if reserved_attributes.include?(name.to_sym) &&
+                                                                                                                                attribute_names.include?(name.to_sym) &&
+                                                                                                                                !internal
       define_method("#{name}=") do |value|
         set_value(name, value)
       end
@@ -158,7 +152,12 @@ module Valkyrie
     # @param key [#to_sym] the name of the attribute to set
     # @param value [] the value to set key to.
     def set_value(key, value)
-      @attributes[key.to_sym] = self.class.schema[key.to_sym].call(value)
+      @attributes[key.to_sym] = self.class.schema.key(key.to_sym).type.call(value)
+    end
+
+    # Returns if an attribute is set as ordered.
+    def ordered_attribute?(key)
+      self.class.schema.key(key).type.meta.try(:[], :ordered)
     end
 
     class ReservedAttributeError < StandardError; end

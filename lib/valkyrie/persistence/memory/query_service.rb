@@ -157,7 +157,7 @@ module Valkyrie::Persistence::Memory
       end
 
       def ordered_property?(resource:, property:)
-        resource.class.schema[property].meta.try(:[], :ordered)
+        resource.ordered_attribute?(property)
       end
   end
 end
