@@ -19,15 +19,7 @@ module Valkyrie
     # available key, and makes sure the defaults are set up if no value is
     # given.
     def self.allow_nonexistent_keys
-      nil_2_undef = ->(v) { v.nil? ? Dry::Types::Undefined : v }
-      transform_types do |type|
-        current_meta = type.meta.merge(omittable: true)
-        if type.default?
-          type.constructor(nil_2_undef).omittable.meta(current_meta)
-        else
-          type.omittable.meta(current_meta)
-        end
-      end
+      transform_types(&:omittable)
     end
 
     # Overridden to provide default attributes.
