@@ -96,13 +96,6 @@ module Valkyrie
       def of(type)
         super.default([].freeze)
       end
-
-      # Override optional to provide a default because without it an
-      # instantiated Valkyrie::Resource's internal hash does not have values for
-      # every possible attribute, resulting in `MissingAttributeError`.
-      def optional
-        super.default(nil)
-      end
     end
     Array.singleton_class.include(ArrayDefault)
     Set.singleton_class.include(ArrayDefault)
