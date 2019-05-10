@@ -88,7 +88,7 @@ module Valkyrie
     end
 
     def attributes
-      super.dup.freeze
+      Hash[self.class.attribute_names.map { |x| [x, nil] }].merge(super).freeze
     end
 
     def dup
