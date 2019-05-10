@@ -76,7 +76,6 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource.my_property = "test"
 
       expect(resource[:my_property]).to eq ["test"]
-      # resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != :my_property }, meta: resource_klass.schema.meta))
     end
     it "returns nil for non-existent properties" do
       resource = resource_klass.new
@@ -97,6 +96,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
 
   def unset_key(resource_klass, property)
     resource_klass.schema(Dry::Types::Schema.new(Hash, **resource_klass.schema.options, keys: resource_klass.schema.keys.select { |x| x.name != property }, meta: resource_klass.schema.meta))
+    resource_klass.instance_variable_set(:@attribute_names, nil)
     resource_klass.allow_nonexistent_keys
   end
 
@@ -142,6 +142,21 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       expect(resource.attributes).to have_key(:bla)
       expect(resource.attributes[:internal_resource]).to eq resource_klass.to_s
       expect { resource.attributes.dup[:internal_resource] = "bla" }.not_to output.to_stderr
+
+      unset_key(resource_klass, :bla)
+      resource = resource_klass.new
+      expect(resource.attributes).not_to have_key(:bla)
+    end
+  end
+
+  describe "#__attributes__" do
+    it "returns all defined attributes, but doesn't add nil keys" do
+      resource_klass.attribute :bla unless resource_klass.schema.key?(:bla)
+
+      resource = resource_klass.new
+      expect(resource.__attributes__).to be_frozen
+      expect(resource.__attributes__).not_to have_key :bla
+      expect(resource.__attributes__).to have_key :internal_resource
 
       unset_key(resource_klass, :bla)
     end
