@@ -5,7 +5,7 @@ require 'rails/generators/model_helpers'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::ResourceGenerator do
-  before(:all) do
+  before do
     # define RSpec::Rails so test file is generated
     module RSpec::Rails; end
 
@@ -14,7 +14,7 @@ RSpec.describe Valkyrie::ResourceGenerator do
     load "#{tempdir}/app/models/helm.rb"
   end
 
-  after(:all) do
+  after do
     tempdir = ROOT_PATH.join('tmp', 'resource')
     Object.send(:remove_const, :Helm)
     RSpec.send(:remove_const, :Rails)
