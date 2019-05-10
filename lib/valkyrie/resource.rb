@@ -91,6 +91,10 @@ module Valkyrie
       Hash[self.class.attribute_names.map { |x| [x, nil] }].merge(super).freeze
     end
 
+    def __attributes__
+      Hash[@attributes].freeze
+    end
+
     def dup
       new({})
     end
