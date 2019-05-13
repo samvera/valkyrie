@@ -76,6 +76,8 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       resource.my_property = "test"
 
       expect(resource[:my_property]).to eq ["test"]
+
+      unset_key(resource_klass, :my_property)
     end
     it "returns nil for non-existent properties" do
       resource = resource_klass.new
