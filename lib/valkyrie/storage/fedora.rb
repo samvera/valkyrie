@@ -33,16 +33,16 @@ module Valkyrie::Storage
     # @param resource [Valkyrie::Resource]
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:, **_extra_arguments)
+    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", **_extra_arguments)
       identifier = id_to_uri(resource.id) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
-        request.headers['Content-Type'] = file.content_type
+        request.headers['Content-Type'] = content_type
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
         request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(file)}"
         request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
-        io = Faraday::UploadIO.new(file.tempfile.path, file.content_type)
+        io = Faraday::UploadIO.new(file, content_type, original_filename)
         request.body = io
       end
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
@@ -71,6 +71,17 @@ module Valkyrie::Storage
     end
     private_constant :IOProxy
 
+    # Translate the Valkrie ID into a URL for the fedora file
+    # @return [RDF::URI]
+    def fedora_identifier(id:)
+      identifier = id.to_s.sub(PROTOCOL, "#{connection.http.scheme}://")
+      RDF::URI(identifier)
+    end
+
+    def id_to_uri(id)
+      RDF::URI("#{connection_prefix}/#{CGI.escape(id.to_s)}")
+    end
+
     private
 
       # @return [IOProxy]
@@ -78,17 +89,6 @@ module Valkyrie::Storage
         response = connection.http.get(fedora_identifier(id: id))
         raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
         IOProxy.new(response.body)
-      end
-
-      # Translate the Valkrie ID into a URL for the fedora file
-      # @return [RDF::URI]
-      def fedora_identifier(id:)
-        identifier = id.to_s.sub(PROTOCOL, "#{connection.http.scheme}://")
-        RDF::URI(identifier)
-      end
-
-      def id_to_uri(id)
-        RDF::URI("#{connection_prefix}/#{CGI.escape(id.to_s)}")
       end
 
       def connection_prefix
