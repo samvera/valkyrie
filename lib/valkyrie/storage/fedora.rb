@@ -4,6 +4,7 @@ module Valkyrie::Storage
   class Fedora
     attr_reader :connection, :base_path, :fedora_version
     PROTOCOL = 'fedora://'
+    SLASH = '/'
 
     # @param [Ldp::Client] connection
     def initialize(connection:, base_path: "/", fedora_version: 4)
@@ -31,10 +32,11 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
-    # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @option id_transformer [Lambda] transforms a simple id (e.g. 'DDS78RK') into a uri
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", **_extra_arguments)
-      identifier = id_to_uri(resource.id) + '/original'
+    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", **extra_arguments)
+      identifier = id_to_uri(resource.id, id_transformer: id_transformer(extra_arguments)) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -79,8 +81,13 @@ module Valkyrie::Storage
       RDF::URI(identifier)
     end
 
-    def id_to_uri(id)
-      RDF::URI("#{connection_prefix}/#{CGI.escape(id.to_s)}")
+    # Convert the simple id into a URI
+    # @param [String] simple id (e.g. 'AN1D4UHA')
+    # @param id_transformer [lambda] procedure for performing the transformation
+    # @return [RDF::URI] the transformed URI (e.g. <RDF::URI 'http://localhost:8998/rest/dev/AN1D4UHA'>)
+    def id_to_uri(id, id_transformer: default_id_transformer)
+      id = CGI.escape(id.to_s)
+      RDF::URI.new(id_transformer.call(id))
     end
 
     private
@@ -92,8 +99,16 @@ module Valkyrie::Storage
         IOProxy.new(response.body)
       end
 
-      def connection_prefix
-        "#{connection.http.url_prefix}/#{base_path}"
+      def id_transformer(extra_arguments)
+        extra_arguments[:id_transformer] || default_id_transformer
+      end
+
+      def default_id_transformer
+        lambda do |id|
+          pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
+          post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
+          "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}#{id}"
+        end
       end
   end
 end

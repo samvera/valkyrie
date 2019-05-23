@@ -97,5 +97,45 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         expect(response.headers["content-type"]).to eq "image/tiff"
       end
     end
+
+    describe '#id_to_uri' do
+      let(:id) { 'AN1D4UHA' }
+
+      context 'when transformer is passed in' do
+        let(:id_transformer) do
+          lambda do |id|
+            head = id.split('/').first
+            head.gsub!(/#.*/, '')
+            "http://localhost:8998/rest/test/" + (head.scan(/..?/).first(4) + [id]).join('/')
+          end
+        end
+        let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
+
+        it 'produces a valid URI' do
+          expected_uri = RDF::URI.new('http://localhost:8998/rest/test/AN/1D/4U/HA/AN1D4UHA')
+          expect(storage_adapter.id_to_uri(id, id_transformer: id_transformer)).to eq expected_uri
+        end
+      end
+
+      context 'when using default transformer' do
+        context 'and basepath is passed in' do
+          let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
+
+          it 'produces a valid URI' do
+            expected_uri = RDF::URI.new('http://localhost:8998/rest/test/AN1D4UHA')
+            expect(storage_adapter.id_to_uri(id)).to eq expected_uri
+          end
+        end
+
+        context "when basepath uses default (e.g. '/')" do
+          let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
+
+          it 'produces a valid URI' do
+            expected_uri = RDF::URI.new('http://localhost:8998/rest/AN1D4UHA')
+            expect(storage_adapter.id_to_uri(id)).to eq expected_uri
+          end
+        end
+      end
+    end
   end
 end
