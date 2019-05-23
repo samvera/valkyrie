@@ -59,7 +59,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         )).to be_kind_of Valkyrie::StorageAdapter::File
 
         uri = storage_adapter.fedora_identifier(id: uploaded_file.id)
-        response = Faraday.head(uri.to_s)
+        response = storage_adapter.connection.http.head(uri.to_s)
 
         expect(response.headers["content-type"]).to eq "image/tiff"
       end
@@ -92,7 +92,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         )).to be_kind_of Valkyrie::StorageAdapter::File
 
         uri = storage_adapter.fedora_identifier(id: uploaded_file.id)
-        response = Faraday.head(uri.to_s)
+        response = storage_adapter.connection.http.head(uri.to_s)
 
         expect(response.headers["content-type"]).to eq "image/tiff"
       end
