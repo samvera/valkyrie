@@ -15,6 +15,7 @@ module FedoraHelper
     Faraday.new(url) do |f|
       f.request :multipart
       f.request :url_encoded
+      f.basic_auth 'fedoraAdmin', 'fedoraAdmin'
       f.adapter Faraday.default_adapter
     end
   end
