@@ -92,9 +92,10 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         )).to be_kind_of Valkyrie::StorageAdapter::File
 
         uri = storage_adapter.fedora_identifier(id: uploaded_file.id)
-        response = Faraday.head(uri.to_s)
+        response = RDF::Graph.load(uri.to_s + "/fcr:metadata")
+        mime_type = response.query([nil, RDF::URI("http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#hasMimeType"), nil]).objects.first.to_s
 
-        expect(response.headers["content-type"]).to eq "image/tiff"
+        expect(mime_type).to eq "image/tiff"
       end
     end
   end
