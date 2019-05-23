@@ -39,6 +39,7 @@ module Valkyrie::Storage
       connection.http.put do |request|
         request.url identifier
         request.headers['Content-Type'] = content_type
+        request.headers['Content-Length'] = file.length.to_s
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
         request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(file)}"
         request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
