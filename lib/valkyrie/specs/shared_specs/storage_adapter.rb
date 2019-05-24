@@ -17,6 +17,19 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
 
+  it "can upload a file which is just an IO" do
+    io_file = Tempfile.new('temp_io')
+    io_file.write File.read(ROOT_PATH.join("spec", "fixtures", "files", "example.tif"))
+    io_file.rewind
+    sha1 = Digest::SHA1.file(io_file).to_s
+
+    resource = Valkyrie::Specs::CustomResource.new(id: SecureRandom.uuid)
+
+    expect(uploaded_file = storage_adapter.upload(file: io_file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)).to be_kind_of Valkyrie::StorageAdapter::File
+
+    expect(uploaded_file.valid?(digests: { sha1: sha1 })).to be true
+  end
+
   it "can upload, validate, re-fetch, and delete a file" do
     resource = Valkyrie::Specs::CustomResource.new(id: "test")
     sha1 = Digest::SHA1.file(file).to_s

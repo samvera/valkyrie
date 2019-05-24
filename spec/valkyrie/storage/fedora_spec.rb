@@ -26,6 +26,13 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       end
     end
   end
+  before do
+    class Valkyrie::Specs::FedoraCustomResource < Valkyrie::Resource
+    end
+  end
+  after do
+    Valkyrie::Specs.send(:remove_const, :FedoraCustomResource)
+  end
   context "fedora 4" do
     before(:all) do
       # Start from a clean fedora
@@ -36,6 +43,27 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
     it_behaves_like "a Valkyrie::StorageAdapter"
+
+    context "when uploading with a content_type" do
+      it "passes that on" do
+        io_file = file.tempfile
+
+        resource = Valkyrie::Specs::FedoraCustomResource.new(id: SecureRandom.uuid)
+
+        expect(uploaded_file = storage_adapter.upload(
+          file: io_file,
+          original_filename: 'foo.jpg',
+          resource: resource,
+          fake_upload_argument: true,
+          content_type: "image/tiff"
+        )).to be_kind_of Valkyrie::StorageAdapter::File
+
+        uri = storage_adapter.fedora_identifier(id: uploaded_file.id)
+        response = storage_adapter.connection.http.head(uri.to_s)
+
+        expect(response.headers["content-type"]).to eq "image/tiff"
+      end
+    end
   end
 
   context "fedora 5" do
@@ -48,5 +76,26 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
     it_behaves_like "a Valkyrie::StorageAdapter"
+
+    context "when uploading with a content_type" do
+      it "passes that on" do
+        io_file = file.tempfile
+
+        resource = Valkyrie::Specs::FedoraCustomResource.new(id: SecureRandom.uuid)
+
+        expect(uploaded_file = storage_adapter.upload(
+          file: io_file,
+          original_filename: 'foo.jpg',
+          resource: resource,
+          fake_upload_argument: true,
+          content_type: "image/tiff"
+        )).to be_kind_of Valkyrie::StorageAdapter::File
+
+        uri = storage_adapter.fedora_identifier(id: uploaded_file.id)
+        response = storage_adapter.connection.http.head(uri.to_s)
+
+        expect(response.headers["content-type"]).to eq "image/tiff"
+      end
+    end
   end
 end

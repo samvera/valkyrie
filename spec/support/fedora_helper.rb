@@ -4,11 +4,20 @@ module FedoraHelper
     port = fedora_version == 4 ? 8988 : 8998
     opts = {
       base_path: base_path,
-      connection: ::Ldp::Client.new("http://#{fedora_auth}localhost:#{port}/rest"),
+      connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}localhost:#{port}/rest")),
       fedora_version: fedora_version
     }
     opts[:schema] = schema if schema
     opts
+  end
+
+  def faraday_client(url)
+    Faraday.new(url) do |f|
+      f.request :multipart
+      f.request :url_encoded
+      f.basic_auth 'fedoraAdmin', 'fedoraAdmin'
+      f.adapter Faraday.default_adapter
+    end
   end
 
   def fedora_auth
