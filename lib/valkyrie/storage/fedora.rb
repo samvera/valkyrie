@@ -32,11 +32,11 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
+    # @param id_transformer [Lambda] transforms a simple id (e.g. 'DDS78RK') into a uri
     # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
-    # @option id_transformer [Lambda] transforms a simple id (e.g. 'DDS78RK') into a uri
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", **extra_arguments)
-      identifier = id_to_uri(resource.id, id_transformer: id_transformer(extra_arguments)) + '/original'
+    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", id_transformer: default_id_transformer, **extra_arguments)
+      identifier = id_to_uri(resource.id, id_transformer: id_transformer) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -97,10 +97,6 @@ module Valkyrie::Storage
         response = connection.http.get(fedora_identifier(id: id))
         raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
         IOProxy.new(response.body)
-      end
-
-      def id_transformer(extra_arguments)
-        extra_arguments[:id_transformer] || default_id_transformer
       end
 
       def default_id_transformer
