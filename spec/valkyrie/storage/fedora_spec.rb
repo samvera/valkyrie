@@ -98,32 +98,26 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       end
     end
 
-    describe '#id_to_uri' do
-      let(:id) { 'AN1D4UHA' }
-
-      context 'when transformer is passed in' do
-        let(:id_transformer) do
-          lambda do |id|
-            head = id.split('/').first
-            head.gsub!(/#.*/, '')
-            "http://localhost:8998/rest/test/" + (head.scan(/..?/).first(4) + [id]).join('/')
-          end
-        end
-        let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
-
-        it 'produces a valid URI' do
-          expected_uri = RDF::URI.new('http://localhost:8998/rest/test/AN/1D/4U/HA/AN1D4UHA')
-          expect(storage_adapter.id_to_uri(id, id_transformer: id_transformer)).to eq expected_uri
-        end
+    context 'testing resource uri transformer' do
+      let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+      let(:io_file) { file.tempfile }
+      let(:resource) { Valkyrie::Specs::FedoraCustomResource.new(id: 'AN1D4UHA') }
+      let(:uploaded_file) do
+        storage_adapter.upload(
+          file: io_file,
+          original_filename: 'foo.jpg',
+          resource: resource,
+          fake_upload_argument: true,
+          content_type: "image/tiff"
+        )
       end
-
       context 'when using default transformer' do
         context 'and basepath is passed in' do
           let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
 
           it 'produces a valid URI' do
-            expected_uri = RDF::URI.new('http://localhost:8998/rest/test/AN1D4UHA')
-            expect(storage_adapter.id_to_uri(id)).to eq expected_uri
+            expected_uri = 'fedora://localhost:8998/rest/test/AN1D4UHA/original'
+            expect(uploaded_file.id.to_s).to eq expected_uri
           end
         end
 
@@ -131,9 +125,36 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
           let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
 
           it 'produces a valid URI' do
-            expected_uri = RDF::URI.new('http://localhost:8998/rest/AN1D4UHA')
-            expect(storage_adapter.id_to_uri(id)).to eq expected_uri
+            expected_uri = RDF::URI.new('fedora://localhost:8998/rest/AN1D4UHA/original')
+            expect(uploaded_file.id.to_s).to eq expected_uri
           end
+        end
+      end
+
+      context 'when transformer is passed in' do
+        let(:uploaded_file) do
+          storage_adapter.upload(
+            file: io_file,
+            original_filename: 'foo.jpg',
+            resource: resource,
+            fake_upload_argument: true,
+            content_type: "image/tiff",
+            resource_uri_transformer: uri_transformer
+          )
+        end
+        let(:uri_transformer) do
+          lambda do |resource|
+            id = CGI.escape(resource.id.to_s)
+            head = id.split('/').first
+            head.gsub!(/#.*/, '')
+            RDF::URI.new("http://localhost:8998/rest/test/" + (head.scan(/..?/).first(4) + [id]).join('/'))
+          end
+        end
+        let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
+
+        it 'produces a valid URI' do
+          expected_uri = 'fedora://localhost:8998/rest/test/AN/1D/4U/HA/AN1D4UHA/original'
+          expect(uploaded_file.id.to_s).to eq expected_uri
         end
       end
     end

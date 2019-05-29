@@ -32,11 +32,13 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
-    # @param id_transformer [Lambda] transforms a simple id (e.g. 'DDS78RK') into a uri
+    # @param content_type [String] content type of file (e.g. 'image/tiff') (default='application/octet-stream')
+    # @param resource_uri_transformer [Lambda] transforms the resource's id (e.g. 'DDS78RK') into a uri (optional)
     # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", id_transformer: default_id_transformer, **extra_arguments)
-      identifier = id_to_uri(resource.id, id_transformer: id_transformer) + '/original'
+    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
+               resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
+      identifier = resource_uri_transformer.call(resource) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -81,15 +83,6 @@ module Valkyrie::Storage
       RDF::URI(identifier)
     end
 
-    # Convert the simple id into a URI
-    # @param [String] simple id (e.g. 'AN1D4UHA')
-    # @param id_transformer [lambda] procedure for performing the transformation
-    # @return [RDF::URI] the transformed URI (e.g. <RDF::URI 'http://localhost:8998/rest/dev/AN1D4UHA'>)
-    def id_to_uri(id, id_transformer: default_id_transformer)
-      id = CGI.escape(id.to_s)
-      RDF::URI.new(id_transformer.call(id))
-    end
-
     private
 
       # @return [IOProxy]
@@ -99,11 +92,12 @@ module Valkyrie::Storage
         IOProxy.new(response.body)
       end
 
-      def default_id_transformer
-        lambda do |id|
+      def default_resource_uri_transformer
+        lambda do |resource|
+          id = CGI.escape(resource.id.to_s)
           pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
           post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
-          "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}#{id}"
+          RDF::URI.new("#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}#{id}")
         end
       end
   end
