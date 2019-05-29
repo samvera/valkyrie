@@ -38,7 +38,7 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
                resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
-      identifier = resource_uri_transformer.call(resource) + '/original'
+      identifier = resource_uri_transformer.call(resource, base_url) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -93,12 +93,16 @@ module Valkyrie::Storage
       end
 
       def default_resource_uri_transformer
-        lambda do |resource|
+        lambda do |resource, base_url|
           id = CGI.escape(resource.id.to_s)
-          pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
-          post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
-          RDF::URI.new("#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}#{id}")
+          RDF::URI.new(base_url + id)
         end
+      end
+
+      def base_url
+        pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
+        post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
+        "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}"
       end
   end
 end
