@@ -4,6 +4,7 @@ module Valkyrie::Storage
   class Fedora
     attr_reader :connection, :base_path, :fedora_version
     PROTOCOL = 'fedora://'
+    SLASH = '/'
 
     # @param [Ldp::Client] connection
     def initialize(connection:, base_path: "/", fedora_version: 4)
@@ -31,10 +32,13 @@ module Valkyrie::Storage
     # @param file [IO]
     # @param original_filename [String]
     # @param resource [Valkyrie::Resource]
-    # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @param content_type [String] content type of file (e.g. 'image/tiff') (default='application/octet-stream')
+    # @param resource_uri_transformer [Lambda] transforms the resource's id (e.g. 'DDS78RK') into a uri (optional)
+    # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", **_extra_arguments)
-      identifier = id_to_uri(resource.id) + '/original'
+    def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
+               resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
+      identifier = resource_uri_transformer.call(resource, base_url) + '/original'
       sha1 = fedora_version == 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -79,10 +83,6 @@ module Valkyrie::Storage
       RDF::URI(identifier)
     end
 
-    def id_to_uri(id)
-      RDF::URI("#{connection_prefix}/#{CGI.escape(id.to_s)}")
-    end
-
     private
 
       # @return [IOProxy]
@@ -92,8 +92,17 @@ module Valkyrie::Storage
         IOProxy.new(response.body)
       end
 
-      def connection_prefix
-        "#{connection.http.url_prefix}/#{base_path}"
+      def default_resource_uri_transformer
+        lambda do |resource, base_url|
+          id = CGI.escape(resource.id.to_s)
+          RDF::URI.new(base_url + id)
+        end
+      end
+
+      def base_url
+        pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
+        post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
+        "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}"
       end
   end
 end
