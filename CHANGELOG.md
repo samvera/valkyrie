@@ -1,4 +1,18 @@
-# v1.6.0 2018-04-17
+# v1.7.0 2019-05-29
+
+## Changes since last release
+
+* Permit storage adapters to have arbitrary arguments to #upload.
+  [jrgriffiniii](https://github.com/jrgriffiniii)
+* Storage adapters can now all upload regular IO objects.
+  [tpendragon](https://github.com/tpendragon)
+* Fedora Storage Adapter has a configurable `resource_uri_transformer` for going
+  from a `Resource` to a Fedora path.
+  [elrayle](https://github.com/elrayle)
+* Improve Gem metadata and allow Bundler 2
+  [jcoyne](https://github.com/jcoyne)
+
+# v1.6.0 2019-04-17
 
 ## Changes since last release
 
@@ -16,7 +30,7 @@ this release:
 [escowles](https://github.com/escowles)
 [no-reply](https://github.com/no-reply)
 
-# v1.5.1 2018-02-08
+# v1.5.1 2019-02-08
 
 ## Changes since last release
 
@@ -29,7 +43,7 @@ this release:
 [cjcolvar](https://github.com/cjcolvar)
 [escowles](https://github.com/escowles)
 
-# v1.5.0 2018-02-06
+# v1.5.0 2019-02-06
 
 ## Changes since last release
 
@@ -76,7 +90,7 @@ this release:
 [no-reply](https://github.com/no-reply)
 [revgum](https://github.com/revgum)
 
-# v1.5.0 RC2 2018-02-01
+# v1.5.0 RC2 2019-02-01
 
 ## Changes since last release
 
@@ -87,7 +101,7 @@ Additional thanks to the following for code review:
 
 [mjgiarlo](https://github.com/mjgiarlo)
 
-# v1.5.0 RC1 2018-02-01
+# v1.5.0 RC1 2019-02-01
 
 ## Changes since last release
 
@@ -131,7 +145,7 @@ this release:
 [no-reply](https://github.com/no-reply)
 [revgum](https://github.com/revgum)
 
-# v1.4.0 2018-01-08
+# v1.4.0 2019-01-08
 
 ## Changes since last release.
 
