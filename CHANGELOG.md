@@ -1,3 +1,15 @@
+# v1.7.1 2019-05-30
+
+## Changes since last release
+
+* Fix ROOT_PATH error in StorageAdapter#upload shared specs
+  [tpendragon](https://github.com/tpendragon)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[escowles](https://github.com/escowles)
+
 # v1.7.0 2019-05-29
 
 ## Changes since last release
