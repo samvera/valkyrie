@@ -4,6 +4,13 @@ require 'valkyrie/specs/shared_specs'
 include ActionDispatch::TestProcess
 
 RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
+  before do
+    class Valkyrie::Specs::FedoraCustomResource < Valkyrie::Resource
+    end
+  end
+  after do
+    Valkyrie::Specs.send(:remove_const, :FedoraCustomResource)
+  end
   context "fedora 4" do
     before(:all) do
       # Start from a clean fedora
