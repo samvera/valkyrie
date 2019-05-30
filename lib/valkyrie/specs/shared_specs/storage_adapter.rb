@@ -19,7 +19,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "can upload a file which is just an IO" do
     io_file = Tempfile.new('temp_io')
-    io_file.write File.read(ROOT_PATH.join("spec", "fixtures", "files", "example.tif"))
+    io_file.write "Stuff"
     io_file.rewind
     sha1 = Digest::SHA1.file(io_file).to_s
 
