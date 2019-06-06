@@ -1,4 +1,4 @@
 # frozen_string_literal: true
 module Valkyrie
-  VERSION = "2.0.0.RC9"
+  VERSION = "2.0.0.RC10"
 end
