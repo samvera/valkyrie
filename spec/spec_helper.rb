@@ -3,13 +3,13 @@ ENV['RACK_ENV'] = 'test'
 ENV['RAILS_ENV'] = 'test'
 ENV['environment'] = 'test'
 require 'simplecov'
+
 SimpleCov.start do
   add_filter 'spec'
   add_filter 'vendor'
   minimum_coverage 100
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require 'active_fedora'
 require "valkyrie"
 require 'pry'
 require 'action_dispatch'

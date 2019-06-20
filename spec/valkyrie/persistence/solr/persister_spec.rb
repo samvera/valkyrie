@@ -114,26 +114,20 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     end
   end
 
-  describe "rsolr gem deprecation" do
-    let(:message) { /\[DEPRECATION\] rsolr will not be included/ }
-    let(:path) { Bundler.definition.gemfiles.first }
-
-    context "when the gemfile does not have an entry for rsolr" do
-      it "gives a warning when the module loads" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"notarealgem\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/solr.rb"
-        end.to output(message).to_stderr
-      end
+  context 'no rsolr gem' do
+    let(:error) { Gem::LoadError.new.tap { |err| err.name = 'rsolr' } }
+    let(:error_message) do
+      "You are using the Solr adapter without installing the rsolr gem.  "\
+        "Add `gem 'rsolr'` to your Gemfile."
     end
 
-    context "when the gemfile does have an entry for rsolr" do
-      it "does not give a deprecation warning" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"rsolr\", \"~> 1.0\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/solr.rb"
-        end.not_to output(message).to_stderr
-      end
+    before do
+      allow(Gem::Dependency).to receive(:new).with('rsolr', []).and_raise error
+    end
+
+    it 'raises an error' do
+      expect { load 'lib/valkyrie/persistence/solr.rb' }.to raise_error(Gem::LoadError,
+                                                                        error_message)
     end
   end
 end

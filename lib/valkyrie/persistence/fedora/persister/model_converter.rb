@@ -201,8 +201,8 @@ module Valkyrie::Persistence::Fedora
         end
 
         def self.ordered?(value)
-          return false unless value.resource.class.schema[value.key]
-          value.resource.class.schema[value.key].meta.try(:[], :ordered)
+          return false unless value.resource.class.attribute_names.include?(value.key)
+          value.resource.ordered_attribute?(value.key)
         end
 
         delegate :subject, to: :value
@@ -488,9 +488,10 @@ module Valkyrie::Persistence::Fedora
         # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
         def result
           # cast it to datetime for storage, to preserve milliseconds and date
+          # @todo Remove strftime when https://github.com/ruby-rdf/rdf/issues/394 is closed.
           map_value(converted_value:
               RDF::Literal.new(
-                value.value.to_datetime,
+                value.value.to_datetime.strftime("%Y-%m-%dT%H:%M:%S.%N%z"),
                 datatype: PermissiveSchema.valkyrie_time
               ))
         end

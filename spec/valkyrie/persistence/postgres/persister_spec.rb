@@ -26,12 +26,12 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       end
     end
     context "when given an ID it can't save" do
-      it "gives a warning and saves it anyways" do
+      it "raises an UnsupportedDatatype exception" do
         resource = MyResource.new(id: "nonsense")
 
-        expect { persister.save(resource: resource) }.to output(/DEPRECATION/).to_stderr
-        expect { persister.save_all(resources: [resource]) }.to output(/DEPRECATION/).to_stderr
-        expect(query_service.find_all.to_a.length).to eq 2
+        expect { persister.save(resource: resource) }.to raise_error Valkyrie::Persistence::UnsupportedDatatype
+        expect { persister.save_all(resources: [resource]) }.to raise_error Valkyrie::Persistence::UnsupportedDatatype
+        expect(query_service.find_all.to_a.length).to eq 0
       end
     end
   end
@@ -142,50 +142,39 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
         expect(orm_resource.lock_version).to eq 0
       end
     end
-  end
 
-  describe "pg gem deprecation" do
-    let(:message) { /\[DEPRECATION\] pg will not be included/ }
-    let(:path) { Bundler.definition.gemfiles.first }
+    context 'no postgres gem' do
+      let(:error) { Gem::LoadError.new.tap { |err| err.name = 'pg' } }
+      let(:error_message) do
+        "You are using the Postgres adapter without installing the pg gem.  "\
+      "Add `gem 'pg'` to your Gemfile."
+      end
 
-    context "when the gemfile does not have an entry for pg" do
-      it "gives a warning when the module loads" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"rsolr\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.to output(message).to_stderr
+      before do
+        allow(Gem::Dependency).to receive(:new).with('pg', []).and_raise error
+      end
+
+      it 'raises an error' do
+        expect { load 'lib/valkyrie/persistence/postgres.rb' }.to raise_error(Gem::LoadError,
+                                                                              error_message)
       end
     end
 
-    context "when the gemfile does have an entry for pg" do
-      it "does not give a deprecation warning" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"pg\", \"~> 1.0\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.not_to output(message).to_stderr
+    context 'no activerecord gem' do
+      let(:error) { Gem::LoadError.new.tap { |err| err.name = 'activerecord' } }
+      let(:error_message) do
+        "You are using the Postgres adapter without installing the activerecord gem.  "\
+      "Add `gem 'activerecord'` to your Gemfile."
       end
-    end
-  end
 
-  describe "activerecord gem deprecation" do
-    let(:message) { /\[DEPRECATION\] activerecord will not be included/ }
-    let(:path) { Bundler.definition.gemfiles.first }
-
-    context "when the gemfile does not have an entry for activerecord" do
-      it "gives a warning when the module loads" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"pg\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.to output(message).to_stderr
+      before do
+        allow(Gem::Dependency).to receive(:new).with('pg', []).and_call_original
+        allow(Gem::Dependency).to receive(:new).with('activerecord', []).and_raise error
       end
-    end
 
-    context "when the gemfile does have an entry for activerecord" do
-      it "does not give a deprecation warning" do
-        allow(File).to receive(:readlines).with(path).and_return(["gem \"activerecord\", \"~> 1.0\"\n"])
-        expect do
-          load "lib/valkyrie/persistence/postgres.rb"
-        end.not_to output(message).to_stderr
+      it 'raises an error' do
+        expect { load 'lib/valkyrie/persistence/postgres.rb' }.to raise_error(Gem::LoadError,
+                                                                              error_message)
       end
     end
   end

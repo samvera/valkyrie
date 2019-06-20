@@ -1,3 +1,76 @@
+# v2.0.0 2019-06-06
+
+## Changes since last release
+
+* Make LDP optional (Add `gem ldp` to Gemfile if using Fedora)
+* Make ActiveRecord optional (Add `gem activerecord` to Gemfile if using
+  Postgres)
+* Make RSolr optional (Add `gem rsolr` to Gemfile if using Solr)
+* Remove deprecated `standardize_query_result` argument.
+* Remove deprecated `Valkyrie::ID#to_uri`
+* Remove ActiveFedora as a dependency.
+* Remove deprecated `Valkyrie::Persistence::Fedora::PermissiveSchema.alternate_ids`
+* Remove deprecated `Valkyrie::Persistence::Fedora::PermissiveSchema.references`
+* Upgrade `dry-types` to `1.0.x`
+* Fedora Adapter default is now version 5.
+* Require a symbol key when instantiating a Valkyrie::Resource (string keys are no longer valid)
+* Remove deprecated `type.member()` method (use `type.of()`)
+* Remove deprecated `Valkyrie::Types::Int` (use `Valkyrie::Types::Integer`)
+* Performance improvements
+
+## Changes Without Deprecations in `1.6.0`
+
+1. Overriding an attribute getter no longer changes the output of `to_h`. If
+   you've overridden something via `def title; "overwritten"; end`, then `to_h`
+   will now have what was set via the setter or initializer, not `overwritten`.
+2. Setting attribute values via overriding instance variables no longer works.
+   Please use `#set_value` if you need dynamic setting, as this will be a stable
+   API.
+3. `Valkyrie::Resource#to_h` no longer includes keys with `nil` values.
+
+## Upgrade Guide
+
+1. Upgrade Valkyrie to `1.6.0` in your application, run tests, and fix all
+   deprecations output to console.
+2. Upgrade Valkyrie to `2.0.0` in your application.
+3. Failing tests at this point are likely due to behavior in the "Changes
+   Without Deprecations" section above. If you have any trouble, please contact
+   us in the #valkyrie channel in [Samvera Slack](http://slack.samvera.org/).
+
+## New Product Owner
+
+All of us who have been part of the Valkyrie project so far would like to thank
+[Carolyn Cole](https://github.com/carolyncole) for her role so far as Product Owner.
+We'd like to welcome [Kate Lynch](https://github.com/kelynch), who will be
+taking over effective immediately!
+
+## Special Thanks
+
+This is the first major version of Valkyrie since 1.0 over a year ago. A lot of
+work has gone into it, and I'd like to take the chance to thank everyone
+involved for their contributions in the last year:
+
+
+[DanCoughlin](https://github.com/DanCoughlin)
+[awead](https://github.com/awead)
+[cam156](https://github.com/cam156)
+[carolyncole](https://github.com/carolyncole)
+[cjcolvar](https://github.com/cjcolvar)
+[dgcliff](https://github.com/dgcliff)
+[escowles](https://github.com/escowles)
+[hackmastera](https://github.com/hackmastera)
+[jeremyf](https://github.com/jeremyf)
+[jrgriffiniii](https://github.com/jrgriffiniii)
+[kelynch](https://github.com/kelynch)
+[mbklein](https://github.com/mbklein)
+[mjgiarlo](https://github.com/mjgiarlo)
+[mtribone](https://github.com/mtribone)
+[no-reply](https://github.com/no-reply)
+[ojlyytinen](https://github.com/ojlyytinen)
+[revgum](https://github.com/revgum)
+[stkenny](https://github.com/stkenny)
+[tpendragon](https://github.com/tpendragon)
+
 # v1.7.1 2019-05-30
 
 ## Changes since last release

@@ -23,18 +23,16 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'draper'
   spec.add_dependency 'activemodel'
-  spec.add_dependency 'dry-types', '~> 0.12.0'
+  spec.add_dependency 'dry-types', '~> 1.0'
   spec.add_dependency 'rdf'
-  spec.add_dependency 'active-fedora'
   spec.add_dependency 'activesupport'
-  spec.add_dependency 'activerecord'
   spec.add_dependency 'railties' # To use generators and engines
   spec.add_dependency 'reform'
   spec.add_dependency 'reform-rails'
-  spec.add_dependency 'pg'
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
-  spec.add_dependency 'ldp'
+  spec.add_dependency 'rdf-vocab'
+  spec.add_dependency 'disposable', '~> 0.4.5'
 
   spec.add_development_dependency "bundler", "> 1.16.0", "< 3"
   spec.add_development_dependency "rake", "~> 10.0"
@@ -49,7 +47,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'solr_wrapper'
   spec.add_development_dependency 'fcrepo_wrapper'
   spec.add_development_dependency 'docker-stack', '~> 0.2.6'
-  spec.add_development_dependency 'activerecord'
   spec.add_development_dependency 'timecop'
   spec.add_development_dependency 'appraisal'
 end

@@ -15,10 +15,10 @@ module Valkyrie
   # @note Not all Dry::Types built-in types are supported in Valkyrie
   # @see https://github.com/samvera-labs/valkyrie/wiki/Supported-Data-Types List of types supported in Valkyrie
   module Types
-    include Dry::Types.module
+    include Dry.Types(default: :nominal)
 
     # Valkyrie::ID
-    ID = Dry::Types::Definition
+    ID = Dry::Types::Nominal
          .new(Valkyrie::ID)
          .constructor do |input|
       if input.respond_to?(:each)
@@ -40,7 +40,7 @@ module Valkyrie
     end
 
     # Valkyrie::URI
-    URI = Dry::Types::Definition
+    URI = Dry::Types::Nominal
           .new(RDF::URI)
           .constructor do |input|
       if input.present?
@@ -52,7 +52,7 @@ module Valkyrie
 
     # Optimistic Lock Token
     OptimisticLockToken =
-      Dry::Types::Definition
+      Dry::Types::Nominal
       .new(::Valkyrie::Persistence::OptimisticLockToken)
       .constructor do |input|
         Valkyrie::Persistence::OptimisticLockToken.deserialize(input)
@@ -96,14 +96,6 @@ module Valkyrie
       def of(type)
         super.default([].freeze)
       end
-
-      def member(type)
-        warn "[DEPRECATION] .member has been renamed to .of in dry-types and this " \
-          "method will be removed in the next major version of Valkyrie. Please use " \
-          ".of instead. " \
-          "Called from #{Gem.location_of_caller.join(':')}"
-        super.default([].freeze)
-      end
     end
     Array.singleton_class.include(ArrayDefault)
     Set.singleton_class.include(ArrayDefault)
@@ -112,22 +104,6 @@ module Valkyrie
     # single string.
     SingleValuedString = Valkyrie::Types::String.constructor do |value|
       ::Array.wrap(value).first.to_s
-    end
-    Valkyrie::Types::Integer = Dry::Types["int"]
-    Valkyrie::Types::Coercible::Integer = Dry::Types["coercible.int"]
-    Int = Dry::Types["int"].constructor do |value|
-      warn "[DEPRECATION] Valkyrie::Types::Int has been renamed in dry-types and this " \
-           "reference will be removed in the next major version of Valkyrie. Please use " \
-           "Valkyrie::Types::Integer instead. " \
-           "Called from #{Gem.location_of_caller.join(':')}"
-      Dry::Types["int"][value]
-    end
-    Coercible::Int = Dry::Types["coercible.int"].constructor do |value|
-      warn "[DEPRECATION] Valkyrie::Types::Coercible::Int has been renamed in dry-types and this " \
-           "reference will be removed in the next major version of Valkyrie. Please use " \
-           "Valkyrie::Types::Coercible::Integer instead. " \
-           "Called from #{Gem.location_of_caller.join(':')}"
-      Dry::Types["coercible.int"][value]
     end
   end
 end

@@ -17,7 +17,7 @@ Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samv
 ## Primary Contacts
 
 ### Product Owner
-[Katherine Lynch](https://github.com/kelynch)
+[Kate Lynch](https://github.com/kelynch)
 
 ### Technical Lead
 [Trey Pendragon](https://github.com/tpendragon)
@@ -51,10 +51,32 @@ instance with a short name that can be used to refer to it in your application:
 ```
 # frozen_string_literal: true
 require 'valkyrie'
+
+
 Rails.application.config.to_prepare do
+
+  # To use the postgres adapter you must add `gem 'pg'` to your Gemfile
   Valkyrie::MetadataAdapter.register(
     Valkyrie::Persistence::Postgres::MetadataAdapter.new,
     :postgres
+  )
+
+  # To use the solr adapter you must add gem 'rsolr' to your Gemfile
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Solr::MetadataAdapter.new(
+      connection: Blacklight.default_index.connection
+    ),
+    :solr
+  )
+
+  # To use the fedora adapter you must add `gem 'ldp'` to your Gemfile
+  Valkyrie::MetadataAdapter.register(
+    Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+      connection: ::Ldp::Client.new("http://localhost:8988/rest"),
+      base_path: "test_fed",
+      schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+    ),
+    :fedora
   )
 
   Valkyrie::MetadataAdapter.register(
@@ -80,10 +102,12 @@ Rails.application.config.to_prepare do
 end
 ```
 
-The initializer registers two `Valkyrie::MetadataAdapter` instances for storing metadata:
-* `:postgres` which stores metadata in a PostgreSQL database
+The initializer registers four `Valkyrie::MetadataAdapter` instances for storing metadata:
+* `:fedora` which stores metadata in a Fedora server.
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
-  appropriate for testing)
+  appropriate for testing).
+* `:postgres` which stores metadata in a PostgreSQL database.
+* `:solr` which stores metadata in a Solr Index.
 
 Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
 updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
