@@ -7,6 +7,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       include Valkyrie::Resource::AccessControls
       attribute :title
       attribute :author
+      attribute :other_author
       attribute :member_ids
       attribute :nested_resource
       attribute :single_value, Valkyrie::Types::String.optional
@@ -179,7 +180,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
   it "can store DateTimes" do
     time1 = DateTime.current
     time2 = Time.current.in_time_zone
-    book = persister.save(resource: resource_class.new(title: [time1], author: [time2]))
+    time3 = "2019-01"
+    book = persister.save(resource: resource_class.new(title: [time1], author: [time2], other_author: [time3]))
 
     reloaded = query_service.find_by(id: book.id)
 
@@ -187,6 +189,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.title.first.zone).to eq('UTC')
     expect(reloaded.author.first.to_i).to eq(time2.to_i)
     expect(reloaded.author.first.zone).to eq('UTC')
+    expect(reloaded.other_author.first).to eq "2019-01"
   end
 
   it "can store Floats" do

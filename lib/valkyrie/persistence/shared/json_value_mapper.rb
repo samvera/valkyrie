@@ -137,15 +137,17 @@ module Valkyrie::Persistence::Shared
       # e. g. 1970-01-01
       # @param [Object] value
       # @return [Boolean]
+      # rubocop:disable Metrics/CyclomaticComplexity
       def self.handles?(value)
         return false unless value.is_a?(String)
-        return false unless value[4] == "-"
+        return false unless value[4] == "-" && value[10] == "T"
         year = value.to_s[0..3]
         return false unless year.length == 4 && year.to_i.to_s == year
         DateTime.iso8601(value)
       rescue
         false
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       # Generates a Time object in the UTC from the datestamp string value
       # @return [Time]
