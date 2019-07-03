@@ -1,3 +1,18 @@
+# v2.0.1 2019-07-03
+
+## Changes since last release
+
+* Remove strftime from `Fedora::Persister::ModelConverter`
+  [tpendragon](https://github.com/tpendragon)
+* Only parse ISO8601 strings into DateTimes
+  [awead](https://github.com/awead)
+
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[dgcliff](https://github.com/dgcliff)
+
 # v2.0.0 2019-06-06
 
 ## Changes since last release
