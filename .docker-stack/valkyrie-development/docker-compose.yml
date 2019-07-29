@@ -8,13 +8,13 @@ volumes:
   solr_index:
 services:
   fedora4:
-    image: nulib/fcrepo4:4.7.5
+    image: samvera/fcrepo4:4.7.5
     volumes:
     - fedora4:/data
     ports:
     - 8986:8080
   fedora5:
-    image: nulib/fcrepo4:5.1.0
+    image: samvera/fcrepo4:5.1.0
     volumes:
     - fedora5:/data
     ports:
