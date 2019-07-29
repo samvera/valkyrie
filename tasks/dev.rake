@@ -9,7 +9,7 @@ namespace :server do
     SolrWrapper.wrap(shared_solr_opts.merge(port: 8984, instance_dir: 'tmp/blacklight-core-test')) do |solr|
       solr.with_collection(name: "blacklight-core-test", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
         FcrepoWrapper.wrap(shared_fedora_opts.merge(port: 8988, fcrepo_home_dir: "tmp/fcrepo4-test-data", version: "4.7.5", instance_directory: "tmp/fcrepo4")) do |_fcrepo|
-          FcrepoWrapper::Instance.new(shared_fedora_opts.merge(port: 8998, fcrepo_home_dir: "tmp/fcrepo5-test-data", version: "5.0.0", instance_directory: "tmp/fcrepo5")).wrap do |_other_repo|
+          FcrepoWrapper::Instance.new(shared_fedora_opts.merge(port: 8998, fcrepo_home_dir: "tmp/fcrepo5-test-data", version: "5.1.0", instance_directory: "tmp/fcrepo5")).wrap do |_other_repo|
             puts "Setup solr & Fedora"
             loop do
               sleep(1)
@@ -40,7 +40,7 @@ namespace :server do
     SolrWrapper.wrap(shared_solr_opts.merge(port: 8983, instance_dir: 'tmp/blacklight-core')) do |solr|
       solr.with_collection(name: "blacklight-core", dir: Pathname.new(__dir__).join("..", "solr", "config").to_s) do
         FcrepoWrapper.wrap(shared_fedora_opts.merge(port: 8986, fcrepo_home_dir: "tmp/fcrepo4-dev-data", version: "4.7.5")) do |_fcrepo|
-          FcrepoWrapper::Instance.new(shared_fedora_opts.merge(port: 8996, fcrepo_home_dir: "tmp/fcrepo5-dev-data", version: "5.0.0")).wrap do |_fcrepo|
+          FcrepoWrapper::Instance.new(shared_fedora_opts.merge(port: 8996, fcrepo_home_dir: "tmp/fcrepo5-dev-data", version: "5.1.0")).wrap do |_fcrepo|
             puts "Setup solr & Fedora"
             loop do
               sleep(1)
