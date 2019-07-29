@@ -14,7 +14,7 @@ services:
     ports:
     - 8986:8080
   fedora5:
-    image: nulib/fcrepo4:5.0.0
+    image: nulib/fcrepo4:5.1.0
     volumes:
     - fedora5:/data
     ports:
