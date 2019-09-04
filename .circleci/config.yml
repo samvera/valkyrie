@@ -68,6 +68,10 @@ workflows:
   build:
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_6_0.gemfile"
+          ruby: 2.6.3
+          name: "Ruby2-6_Rails6-0"
+      - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.3
           name: "Ruby2-6_Rails5-2"
@@ -100,6 +104,10 @@ workflows:
               only:
                 - master
     jobs:
+      - build:
+          gemfile: "gemfiles/activerecord_6_0.gemfile"
+          ruby: 2.6.3
+          name: "Ruby2-6_Rails6-0"
       - build:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.3
