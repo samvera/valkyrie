@@ -14,6 +14,25 @@ RSpec.describe Valkyrie::Resource do
   subject(:resource) { Resource.new }
   let(:resource_klass) { Resource }
   it_behaves_like "a Valkyrie::Resource"
+
+  describe '.attributes' do
+    let(:schema) { { attr1: Valkyrie::Types::String, attr2: Valkyrie::Types::Set } }
+
+    it 'defines new attributes' do
+      expect { Resource.attributes(schema) }
+        .to change { Resource.fields }
+        .to include(:attr1, :attr2)
+    end
+
+    it 'defines setters for attributes' do
+      Resource.attributes(schema)
+
+      expect { resource.attr1 = 'moomin' }
+        .to change { resource.attr1 }
+        .to eq 'moomin'
+    end
+  end
+
   describe "#fields" do
     it "returns all configured fields as an array of symbols" do
       expect(Resource.fields).to contain_exactly :id, :internal_resource, :created_at, :updated_at, :title
