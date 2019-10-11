@@ -13,6 +13,7 @@ module Valkyrie
   # @see https://github.com/samvera-labs/valkyrie/wiki/ChangeSets-and-Dirty-Tracking Validation and change tracking is provided by change sets
   #
   # @see lib/valkyrie/specs/shared_specs/resource.rb
+  # rubocop:disable Metrics/ClassLength
   class Resource < Dry::Struct
     include Draper::Decoratable
     # Allows a Valkyrie::Resource to be instantiated without providing every
@@ -48,11 +49,32 @@ module Valkyrie
       raise ReservedAttributeError, "#{name} is a reserved attribute and defined by Valkyrie::Resource, do not redefine it." if reserved_attributes.include?(name.to_sym) &&
                                                                                                                                 attribute_names.include?(name.to_sym) &&
                                                                                                                                 !internal
-      define_method("#{name}=") do |value|
-        set_value(name, value)
-      end
+
       type = type.meta(ordered: true) if name == :member_ids
       super(name, type)
+    end
+
+    # @param [Hash{Symbol => Dry::Types::Type}] new_schema
+    # @return [Dry::Struct]
+    # @raise [RepeatedAttributeError] when trying to define attribute with the
+    #   same name as previously defined one
+    # @see #attribute
+    # @note extends {Dry::Struct} by adding `#attr=` style setters
+    def self.attributes(new_schema)
+      super
+
+      new_schema.each_key do |key|
+        key = key.to_s.chomp('?')
+        next if instance_methods.include?("#{key}=".to_sym)
+
+        class_eval(<<-RUBY)
+          def #{key}=(value)
+            set_value("#{key}".to_sym, value)
+          end
+        RUBY
+      end
+
+      self
     end
 
     def self.reserved_attributes
@@ -166,4 +188,5 @@ module Valkyrie
 
     class ReservedAttributeError < StandardError; end
   end
+  # rubocop:enable Metrics/ClassLength
 end
