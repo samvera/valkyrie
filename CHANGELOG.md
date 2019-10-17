@@ -1,3 +1,17 @@
+# v2.0.2 2019-10-17
+
+## Changes since last release
+
+* Fix nil not persisting with the ActiveRecord adapter.
+  [tpendragon](https://github.com/tpendragon)
+* Define setters when building a Resource schema with `.attributes`
+  [no-reply](https://github.com/no-reply)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[coblej](https://github.com/coblej)
+
 # v2.0.1 2019-07-03
 
 ## Changes since last release
