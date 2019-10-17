@@ -56,6 +56,14 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     output = persister.save(resource: resource)
 
     expect(output.single_value).to eq "A single value"
+
+    reloaded = query_service.find_by(id: output.id)
+
+    reloaded.single_value = nil
+    persister.save(resource: reloaded)
+    reloaded = query_service.find_by(id: reloaded.id)
+
+    expect(reloaded.single_value).to eq nil
   end
 
   it "returns nil for an unset single value" do
