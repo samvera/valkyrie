@@ -50,7 +50,6 @@ module Valkyrie
                                                                                                                                 attribute_names.include?(name.to_sym) &&
                                                                                                                                 !internal
 
-      type = type.meta(ordered: true) if name == :member_ids
       super(name, type)
     end
 
@@ -58,9 +57,14 @@ module Valkyrie
     # @return [Dry::Struct]
     # @raise [RepeatedAttributeError] when trying to define attribute with the
     #   same name as previously defined one
+    # @raise [ReservedAttributeError] when trying to define an attribute
+    #   reserved by Valkyrie
     # @see #attribute
     # @note extends {Dry::Struct} by adding `#attr=` style setters
     def self.attributes(new_schema)
+      new_schema[:member_ids] = new_schema[:member_ids].meta(ordered: true) if
+        new_schema.key?(:member_ids)
+
       super
 
       new_schema.each_key do |key|
