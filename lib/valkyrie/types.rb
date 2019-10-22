@@ -99,6 +99,8 @@ module Valkyrie
     end
     Array.singleton_class.include(ArrayDefault)
     Set.singleton_class.include(ArrayDefault)
+    Relation = Valkyrie::Types::Set.of(Valkyrie::Types::ID)
+    OrderedRelation = Valkyrie::Types::Array.of(Valkyrie::Types::ID).meta(ordered: true)
 
     # Used for when an input may be an array, but the output needs to be a
     # single string.
