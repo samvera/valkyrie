@@ -107,7 +107,7 @@ The initializer registers four `Valkyrie::MetadataAdapter` instances for storing
 * `:memory` which stores metadata in an in-memory cache (this cache is not persistent, so it is only
   appropriate for testing).
 * `:postgres` which stores metadata in a PostgreSQL database.
-* `:solr` which stores metadata in a Solr Index.
+* `:solr` which stores metadata in a Solr Index (Solr Persister issues a warning if it has to generate an ID for a new resource because it is intended to be used as a secondary persister).
 
 Other adapter options include `Valkyrie::Persistence::BufferedPersister` for buffering in memory before bulk
 updating another persister, `Valkyrie::Persistence::CompositePersister` for storing in more than one adapter
