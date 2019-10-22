@@ -18,7 +18,7 @@ module Valkyrie
 
     def eql?(other)
       (other.class == self.class && other.state == state) ||
-      (other.to_s == self.to_s)
+        (other.to_s == to_s)
     end
     alias == eql?
 
