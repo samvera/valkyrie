@@ -27,7 +27,9 @@ module Valkyrie::Persistence::Memory
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
-    # Get a single resource by `alternate_identifier`.
+    # Get a single resource by `alternate_identifier`. Alternate identifiers are identifiers (like NOIDs,
+    # DOIs, ARKs, etc.) that are not the system-generated ID, but might be used to identify a resource in an
+    # application (e.g., to make shorter URLs).
     # @param alternate_identifier [Valkyrie::ID] The alternate identifier to query for.
     # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the alternate identifier
     #   isn't in the persistence backend.
