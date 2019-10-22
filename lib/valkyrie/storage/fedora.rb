@@ -7,7 +7,7 @@ module Valkyrie::Storage
     SLASH = '/'
 
     # @param [Ldp::Client] connection
-    def initialize(connection:, base_path: "/", fedora_version: 5)
+    def initialize(connection:, base_path: "/", fedora_version: Valkyrie::Persistence::Fedora::DEFAULT_FEDORA_VERSION)
       @connection = connection
       @base_path = base_path
       @fedora_version = fedora_version
