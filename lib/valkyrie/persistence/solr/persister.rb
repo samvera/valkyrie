@@ -14,35 +14,22 @@ module Valkyrie::Persistence::Solr
       @adapter = adapter
     end
 
-    # Persists a Valkyrie Resource into a Solr index
-    # @note Fields are saved using Solr's dynamic fields functionality.
-    #   If the text has length > 1000, it is stored as *_tsim
-    #   otherwise it's stored as *_tsim, *_ssim, and *_tesim
-    #   e.g., a field called 'title' would be stored as 3 solr fields:
-    #     'title_tsim'
-    #     'title_ssim'
-    #     'title_tesim'
-    # @param [Valkyrie::Resource] resource
-    # @return [Valkyrie::Resource] the persisted resource
+    # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
       repository([resource]).persist.first
     end
 
-    # Persists a set of Valkyrie Resources into a Solr index
-    # @param [Array<Valkyrie::Resource>] resources
-    # @return [Valkyrie::Resource] the set of persisted resources
+    # (see Valkyrie::Persistence::Memory::Persister#save_all)
     def save_all(resources:)
       repository(resources).persist
     end
 
-    # Deletes a Valkyrie Resource persisted into a Solr index
-    # @param [Valkyrie::Resource] resource
-    # @return [Valkyrie::Resource] the deleted resource
+    # (see Valkyrie::Persistence::Memory::Persister#delete)
     def delete(resource:)
       repository([resource]).delete.first
     end
 
-    # Delete the Solr index of all Documents
+    # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     def wipe!
       connection.delete_by_query("*:*")
       connection.commit
