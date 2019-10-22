@@ -55,6 +55,13 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
 
+    # Count all of the Valkyrie Resources of a model persisted in the Solr index
+    # @param [Class, String] model the Valkyrie::Resource Class
+    # @return integer
+    def count_all_of_model(model:)
+      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run.count
+    end
+
     # Find all of the parent resources for a given Valkyrie Resource
     # @param [Valkyrie::Resource] member resource
     # @return [Array<Valkyrie::Resource>] parent resources

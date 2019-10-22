@@ -32,6 +32,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property) }
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:id, :property) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:resource) }
+  it { is_expected.to respond_to(:count_all_of_model).with_keywords(:model) }
 
   describe ".find_all" do
     it "returns all created resources" do
@@ -409,6 +410,15 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       resource = query_service.find_by(id: resource.id)
       # we can't know the value in the general case
       expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]).not_to be_empty
+    end
+  end
+
+  describe ".count_all_of_model" do
+    it "counts all of that model" do
+      persister.save(resource: resource_class.new)
+      persister.save(resource: Valkyrie::Specs::SecondResource.new)
+      persister.save(resource: Valkyrie::Specs::SecondResource.new)
+      expect(query_service.count_all_of_model(model: Valkyrie::Specs::SecondResource)).to eq(2)
     end
   end
 end

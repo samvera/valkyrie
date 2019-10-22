@@ -86,6 +86,11 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#count_all_of_model)
+    def count_all_of_model(model:)
+      find_all.select { |m| m.is_a?(model) }.count
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
       (resource[property] || []).select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|

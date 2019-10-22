@@ -73,6 +73,14 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Count all objects of a given model.
+    # @param model [Class] Class to query for.
+    # @return integer. Count objects in the persistence backend
+    #   with the given class.
+    def count_all_of_model(model:)
+      cache.values.select { |obj| obj.is_a?(model) }.count
+    end
+
     # Get all members of a given resource.
     # @param resource [Valkyrie::Resource] Model whose members are being searched for.
     # @param model [Class] Class to query for. (optional)
