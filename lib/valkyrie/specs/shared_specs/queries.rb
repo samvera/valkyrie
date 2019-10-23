@@ -280,8 +280,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     context "when the resource is saved" do
       context "when the property is unordered" do
         it "returns everything which references the given resource by the given property" do
-          parent = persister.save(resource: resource_class.new)
-          parent2 = persister.save(resource: resource_class.new)
+          parent = persister.save(resource: Valkyrie::Specs::SecondResource.new)
+          parent2 = persister.save(resource: Valkyrie::Specs::SecondResource.new)
           child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
           child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
           persister.save(resource: resource_class.new)
@@ -291,7 +291,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         end
 
         it "returns an empty array if there are none" do
-          parent = persister.save(resource: resource_class.new)
+          parent = persister.save(resource: Valkyrie::Specs::SecondResource.new)
 
           expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).to_a).to eq []
         end
@@ -299,7 +299,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       context "when the property is ordered" do
         it "returns everything which references the given resource by the given property" do
-          parent = persister.save(resource: resource_class.new)
+          parent = persister.save(resource: Valkyrie::Specs::SecondResource.new)
           child = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id]))
           child2 = persister.save(resource: resource_class.new(an_ordered_member_of: [parent.id, parent.id]))
           persister.save(resource: resource_class.new)
@@ -312,8 +312,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
     context "when id is passed instead of resource" do
       it "returns everything which references the given resource by the given property" do
-        parent = persister.save(resource: resource_class.new)
-        parent2 = persister.save(resource: resource_class.new)
+        parent = persister.save(resource: Valkyrie::Specs::SecondResource.new)
+        parent2 = persister.save(resource: Valkyrie::Specs::SecondResource.new)
         child = persister.save(resource: resource_class.new(a_member_of: [parent.id]))
         child2 = persister.save(resource: resource_class.new(a_member_of: [parent.id, parent2.id, parent.id]))
         persister.save(resource: resource_class.new)
