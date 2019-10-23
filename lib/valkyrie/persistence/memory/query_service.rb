@@ -150,10 +150,15 @@ module Valkyrie::Persistence::Memory
         resource.member_ids || []
       end
 
+      # Determine whether or not a value is a Valkyrie ID
+      # @param [Object] id
+      # @return [Boolean]
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
       end
 
+      # Ensure that a given Valkyrie Resource has been persisted
+      # @param [Valkyrie::Resource] resource
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
