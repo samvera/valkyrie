@@ -33,6 +33,12 @@ module Valkyrie::Persistence::Solr::Queries
       end
     end
 
+    # Queries without making Resrouces and returns the RSolr page_total value
+    # @return [Integer]
+    def count
+      connection.get("select", params: { q: query })["response"]["numFound"].to_s.to_i
+    end
+
     # Generates the Solr query for retrieving all Documents in the index
     # If a model is specified for the query, it is scoped to that Valkyrie resource type
     # @return [String]
