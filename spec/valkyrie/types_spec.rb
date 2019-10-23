@@ -14,6 +14,8 @@ RSpec.describe Valkyrie::Types do
       attribute :nested_resource_array, Valkyrie::Types::Array.of(Resource.optional)
       attribute :nested_resource_array_of, Valkyrie::Types::Array.of(Resource.optional)
       attribute :nested_resource_set, Valkyrie::Types::Set.of(Resource.optional)
+      attribute :relation_values, Valkyrie::Types::Relation
+      attribute :ordered_relation_values, Valkyrie::Types::OrderedRelation
     end
   end
   after do
@@ -140,6 +142,41 @@ RSpec.describe Valkyrie::Types do
     it "returns the boolean value set" do
       resource = Resource.new(my_flag: true)
       expect(resource.my_flag).to be true
+    end
+  end
+
+  describe "the Relation type" do
+    context "acts as a Set of Valkyrie::Types::ID" do
+      it "can contain IDs" do
+        resource = Resource.new(relation_values: [Valkyrie::ID.new("1"), nil, Valkyrie::ID.new("A"), Valkyrie::ID.new("")])
+        expect(resource.relation_values).to contain_exactly Valkyrie::ID.new("1"), Valkyrie::ID.new("A")
+      end
+
+      it "casts values to ID type" do
+        resource = Resource.new(relation_values: [1, "ducks"])
+        expect(resource.relation_values).to contain_exactly Valkyrie::ID.new("1"), Valkyrie::ID.new("ducks")
+      end
+    end
+  end
+
+  describe "the OrderedRelation type" do
+    context "acts as an ordered Array of Valkyrie::Types::ID" do
+      it "can contain IDs" do
+        resource = Resource.new(ordered_relation_values: [Valkyrie::ID.new("1"), Valkyrie::ID.new("A")])
+        expect(resource.ordered_relation_values).to contain_exactly Valkyrie::ID.new("1"), Valkyrie::ID.new("A")
+      end
+
+      it "casts values to ID type" do
+        resource = Resource.new(ordered_relation_values: [1, "ducks"])
+        expect(resource.ordered_relation_values).to contain_exactly Valkyrie::ID.new("1"), Valkyrie::ID.new("ducks")
+      end
+
+      it "returns all values in order including duplicates" do
+        dup = Valkyrie::ID.new("1")
+        uniq = Valkyrie::ID.new("A")
+        resource = Resource.new(ordered_relation_values: [dup, uniq, dup])
+        expect(resource.ordered_relation_values).to contain_exactly dup, uniq, dup
+      end
     end
   end
 end
