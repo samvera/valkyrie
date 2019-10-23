@@ -88,7 +88,7 @@ module Valkyrie::Persistence::Fedora
 
     # (see Valkyrie::Persistence::Memory::QueryService#count_all_of_model)
     def count_all_of_model(model:)
-      find_all.select { |m| m.is_a?(model) }.count
+      find_all_of_model(model).count
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
