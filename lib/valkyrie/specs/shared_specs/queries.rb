@@ -289,7 +289,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         let(:parent3) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
 
         it "returns only resources with the relationship filtered to the specified model" do
-          expect(subject.map(&:id).to_a).to eq [parent3.id, parent.id]
+          expect(subject.map(&:id).to_a).to match_array [parent3.id, parent.id]
         end
       end
 
