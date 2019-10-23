@@ -101,30 +101,29 @@ module Valkyrie::Persistence::Postgres
       find_inverse_references_by(resource: resource, property: :member_ids)
     end
 
-    # Find all resources related to a given Valkyrie Resource by a property
-    # @param [Valkyrie::Resource] resource
-    # @param [String] property
-    # @return [Array<Valkyrie::Resource>]
-    def find_references_by(resource:, property:)
+    # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
+    def find_references_by(resource:, property:, model: nil)
       return [] if resource.id.blank? || resource[property].blank?
       # only return ordered if needed to avoid performance penalties
-      if ordered_property?(resource: resource, property: property)
-        run_query(find_ordered_references_query, property, resource.id.to_s)
-      else
-        run_query(find_references_query, property, resource.id.to_s)
-      end
+      result =
+        if ordered_property?(resource: resource, property: property)
+          run_query(find_ordered_references_query, property, resource.id.to_s)
+        else
+          run_query(find_references_query, property, resource.id.to_s)
+        end
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
-    # Find all resources referencing a given Valkyrie Resource by a property
-    # @param [Valkyrie::Resource] resource
-    # @param [String] property
-    # @return [Array<Valkyrie::Resource>]
-    def find_inverse_references_by(resource: nil, id: nil, property:)
+    # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
+    def find_inverse_references_by(resource: nil, id: nil, property:, model: nil)
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
       id ||= resource.id
       internal_array = "{\"#{property}\": [{\"id\": \"#{id}\"}]}"
-      run_query(find_inverse_references_query, internal_array)
+      result = run_query(find_inverse_references_query, internal_array)
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
     # Execute a query in SQL for resource records and map them to Valkyrie
