@@ -121,9 +121,11 @@ module Valkyrie::Persistence::Postgres
       ensure_persisted(resource) if resource
       id ||= resource.id
       internal_array = "{\"#{property}\": [{\"id\": \"#{id}\"}]}"
-      result = run_query(find_inverse_references_query, internal_array)
-      return result unless model
-      result.select { |obj| obj.is_a?(model) }
+      if model
+        run_query(find_inverse_references_with_type_query, internal_array, model)
+      else
+        run_query(find_inverse_references_query, internal_array)
+      end
     end
 
     # Execute a query in SQL for resource records and map them to Valkyrie
@@ -183,6 +185,21 @@ module Valkyrie::Persistence::Postgres
       <<-SQL
         SELECT * FROM orm_resources WHERE
         metadata @> ?
+      SQL
+    end
+
+    # Generate the SQL query for retrieving member resources in PostgreSQL using a
+    #   JSON object literal (e. g. { "alternate_ids": [{"id": "d6e88f80-41b3-4dbf-a2a0-cd79e20f6d10"}] }).
+    #   and resource type as arguments
+    # @see https://guides.rubyonrails.org/active_record_querying.html#array-conditions
+    # This uses JSON functions in order to retrieve JSON property values
+    # @see https://www.postgresql.org/docs/current/static/functions-json.html
+    # @return [String]
+    def find_inverse_references_with_type_query
+      <<-SQL
+        SELECT * FROM orm_resources WHERE
+        metadata @> ?
+        AND internal_resource = ?
       SQL
     end
 
