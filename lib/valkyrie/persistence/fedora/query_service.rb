@@ -92,10 +92,12 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
-    def find_references_by(resource:, property:)
-      (resource[property] || []).select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|
+    def find_references_by(resource:, property:, model: nil)
+      objects = (resource[property] || []).select { |x| x.is_a?(Valkyrie::ID) }.lazy.map do |id|
         find_by(id: id)
       end
+      return objects unless model
+      objects.select { |obj| obj.is_a?(model) }
     end
 
     # Retrieves the RDF graph for the LDP container for a resource
@@ -116,14 +118,16 @@ module Valkyrie::Persistence::Fedora
     # Find all resources referencing a given resource (e. g. parents)
     # *This is done by iterating through the ID of each resource referencing the resource in the query, and requesting each resource over the HTTP*
     # *Also, an initial request is made to find the URIs of the resources referencing the resource in the query*
-    def find_inverse_references_by(resource: nil, id: nil, property:)
+    def find_inverse_references_by(resource: nil, id: nil, property:, model: nil)
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
       resource ||= find_by(id: id)
       ids = find_inverse_reference_ids_by_unordered(resource: resource, property: property).uniq
       objects_from_unordered = ids.lazy.map { |ref_id| find_by(id: ref_id) }
       objects_from_ordered = find_inverse_references_by_ordered(resource: resource, property: property, ignore_ids: ids)
-      [objects_from_unordered, objects_from_ordered].lazy.flat_map(&:lazy)
+      objects = [objects_from_unordered, objects_from_ordered].lazy.flat_map(&:lazy)
+      return objects unless model
+      objects.select { |obj| obj.is_a?(model) }
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#custom_queries)
