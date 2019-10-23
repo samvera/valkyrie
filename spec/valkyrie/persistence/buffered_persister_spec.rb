@@ -24,8 +24,8 @@ RSpec.describe Valkyrie::Persistence::BufferedPersister do
   describe "#with_buffer" do
     it "can buffer a session into a memory adapter" do
       buffer = nil
-      persister.with_buffer do |persister, memory_buffer|
-        persister.save(resource: Resource.new)
+      persister.with_buffer do |inner_persister, memory_buffer|
+        inner_persister.save(resource: Resource.new)
         buffer = memory_buffer
       end
       expect(buffer.query_service.find_all.length).to eq 1
