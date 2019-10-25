@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Fedora
   #   Valkyrie::Persistence::Fedora::MetadataAdapter.new(
   #     connection: ::Ldp::Client.new("http://localhost:8988/rest"),
   #     base_path: "test_fed",
-  #     schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://bad.com/title"))
+  #     schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://example.com/title"))
   #   )
   class MetadataAdapter
     attr_reader :connection, :base_path, :schema, :fedora_version
