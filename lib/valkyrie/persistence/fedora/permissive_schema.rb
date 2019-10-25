@@ -6,8 +6,8 @@ module Valkyrie::Persistence::Fedora
   #
   # @example Passing in a mapping
   #   schema = Valkyrie::Persistence::Fedora::PermissiveSchema.new(member_ids:
-  #     RDF::URI("http://mypredicates.com/member_ids"))
-  #   schema.predicate_for(resource: Resource.new, property: :member_ids) # => RDF::URI<"http://mypredicates.com/member_ids">
+  #     RDF::URI("http://example.com/member_ids"))
+  #   schema.predicate_for(resource: Resource.new, property: :member_ids) # => RDF::URI<"http://example.com/member_ids">
   #   schema.predicate_for(resource: Resource.new, property: :unknown) # => RDF::URI<"http://example.com/predicate/unknown">
   class PermissiveSchema
     URI_PREFIX = 'http://example.com/predicate/'
