@@ -46,6 +46,13 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
 
+    # Count all of the Valkyrie Resources of a model persisted in the Solr index
+    # @param [Class, String] model the Valkyrie::Resource Class
+    # @return integer
+    def count_all_of_model(model:)
+      Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).count
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
     def find_parents(resource:)
       find_inverse_references_by(resource: resource, property: :member_ids)

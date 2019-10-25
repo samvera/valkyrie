@@ -35,6 +35,13 @@ module Valkyrie::Persistence::Postgres
       end
     end
 
+    # Count all records for a specific resource type
+    # @param [Class] model
+    # @return integer
+    def count_all_of_model(model:)
+      orm_class.where(internal_resource: model.to_s).count
+    end
+
     # Find a record using a Valkyrie ID, and map it to a Valkyrie Resource
     # @param [Valkyrie::ID, String] id
     # @return [Valkyrie::Resource]
