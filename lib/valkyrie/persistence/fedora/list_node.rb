@@ -18,7 +18,6 @@ module Valkyrie::Persistence::Fedora
   class ListNode
     attr_reader :rdf_subject, :graph
     attr_writer :next, :prev
-    attr_accessor :target
     attr_writer :next_uri, :prev_uri
     attr_accessor :proxy_in, :proxy_for
     attr_reader :adapter
@@ -59,16 +58,15 @@ module Valkyrie::Persistence::Fedora
     def to_graph
       return RDF::Graph.new if target_id.blank?
       g = Resource.new(rdf_subject)
-      g.proxy_for = target_uri
+      g.proxy_for = target
       g.proxy_in = proxy_in.try(:uri)
       g.next = self.next.try(:rdf_subject)
       g.prev = prev.try(:rdf_subject)
       g.graph
     end
 
-    # Resolves the URI for the value of the list expression
-    # @return [RDF::URI]
-    def target_uri
+    # @return [RDF::URI] or [String]
+    def target
       if target_id.is_a?(Valkyrie::ID)
         adapter.id_to_uri(target_id.to_s)
       else
@@ -76,7 +74,6 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
-    # Generates the string ID value for the value in the list expression
     # @return [String]
     def target_id
       if proxy_for.to_s.include?("/") && proxy_for.to_s.start_with?(adapter.connection_prefix)

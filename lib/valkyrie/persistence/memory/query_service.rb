@@ -27,7 +27,9 @@ module Valkyrie::Persistence::Memory
       cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
     end
 
-    # Get a single resource by `alternate_identifier`.
+    # Get a single resource by `alternate_identifier`. Alternate identifiers are identifiers (like NOIDs,
+    # DOIs, ARKs, etc.) that are not the system-generated ID, but might be used to identify a resource in an
+    # application (e.g., to make shorter URLs).
     # @param alternate_identifier [Valkyrie::ID] The alternate identifier to query for.
     # @raise [Valkyrie::Persistence::ObjectNotFoundError] Raised when the alternate identifier
     #   isn't in the persistence backend.
@@ -156,10 +158,15 @@ module Valkyrie::Persistence::Memory
         resource.member_ids || []
       end
 
+      # Determine whether or not a value is a Valkyrie ID
+      # @param [Object] id
+      # @return [Boolean]
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
       end
 
+      # Ensure that a given Valkyrie Resource has been persisted
+      # @param [Valkyrie::Resource] resource
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end

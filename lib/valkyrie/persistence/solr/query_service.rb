@@ -12,27 +12,21 @@ module Valkyrie::Persistence::Solr
       @adapter = adapter
     end
 
-    # Find resources by Valkyrie ID
-    # @param [Valkyrie::ID] id
-    # @return [Valkyrie::Resource]
+    # (see Valkyrie::Persistence::Memory::QueryService#find_by)
     def find_by(id:)
       id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
       Valkyrie::Persistence::Solr::Queries::FindByIdQuery.new(id, connection: connection, resource_factory: resource_factory).run
     end
 
-    # Find resources by a Valkyrie alternate identifier
-    # @param [Valkyrie::ID] alternate_identifier
-    # @return [Valkyrie::Resource]
+    # (see Valkyrie::Persistence::Memory::QueryService#find_by_alternate_identifier)
     def find_by_alternate_identifier(alternate_identifier:)
       alternate_identifier = Valkyrie::ID.new(alternate_identifier.to_s) if alternate_identifier.is_a?(String)
       validate_id(alternate_identifier)
       Valkyrie::Persistence::Solr::Queries::FindByAlternateIdentifierQuery.new(alternate_identifier, connection: connection, resource_factory: resource_factory).run
     end
 
-    # Find resources using a set of Valkyrie IDs
-    # @param [Array<Valkyrie::ID>] ids
-    # @return [Array<Valkyrie::Resource>]
+    # (see Valkyrie::Persistence::Memory::QueryService#find_many_by_ids)
     def find_many_by_ids(ids:)
       ids.map! do |id|
         id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
@@ -42,15 +36,12 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindManyByIdsQuery.new(ids, connection: connection, resource_factory: resource_factory).run
     end
 
-    # Find all of the Valkyrie Resources persisted in the Solr index
-    # @return [Array<Valkyrie::Resource>]
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory).run
     end
 
-    # Find all of the Valkyrie Resources of a model persisted in the Solr index
-    # @param [Class, String] model the Valkyrie::Resource Class
-    # @return [Array<Valkyrie::Resource>]
+    # (see Valkyrie::Persistence::Memory::QueryService#find_all_of_model)
     def find_all_of_model(model:)
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
@@ -62,16 +53,12 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).count
     end
 
-    # Find all of the parent resources for a given Valkyrie Resource
-    # @param [Valkyrie::Resource] member resource
-    # @return [Array<Valkyrie::Resource>] parent resources
+    # (see Valkyrie::Persistence::Memory::QueryService#find_parents)
     def find_parents(resource:)
       find_inverse_references_by(resource: resource, property: :member_ids)
     end
 
-    # Find all of the member resources for a given Valkyrie Resource
-    # @param [Valkyrie::Resource] parent resource
-    # @return [Array<Valkyrie::Resource>] member resources
+    # (see Valkyrie::Persistence::Memory::QueryService#find_members)
     def find_members(resource:, model: nil)
       Valkyrie::Persistence::Solr::Queries::FindMembersQuery.new(
         resource: resource,
@@ -81,10 +68,7 @@ module Valkyrie::Persistence::Solr
       ).run
     end
 
-    # Find all of the resources referenced by a given Valkyrie Resource using a specific property
-    # @param [Valkyrie::Resource] resource
-    # @param [Symbol, String] property
-    # @return [Array<Valkyrie::Resource>] referenced resources
+    # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
     def find_references_by(resource:, property:)
       if ordered_property?(resource: resource, property: property)
         Valkyrie::Persistence::Solr::Queries::FindOrderedReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
@@ -93,11 +77,7 @@ module Valkyrie::Persistence::Solr
       end
     end
 
-    # Find all of the resources referencing a given Valkyrie Resource using a specific property
-    # (e. g. find all resources referencing a parent resource as a collection using the property "member_of_collections")
-    # @param [Valkyrie::Resource] referenced resource
-    # @param [Symbol, String] property
-    # @return [Array<Valkyrie::Resource>] related resources
+    # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
     def find_inverse_references_by(resource: nil, id: nil, property:)
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
@@ -105,27 +85,24 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(id: id, property: property, connection: connection, resource_factory: resource_factory).run
     end
 
-    # Construct the Valkyrie::Persistence::CustomQueryContainer object using this query service
-    # @return [Valkyrie::Persistence::CustomQueryContainer]
+    # (see Valkyrie::Persistence::Memory::QueryService#custom_queries)
     def custom_queries
       @custom_queries ||= ::Valkyrie::Persistence::CustomQueryContainer.new(query_service: self)
     end
 
     private
 
-      # Determine whether or not a value is a Valkyrie ID
-      # @param [Object] id
-      # @return [Boolean]
+      # (see Valkyrie::Persistence::Memory::QueryService#validate_id)
       def validate_id(id)
         raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
       end
 
-      # Ensure that a given Valkyrie Resource has been persisted
-      # @param [Valkyrie::Resource] resource
+      # (see Valkyrie::Persistence::Memory::QueryService#ensure_persisted)
       def ensure_persisted(resource)
         raise ArgumentError, 'resource is not saved' unless resource.persisted?
       end
 
+      # (see Valkyrie::Persistence::Memory::QueryService#ordered_property?)
       def ordered_property?(resource:, property:)
         resource.ordered_attribute?(property)
       end
