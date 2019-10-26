@@ -308,6 +308,32 @@ RSpec.shared_examples 'a Valkyrie query provider' do
           expect(query_service.find_inverse_references_by(resource: parent, property: :an_ordered_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
         end
       end
+
+      context "when the property is ordered for one child but not the other" do
+        before do
+          class Valkyrie::Specs::Parent < Valkyrie::Resource; end
+          class Valkyrie::Specs::ChildWithUnorderedParents < Valkyrie::Resource
+            attribute :a_member_of, Valkyrie::Types::Array
+          end
+          class Valkyrie::Specs::ChildWithOrderedParents < Valkyrie::Resource
+            attribute :a_member_of, Valkyrie::Types::Array.meta(ordered: true)
+          end
+        end
+        after do
+          Valkyrie::Specs.send(:remove_const, :Parent)
+          Valkyrie::Specs.send(:remove_const, :ChildWithUnorderedParents)
+          Valkyrie::Specs.send(:remove_const, :ChildWithOrderedParents)
+        end
+        it "returns" do
+          parent = persister.save(resource: Valkyrie::Specs::Parent.new)
+          child = persister.save(resource: Valkyrie::Specs::ChildWithUnorderedParents.new(a_member_of: [parent.id]))
+          child2 = persister.save(resource: Valkyrie::Specs::ChildWithOrderedParents.new(a_member_of: [parent.id, parent.id]))
+          persister.save(resource: Valkyrie::Specs::ChildWithUnorderedParents.new)
+          persister.save(resource: Valkyrie::Specs::Parent.new)
+
+          expect(query_service.find_inverse_references_by(resource: parent, property: :a_member_of).map(&:id).to_a).to contain_exactly child.id, child2.id
+        end
+      end
     end
 
     context "when id is passed instead of resource" do

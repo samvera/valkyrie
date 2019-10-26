@@ -120,11 +120,9 @@ module Valkyrie::Persistence::Fedora
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
       resource ||= find_by(id: id)
-      if ordered_property?(resource: resource, property: property)
-        find_inverse_references_by_ordered(resource: resource, property: property)
-      else
-        find_inverse_references_by_unordered(resource: resource, property: property)
-      end
+      ids = find_inverse_references_by_ordered(resource: resource, property: property)
+      ids += find_inverse_references_by_unordered(resource: resource, property: property)
+      ids.lazy.map { |ref_id| find_by(id: ref_id) }
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#custom_queries)
@@ -139,14 +137,14 @@ module Valkyrie::Persistence::Fedora
         property_uri = adapter.schema.predicate_for(property: property, resource: nil)
         ids = content.graph.query([nil, property_uri, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
         ids.uniq!
-        ids.lazy.map { |id| find_by(id: id) }
+        ids
       end
 
       def find_inverse_references_by_ordered(resource:, property:)
         content = content_with_inbound(id: resource.id)
         ids = content.graph.query([nil, ::RDF::Vocab::ORE.proxyFor, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
         ids.uniq!
-        ids.lazy.map { |id| find_by(id: id) }.select { |o| o[property].include?(resource.id) }
+        ids
       end
 
       # Ensures that an object is (or can be cast into a) Valkyrie::ID
