@@ -5,6 +5,7 @@ module Valkyrie
   #  storage backends (such as fedora, disk, etc)
   class StorageAdapter
     class FileNotFound < StandardError; end
+    class AdapterNotFoundError < StandardError; end
     class_attribute :storage_adapters
     self.storage_adapters = {}
     class << self
@@ -54,10 +55,12 @@ module Valkyrie
       # @param id [Valkyrie::ID]
       # @return [Valkyrie::StorageAdapter]
       def adapter_for(id:)
-        # TODO: Determine the appropriate response when we have an unhandled :id
-        storage_adapters.values.find do |storage_adapter|
+        handler = storage_adapters.values.find do |storage_adapter|
           storage_adapter.handles?(id: id)
         end
+
+        raise AdapterNotFoundError, 'Unable to find a StorageAdapter' if handler.nil?
+        handler
       end
     end
 

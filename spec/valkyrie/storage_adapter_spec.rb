@@ -43,6 +43,13 @@ RSpec.describe Valkyrie::StorageAdapter do
 
       expect(described_class.adapter_for(id: file.id)).to eq storage_adapter
     end
+
+    it "raises an exception if unable to find a StorageAdapter" do
+      file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
+      described_class.register(storage_adapter, :find_test)
+
+      expect { described_class.adapter_for(id: file.id) }.to raise_error(Valkyrie::StorageAdapter::AdapterNotFoundError)
+    end
   end
 
   describe ".delete" do
