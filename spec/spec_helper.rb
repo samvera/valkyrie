@@ -22,3 +22,8 @@ ROOT_PATH = Pathname.new(Dir.pwd)
 Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }
 
 WebMock.disable_net_connect!(allow_localhost: true)
+
+RSpec.configure do |config|
+  config.order = :random
+  Kernel.srand config.seed
+end
