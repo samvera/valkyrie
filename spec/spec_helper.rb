@@ -27,3 +27,6 @@ RSpec.configure do |config|
   config.order = :random
   Kernel.srand config.seed
 end
+
+# See Valkyrie::Logging for specific details
+Valkyrie.logger.suppress_logging_for_contexts!("Valkyrie::Persistence::Solr::Repository#generate_id")

@@ -62,8 +62,9 @@ module Valkyrie::Persistence::Solr
     # Given a new Valkyrie Resource, generate a random UUID and assign it to the Resource
     # @param [Valkyrie::Resource] resource
     # @param [String] the UUID for the new resource
+    # @see Valkyrie::Logging for details concerning log suppression.
     def generate_id(resource)
-      Valkyrie.logger.warn "The Solr adapter is not meant to persist new resources, but is now generating an ID."
+      Valkyrie.logger.warn("The Solr adapter is not meant to persist new resources, but is now generating an ID.", logging_context: "Valkyrie::Persistence::Solr::Repository#generate_id")
       resource.id = SecureRandom.uuid
     end
 

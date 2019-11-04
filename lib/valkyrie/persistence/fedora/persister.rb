@@ -64,11 +64,13 @@ module Valkyrie::Persistence::Fedora
     # (see Valkyrie::Persistence::Memory::Persister#wipe!)
     # Deletes Fedora repository resource *and* the tombstone resources which remain
     # @see https://wiki.duraspace.org/display/FEDORA4x/RESTful+HTTP+API#RESTfulHTTPAPI-RedDELETEDeletearesource
+    # @see Valkyrie::Logging for details concerning log suppression.
     def wipe!
       connection.delete(base_path)
       connection.delete("#{base_path}/fcr:tombstone")
     rescue => error
-      Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}") unless error.is_a?(::Ldp::NotFound)
+      return unless error.is_a?(::Ldp::NotFound)
+      Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}", logging_context: "Valkyrie::Persistence::Fedora::Persister#wipe")
     end
 
     # Creates the root LDP Container for the connection with Fedora

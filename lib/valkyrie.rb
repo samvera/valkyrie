@@ -14,6 +14,7 @@ require 'logger'
 require 'rdf/vocab'
 
 module Valkyrie
+  require 'valkyrie/logging'
   require 'valkyrie/id'
   require 'valkyrie/change_set'
   require 'valkyrie/value_mapper'
@@ -61,12 +62,16 @@ module Valkyrie
     end
   end
 
+  # @return [Valkyrie::Logging]
   def logger
-    @logger ||= Logger.new(STDOUT)
+    @logger ||= Valkyrie::Logging.new(logger: Logger.new(STDOUT))
   end
 
+  # Wraps the given logger in an instance of Valkyrie::Logging
+  #
+  # @param logger [Logger]
   def logger=(logger)
-    @logger = logger
+    @logger = Valkyrie::Logging.new(logger: logger)
   end
 
   class Config < OpenStruct
