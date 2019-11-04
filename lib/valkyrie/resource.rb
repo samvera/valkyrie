@@ -187,7 +187,7 @@ module Valkyrie
 
     # Returns if an attribute is set as ordered.
     def ordered_attribute?(key)
-      self.class.schema.key(key).type.meta.try(:[], :ordered)
+      self.class.schema.key(key.to_sym).type.meta.try(:[], :ordered)
     end
 
     class ReservedAttributeError < StandardError; end
