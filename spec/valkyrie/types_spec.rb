@@ -76,11 +76,11 @@ RSpec.describe Valkyrie::Types do
     end
   end
 
-  describe Valkyrie::Types::OptimisticLockToken do
+  describe "Valkyrie::Types::OptimisticLockToken" do
     it "casts from a string" do
       serialized_token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: "adapter_id", token: Valkyrie::ID.new("token")).serialize
 
-      expect(described_class[serialized_token]).to be_a Valkyrie::Persistence::OptimisticLockToken
+      expect(Valkyrie::Types::OptimisticLockToken[serialized_token]).to be_a Valkyrie::Persistence::OptimisticLockToken
     end
   end
 
