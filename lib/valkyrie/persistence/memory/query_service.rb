@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 module Valkyrie::Persistence::Memory
+  # Query Service for the memory metadata adapter.
+  # @see Valkyrie::Persistence::Memory
+  # @note Documentation for Query Services in general is maintained here.
   class QueryService
-    # Query Service for the memory metadata adapter.
-    # @see Valkyrie::Persistence::Memory
-    # @note Documentation for Query Services in general is maintained here.
     attr_reader :adapter, :query_handlers
     delegate :cache, to: :adapter
 
