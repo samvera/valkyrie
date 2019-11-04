@@ -69,8 +69,7 @@ module Valkyrie::Persistence::Fedora
       connection.delete(base_path)
       connection.delete("#{base_path}/fcr:tombstone")
     rescue => error
-      return unless error.is_a?(::Ldp::NotFound)
-      Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}", logging_context: "Valkyrie::Persistence::Fedora::Persister#wipe")
+      Valkyrie.logger.debug("Failed to wipe Fedora for some reason: #{error}", logging_context: "Valkyrie::Persistence::Fedora::Persister#wipe") unless error.is_a?(::Ldp::NotFound)
     end
 
     # Creates the root LDP Container for the connection with Fedora
