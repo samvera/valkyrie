@@ -173,6 +173,15 @@ RSpec.describe Valkyrie::Resource do
           expect(resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK][0]).to be_a Valkyrie::Persistence::OptimisticLockToken
         end
       end
+      describe ".clear_optimistic_lock_token!" do
+        it "sets the #{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK} attribute to an empty Array" do
+          lock_token = Valkyrie::Persistence::OptimisticLockToken.deserialize("lock_token:adapter_id:a_tok:en")
+          resource = MyLockingResource.new(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => lock_token)
+          expect do
+            resource.clear_optimistic_lock_token!
+          end.to change { resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK) }.from([lock_token]).to([])
+        end
+      end
     end
 
     context "when it is not enabled" do
@@ -190,6 +199,14 @@ RSpec.describe Valkyrie::Resource do
         expect(MyNonlockingResource.new).not_to respond_to(:optimistic_lock_token)
         expect(MyNonlockingResource.new.optimistic_locking_enabled?).to be false
         expect(MyNonlockingResource.optimistic_locking_enabled?).to be false
+      end
+
+      describe ".clear_optimistic_lock_token!" do
+        it "makes no attempt to set the #{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK} attribute" do
+          resource = MyNonlockingResource.new
+          resource.clear_optimistic_lock_token!
+          expect { resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK) }.to raise_error(NoMethodError)
+        end
       end
     end
   end
