@@ -105,14 +105,11 @@ module Valkyrie::Persistence::Postgres
     def find_references_by(resource:, property:, model: nil)
       return [] if resource.id.blank? || resource[property].blank?
       # only return ordered if needed to avoid performance penalties
-      result =
-        if ordered_property?(resource: resource, property: property)
-          run_query(find_ordered_references_query, property, resource.id.to_s)
-        else
-          run_query(find_references_query, property, resource.id.to_s)
-        end
-      return result unless model
-      result.select { |obj| obj.is_a?(model) }
+      if ordered_property?(resource: resource, property: property)
+        find_ordered_references_by(resource: resource, property: property, model: model)
+      else
+        find_unordered_references_by(resource: resource, property: property, model: model)
+      end
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
@@ -220,11 +217,28 @@ module Valkyrie::Persistence::Postgres
       SQL
     end
 
+    def find_references_with_type_query
+      <<-SQL
+        SELECT DISTINCT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) AS b(member)
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ? AND member.internal_resource = ?
+      SQL
+    end
+
     def find_ordered_references_query
       <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->?) WITH ORDINALITY AS b(member, member_pos)
         JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
+        ORDER BY b.member_pos
+      SQL
+    end
+
+    def find_ordered_references_with_type_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ? AND member.internal_resource = ?
         ORDER BY b.member_pos
       SQL
     end
@@ -236,6 +250,22 @@ module Valkyrie::Persistence::Postgres
     end
 
     private
+
+      def find_ordered_references_by(resource:, property:, model: nil)
+        if model
+          run_query(find_ordered_references_with_type_query, property, resource.id.to_s, model)
+        else
+          run_query(find_ordered_references_query, property, resource.id.to_s)
+        end
+      end
+
+      def find_unordered_references_by(resource:, property:, model: nil)
+        if model
+          run_query(find_references_with_type_query, property, resource.id.to_s, model)
+        else
+          run_query(find_references_query, property, resource.id.to_s)
+        end
+      end
 
       # Determines whether or not an Object is a Valkyrie ID
       # @param [Object] id
