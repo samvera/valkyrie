@@ -14,6 +14,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
     class Valkyrie::Specs::ThirdResource < Valkyrie::Resource
       attribute :a_member_of, Valkyrie::Types::Array
+      attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
     end
   end
   after do
@@ -280,9 +281,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
 
     context "filtering by model" do
-      subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: Valkyrie::Specs::SecondResource) }
-
       context "when the object has related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: Valkyrie::Specs::SecondResource) }
         let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent3.id, parent2.id, parent.id])) }
         let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
         let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
@@ -293,7 +293,20 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         end
       end
 
+      context "when the object has ordered related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :an_ordered_member_of, model: Valkyrie::Specs::SecondResource) }
+        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(an_ordered_member_of: [parent.id, parent3.id, parent2.id, parent.id])) }
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+        let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
+        let(:parent3) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+
+        it "returns only resources with the relationship filtered to the specified model" do
+          expect(subject.map(&:id).to_a).to match_array [parent.id, parent3.id, parent.id]
+        end
+      end
+
       context "when there are no related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: Valkyrie::Specs::SecondResource) }
         let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id])) }
         let(:parent) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
 
