@@ -12,10 +12,15 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
     class Valkyrie::Specs::SecondResource < Valkyrie::Resource
     end
+    class Valkyrie::Specs::ThirdResource < Valkyrie::Resource
+      attribute :a_member_of, Valkyrie::Types::Array
+      attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
+    end
   end
   after do
     Valkyrie::Specs.send(:remove_const, :CustomResource)
     Valkyrie::Specs.send(:remove_const, :SecondResource)
+    Valkyrie::Specs.send(:remove_const, :ThirdResource)
   end
   let(:resource_class) { Valkyrie::Specs::CustomResource }
   let(:query_service) { adapter.query_service } unless defined? query_service
@@ -28,9 +33,9 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_by_alternate_identifier).with_keywords(:alternate_identifier) }
   it { is_expected.to respond_to(:find_many_by_ids).with_keywords(:ids) }
   it { is_expected.to respond_to(:find_members).with_keywords(:resource, :model) }
-  it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property) }
-  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property) }
-  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:id, :property) }
+  it { is_expected.to respond_to(:find_references_by).with_keywords(:resource, :property, :model) }
+  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:resource, :property, :model) }
+  it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:id, :property, :model) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:resource) }
   it { is_expected.to respond_to(:count_all_of_model).with_keywords(:model) }
 
@@ -274,6 +279,42 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         expect(query_service.find_references_by(resource: child, property: :an_ordered_member_of).map(&:id).to_a).to eq []
       end
     end
+
+    context "filtering by model" do
+      context "when the object has related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: Valkyrie::Specs::SecondResource) }
+        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent3.id, parent2.id, parent.id])) }
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+        let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
+        let(:parent3) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+
+        it "returns only resources with the relationship filtered to the specified model" do
+          expect(subject.map(&:id).to_a).to match_array [parent3.id, parent.id]
+        end
+      end
+
+      context "when the object has ordered related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :an_ordered_member_of, model: Valkyrie::Specs::SecondResource) }
+        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(an_ordered_member_of: [parent.id, parent3.id, parent2.id, parent.id])) }
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+        let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
+        let(:parent3) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+
+        it "returns only resources with the relationship filtered to the specified model" do
+          expect(subject.map(&:id).to_a).to match_array [parent.id, parent3.id, parent.id]
+        end
+      end
+
+      context "when there are no related resources that match the filter" do
+        subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: Valkyrie::Specs::SecondResource) }
+        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id])) }
+        let(:parent) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
+
+        it "returns an empty array" do
+          expect(subject.to_a).to eq []
+        end
+      end
+    end
   end
 
   describe ".find_inverse_references_by" do
@@ -360,6 +401,32 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         parent = resource_class.new
 
         expect { query_service.find_inverse_references_by(resource: parent, property: :a_member_of).to_a }.to raise_error ArgumentError
+      end
+    end
+
+    context "filtering by model" do
+      subject { query_service.find_inverse_references_by(resource: parent, property: :a_member_of, model: Valkyrie::Specs::CustomResource) }
+
+      context "when the object has related resources that match the filter" do
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+
+        it "returns only resources with the relationship filtered to the specified model" do
+          child1 = persister.save(resource: Valkyrie::Specs::CustomResource.new(a_member_of: [parent.id]))
+          persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id]))
+          child3 = persister.save(resource: Valkyrie::Specs::CustomResource.new(a_member_of: [parent.id]))
+
+          expect(subject.map(&:id).to_a).to match_array [child3.id, child1.id]
+        end
+      end
+
+      context "when there are no related resources that match the filter" do
+        let(:parent) { persister.save(resource: Valkyrie::Specs::SecondResource.new) }
+
+        it "returns an empty array" do
+          persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id]))
+
+          expect(subject.to_a).to eq []
+        end
       end
     end
   end

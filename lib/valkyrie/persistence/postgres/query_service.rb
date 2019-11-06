@@ -101,30 +101,28 @@ module Valkyrie::Persistence::Postgres
       find_inverse_references_by(resource: resource, property: :member_ids)
     end
 
-    # Find all resources related to a given Valkyrie Resource by a property
-    # @param [Valkyrie::Resource] resource
-    # @param [String] property
-    # @return [Array<Valkyrie::Resource>]
-    def find_references_by(resource:, property:)
+    # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
+    def find_references_by(resource:, property:, model: nil)
       return [] if resource.id.blank? || resource[property].blank?
       # only return ordered if needed to avoid performance penalties
       if ordered_property?(resource: resource, property: property)
-        run_query(find_ordered_references_query, property, resource.id.to_s)
+        find_ordered_references_by(resource: resource, property: property, model: model)
       else
-        run_query(find_references_query, property, resource.id.to_s)
+        find_unordered_references_by(resource: resource, property: property, model: model)
       end
     end
 
-    # Find all resources referencing a given Valkyrie Resource by a property
-    # @param [Valkyrie::Resource] resource
-    # @param [String] property
-    # @return [Array<Valkyrie::Resource>]
-    def find_inverse_references_by(resource: nil, id: nil, property:)
+    # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
+    def find_inverse_references_by(resource: nil, id: nil, property:, model: nil)
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
       id ||= resource.id
       internal_array = "{\"#{property}\": [{\"id\": \"#{id}\"}]}"
-      run_query(find_inverse_references_query, internal_array)
+      if model
+        run_query(find_inverse_references_with_type_query, internal_array, model)
+      else
+        run_query(find_inverse_references_query, internal_array)
+      end
     end
 
     # Execute a query in SQL for resource records and map them to Valkyrie
@@ -188,6 +186,21 @@ module Valkyrie::Persistence::Postgres
     end
 
     # Generate the SQL query for retrieving member resources in PostgreSQL using a
+    #   JSON object literal (e. g. { "alternate_ids": [{"id": "d6e88f80-41b3-4dbf-a2a0-cd79e20f6d10"}] }).
+    #   and resource type as arguments
+    # @see https://guides.rubyonrails.org/active_record_querying.html#array-conditions
+    # This uses JSON functions in order to retrieve JSON property values
+    # @see https://www.postgresql.org/docs/current/static/functions-json.html
+    # @return [String]
+    def find_inverse_references_with_type_query
+      <<-SQL
+        SELECT * FROM orm_resources WHERE
+        metadata @> ?
+        AND internal_resource = ?
+      SQL
+    end
+
+    # Generate the SQL query for retrieving member resources in PostgreSQL using a
     #   JSON object literal and resource ID as arguments.
     # @see https://guides.rubyonrails.org/active_record_querying.html#array-conditions
     # @note this uses a CROSS JOIN for all combinations of member IDs with the
@@ -204,11 +217,28 @@ module Valkyrie::Persistence::Postgres
       SQL
     end
 
+    def find_references_with_type_query
+      <<-SQL
+        SELECT DISTINCT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) AS b(member)
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ? AND member.internal_resource = ?
+      SQL
+    end
+
     def find_ordered_references_query
       <<-SQL
         SELECT member.* FROM orm_resources a,
         jsonb_array_elements(a.metadata->?) WITH ORDINALITY AS b(member, member_pos)
         JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ?
+        ORDER BY b.member_pos
+      SQL
+    end
+
+    def find_ordered_references_with_type_query
+      <<-SQL
+        SELECT member.* FROM orm_resources a,
+        jsonb_array_elements(a.metadata->?) WITH ORDINALITY AS b(member, member_pos)
+        JOIN orm_resources member ON (b.member->>'id')::#{id_type} = member.id WHERE a.id = ? AND member.internal_resource = ?
         ORDER BY b.member_pos
       SQL
     end
@@ -220,6 +250,22 @@ module Valkyrie::Persistence::Postgres
     end
 
     private
+
+      def find_ordered_references_by(resource:, property:, model: nil)
+        if model
+          run_query(find_ordered_references_with_type_query, property, resource.id.to_s, model)
+        else
+          run_query(find_ordered_references_query, property, resource.id.to_s)
+        end
+      end
+
+      def find_unordered_references_by(resource:, property:, model: nil)
+        if model
+          run_query(find_references_with_type_query, property, resource.id.to_s, model)
+        else
+          run_query(find_references_query, property, resource.id.to_s)
+        end
+      end
 
       # Determines whether or not an Object is a Valkyrie ID
       # @param [Object] id

@@ -69,20 +69,25 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_references_by)
-    def find_references_by(resource:, property:)
-      if ordered_property?(resource: resource, property: property)
-        Valkyrie::Persistence::Solr::Queries::FindOrderedReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
-      else
-        Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
-      end
+    def find_references_by(resource:, property:, model: nil)
+      result =
+        if ordered_property?(resource: resource, property: property)
+          Valkyrie::Persistence::Solr::Queries::FindOrderedReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+        else
+          Valkyrie::Persistence::Solr::Queries::FindReferencesQuery.new(resource: resource, property: property, connection: connection, resource_factory: resource_factory).run
+        end
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_inverse_references_by)
-    def find_inverse_references_by(resource: nil, id: nil, property:)
+    def find_inverse_references_by(resource: nil, id: nil, property:, model: nil)
       raise ArgumentError, "Provide resource or id" unless resource || id
       ensure_persisted(resource) if resource
       id ||= resource.id
-      Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(id: id, property: property, connection: connection, resource_factory: resource_factory).run
+      result = Valkyrie::Persistence::Solr::Queries::FindInverseReferencesQuery.new(id: id, property: property, connection: connection, resource_factory: resource_factory).run
+      return result unless model
+      result.select { |obj| obj.is_a?(model) }
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#custom_queries)
