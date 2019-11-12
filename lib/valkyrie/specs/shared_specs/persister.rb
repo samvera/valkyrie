@@ -360,7 +360,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
           resource = MyLockingResource.new(title: ["My Locked Resource"])
           initial_resource = persister.save(resource: resource)
           initial_token = initial_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first
-          initial_resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", [])
+          initial_resource.clear_optimistic_lock_token!
           updated_resource = persister.save(resource: initial_resource)
           expect(initial_token.serialize)
             .not_to eq(updated_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first.serialize)

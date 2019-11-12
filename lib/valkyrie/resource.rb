@@ -113,6 +113,10 @@ module Valkyrie
       self.class.optimistic_locking_enabled?
     end
 
+    def clear_optimistic_lock_token!
+      send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", []) if optimistic_locking_enabled?
+    end
+
     def attributes
       Hash[self.class.attribute_names.map { |x| [x, nil] }].merge(super).freeze
     end
