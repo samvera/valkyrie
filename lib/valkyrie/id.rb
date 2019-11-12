@@ -17,7 +17,8 @@ module Valkyrie
     delegate :hash, to: :state
 
     def eql?(other)
-      other.class == self.class && other.state == state
+      (other.class == self.class && other.state == state) ||
+        (other.to_s == to_s)
     end
     alias == eql?
 

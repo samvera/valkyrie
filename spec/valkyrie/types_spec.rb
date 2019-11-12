@@ -38,6 +38,10 @@ RSpec.describe Valkyrie::Types do
       it 'casts to a string' do
         expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
       end
+
+      it 'equals the equivalent string if ID matches string' do
+        expect(resource.thumbnail_id).to eq '123'
+      end
     end
 
     context 'when an ID is passed in' do
