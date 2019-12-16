@@ -3,6 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Resource do
+  subject(:resource) { Resource.new }
   before do
     class Resource < Valkyrie::Resource
       attribute :title, Valkyrie::Types::Set
@@ -11,7 +12,6 @@ RSpec.describe Valkyrie::Resource do
   after do
     Object.send(:remove_const, :Resource)
   end
-  subject(:resource) { Resource.new }
   let(:resource_klass) { Resource }
   it_behaves_like "a Valkyrie::Resource"
 
@@ -108,6 +108,7 @@ RSpec.describe Valkyrie::Resource do
   end
 
   context "extended class" do
+    subject(:resource) { MyResource.new }
     before do
       class MyResource < Resource
       end
@@ -115,7 +116,6 @@ RSpec.describe Valkyrie::Resource do
     after do
       Object.send(:remove_const, :MyResource)
     end
-    subject(:resource) { MyResource.new }
     describe "#fields" do
       it "returns all configured parent fields as an array of symbols" do
         expect(MyResource.fields).to eq [:id, :internal_resource, :created_at, :updated_at, :title]
