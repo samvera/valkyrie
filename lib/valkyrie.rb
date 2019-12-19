@@ -13,6 +13,8 @@ require 'json/ld'
 require 'logger'
 require 'rdf/vocab'
 
+using RDFPatches
+
 module Valkyrie
   require 'valkyrie/logging'
   require 'valkyrie/id'
@@ -30,6 +32,7 @@ module Valkyrie
   require 'valkyrie/vocab/pcdm_use'
   require 'generators/valkyrie/resource_generator'
   require 'valkyrie/engine' if defined?(Rails)
+
   def config
     @config ||= Config.new(
       config_hash
