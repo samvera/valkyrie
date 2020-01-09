@@ -17,12 +17,26 @@ module Valkyrie
     delegate :hash, to: :state
 
     def eql?(other)
-      (other.class == self.class && other.state == state) ||
-        (other.to_s == to_s)
+      return (default_equality(other) || string_equality(other)) if Valkyrie.config.id_string_equality == true
+      default_equality(other)
     end
     alias == eql?
 
     protected
+
+      def default_equality(other)
+        output = (other.class == self.class && other.state == state)
+        return output if output == true
+        if output == false && string_equality(other) && Valkyrie.config.id_string_equality.nil?
+          warn "[DEPRECATION] Valkyrie::IDs will always be equal to their string counterparts in 3.0.0. " \
+            "To silence this message, please either compare IDs or set Valkyrie.config.id_string_equality = true."
+        end
+        false
+      end
+
+      def string_equality(other)
+        other.to_s == to_s
+      end
 
       def state
         [@id]

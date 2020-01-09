@@ -35,13 +35,28 @@ RSpec.describe Valkyrie::Types do
     end
 
     context 'when a string is passed in' do
+      let(:message) do
+        /\[DEPRECATION\] Valkyrie::IDs will always be equal to their string counterparts in 3.0.0. To silence this message, please either compare IDs or set Valkyrie.config.id_string_equality = true./
+      end
       let(:thumbnail_id) { '123' }
 
       it 'casts to a string' do
         expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
       end
 
-      it 'equals the equivalent string if ID matches string' do
+      it 'does not equal the equivalent string if ID matches string' do
+      end
+
+      it "doesn't echo a deprecated message if configured" do
+        Valkyrie.config.id_string_equality = false
+        expect do
+          expect(resource.thumbnail_id).not_to eq '123'
+        end.not_to output(message).to_stderr
+      end
+
+      it 'equals the equivalent string if Valkyrie is configured' do
+        allow(Valkyrie.config).to receive(:id_string_equality).and_return(true)
+
         expect(resource.thumbnail_id).to eq '123'
       end
     end
