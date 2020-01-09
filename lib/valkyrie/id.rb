@@ -28,8 +28,10 @@ module Valkyrie
         output = (other.class == self.class && other.state == state)
         return output if output == true
         if output == false && string_equality(other) && Valkyrie.config.id_string_equality.nil?
+          # :nocov:
           warn "[DEPRECATION] Valkyrie::IDs will always be equal to their string counterparts in 3.0.0. " \
             "To silence this message, please either compare IDs or set Valkyrie.config.id_string_equality = true."
+          # :nocov:
         end
         false
       end
