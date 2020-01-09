@@ -1,3 +1,68 @@
+# v2.1.0 2020-01-09
+
+## Changes since last release
+
+* Use `::` prefixed names for `JSON::LD` references.
+  [no-reply](https://github.com/no-reply)
+* Use SVG instead of PNG for version badge.
+  [hackmastera](https://github.com/hackmastera)
+* Fix Rubocop for latest Bixby.
+  [hackmastera](https://github.com/hackmastera)
+* Valkyrie IDs equal string equivalent of ID to String with config
+  [jlevnhv](https://github.com/jlevnhv)
+* Add optional model parameter to find_inverse_references_by and
+find_references_by
+  [elrayle](https://github.com/elrayle)
+  [laritakr](https://github.com/laritakr)
+* Add parity in schema.key lookup for `ordered_attribute?`
+  [jeremyf](https://github.com/jeremyf)
+* Order member_ids when using schema-style attributes method.
+  [no-reply](https://github.com/no-reply)
+* Use DEFAULT_FEDORA_VERSION constant for Fedora adapter.
+  [no-reply](https://github.com/no-reply)
+* Stop testing ActiveRecord 5.1
+  [scherztc](https://github.com/scherztc)
+* Rename ListNode#target_uri to ListNode#target
+  [mbklein](https://github.com/mbklein)
+* Document that Solr Persister is intended to be used as a secondary persister.
+  [hweng](https://github.com/hweng)
+* Remove unused database tables from schema.rb
+  [scherztc](https://github.com/scherztc)
+* Alternate Identifier documentation
+  [escowles](https://github.com/escowles)
+* Remove suggest component in example Solr Config
+  [hweng](https://github.com/hweng)
+* Remove unused db/seeds.rb
+  [scherztc](https://github.com/scherztc)
+* Replace YARD Doc for Solr adapter with references to Memory Adapter.
+  [afred](https://github.com/afred)
+* Refactor shadowed variable in buffered persister spec.
+  [jeremyf](https://github.com/jeremyf)
+* Use example.com instead of made-up URLs
+  [escowles](https://github.com/escowles)
+* Add count_all_of_model query
+  [christinach](https://github.com/christinach)
+  [blancoj](https://github.com/blancoj)
+* Raise an error when unable to find a StorageAdapter
+  [bkiahstroud](https://github.com/bkiahstroud)
+  [FCRodriguez7](https://github.com/FCRodriguez7)
+  [kcompsci](https://github.com/kcompsci)
+* Allow find_inverse_reference_by property to be either ordered or not.
+  [elrayle](https://github.com/elrayle)
+* Randomized spec order
+  [jeremyf](https://github.com/jeremyf)
+* Allow Valkyrie logging to be tagged with a context and suppressed.
+  [jeremyf](https://github.com/jeremyf)
+* Fix documentation for Valkyrie::Persister::Memory being disassociated.
+  [jeremyf](https://github.com/jeremyf)
+* Suppress Solr warnings in tests.
+  [jeremyf](https://github.com/jeremyf)
+* Add `Valkyrie::Types::Relation` and `Valkyrie::Types::OrderedRelation`
+  [luisgreg99](https://github.com/luisgreg99)
+  [lsat12357](https://github.com/lsat12357)
+  [foglabs](https://github.com/foglabs)
+  [dgcliff](https://github.com/dgcliff)
+
 # v2.0.2 2019-10-17
 
 ## Changes since last release
