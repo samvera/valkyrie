@@ -115,7 +115,12 @@ RSpec.describe Valkyrie::Types do
   describe 'The array type' do
     it 'is not modifiable' do
       # We don't want to modify the defaults in the schema.
-      expect { Resource.new.authors << 'foo' }.to raise_error(RuntimeError, "can't modify frozen Array")
+      # @todo Remove the constant check when we're no longer supporting Ruby 2.4.
+      if Object.const_defined?("FrozenError")
+        expect { Resource.new.authors << 'foo' }.to raise_error FrozenError
+      else
+        expect { Resource.new.authors << 'foo' }.to raise_error(RuntimeError, "can't modify frozen Array")
+      end
     end
     it "doesn't create things inside if no value is passed" do
       expect(Resource.new.nested_resource_array).to eq []
