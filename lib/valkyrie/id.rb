@@ -25,7 +25,7 @@ module Valkyrie
     delegate :hash, to: :state
 
     def eql?(other)
-      return (default_equality(other) || string_equality(other)) if Valkyrie.config.id_string_equality == true
+      return string_equality(other) if Valkyrie.config.id_string_equality == true
       default_equality(other)
     end
     alias == eql?
