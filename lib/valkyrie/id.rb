@@ -13,19 +13,19 @@ module Valkyrie
     ##
     # @return [String]
     def to_s
-      id
+      to_str
     end
 
     ##
     # @return [String]
     def to_str
-      id # return `id` even if `#to_s` is overridden
+      id
     end
 
     delegate :hash, to: :state
 
     def eql?(other)
-      return (default_equality(other) || string_equality(other)) if Valkyrie.config.id_string_equality == true
+      return string_equality(other) if Valkyrie.config.id_string_equality == true
       default_equality(other)
     end
     alias == eql?
