@@ -10,8 +10,16 @@ module Valkyrie
       @id = id.to_s
     end
 
+    ##
+    # @return [String]
     def to_s
       id
+    end
+
+    ##
+    # @return [String]
+    def to_str
+      id # return `id` even if `#to_s` is overridden
     end
 
     delegate :hash, to: :state
@@ -35,7 +43,7 @@ module Valkyrie
       end
 
       def string_equality(other)
-        other.to_s == to_s
+        other == to_str
       end
 
       def state
