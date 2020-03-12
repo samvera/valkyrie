@@ -44,7 +44,12 @@ RSpec.describe Valkyrie::Types do
         expect(resource.thumbnail_id).to eq Valkyrie::ID.new('123')
       end
 
-      it 'does not equal the equivalent string if ID matches string' do
+      it "echos a deprecated message if not configured" do
+        allow(Valkyrie.config).to receive(:id_string_equality).and_return(nil)
+
+        expect do
+          expect(resource.thumbnail_id).not_to eq '123'
+        end.to output(message).to_stderr
       end
 
       it "doesn't echo a deprecated message if configured" do
@@ -54,10 +59,16 @@ RSpec.describe Valkyrie::Types do
         end.not_to output(message).to_stderr
       end
 
-      it 'equals the equivalent string if Valkyrie is configured' do
-        allow(Valkyrie.config).to receive(:id_string_equality).and_return(true)
+      context 'when String equality is configured' do
+        before { allow(Valkyrie.config).to receive(:id_string_equality).and_return(true) }
 
-        expect(resource.thumbnail_id).to eq '123'
+        it 'equals the equivalent string' do
+          expect(resource.thumbnail_id).to eq '123'
+        end
+
+        it 'is equal to the equivalent string' do
+          expect('123' == resource.thumbnail_id).to be true
+        end
       end
     end
 

@@ -10,14 +10,22 @@ module Valkyrie
       @id = id.to_s
     end
 
+    ##
+    # @return [String]
     def to_s
+      to_str
+    end
+
+    ##
+    # @return [String]
+    def to_str
       id
     end
 
     delegate :hash, to: :state
 
     def eql?(other)
-      return (default_equality(other) || string_equality(other)) if Valkyrie.config.id_string_equality == true
+      return string_equality(other) if Valkyrie.config.id_string_equality == true
       default_equality(other)
     end
     alias == eql?
@@ -35,7 +43,7 @@ module Valkyrie
       end
 
       def string_equality(other)
-        other.to_s == to_s
+        other == to_str
       end
 
       def state
