@@ -1,3 +1,19 @@
+# v2.1.1 2020-03-12
+
+## Changes since last release
+
+* Add Ruby 2.7 support.
+  [tpendragon](https://github.com/tpendragon)
+* Make ID & String equality symmetrical
+  [no-reply](https://github.com/no-reply)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[cjcolvar](https://github.com/cjcolvar)
+[escowles](https://github.com/escowles)
+[jeremyf](https://github.com/jeremyf)
+
 # v2.1.0 2020-01-09
 
 ## Changes since last release
