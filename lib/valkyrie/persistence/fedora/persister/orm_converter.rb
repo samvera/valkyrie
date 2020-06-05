@@ -556,7 +556,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-              Array(values)
+            Array(values)
           end
 
           # Retrieve a list of blacklisted URIs for predicates
