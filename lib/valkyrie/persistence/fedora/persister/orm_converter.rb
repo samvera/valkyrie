@@ -318,7 +318,7 @@ module Valkyrie::Persistence::Fedora
           # Casts the value of the RDF literal into an Applicator for DateTime values
           # @return [Applicator]
           def result
-            value.statement.object = ::DateTime.iso8601(value.statement.object.to_s).utc
+            value.statement.object = ::DateTime.iso8601(value.statement.object.to_s).new_offset(0)
             calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
           end
         end
@@ -394,7 +394,7 @@ module Valkyrie::Persistence::Fedora
           # Casts the value of the RDF literal into an Applicator for DateTime values
           # @return [Applicator]
           def result
-            value.statement.object = Time.parse(value.statement.object.to_s).utc
+            value.statement.object = DateTime.parse(value.statement.object.to_s).new_offset(0)
             calling_mapper.for(Property.new(statement: value.statement, scope: value.scope, adapter: value.adapter)).result
           end
         end
@@ -556,11 +556,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-            if values.is_a?(Time)
-              [values]
-            else
-              Array(values)
-            end
+            Array(values)
           end
 
           # Retrieve a list of blacklisted URIs for predicates

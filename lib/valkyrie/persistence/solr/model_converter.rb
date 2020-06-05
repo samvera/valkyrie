@@ -378,8 +378,8 @@ module Valkyrie::Persistence::Solr
           # @param [Object] value
           # @return [Time]
           def to_datetime(value)
-            return value.utc if value.is_a?(DateTime)
-            return value.to_datetime.utc if value.respond_to?(:to_datetime)
+            return value.new_offset(0) if value.is_a?(DateTime)
+            return value.to_datetime.new_offset(0) if value.respond_to?(:to_datetime)
           end
       end
 

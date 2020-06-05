@@ -152,7 +152,7 @@ module Valkyrie::Persistence::Shared
       # Generates a Time object in the UTC from the datestamp string value
       # @return [Time]
       def result
-        DateTime.iso8601(value).utc
+        DateTime.iso8601(value).new_offset(0)
       end
     end
   end
