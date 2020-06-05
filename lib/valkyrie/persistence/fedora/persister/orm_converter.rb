@@ -556,11 +556,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-            if values.is_a?(Time)
-              [values]
-            else
               Array(values)
-            end
           end
 
           # Retrieve a list of blacklisted URIs for predicates
