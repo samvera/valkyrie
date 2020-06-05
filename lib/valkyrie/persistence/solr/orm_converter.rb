@@ -48,7 +48,7 @@ module Valkyrie::Persistence::Solr
     # Construct a Time object from the datestamp for the resource creation date indexed in Solr
     # @return [Time]
     def created_at
-      DateTime.parse(solr_document.fetch("created_at_dtsi").to_s).utc
+      DateTime.parse(solr_document.fetch("created_at_dtsi").to_s).new_offset(0)
     end
 
     # Construct a Time object from the datestamp for the date of the last resource update indexed in Solr
@@ -445,7 +445,7 @@ module Valkyrie::Persistence::Solr
       # @return [Boolean]
       def self.handles?(value)
         return false unless value.to_s.start_with?("datetime-")
-        DateTime.iso8601(value.sub(/^datetime-/, '')).utc
+        DateTime.iso8601(value.sub(/^datetime-/, '')).new_offset(0)
       rescue
         false
       end
@@ -453,7 +453,7 @@ module Valkyrie::Persistence::Solr
       # Parses and casts the Solr field value into a UTC DateTime value
       # @return [Time]
       def result
-        DateTime.parse(value.sub(/^datetime-/, '')).utc
+        DateTime.parse(value.sub(/^datetime-/, '')).new_offset(0)
       end
     end
   end

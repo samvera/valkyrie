@@ -77,8 +77,8 @@ module Valkyrie::Persistence::Memory
       end
 
       def normalize_date_value(value)
-        return value.utc if value.is_a?(DateTime)
-        return value.to_datetime.utc if value.is_a?(Time)
+        return value.new_offset(0) if value.is_a?(DateTime)
+        return value.to_datetime.new_offset(0) if value.is_a?(Time)
         value
       end
 

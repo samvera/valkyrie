@@ -194,9 +194,9 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     reloaded = query_service.find_by(id: book.id)
 
     expect(reloaded.title.first.to_i).to eq(time1.to_i)
-    expect(reloaded.title.first.zone).to eq('UTC')
+    expect(reloaded.title.first.zone).to eq('+00:00')
     expect(reloaded.author.first.to_i).to eq(time2.to_i)
-    expect(reloaded.author.first.zone).to eq('UTC')
+    expect(reloaded.author.first.zone).to eq('+00:00')
     expect(reloaded.other_author.first).to eq "2019-01"
   end
 

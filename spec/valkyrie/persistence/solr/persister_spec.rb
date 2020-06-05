@@ -64,7 +64,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     let(:resource_class) { CustomResource }
 
     it "Returns a string when DateTime conversion fails" do
-      time1 = DateTime.current.utc
+      time1 = DateTime.current.new_offset(0)
       time2 = Time.current.utc
       allow(DateTime).to receive(:iso8601).and_raise StandardError.new("bogus exception")
       book = persister.save(resource: resource_class.new(title: [time1], author: [time2]))
