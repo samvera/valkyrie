@@ -24,7 +24,14 @@ module Valkyrie::Persistence::Memory
     def find_by(id:)
       id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
       validate_id(id)
-      cache[id] || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+      fetch_from_cache(id) || raise(::Valkyrie::Persistence::ObjectNotFoundError)
+    end
+
+    def fetch_from_cache(id)
+      result = cache[id]
+      return result if result.nil? || !result.optimistic_locking_enabled? || result[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].present?
+      result.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, cache[:versions][id])
+      result
     end
 
     # Get a single resource by `alternate_identifier`. Alternate identifiers are identifiers (like NOIDs,
@@ -62,7 +69,9 @@ module Valkyrie::Persistence::Memory
     # Get all objects.
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend.
     def find_all
-      cache.values
+      cache.except(:versions).values.map do |resource|
+        fetch_from_cache(resource.id)
+      end
     end
 
     # Get all objects of a given model.
@@ -70,7 +79,7 @@ module Valkyrie::Persistence::Memory
     # @return [Array<Valkyrie::Resource>] All objects in the persistence backend
     #   with the given class.
     def find_all_of_model(model:)
-      cache.values.select do |obj|
+      find_all.select do |obj|
         obj.is_a?(model)
       end
     end

@@ -27,7 +27,7 @@ module Valkyrie::Persistence::Memory
 
     # @return [Valkyrie::ID] Identifier for this metadata adapter.
     def id
-      @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(self.class.to_s))
+      @id ||= Valkyrie::ID.new(Digest::MD5.hexdigest(self.class.to_s + SecureRandom.uuid))
     end
   end
 end

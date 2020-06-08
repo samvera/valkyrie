@@ -84,8 +84,10 @@ module Valkyrie::Persistence::Memory
 
       # Create a new lock token based on the current timestamp.
       def generate_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
         token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
+        cache[:versions] ||= {}
+        cache[:versions][resource.id] = token
+        return unless resource.optimistic_locking_enabled?
         resource.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, token)
       end
 
@@ -96,11 +98,12 @@ module Valkyrie::Persistence::Memory
         cached_resource = cache[resource.id]
         return true if cached_resource.blank?
 
-        resource_lock_tokens = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
+        resource_lock_tokens = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK] || []
         resource_value = resource_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
-        return true if resource_value.blank?
+        cached_token = cached_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK] || []
+        cached_value = cached_token.find { |lock_token| lock_token.adapter_id == adapter.id }
+        return true if resource_value.nil?
 
-        cached_value = cached_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first
         cached_value == resource_value
       end
   end

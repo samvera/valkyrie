@@ -42,7 +42,7 @@ module Valkyrie::Persistence::Fedora
         return resource unless lastmod
 
         token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: "native-#{adapter.id}", token: DateTime.parse(lastmod.to_s).httpdate)
-        resource.send(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK) << token
+        resource.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK] + [token])
         resource
       end
 
