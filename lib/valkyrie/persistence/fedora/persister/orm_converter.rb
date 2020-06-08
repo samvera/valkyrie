@@ -97,11 +97,9 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
-        # Class for handling cases where blacklisted values should not be mapped
-        class BlacklistedValue < ::Valkyrie::ValueMapper
-          FedoraValue.register(self)
-
-          # Determines whether or not the value has a blacklisted namespace for the RDF statement object
+        # Class for handling cases where deny listed values should not be mapped
+        class DenylistedValue < ::Valkyrie::ValueMapper
+          # Determines whether or not the value has a denied namespace for the RDF statement object
           # (i. e. avoid attempting to map any RDF statements making assertions about LDP containers or resource internal to Fedora)
           # @param [Property] value
           # @return [Boolean]
@@ -109,10 +107,18 @@ module Valkyrie::Persistence::Fedora
             value.statement.object.to_s.start_with?("http://www.w3.org/ns/ldp", "http://fedora.info")
           end
 
-          # Provide the NullApplicator Class for any Property in a blacklisted namespace
+          # Provide the NullApplicator Class for any Property in a deny listed namespace
           def result
             NullApplicator
           end
+        end
+
+        # @deprecated
+        # Class for handling cases where deny listed values should not be mapped
+        # @see DenylistedValue
+        class BlacklistedValue < DenylistedValue
+          FedoraValue.register(self)
+          warn "[DEPRECATION] Samvera is deprecating '#{self}' in 3.0.0. Use #{DenylistedValue} instead."
         end
 
         # Class for handling cases where the RDF subject of a Property references a separate resource using a hash URI
@@ -522,7 +528,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Hash] hsh a new or existing Hash of attribute for Valkyrie resource attributes
           # @return [Hash]
           def apply_to(hsh)
-            return if blacklist?(key)
+            return if deny?(key)
             hsh[key.to_sym] = if hsh.key?(key.to_sym)
                                 Array.wrap(hsh[key.to_sym]) + cast_array(values)
                               else
@@ -541,13 +547,23 @@ module Valkyrie::Persistence::Fedora
             key
           end
 
-          # Determines whether or not a key is blacklisted for mapping
+          # @deprecated
+          # Determines whether or not a key is on the deny list for mapping
           # (For example <http://fedora.info/definitions> assertions are not mapped to Valkyrie attributes)
           # @param [Symbol] key
           # @return [Boolean]
           def blacklist?(key)
-            blacklist.each do |blacklist_item|
-              return true if key.start_with?(blacklist_item)
+            warn "[DEPRECATION] Samvera is deprecating '#{self.class}#blacklist?' in 3.0.0. Use #{self.class}#deny? instead."
+            deny?(key)
+          end
+
+          # Determines whether or not a key is on the deny list for mapping
+          # (For example <http://fedora.info/definitions> assertions are not mapped to Valkyrie attributes)
+          # @param [Symbol] key
+          # @return [Boolean]
+          def deny?(key)
+            denylist.each do |denylist_item|
+              return true if key.start_with?(denylist_item)
             end
             false
           end
@@ -559,9 +575,17 @@ module Valkyrie::Persistence::Fedora
             Array(values)
           end
 
-          # Retrieve a list of blacklisted URIs for predicates
+          # @deprecated
+          # Retrieve a list of denied URIs for predicates
           # @return [Array<String>]
           def blacklist
+            warn "[DEPRECATION] Samvera is deprecating '#{self.class}#blacklist' in 3.0.0. Use #{self.class}#denylist instead."
+            denylist
+          end
+
+          # Retrieve a list of denied URIs for predicates
+          # @return [Array<String>]
+          def denylist
             [
               "http://fedora.info/definitions",
               "http://www.iana.org/assignments/relation/last"
