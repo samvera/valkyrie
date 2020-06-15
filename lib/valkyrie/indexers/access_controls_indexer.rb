@@ -40,24 +40,24 @@ module Valkyrie::Indexers
 
     private
 
-      # rubocop:disable Metrics/MethodLength
-      def default_config
-        if defined?(Hydra) && Hydra.respond_to?(:config)
-          {
-            read_groups: Hydra.config[:permissions][:read].group,
-            read_users: Hydra.config[:permissions][:read].individual,
-            edit_groups: Hydra.config[:permissions][:edit].group,
-            edit_users: Hydra.config[:permissions][:edit].individual
-          }
-        else
-          {
-            read_groups: 'read_access_group_ssim',
-            read_users: 'read_access_person_ssim',
-            edit_groups: 'edit_access_group_ssim',
-            edit_users: 'edit_access_person_ssim'
-          }
-        end
+    # rubocop:disable Metrics/MethodLength
+    def default_config
+      if defined?(Hydra) && Hydra.respond_to?(:config)
+        {
+          read_groups: Hydra.config[:permissions][:read].group,
+          read_users: Hydra.config[:permissions][:read].individual,
+          edit_groups: Hydra.config[:permissions][:edit].group,
+          edit_users: Hydra.config[:permissions][:edit].individual
+        }
+      else
+        {
+          read_groups: 'read_access_group_ssim',
+          read_users: 'read_access_person_ssim',
+          edit_groups: 'edit_access_group_ssim',
+          edit_users: 'edit_access_person_ssim'
+        }
       end
+    end
     # rubocop:enable Metrics/MethodLength
   end
 end

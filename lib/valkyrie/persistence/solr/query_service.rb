@@ -97,19 +97,19 @@ module Valkyrie::Persistence::Solr
 
     private
 
-      # (see Valkyrie::Persistence::Memory::QueryService#validate_id)
-      def validate_id(id)
-        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
-      end
+    # (see Valkyrie::Persistence::Memory::QueryService#validate_id)
+    def validate_id(id)
+      raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+    end
 
-      # (see Valkyrie::Persistence::Memory::QueryService#ensure_persisted)
-      def ensure_persisted(resource)
-        raise ArgumentError, 'resource is not saved' unless resource.persisted?
-      end
+    # (see Valkyrie::Persistence::Memory::QueryService#ensure_persisted)
+    def ensure_persisted(resource)
+      raise ArgumentError, 'resource is not saved' unless resource.persisted?
+    end
 
-      # (see Valkyrie::Persistence::Memory::QueryService#ordered_property?)
-      def ordered_property?(resource:, property:)
-        resource.ordered_attribute?(property)
-      end
+    # (see Valkyrie::Persistence::Memory::QueryService#ordered_property?)
+    def ordered_property?(resource:, property:)
+      resource.ordered_attribute?(property)
+    end
   end
 end

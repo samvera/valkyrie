@@ -104,8 +104,8 @@ module Valkyrie
 
     private
 
-      def field(field_name)
-        self.class.definitions.fetch(field_name.to_s)
-      end
+    def field(field_name)
+      self.class.definitions.fetch(field_name.to_s)
+    end
   end
 end

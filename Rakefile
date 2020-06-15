@@ -51,25 +51,23 @@ namespace :db do
 
   desc 'Migrate the database (options: VERSION=x, VERBOSE=false).'
   task migrate: :configure_connection do
-    begin
-      verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
-      version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
-      scope   = ENV['SCOPE']
-      verbose_was = ActiveRecord::Migration.verbose
-      ActiveRecord::Migration.verbose = verbose
-      if ActiveRecord::Migrator.respond_to?(:migrate)
-        ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
-          scope.blank? || scope == migration.scope
-        end
-      else
-        ActiveRecord::Base.connection.migration_context.migrate(version) do |migration|
-          scope.blank? || scope == migration.scope
-        end
+    verbose = ENV["VERBOSE"] ? ENV["VERBOSE"] == "true" : true
+    version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
+    scope   = ENV['SCOPE']
+    verbose_was = ActiveRecord::Migration.verbose
+    ActiveRecord::Migration.verbose = verbose
+    if ActiveRecord::Migrator.respond_to?(:migrate)
+      ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
+        scope.blank? || scope == migration.scope
       end
-      ActiveRecord::Base.clear_cache!
-    ensure
-      ActiveRecord::Migration.verbose = verbose_was
+    else
+      ActiveRecord::Base.connection.migration_context.migrate(version) do |migration|
+        scope.blank? || scope == migration.scope
+      end
     end
+    ActiveRecord::Base.clear_cache!
+  ensure
+    ActiveRecord::Migration.verbose = verbose_was
   end
 
   namespace :schema do

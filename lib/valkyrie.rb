@@ -119,19 +119,19 @@ module Valkyrie
 
     private
 
-      def defaults
-        {
-          resource_class_resolver: method(:default_resource_class_resolver)
-        }
-      end
+    def defaults
+      {
+        resource_class_resolver: method(:default_resource_class_resolver)
+      }
+    end
 
-      # String constantize is a "by convention" factory. This works, but assumes
-      # the ruby class once used to persist is the model used to now reify.
-      #
-      # @param [String] class_name
-      def default_resource_class_resolver(class_name)
-        class_name.constantize
-      end
+    # String constantize is a "by convention" factory. This works, but assumes
+    # the ruby class once used to persist is the model used to now reify.
+    #
+    # @param [String] class_name
+    def default_resource_class_resolver(class_name)
+      class_name.constantize
+    end
   end
 
   module_function :config, :logger, :logger=, :config_root_path, :environment, :config_file, :config_hash

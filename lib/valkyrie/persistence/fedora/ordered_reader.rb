@@ -26,10 +26,10 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      # Access the "first" (head) node for the linked list
-      # @return [Valkyrie::Persistence::Fedora::OrderedList::HeadSentinel]
-      def first_head
-        root.head
-      end
+    # Access the "first" (head) node for the linked list
+    # @return [Valkyrie::Persistence::Fedora::OrderedList::HeadSentinel]
+    def first_head
+      root.head
+    end
   end
 end

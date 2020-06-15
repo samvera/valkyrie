@@ -85,60 +85,60 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      attr_reader :next_uri, :prev_uri, :node_cache
+    attr_reader :next_uri, :prev_uri, :node_cache
 
-      # Class used to populate the RDF graph structure for the linked lists
-      class Builder
-        attr_reader :uri, :graph
+    # Class used to populate the RDF graph structure for the linked lists
+    class Builder
+      attr_reader :uri, :graph
 
-        # @param uri [RDF::URI] the URI for the linked list in the graph store
-        # @param graph [RDF::Repository] the RDF graph to be populated
-        def initialize(uri, graph)
-          @uri = uri
-          @graph = graph
-        end
-
-        # Populates attributes for the LinkedNode
-        # @param instance [ListNode]
-        def populate(instance)
-          instance.proxy_for = resource.proxy_for
-          instance.proxy_in = resource.proxy_in
-          instance.next_uri = resource.next
-          instance.prev_uri = resource.prev
-        end
-
-        private
-
-          # Constructs a set of triples using ActiveTriples as objects
-          # @return [Valkyrie::Persistence::Fedora::ListNode::Resource]
-          def resource
-            @resource ||= Resource.new(uri, graph: graph)
-          end
+      # @param uri [RDF::URI] the URI for the linked list in the graph store
+      # @param graph [RDF::Repository] the RDF graph to be populated
+      def initialize(uri, graph)
+        @uri = uri
+        @graph = graph
       end
 
-      # Class for providing a set of triples modeling linked list nodes
-      class Resource
-        def self.property(property, predicate:)
-          define_method property do
-            graph.query([uri, predicate, nil]).objects.first
-          end
+      # Populates attributes for the LinkedNode
+      # @param instance [ListNode]
+      def populate(instance)
+        instance.proxy_for = resource.proxy_for
+        instance.proxy_in = resource.proxy_in
+        instance.next_uri = resource.next
+        instance.prev_uri = resource.prev
+      end
 
-          define_method "#{property}=" do |val|
-            return if val.nil?
-            graph << [uri, predicate, val]
-          end
+      private
+
+      # Constructs a set of triples using ActiveTriples as objects
+      # @return [Valkyrie::Persistence::Fedora::ListNode::Resource]
+      def resource
+        @resource ||= Resource.new(uri, graph: graph)
+      end
+    end
+
+    # Class for providing a set of triples modeling linked list nodes
+    class Resource
+      def self.property(property, predicate:)
+        define_method property do
+          graph.query([uri, predicate, nil]).objects.first
         end
 
-        property :proxy_for, predicate: ::RDF::Vocab::ORE.proxyFor
-        property :proxy_in, predicate: ::RDF::Vocab::ORE.proxyIn
-        property :next, predicate: ::RDF::Vocab::IANA.next
-        property :prev, predicate: ::RDF::Vocab::IANA.prev
-
-        attr_reader :graph, :uri
-        def initialize(uri, graph: RDF::Graph.new)
-          @uri = uri
-          @graph = graph
+        define_method "#{property}=" do |val|
+          return if val.nil?
+          graph << [uri, predicate, val]
         end
       end
+
+      property :proxy_for, predicate: ::RDF::Vocab::ORE.proxyFor
+      property :proxy_in, predicate: ::RDF::Vocab::ORE.proxyIn
+      property :next, predicate: ::RDF::Vocab::IANA.next
+      property :prev, predicate: ::RDF::Vocab::IANA.prev
+
+      attr_reader :graph, :uri
+      def initialize(uri, graph: RDF::Graph.new)
+        @uri = uri
+        @graph = graph
+      end
+    end
   end
 end

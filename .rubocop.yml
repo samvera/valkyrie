@@ -25,6 +25,8 @@ RSpec/MultipleExpectations:
   Enabled: false
 Rails/TimeZone:
   Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false
 Naming/PredicateName:
   Exclude:
     - "lib/valkyrie/resource.rb"

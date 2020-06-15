@@ -251,46 +251,46 @@ module Valkyrie::Persistence::Postgres
 
     private
 
-      def find_ordered_references_by(resource:, property:, model: nil)
-        if model
-          run_query(find_ordered_references_with_type_query, property, resource.id.to_s, model)
-        else
-          run_query(find_ordered_references_query, property, resource.id.to_s)
-        end
+    def find_ordered_references_by(resource:, property:, model: nil)
+      if model
+        run_query(find_ordered_references_with_type_query, property, resource.id.to_s, model)
+      else
+        run_query(find_ordered_references_query, property, resource.id.to_s)
       end
+    end
 
-      def find_unordered_references_by(resource:, property:, model: nil)
-        if model
-          run_query(find_references_with_type_query, property, resource.id.to_s, model)
-        else
-          run_query(find_references_query, property, resource.id.to_s)
-        end
+    def find_unordered_references_by(resource:, property:, model: nil)
+      if model
+        run_query(find_references_with_type_query, property, resource.id.to_s, model)
+      else
+        run_query(find_references_query, property, resource.id.to_s)
       end
+    end
 
-      # Determines whether or not an Object is a Valkyrie ID
-      # @param [Object] id
-      # @raise [ArgumentError]
-      def validate_id(id)
-        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
-      end
+    # Determines whether or not an Object is a Valkyrie ID
+    # @param [Object] id
+    # @raise [ArgumentError]
+    def validate_id(id)
+      raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+    end
 
-      # Determines whether or not a resource has been persisted
-      # @param [Object] resource
-      # @raise [ArgumentError]
-      def ensure_persisted(resource)
-        raise ArgumentError, 'resource is not saved' unless resource.persisted?
-      end
+    # Determines whether or not a resource has been persisted
+    # @param [Object] resource
+    # @raise [ArgumentError]
+    def ensure_persisted(resource)
+      raise ArgumentError, 'resource is not saved' unless resource.persisted?
+    end
 
-      # Accesses the data type in PostgreSQL used for the primary key
-      # (For example, a UUID)
-      # @see https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/SchemaCache.html#method-i-columns_hash
-      # @return [Symbol]
-      def id_type
-        @id_type ||= orm_class.columns_hash["id"].type
-      end
+    # Accesses the data type in PostgreSQL used for the primary key
+    # (For example, a UUID)
+    # @see https://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/SchemaCache.html#method-i-columns_hash
+    # @return [Symbol]
+    def id_type
+      @id_type ||= orm_class.columns_hash["id"].type
+    end
 
-      def ordered_property?(resource:, property:)
-        resource.ordered_attribute?(property)
-      end
+    def ordered_property?(resource:, property:)
+      resource.ordered_attribute?(property)
+    end
   end
 end
