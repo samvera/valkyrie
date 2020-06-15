@@ -83,24 +83,24 @@ module Valkyrie::Storage
 
     private
 
-      # @return [IOProxy]
-      def response(id:)
-        response = connection.http.get(fedora_identifier(id: id))
-        raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
-        IOProxy.new(response.body)
-      end
+    # @return [IOProxy]
+    def response(id:)
+      response = connection.http.get(fedora_identifier(id: id))
+      raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
+      IOProxy.new(response.body)
+    end
 
-      def default_resource_uri_transformer
-        lambda do |resource, base_url|
-          id = CGI.escape(resource.id.to_s)
-          RDF::URI.new(base_url + id)
-        end
+    def default_resource_uri_transformer
+      lambda do |resource, base_url|
+        id = CGI.escape(resource.id.to_s)
+        RDF::URI.new(base_url + id)
       end
+    end
 
-      def base_url
-        pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
-        post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
-        "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}"
-      end
+    def base_url
+      pre_divider = base_path.starts_with?(SLASH) ? '' : SLASH
+      post_divider = base_path.ends_with?(SLASH) ? '' : SLASH
+      "#{connection.http.url_prefix}#{pre_divider}#{base_path}#{post_divider}"
+    end
   end
 end

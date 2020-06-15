@@ -31,11 +31,9 @@ module Valkyrie::Persistence::Fedora
     def find_many_by_ids(ids:)
       ids = ids.uniq
       ids.map do |id|
-        begin
-          find_by(id: id)
-        rescue ::Valkyrie::Persistence::ObjectNotFoundError
-          nil
-        end
+        find_by(id: id)
+      rescue ::Valkyrie::Persistence::ObjectNotFoundError
+        nil
       end.reject(&:nil?)
     end
 
@@ -137,44 +135,44 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      def find_inverse_reference_ids_by_unordered(resource:, property:)
-        content = content_with_inbound(id: resource.id)
-        property_uri = adapter.schema.predicate_for(property: property, resource: nil)
-        content.graph.query([nil, property_uri, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
-      end
+    def find_inverse_reference_ids_by_unordered(resource:, property:)
+      content = content_with_inbound(id: resource.id)
+      property_uri = adapter.schema.predicate_for(property: property, resource: nil)
+      content.graph.query([nil, property_uri, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+    end
 
-      def find_inverse_references_by_ordered(resource:, property:, ignore_ids: [])
-        content = content_with_inbound(id: resource.id)
-        ids = content.graph.query([nil, ::RDF::Vocab::ORE.proxyFor, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
-        ids.uniq!
-        ids.delete_if { |id| ignore_ids.include? id }
-        ids.lazy.map { |id| find_by(id: id) }.select { |o| o[property].include?(resource.id) }
-      end
+    def find_inverse_references_by_ordered(resource:, property:, ignore_ids: [])
+      content = content_with_inbound(id: resource.id)
+      ids = content.graph.query([nil, ::RDF::Vocab::ORE.proxyFor, adapter.id_to_uri(resource.id)]).map(&:subject).map { |x| x.to_s.gsub(/#.*/, '') }.map { |x| adapter.uri_to_id(x) }
+      ids.uniq!
+      ids.delete_if { |id| ignore_ids.include? id }
+      ids.lazy.map { |id| find_by(id: id) }.select { |o| o[property].include?(resource.id) }
+    end
 
-      # Ensures that an object is (or can be cast into a) Valkyrie::ID
-      # @return [Valkyrie::ID]
-      # @raise [ArgumentError]
-      def validate_id(id)
-        id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
-        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
-      end
+    # Ensures that an object is (or can be cast into a) Valkyrie::ID
+    # @return [Valkyrie::ID]
+    # @raise [ArgumentError]
+    def validate_id(id)
+      id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
+      raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+    end
 
-      # Resolve a URI for an LDP resource in Fedora and construct a Valkyrie::Resource
-      # @param uri [RDF::URI]
-      # @return [Valkyrie::Resource]
-      # @raise [Valkyrie::Persistence::ObjectNotFoundError]
-      def resource_from_uri(uri)
-        resource = Ldp::Resource.for(connection, uri, connection.get(uri))
-        resource_factory.to_resource(object: resource)
-      rescue ::Ldp::Gone, ::Ldp::NotFound
-        raise ::Valkyrie::Persistence::ObjectNotFoundError
-      end
+    # Resolve a URI for an LDP resource in Fedora and construct a Valkyrie::Resource
+    # @param uri [RDF::URI]
+    # @return [Valkyrie::Resource]
+    # @raise [Valkyrie::Persistence::ObjectNotFoundError]
+    def resource_from_uri(uri)
+      resource = Ldp::Resource.for(connection, uri, connection.get(uri))
+      resource_factory.to_resource(object: resource)
+    rescue ::Ldp::Gone, ::Ldp::NotFound
+      raise ::Valkyrie::Persistence::ObjectNotFoundError
+    end
 
-      # Ensures that a Valkyrie::Resource has been persisted
-      # @param resource [Valkyrie::Resource]
-      # @raise [ArgumentError]
-      def ensure_persisted(resource)
-        raise ArgumentError, 'resource is not saved' unless resource.persisted?
-      end
+    # Ensures that a Valkyrie::Resource has been persisted
+    # @param resource [Valkyrie::Resource]
+    # @raise [ArgumentError]
+    def ensure_persisted(resource)
+      raise ArgumentError, 'resource is not saved' unless resource.persisted?
+    end
   end
 end

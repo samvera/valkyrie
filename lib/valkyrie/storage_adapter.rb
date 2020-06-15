@@ -106,20 +106,20 @@ module Valkyrie
 
       private
 
-        def tmp_file_name
-          id.to_s.tr(':/', '__')
-        end
+      def tmp_file_name
+        id.to_s.tr(':/', '__')
+      end
 
-        def tmp_file_path
-          ::File.join(Dir.tmpdir, tmp_file_name)
-        end
+      def tmp_file_path
+        ::File.join(Dir.tmpdir, tmp_file_name)
+      end
 
-        def tmp_file
-          @tmp_file ||= ::File.open(tmp_file_path, 'w+b') do |f|
-            IO.copy_stream(io, f)
-            f
-          end
+      def tmp_file
+        @tmp_file ||= ::File.open(tmp_file_path, 'w+b') do |f|
+          IO.copy_stream(io, f)
+          f
         end
+      end
     end
   end
 end

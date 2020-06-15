@@ -92,7 +92,7 @@ module Valkyrie::Persistence::Fedora
       existing_predicates = schema.find { |_k, v| v == RDF::URI(predicate.to_s) }
       predicate_name = predicate.to_s.gsub(URI_PREFIX, '')
 
-      return predicate_name if existing_predicates.nil? || existing_predicates.empty?
+      return predicate_name if existing_predicates.blank?
       existing_predicates.first
     end
   end

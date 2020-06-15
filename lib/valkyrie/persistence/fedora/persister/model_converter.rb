@@ -325,21 +325,21 @@ module Valkyrie::Persistence::Fedora
       class MappedFedoraValue < ::Valkyrie::ValueMapper
         private
 
-          # Map a default Ruby data type
-          # (This maps the existing Property to a FedoraValue first)
-          # @param [Object] converted_value
-          # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
-          def map_value(converted_value:)
-            calling_mapper.for(
-              Property.new(
-                value.subject,
-                value.key,
-                converted_value,
-                value.adapter,
-                value.resource
-              )
-            ).result
-          end
+        # Map a default Ruby data type
+        # (This maps the existing Property to a FedoraValue first)
+        # @param [Object] converted_value
+        # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
+        def map_value(converted_value:)
+          calling_mapper.for(
+            Property.new(
+              value.subject,
+              value.key,
+              converted_value,
+              value.adapter,
+              value.resource
+            )
+          ).result
+        end
       end
 
       # Class mapping Property objects for Valkyrie IDs using typed RDF literals

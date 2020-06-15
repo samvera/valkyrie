@@ -86,97 +86,95 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      # Ensure that all alternate IDs for a given resource are persisted
-      # @param [Valkyrie::Resource] resource
-      # @return [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>]
-      def find_or_create_alternate_ids(resource)
-        return nil unless resource.try(:alternate_ids)
+    # Ensure that all alternate IDs for a given resource are persisted
+    # @param [Valkyrie::Resource] resource
+    # @return [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>]
+    def find_or_create_alternate_ids(resource)
+      return nil unless resource.try(:alternate_ids)
 
-        resource.alternate_ids.map do |alternate_identifier|
-          begin
-            adapter.query_service.find_by(id: alternate_identifier)
-          rescue ::Valkyrie::Persistence::ObjectNotFoundError
-            alternate_resource = ::Valkyrie::Persistence::Fedora::AlternateIdentifier.new(id: alternate_identifier)
-            adapter.persister.save(resource: alternate_resource)
-          end
-        end
+      resource.alternate_ids.map do |alternate_identifier|
+        adapter.query_service.find_by(id: alternate_identifier)
+      rescue ::Valkyrie::Persistence::ObjectNotFoundError
+        alternate_resource = ::Valkyrie::Persistence::Fedora::AlternateIdentifier.new(id: alternate_identifier)
+        adapter.persister.save(resource: alternate_resource)
+      end
+    end
+
+    # Ensure that any Resources referenced by alternate IDs are deleted when a Resource has these IDs deleted
+    # @param [Valkyrie::Resource] updated_resource
+    def cleanup_alternate_resources(updated_resource)
+      persisted_resource = adapter.query_service.find_by(id: updated_resource.id)
+      removed_identifiers = persisted_resource.alternate_ids - updated_resource.alternate_ids
+
+      removed_identifiers.each do |removed_id|
+        adapter.persister.delete(resource: adapter.query_service.find_by(id: removed_id))
+      end
+    end
+
+    # Ensure that any Resources referenced by alternate IDs are persisted when a Resource has these IDs added
+    # @param [Valkyrie::Resource] resource
+    # @param [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>] alternate_resources
+    # @return [Valkyrie::Resource]
+    def save_reference_to_resource(resource, alternate_resources)
+      alternate_resources.each do |alternate_resource|
+        alternate_resource.references = resource.id
+        adapter.persister.save(resource: alternate_resource)
       end
 
-      # Ensure that any Resources referenced by alternate IDs are deleted when a Resource has these IDs deleted
-      # @param [Valkyrie::Resource] updated_resource
-      def cleanup_alternate_resources(updated_resource)
-        persisted_resource = adapter.query_service.find_by(id: updated_resource.id)
-        removed_identifiers = persisted_resource.alternate_ids - updated_resource.alternate_ids
+      resource
+    end
 
-        removed_identifiers.each do |removed_id|
-          adapter.persister.delete(resource: adapter.query_service.find_by(id: removed_id))
-        end
-      end
+    # Generate the lock token for a Resource, and set it for attribute
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Persistence::OptimisticLockToken]
+    # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
+    # @note Fedora's last modified response is not granular enough to produce an effective lock token
+    #   therefore, we use the same implementation as the memory adapter. This could fail to lock a
+    #   resource if Fedora updated this resource between the time it was saved and Valkyrie created
+    #   the token.
+    def generate_lock_token(resource)
+      return unless resource.optimistic_locking_enabled?
+      token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
+      resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
+    end
 
-      # Ensure that any Resources referenced by alternate IDs are persisted when a Resource has these IDs added
-      # @param [Valkyrie::Resource] resource
-      # @param [Array<Valkyrie::Persistence::Fedora::AlternateIdentifier>] alternate_resources
-      # @return [Valkyrie::Resource]
-      def save_reference_to_resource(resource, alternate_resources)
-        alternate_resources.each do |alternate_resource|
-          alternate_resource.references = resource.id
-          adapter.persister.save(resource: alternate_resource)
-        end
+    # Determine whether or not a lock token is still valid for a persisted Resource
+    #   If the persisted Resource has been updated since it was last read into memory,
+    #   then the resouce in memory has been invalidated and Valkyrie::Persistence::StaleObjectError
+    #   is raised.
+    # @param [Valkyrie::Resource] resource
+    # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
+    # @raise [Valkyrie::Persistence::StaleObjectError]
+    def validate_lock_token(resource)
+      return unless resource.optimistic_locking_enabled?
+      return if resource.id.blank?
 
-        resource
-      end
+      current_lock_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
+      return if current_lock_token.blank?
 
-      # Generate the lock token for a Resource, and set it for attribute
-      # @param [Valkyrie::Resource] resource
-      # @return [Valkyrie::Persistence::OptimisticLockToken]
-      # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
-      # @note Fedora's last modified response is not granular enough to produce an effective lock token
-      #   therefore, we use the same implementation as the memory adapter. This could fail to lock a
-      #   resource if Fedora updated this resource between the time it was saved and Valkyrie created
-      #   the token.
-      def generate_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
-        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
-        resource.send("#{Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK}=", token)
-      end
+      retrieved_lock_tokens = adapter.query_service.find_by(id: resource.id)[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
+      retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
+      return if retrieved_lock_token.blank?
 
-      # Determine whether or not a lock token is still valid for a persisted Resource
-      #   If the persisted Resource has been updated since it was last read into memory,
-      #   then the resouce in memory has been invalidated and Valkyrie::Persistence::StaleObjectError
-      #   is raised.
-      # @param [Valkyrie::Resource] resource
-      # @see https://github.com/samvera-labs/valkyrie/wiki/Optimistic-Locking
-      # @raise [Valkyrie::Persistence::StaleObjectError]
-      def validate_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
-        return if resource.id.blank?
+      raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process." unless current_lock_token == retrieved_lock_token
+    end
 
-        current_lock_token = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id == adapter.id }
-        return if current_lock_token.blank?
+    # Retrieve the lock token that holds Fedora's system-managed last-modified date
+    # @param [Valkyrie::Resource] resource
+    # @return [Valkyrie::Persistence::OptimisticLockToken]
+    def native_lock_token(resource)
+      return unless resource.optimistic_locking_enabled?
+      resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id.to_s == "native-#{adapter.id}" }
+    end
 
-        retrieved_lock_tokens = adapter.query_service.find_by(id: resource.id)[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
-        retrieved_lock_token = retrieved_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
-        return if retrieved_lock_token.blank?
-
-        raise Valkyrie::Persistence::StaleObjectError, "The object #{resource.id} has been updated by another process." unless current_lock_token == retrieved_lock_token
-      end
-
-      # Retrieve the lock token that holds Fedora's system-managed last-modified date
-      # @param [Valkyrie::Resource] resource
-      # @return [Valkyrie::Persistence::OptimisticLockToken]
-      def native_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
-        resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].find { |lock_token| lock_token.adapter_id.to_s == "native-#{adapter.id}" }
-      end
-
-      # Set Fedora request headers:
-      # * `Prefer: handling=lenient; received="minimal"` allows us to avoid sending all server-managed triples
-      # * `If-Unmodified-Since` triggers Fedora's server-side optimistic locking
-      # @param request [Faraday::Request]
-      # @param lock_token [Valkyrie::Persistence::OptimisticLockToken]
-      def update_request_headers(request, lock_token)
-        request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
-        request.headers["If-Unmodified-Since"] = lock_token.token if lock_token
-      end
+    # Set Fedora request headers:
+    # * `Prefer: handling=lenient; received="minimal"` allows us to avoid sending all server-managed triples
+    # * `If-Unmodified-Since` triggers Fedora's server-side optimistic locking
+    # @param request [Faraday::Request]
+    # @param lock_token [Valkyrie::Persistence::OptimisticLockToken]
+    def update_request_headers(request, lock_token)
+      request.headers["Prefer"] = "handling=lenient; received=\"minimal\""
+      request.headers["If-Unmodified-Since"] = lock_token.token if lock_token
+    end
   end
 end

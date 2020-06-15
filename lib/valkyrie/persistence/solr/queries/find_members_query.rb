@@ -27,7 +27,7 @@ module Valkyrie::Persistence::Solr::Queries
     # Results are ordered by the member IDs specified in the Valkyrie Resource attribute
     # @yield [Valkyrie::Resource]
     def each
-      return [] unless resource.id.present?
+      return [] if resource.id.blank?
       member_ids.map { |id| unordered_members.find { |member| member.id == id } }.reject(&:nil?).each do |member|
         yield member
       end

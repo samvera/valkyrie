@@ -4,7 +4,6 @@ inherit_gem:
   bixby: bixby_default.yml
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: 2.3
   Exclude:
     - 'bin/*'
     - 'db/schema.rb'
@@ -25,6 +24,10 @@ RSpec/ExampleLength:
 RSpec/MultipleExpectations:
   Enabled: false
 Rails/TimeZone:
+  Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false
+Rails/ApplicationRecord:
   Enabled: false
 Naming/PredicateName:
   Exclude:

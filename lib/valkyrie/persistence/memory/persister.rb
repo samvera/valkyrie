@@ -62,46 +62,46 @@ module Valkyrie::Persistence::Memory
 
     private
 
-      def generate_id(resource)
-        resource.new(id: SecureRandom.uuid)
-      end
+    def generate_id(resource)
+      resource.new(id: SecureRandom.uuid)
+    end
 
-      # Convert all dates to DateTime in the UTC time zone for consistency.
-      def normalize_dates!(resource)
-        resource.attributes.each { |k, v| resource.send("#{k}=", normalize_date_values(v)) }
-      end
+    # Convert all dates to DateTime in the UTC time zone for consistency.
+    def normalize_dates!(resource)
+      resource.attributes.each { |k, v| resource.send("#{k}=", normalize_date_values(v)) }
+    end
 
-      def normalize_date_values(v)
-        return v.map { |val| normalize_date_value(val) } if v.is_a?(Array)
-        normalize_date_value(v)
-      end
+    def normalize_date_values(v)
+      return v.map { |val| normalize_date_value(val) } if v.is_a?(Array)
+      normalize_date_value(v)
+    end
 
-      def normalize_date_value(value)
-        return value.new_offset(0) if value.is_a?(DateTime)
-        return value.to_datetime.new_offset(0) if value.is_a?(Time)
-        value
-      end
+    def normalize_date_value(value)
+      return value.new_offset(0) if value.is_a?(DateTime)
+      return value.to_datetime.new_offset(0) if value.is_a?(Time)
+      value
+    end
 
-      # Create a new lock token based on the current timestamp.
-      def generate_lock_token(resource)
-        return unless resource.optimistic_locking_enabled?
-        token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
-        resource.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, token)
-      end
+    # Create a new lock token based on the current timestamp.
+    def generate_lock_token(resource)
+      return unless resource.optimistic_locking_enabled?
+      token = Valkyrie::Persistence::OptimisticLockToken.new(adapter_id: adapter.id, token: Time.now.to_r)
+      resource.set_value(Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK, token)
+    end
 
-      # Check whether a resource is current.
-      def valid_lock?(resource)
-        return true unless resource.optimistic_locking_enabled?
+    # Check whether a resource is current.
+    def valid_lock?(resource)
+      return true unless resource.optimistic_locking_enabled?
 
-        cached_resource = cache[resource.id]
-        return true if cached_resource.blank?
+      cached_resource = cache[resource.id]
+      return true if cached_resource.blank?
 
-        resource_lock_tokens = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
-        resource_value = resource_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
-        return true if resource_value.blank?
+      resource_lock_tokens = resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK]
+      resource_value = resource_lock_tokens.find { |lock_token| lock_token.adapter_id == adapter.id }
+      return true if resource_value.blank?
 
-        cached_value = cached_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first
-        cached_value == resource_value
-      end
+      cached_value = cached_resource[Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK].first
+      cached_value == resource_value
+    end
   end
 end

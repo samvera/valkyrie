@@ -67,111 +67,111 @@ module Valkyrie::Persistence::Fedora
 
     private
 
-      attr_reader :node_cache
+    attr_reader :node_cache
 
-      # Append a node to a linked list
-      # @param source [ListNode] the node being appended
-      # @param append_node [ListNode] the node already in the existing list
-      def append_to(source, append_node)
-        source.prev = append_node
-        append_node.next.prev = source
-        source.next = append_node.next
-        append_node.next = source
-        @changed = true
+    # Append a node to a linked list
+    # @param source [ListNode] the node being appended
+    # @param append_node [ListNode] the node already in the existing list
+    def append_to(source, append_node)
+      source.prev = append_node
+      append_node.next.prev = source
+      source.next = append_node.next
+      append_node.next = source
+      @changed = true
+    end
+
+    # Constructs a new OrderedReader for this OrderedList
+    # @return [OrderedReader]
+    def ordered_reader
+      OrderedReader.new(self)
+    end
+
+    # Populates the list with constructed ListNode Objects
+    # @param subject [RDF::URI]
+    def build_node(subject = nil)
+      return nil unless subject
+      node_cache.fetch(subject) do
+        ListNode.new(node_cache, subject, adapter, graph)
+      end
+    end
+
+    # Generates hash URIs for the subject of the LinkedList
+    # Should one of these URIs already be in use, a new URI will be generated
+    # @return [RDF::URI]
+    def new_node_subject
+      node = ::RDF::URI("##{::RDF::Node.new.id}")
+      node = ::RDF::URI("##{::RDF::Node.new.id}") while node_cache.key?(node)
+      node
+    end
+
+    # Class used for caching LinkedNode objects mapped to URIs
+    class NodeCache
+      def initialize
+        @cache ||= {}
       end
 
-      # Constructs a new OrderedReader for this OrderedList
-      # @return [OrderedReader]
-      def ordered_reader
-        OrderedReader.new(self)
+      # Retrieve the ListNode for a given URI
+      # If a block is passed, set its output to the cache
+      # @param uri [RDF::URI]
+      # @return [ListNode]
+      def fetch(uri)
+        @cache[uri] ||= yield if block_given?
       end
 
-      # Populates the list with constructed ListNode Objects
-      # @param subject [RDF::URI]
-      def build_node(subject = nil)
-        return nil unless subject
-        node_cache.fetch(subject) do
-          ListNode.new(node_cache, subject, adapter, graph)
-        end
+      # Determines whether or not the cache contains a key
+      # @param key [Object]
+      # @return [Boolean]
+      def key?(key)
+        @cache.key?(key)
+      end
+    end
+
+    # Class modeling sentinels within the linked list
+    # @see https://en.wikipedia.org/wiki/Sentinel_value
+    class Sentinel
+      attr_reader :parent, :next, :prev
+      attr_writer :next, :prev
+
+      # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
+      # @param next_node [ListNode]
+      # @param prev_node [ListNode]
+      def initialize(parent, next_node: nil, prev_node: nil)
+        @parent = parent
+        @next = next_node
+        @prev = prev_node
       end
 
-      # Generates hash URIs for the subject of the LinkedList
-      # Should one of these URIs already be in use, a new URI will be generated
-      # @return [RDF::URI]
-      def new_node_subject
-        node = ::RDF::URI("##{::RDF::Node.new.id}")
-        node = ::RDF::URI("##{::RDF::Node.new.id}") while node_cache.key?(node)
-        node
+      # Ensure that this always behaves like a NilClass
+      # @return [TrueClass]
+      def nil?
+        true
       end
 
-      # Class used for caching LinkedNode objects mapped to URIs
-      class NodeCache
-        def initialize
-          @cache ||= {}
-        end
-
-        # Retrieve the ListNode for a given URI
-        # If a block is passed, set its output to the cache
-        # @param uri [RDF::URI]
-        # @return [ListNode]
-        def fetch(uri)
-          @cache[uri] ||= yield if block_given?
-        end
-
-        # Determines whether or not the cache contains a key
-        # @param key [Object]
-        # @return [Boolean]
-        def key?(key)
-          @cache.key?(key)
-        end
+      # Ensure that this does not have a URI
+      # @return [NilClass]
+      def rdf_subject
+        nil
       end
+    end
 
-      # Class modeling sentinels within the linked list
-      # @see https://en.wikipedia.org/wiki/Sentinel_value
-      class Sentinel
-        attr_reader :parent, :next, :prev
-        attr_writer :next, :prev
-
-        # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
-        # @param next_node [ListNode]
-        # @param prev_node [ListNode]
-        def initialize(parent, next_node: nil, prev_node: nil)
-          @parent = parent
-          @next = next_node
-          @prev = prev_node
-        end
-
-        # Ensure that this always behaves like a NilClass
-        # @return [TrueClass]
-        def nil?
-          true
-        end
-
-        # Ensure that this does not have a URI
-        # @return [NilClass]
-        def rdf_subject
-          nil
-        end
+    class HeadSentinel < Sentinel
+      # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
+      # @param next_node [ListNode]
+      # @param prev_node [ListNode]
+      def initialize(*args)
+        super
+        @next ||= TailSentinel.new(parent, prev_node: self)
       end
+    end
 
-      class HeadSentinel < Sentinel
-        # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
-        # @param next_node [ListNode]
-        # @param prev_node [ListNode]
-        def initialize(*args)
-          super
-          @next ||= TailSentinel.new(parent, prev_node: self)
-        end
+    class TailSentinel < Sentinel
+      # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
+      # @param next_node [ListNode]
+      # @param prev_node [ListNode]
+      def initialize(*args)
+        super
+        prev.next = self if prev&.next != self
       end
-
-      class TailSentinel < Sentinel
-        # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
-        # @param next_node [ListNode]
-        # @param prev_node [ListNode]
-        def initialize(*args)
-          super
-          prev.next = self if prev&.next != self
-        end
-      end
+    end
   end
 end

@@ -51,11 +51,9 @@ module Valkyrie::Persistence::Memory
     def find_many_by_ids(ids:)
       ids = ids.uniq
       ids.map do |id|
-        begin
-          find_by(id: id)
-        rescue ::Valkyrie::Persistence::ObjectNotFoundError
-          nil
-        end
+        find_by(id: id)
+      rescue ::Valkyrie::Persistence::ObjectNotFoundError
+        nil
       end.reject(&:nil?)
     end
 
@@ -80,7 +78,7 @@ module Valkyrie::Persistence::Memory
     # @return integer. Count objects in the persistence backend
     #   with the given class.
     def count_all_of_model(model:)
-      cache.values.select { |obj| obj.is_a?(model) }.count
+      cache.values.count { |obj| obj.is_a?(model) }
     end
 
     # Get all members of a given resource.
@@ -105,11 +103,9 @@ module Valkyrie::Persistence::Memory
     #   `property` property on `resource`. Not necessarily in order.
     def find_references_by(resource:, property:, model: nil)
       refs = Array.wrap(resource[property]).map do |id|
-        begin
-          find_by(id: id)
-        rescue ::Valkyrie::Persistence::ObjectNotFoundError
-          nil
-        end
+        find_by(id: id)
+             rescue ::Valkyrie::Persistence::ObjectNotFoundError
+               nil
       end.reject(&:nil?)
       refs.uniq! unless ordered_property?(resource: resource, property: property)
       return refs unless model
@@ -159,27 +155,27 @@ module Valkyrie::Persistence::Memory
 
     private
 
-      # @return [Array<Valkyrie::ID>] a list of the identifiers of the member objects
-      def member_ids(resource:)
-        return [] unless resource.respond_to? :member_ids
-        resource.member_ids || []
-      end
+    # @return [Array<Valkyrie::ID>] a list of the identifiers of the member objects
+    def member_ids(resource:)
+      return [] unless resource.respond_to? :member_ids
+      resource.member_ids || []
+    end
 
-      # Determine whether or not a value is a Valkyrie ID
-      # @param [Object] id
-      # @return [Boolean]
-      def validate_id(id)
-        raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
-      end
+    # Determine whether or not a value is a Valkyrie ID
+    # @param [Object] id
+    # @return [Boolean]
+    def validate_id(id)
+      raise ArgumentError, 'id must be a Valkyrie::ID' unless id.is_a? Valkyrie::ID
+    end
 
-      # Ensure that a given Valkyrie Resource has been persisted
-      # @param [Valkyrie::Resource] resource
-      def ensure_persisted(resource)
-        raise ArgumentError, 'resource is not saved' unless resource.persisted?
-      end
+    # Ensure that a given Valkyrie Resource has been persisted
+    # @param [Valkyrie::Resource] resource
+    def ensure_persisted(resource)
+      raise ArgumentError, 'resource is not saved' unless resource.persisted?
+    end
 
-      def ordered_property?(resource:, property:)
-        resource.ordered_attribute?(property)
-      end
+    def ordered_property?(resource:, property:)
+      resource.ordered_attribute?(property)
+    end
   end
 end
