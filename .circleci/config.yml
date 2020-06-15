@@ -87,10 +87,6 @@ workflows:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.5.7
           name: "Ruby2-5_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.4.9
-          name: "Ruby2-4_Rails5-2"
   nightly:
     triggers:
       - schedule:
@@ -120,7 +116,3 @@ workflows:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.5.7
           name: "Ruby2-5_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.4.9
-          name: "Ruby2-4_Rails5-2"
