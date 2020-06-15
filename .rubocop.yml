@@ -27,6 +27,8 @@ Rails/TimeZone:
   Enabled: false
 Rails/RakeEnvironment:
   Enabled: false
+Rails/ApplicationRecord:
+  Enabled: false
 Naming/PredicateName:
   Exclude:
     - "lib/valkyrie/resource.rb"
