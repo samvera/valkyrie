@@ -1,4 +1,3 @@
-<% local = File.exist?('/tmp/.s.PGSQL.5432') && File.stat('/tmp/.s.PGSQL.5432').socket? %>
 default: &default
   adapter: postgresql
   encoding: utf8
@@ -6,22 +5,16 @@ default: &default
   pool: <%= Integer(ENV.fetch("DB_POOL", 5)) %>
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000
-  <% unless local %>
   host: localhost
-  username: docker
-  password: d0ck3r
-  <% end %>
+  username: postgres
+  password: 
 
 development:
   <<: *default
   database: Valkyrie_gem_development
-  <% unless local %>
   port: 5433
-  <% end %>
 
 test:
   <<: *default
   database: Valkyrie_gem_test
-  <% unless local %>
-  port: 5434
-  <% end %>
+  port: <%= ENV["POSTGRES_PORT"] || 5433 %>

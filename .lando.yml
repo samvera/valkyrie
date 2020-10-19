@@ -1,0 +1,37 @@
+name: valkyrie
+services:
+  valkyrie_test_solr_7:
+    type: solr:7
+    portforward: 8994
+    core: valkyrie-core-test
+    config:
+      dir: solr/config
+  valkyrie_database:
+    type: postgres:10
+    portforward: 5433
+  valkyrie_fedora_4:
+    type: compose
+    app_mount: false
+    volumes:
+      fedora4:
+    services:
+      image: samvera/fcrepo4:4.7.5
+      command: /fedora-entrypoint.sh
+      volumes:
+      - fedora4:/data
+      ports:
+      - 8988:8080
+    portforward: true
+  valkyrie_fedora_5:
+    type: compose
+    app_mount: false
+    volumes:
+      fedora5:
+    services:
+      image: samvera/fcrepo4:5.1.0
+      command: /fedora-entrypoint.sh
+      volumes:
+      - fedora5:/data
+      ports:
+      - 8998:8080
+    portforward: true

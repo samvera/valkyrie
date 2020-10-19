@@ -6,7 +6,6 @@ require 'config/database_connection'
 require 'active_record'
 require 'rubocop/rake_task'
 load 'tasks/dev.rake'
-load 'tasks/docker.rake'
 
 RSpec::Core::RakeTask.new(:spec)
 
@@ -37,8 +36,12 @@ namespace :db do
 
   desc 'Create the database from db/config.yml for the current DATABASE_ENV'
   task create: :configure_connection do
-    database = ActiveRecord::Tasks::PostgreSQLDatabaseTasks.new(@config)
-    database.create
+    begin
+      database = ActiveRecord::Tasks::PostgreSQLDatabaseTasks.new(@config)
+      database.create
+    rescue
+      puts "Database already exists."
+    end
     puts "Database created"
   end
 
