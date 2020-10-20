@@ -2,7 +2,6 @@
 version: 2.1
 jobs:
   build:
-    machine: true
     parameters:
       gemfile:
         description: "Gemfile to run"
@@ -12,32 +11,42 @@ jobs:
         description: "Ruby version"
         default: "2.6.5"
         type: "string"
+    docker:
+      - image: circleci/ruby:<< parameters.ruby >>-node-browsers
+        environment:
+          RAILS_ENV: test
+      - image: postgres:10.6-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: Valkyrie_gem_test
+          POSTGRES_HOST_AUTH_METHOD: trust
+      - image: samvera/fcrepo4:4.7.5
+        environment:
+          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
+          JAVA_OPTIONS: "-Djetty.http.port=8988"
+      - image: samvera/fcrepo4:5.1.0
+        environment:
+          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
+          JAVA_OPTIONS: "-Djetty.http.port=8998 -Dfcrepo.dynamic.jms.port=61618 -Dfcrepo.dynamic.stomp.port=61614"
+      - image: solr:7.7-alpine
+        command: bin/solr -cloud -noprompt -f -p 8994
     environment:
       BUNDLE_GEMFILE: << parameters.gemfile >>
+      POSTGRES_PORT: 5432
     steps:
       - checkout
       - run:
-          name: Set ruby version to << parameters.ruby >>
-          command: |
-            rvm install << parameters.ruby >>
-            echo . $(rvm << parameters.ruby >> do rvm env --path) >> $BASH_ENV
-      - run: 
-          shell: /bin/bash -l
-          name: Uninstall global Bundler
-          command: |
-            rvm use << parameters.ruby >>
-            rvm gemset use global
-            gem uninstall bundler -x
-            echo Uninstalled
+          name: Wait for solr
+          command: dockerize -wait tcp://localhost:8994 -timeout 1m
       - run:
-          name: Install Docker Compose
+          name: Load config into solr
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
-      - run:
-          name: Update bundler
-          command: gem install bundler -v 1.17.2
+            cd solr/config
+            zip -1 -r solr_config.zip ./*
+            curl -H "Content-type:application/octet-stream" --data-binary @solr_config.zip "http://localhost:8994/solr/admin/configs?action=UPLOAD&name=valkyrie"
+            curl -H 'Content-type: application/json' http://localhost:8994/api/collections/ -d '{create: {name: valkyrie-core-test, config: valkyrie, numShards: 1}}'
+      # Install Bundler
+      - run: gem install bundler -v '~> 2.0'
       - restore_cache:
          keys:
            - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
@@ -58,8 +67,11 @@ jobs:
           name: Run Rubocop
           command: bundle exec rake rubocop
       - run:
+          name: Set up database
+          command: bundle exec rake db:migrate
+      - run:
           name: Run Specs
-          command: bundle exec rake docker:spec
+          command: bundle exec rspec spec
       - store_artifacts:
           path: coverage
           destination: coverage
