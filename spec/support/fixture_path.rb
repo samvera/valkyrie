@@ -3,6 +3,10 @@ module FixturePath
   def fixture_path
     RSpec.configuration.fixture_path
   end
+
+  def file_fixture_path
+    RSpec.configuration.fixture_path
+  end
 end
 RSpec.configure do |config|
   config.add_setting :fixture_path
