@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rdf', '~> 3.0', '>= 3.0.10'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'railties' # To use generators and engines
-  spec.add_dependency 'reform'
+  spec.add_dependency 'reform', '~> 2.2'
   spec.add_dependency 'reform-rails'
   spec.add_dependency 'json-ld'
   spec.add_dependency 'json'
