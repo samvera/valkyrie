@@ -1,3 +1,29 @@
+# v2.1.2 2020-03-12
+
+## Changes since last release
+
+* Tighten reform dependency
+  [tpendragon](https://github.com/tpendragon)
+* Loosen RDF Dependency
+  [no-reply](https://github.com/no-reply)
+* Update development ruby version in .tool-versions
+  [hackartisan](https://github.com/hackartisan)
+* Use Lando for development
+  [tpendragon](https://github.com/tpendragon)
+* Deprecate Blacklist in favor of Denylist.
+  [jeremyf](https://github.com/jeremyf)
+* Make DateTime handling in Fedora/Solr persisters consistent with others.
+  [hcayless](https://github.com/hcayless)
+* Add open-ended Rake support.
+  [no-reply](https://github.com/no-reply)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[cjcolvar](https://github.com/cjcolvar)
+[escowles](https://github.com/escowles)
+[jeremyf](https://github.com/jeremyf)
+
 # v2.1.1 2020-03-12
 
 ## Changes since last release
