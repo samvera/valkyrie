@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
-  [4, 5].each do |fedora_version|
+  [4, 5, 6].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
       let(:adapter) { described_class.new(fedora_adapter_config(base_path: "test_fed", fedora_version: version)) }
@@ -27,7 +27,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
 
             expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8988/rest/test_fed/te/st/test%2Fdefault"
           else
-            expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8998/rest/test_fed/test%2Fdefault"
+            expect(adapter.id_to_uri(id).to_s).to eq "#{adapter.url_prefix}/test_fed/test%2Fdefault"
           end
         end
       end

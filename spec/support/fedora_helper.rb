@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 module FedoraHelper
   def fedora_adapter_config(base_path:, schema: nil, fedora_version: 4)
-    port = fedora_version == 4 ? 8988 : 8998
+    port = 8988
+    if fedora_version == 5
+      port = 8998
+    elsif fedora_version == 6
+      port = ENV["FEDORA_6_PORT"] || 8978
+    end
+    connection_url = fedora_version == 6 ? "/fcrepo/rest" : "/rest"
     opts = {
       base_path: base_path,
-      connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}localhost:#{port}/rest")),
+      connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}localhost:#{port}#{connection_url}")),
       fedora_version: fedora_version
     }
     opts[:schema] = schema if schema
@@ -33,6 +39,7 @@ RSpec.configure do |config|
   config.before(:example, :wipe_fedora) do
     wipe_fedora!(base_path: "test_fed", fedora_version: 4)
     wipe_fedora!(base_path: "test_fed", fedora_version: 5)
+    wipe_fedora!(base_path: "test_fed", fedora_version: 6)
   end
   config.include FedoraHelper
 end

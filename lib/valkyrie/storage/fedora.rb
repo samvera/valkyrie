@@ -37,7 +37,7 @@ module Valkyrie::Storage
     def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
                resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
       identifier = resource_uri_transformer.call(resource, base_url) + '/original'
-      sha1 = fedora_version == 5 ? "sha" : "sha1"
+      sha1 = [5, 6].include?(fedora_version) ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
         request.headers['Content-Type'] = content_type

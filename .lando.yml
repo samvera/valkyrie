@@ -38,3 +38,18 @@ services:
       ports:
       - 8998:8080
     portforward: true
+  valkyrie_fedora_6:
+    type: compose
+    app_mount: false
+    volumes:
+      fedora6:
+    services:
+      image: fcrepo/fcrepo:6.0.0-beta-1
+      command:
+        - "catalina.sh"
+        - "run"
+      volumes:
+      - fedora6:/data
+      ports:
+      - 8978:8080
+    portforward: true
