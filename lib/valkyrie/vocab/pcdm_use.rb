@@ -39,10 +39,22 @@ module Valkyrie::Vocab
          "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
+    term :PreservationFile,
+         comment: %(Best quality representation of the Object appropriate for long-term
+           preservation.),
+         label: "preservation file",
+         "dct:replaces": %(http://pcdm.org/use#PreservationMasterFile),
+         "rdf:subClassOf": %(http://pcdm.org/resources#File),
+         "rdfs:isDefinedBy": %(pcdmuse:),
+         type: "rdfs:Class"
+    warn "[DEPRECATION] PCDM is deprecating '#{self.class}#PreservationMasterFile'. Use #{self.class}#PreservationFile instead."
+    # @deprecated
     term :PreservationMasterFile,
          comment: %(Best quality representation of the Object appropriate for long-term
            preservation.),
          label: "preservation master file",
+         "dct:isReplacedBy": %(http://pcdm.org/use#PreservationFile),
+         "owl:deprecated": true,
          "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
