@@ -32,6 +32,11 @@ namespace :db do
   task configure_connection: :configuration do
     DatabaseConnection.connect!(DATABASE_ENV)
     ActiveRecord::Base.logger = Logger.new STDOUT if @config['logger']
+    @config = if ::ActiveRecord::Base.configurations.respond_to?(:configs_for)
+                ::ActiveRecord::Base.configurations.configs_for(env_name: DATABASE_ENV.to_s)[0]
+              else
+                ::ActiveRecord::Base.configurations[DATABASE_ENV.to_s]
+              end
   end
 
   desc 'Create the database from db/config.yml for the current DATABASE_ENV'

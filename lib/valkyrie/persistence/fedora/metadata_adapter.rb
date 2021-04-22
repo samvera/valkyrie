@@ -58,7 +58,7 @@ module Valkyrie::Persistence::Fedora
     # @param [RDF::URI] id the Valkyrie ID
     # @return [RDF::URI]
     def id_to_uri(id)
-      prefix = fedora_version == 5 ? "" : "#{pair_path(id)}/"
+      prefix = [5, 6].include?(fedora_version) ? "" : "#{pair_path(id)}/"
       RDF::URI("#{connection_prefix}/#{prefix}#{CGI.escape(id.to_s)}")
     end
 
@@ -69,6 +69,10 @@ module Valkyrie::Persistence::Fedora
     # @return [Array<String>]
     def pair_path(id)
       id.to_s.split(/[-\/]/).first.split("").each_slice(2).map(&:join).join("/")
+    end
+
+    def url_prefix
+      connection.http.url_prefix
     end
 
     # Generate the prefix used in HTTP requests to the Fedora RESTful endpoint
