@@ -31,7 +31,7 @@ RSpec.shared_examples 'a Valkyrie::Resource' do
       end
     end
 
-    describe "#fields" do
+    describe ".fields" do
       it "returns a set of fields" do
         expect(meta_klass).to respond_to(:fields).with(0).arguments
         expect(meta_klass.fields).to include(:id)
