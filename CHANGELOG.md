@@ -1,4 +1,17 @@
-# v2.1.2 2020-03-12
+# v2.2.0 2021-05-06
+
+## Changes since last release
+
+* Add support for Fedora 6.
+  [tpendragon](https://github.com/tpendragon)
+* Deprecate pcdmuse:PreservationMasterFile in favor of pcdmuse:PreservationFile
+  [escowles](https://github.com/escowles)
+* Improve spec docs for resource.rb
+  [dchandekstark](https://github.com/dchandekstark)
+* Memoize resource in Solr queries to reduce Solr calls.
+  [dchandekstark](https://github.com/dchandekstark)
+
+# v2.1.2 2021-04-19
 
 ## Changes since last release
 
