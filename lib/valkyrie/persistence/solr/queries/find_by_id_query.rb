@@ -31,7 +31,7 @@ module Valkyrie::Persistence::Solr::Queries
     # Query Solr for for the first document with the ID in a field
     # @return [Hash]
     def resource
-      connection.get("select", params: { q: "id:\"#{id}\"", fl: "*", rows: 1 })["response"]["docs"].first
+      @resource ||= connection.get("select", params: { q: "id:\"#{id}\"", fl: "*", rows: 1 })["response"]["docs"].first
     end
   end
 end

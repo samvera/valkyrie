@@ -32,7 +32,7 @@ module Valkyrie::Persistence::Solr::Queries
     # @note the field used here is alternate_ids_ssim and the value is prefixed by "id-"
     # @return [Hash]
     def resource
-      connection.get("select", params: { q: "alternate_ids_ssim:\"id-#{alternate_identifier}\"", fl: "*", rows: 1 })["response"]["docs"].first
+      @resource ||= connection.get("select", params: { q: "alternate_ids_ssim:\"id-#{alternate_identifier}\"", fl: "*", rows: 1 })["response"]["docs"].first
     end
   end
 end
