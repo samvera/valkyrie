@@ -40,6 +40,16 @@ jobs:
       FEDORA_6_PORT: 8080
     steps:
       - checkout
+
+      - run:
+          name: Check for 'master' branch
+          command: |
+              git fetch --all --quiet --prune --prune-tags
+              if [[ -n "$(git branch --all --list master */master)" ]]; then
+                  echo "A branch named 'master' was found. Please remove it."
+                  echo "$(git branch --all --list master */master)"
+              fi
+              [[ -z "$(git branch --all --list master */master)" ]]
       - run:
           name: Wait for solr
           command: dockerize -wait tcp://localhost:8994 -timeout 1m
