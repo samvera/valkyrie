@@ -79,7 +79,7 @@ module Valkyrie::Persistence::Solr
 
     # Construct the Hash containing the Valkyrie Resource attributes using the Solr Document
     # @note this filters for attributes which have been indexed as stored multivalued texts (tsim)
-    # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+    # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
     # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
     # @return [Hash]
     def attribute_hash
