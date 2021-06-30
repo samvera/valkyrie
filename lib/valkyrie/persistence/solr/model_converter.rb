@@ -82,7 +82,7 @@ module Valkyrie::Persistence::Solr
 
     # Determines whether or not a field is multivalued
     # @note this is tied to conventions in the Solr Schema
-    # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+    # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
     # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
     # @param [String] field
     # @return [Boolean]
@@ -238,7 +238,7 @@ module Valkyrie::Persistence::Solr
       # @note this prepends the string "serialized-" to the value indexed in Solr
       # This is indexed as a stored multivalued text
       # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
-      # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+      # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [SolrRow]
       def result
         SolrRow.new(key: value.key, fields: ["tsim"], values: "serialized-#{value.value.to_json}")
@@ -436,7 +436,7 @@ module Valkyrie::Persistence::Solr
       #   - stored multivalued english text
       # If the string is greater than 1000 characters in length, it is only indexed as a stored multivalued text
       # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
-      # @see https://github.com/samvera-labs/valkyrie/blob/master/solr/config/schema.xml
+      # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [Array<Symbol>]
       def fields
         if value.value.length > 1000

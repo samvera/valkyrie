@@ -60,9 +60,9 @@ this release:
 * Use `::` prefixed names for `JSON::LD` references.
   [no-reply](https://github.com/no-reply)
 * Use SVG instead of PNG for version badge.
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Fix Rubocop for latest Bixby.
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Valkyrie IDs equal string equivalent of ID to String with config
   [jlevnhv](https://github.com/jlevnhv)
 * Add optional model parameter to find_inverse_references_by and
@@ -207,7 +207,7 @@ involved for their contributions in the last year:
 [cjcolvar](https://github.com/cjcolvar)
 [dgcliff](https://github.com/dgcliff)
 [escowles](https://github.com/escowles)
-[hackmastera](https://github.com/hackmastera)
+[hackartisan](https://github.com/hackartisan)
 [jeremyf](https://github.com/jeremyf)
 [jrgriffiniii](https://github.com/jrgriffiniii)
 [kelynch](https://github.com/kelynch)
@@ -288,17 +288,17 @@ this release:
 * Provide a warning when postgres adapter overwrites an ID, deprecate this
   behavior so it will throw an exception in the future.
   [cam156](https://github.com/cam156)
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
   [tpendragon](https://github.com/tpendragon)
 * Add support for passing just an ID to find_inverse_references_by
   [cam156](https://github.com/cam156)
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Fix memory adapter raising an exception in find_by_alternate_identifier when
   there are resources without the alternate_identifier attribute.
   [jeremyf](https://github.com/jeremyf)
 * Provide a warning when using the postgres adapter without manually providing
   the pg gem, so it can be an optional dependency in 2.0.0.
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Provide guidance in specs on how to define alternate_ids
   [cjcolvar](https://github.com/cjcolvar)
 * Upload files to Fedora using form/multipart.
@@ -344,17 +344,17 @@ Additional thanks to the following for code review:
 * Provide a warning when postgres adapter overwrites an ID, deprecate this
   behavior so it will throw an exception in the future.
   [cam156](https://github.com/cam156)
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
   [tpendragon](https://github.com/tpendragon)
 * Add support for passing just an ID to find_inverse_references_by
   [cam156](https://github.com/cam156)
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Fix memory adapter raising an exception in find_by_alternate_identifier when
   there are resources without the alternate_identifier attribute.
   [jeremyf](https://github.com/jeremyf)
 * Provide a warning when using the postgres adapter without manually providing
   the pg gem, so it can be an optional dependency in 2.0.0.
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Provide guidance in specs on how to define alternate_ids
   [cjcolvar](https://github.com/cjcolvar)
 * Upload files to Fedora using form/multipart.
@@ -405,7 +405,7 @@ this release:
 ## Changes since last release
 
 * Fix solr persister to pass through exceptions on timeout
-  [hackmastera](https://github.com/hackmastera)
+  [hackartisan](https://github.com/hackartisan)
 * Fix generated specs to work with shared_specs expectation
   [revgum](https://github.com/revgum)
 
@@ -452,7 +452,7 @@ following participants who made it happen:
 * [cam156](https://github.com/cam156)
 * [DanCoughlin](https://github.com/DanCoughlin)
 * [escowles](https://github.com/escowles)
-* [hackmastera](https://github.com/hackmastera)
+* [hackartisan](https://github.com/hackartisan)
 * [jrgriffiniii](https://github.com/jrgriffiniii)
 * [mtribone](https://github.com/mtribone)
 * [tpendragon](https://github.com/tpendragon)
@@ -469,7 +469,7 @@ following participants who made it happen:
 ## Changes since last release
 
 * Loosened ActiveRecord restriction to allow upgrading pg gem to 1.0.
-    [hackmastera](https://github.com/hackmastera)
+    [hackartisan](https://github.com/hackartisan)
 
 # v1.1.0 2018-05-08
 
@@ -548,7 +548,7 @@ Initial Release
 * [dlpierce](https://github.com/dlpierce)
 * [escowles](https://github.com/escowles)
 * [geekscruff](https://github.com/geekscruff)
-* [hackmastera](https://github.com/hackmastera)
+* [hackartisan](https://github.com/hackartisan)
 * [jcoyne](https://github.com/jcoyne)
 * [jeremyf](https://github.com/jeremyf)
 * [jgondron](https://github.com/jgondron)

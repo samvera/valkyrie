@@ -313,7 +313,6 @@ module Valkyrie::Persistence::Fedora
         end
 
         # Generate a new RDF hash URI for the "child" graph for the ModelConverter::Property
-        # @see https://github.com/fcrepo4/fcrepo4/blob/master/fcrepo-kernel-modeshape/src/main/java/org/fcrepo/kernel/modeshape/rdf/JcrRdfTools.java#L455
         # @return [RDF::Graph]
         def subject_uri
           @subject_uri ||= ::RDF::URI(RDF::Node.new.to_s.gsub("_:", "#"))
