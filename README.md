@@ -239,7 +239,7 @@ custom adapters, but your application will still work.
 Using the shared specs in your own models is described in more detail on the [Shared Specs Wiki
 page](https://github.com/samvera/valkyrie/wiki/Shared-Specs).
 
-### Fedora 5 Compatibility
+### Fedora 5/6 Compatibility
 When configuring your adapter, include the `fedora_version` parameter in your metadata or storage adapter
 config.  If Fedora requires auth, you can also include that in the URL, e.g.:
 
