@@ -22,6 +22,18 @@ module Valkyrie::Persistence::Postgres
         return false if @disable_optimistic_locking
         true
       end
+
+      def self.connection_hash
+        # connection_config is deprecated in ActiveRecord and being removed in Rails
+        # 6.2 - this method is an alias that uses connection_db_config if defined
+        # and falls back to connection_config otherwise. This allows all rails versions
+        # to be supported
+        if defined?(ActiveRecord::Base.connection_db_config)
+          ActiveRecord::Base.connection_db_config.configuration_hash
+        else
+          ActiveRecord::Base.connection_config
+        end
+      end
     end
   end
 end

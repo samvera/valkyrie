@@ -31,7 +31,7 @@ module Valkyrie::Persistence::Postgres
     # @return [Valkyrie::ID]
     def id
       @id ||= begin
-        to_hash = "#{resource_factory.orm_class.connection_config['host']}:#{resource_factory.orm_class.connection_config['database']}"
+        to_hash = "#{resource_factory.orm_class.connection_hash['host']}:#{resource_factory.orm_class.connection_hash['database']}"
         Valkyrie::ID.new(Digest::MD5.hexdigest(to_hash))
       end
     end
