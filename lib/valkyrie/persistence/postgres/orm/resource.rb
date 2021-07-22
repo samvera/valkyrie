@@ -28,11 +28,7 @@ module Valkyrie::Persistence::Postgres
         # 6.2 - this method is an alias that uses connection_db_config if defined
         # and falls back to connection_config otherwise. This allows all rails versions
         # to be supported
-        if defined?(ActiveRecord::Base.connection_db_config)
-          ActiveRecord::Base.connection_db_config.configuration_hash
-        else
-          ActiveRecord::Base.connection_config
-        end
+        ActiveRecord::Base.respond_to?(:connection_db_config) ? ActiveRecord::Base.connection_db_config.configuration_hash : ActiveRecord::Base.connection_config
       end
     end
   end
