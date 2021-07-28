@@ -24,8 +24,8 @@ module Valkyrie::Persistence
       @buffer_class = buffer_class
     end
 
-    def save(resource:)
-      persister.save(resource: resource)
+    def save(resource:, external_resource: false)
+      persister.save(resource: resource, external_resource: external_resource)
     end
 
     def save_all(resources:)

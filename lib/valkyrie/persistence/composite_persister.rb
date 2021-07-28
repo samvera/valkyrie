@@ -24,10 +24,10 @@ module Valkyrie::Persistence
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(resource:)
+    def save(resource:, external_resource: false)
       # Assume the first persister is the canonical data store; that's the optlock we want
       first, *rest = *persisters
-      cached_resource = first.save(resource: resource)
+      cached_resource = first.save(resource: resource, external_resource: external_resource)
       # Don't pass opt lock tokens to other persisters
       internal_resource = cached_resource.dup
       internal_resource.clear_optimistic_lock_token!
