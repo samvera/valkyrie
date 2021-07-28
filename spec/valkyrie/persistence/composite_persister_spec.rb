@@ -40,7 +40,7 @@ RSpec.describe Valkyrie::Persistence::CompositePersister do
     end
     it "can save in postgres and then index freshly into solr" do
       book = postgres_adapter.persister.save(resource: CustomResource.new)
-      expect { adapter.persister.save(resource: book) }.not_to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+      expect { persister.save(resource: book) }.not_to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
     end
   end
 end

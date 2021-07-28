@@ -24,12 +24,6 @@ module Valkyrie::Persistence
         @deletes << resource
         super
       end
-
-      # A buffered memory persister can save anything, it doesn't have to hold
-      # a consistent internal state.
-      def valid_for_save?(_)
-        true
-      end
     end
   end
 end
