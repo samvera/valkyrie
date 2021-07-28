@@ -17,10 +17,10 @@ module Valkyrie::Persistence::Postgres
     # @return [Valkyrie::Resource] the persisted/updated resource
     # @raise [Valkyrie::Persistence::StaleObjectError] raised if the resource
     #   was modified in the database between been read into memory and persisted
-    def save(resource:)
+    def save(resource:, external_resource: false)
       orm_object = resource_factory.from_resource(resource: resource)
       orm_object.transaction do
-        raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." if resource.persisted? && !orm_object.persisted?
+        raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." if !external_resource && resource.persisted? && !orm_object.persisted?
         orm_object.save!
         if resource.id && resource.id.to_s != orm_object.id
           raise Valkyrie::Persistence::UnsupportedDatatype,

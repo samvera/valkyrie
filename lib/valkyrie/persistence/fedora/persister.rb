@@ -13,7 +13,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(resource:)
+    def save(resource:, external_resource: false)
       initialize_repository
       internal_resource = resource.dup
       internal_resource.created_at ||= Time.current

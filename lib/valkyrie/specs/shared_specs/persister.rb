@@ -60,6 +60,12 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
       expect { persister.save(resource: saved) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
     end
+    it "is okay if it's from another persister" do
+      memory_adapter = Valkyrie::Persistence::Memory::MetadataAdapter.new
+      saved = memory_adapter.persister.save(resource: resource)
+
+      expect { persister.save(resource: saved, external_resource: true) }.not_to raise_error
+    end
   end
 
   it "can persist single values" do

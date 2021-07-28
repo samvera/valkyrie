@@ -16,11 +16,11 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
     # @return [Boolean] If write_only, whether saving succeeded.
-    def save(resource:)
-      raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." unless write_only? || valid_for_save?(resource)
+    def save(resource:, external_resource: false)
       if write_only?
         repository([resource]).persist
       else
+        raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." unless external_resource || valid_for_save?(resource)
         repository([resource]).persist.first
       end
     end
