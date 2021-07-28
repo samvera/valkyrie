@@ -17,9 +17,12 @@ RSpec.describe Valkyrie::Persistence::CompositePersister do
     let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
     let(:persister) do
       described_class.new(
-        Valkyrie::Persistence::Postgres::MetadataAdapter.new.persister,
+        postgres_adapter.persister,
         adapter.persister
       )
+    end
+    let(:postgres_adapter) do
+      Valkyrie::Persistence::Postgres::MetadataAdapter.new
     end
     let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
 
@@ -34,6 +37,10 @@ RSpec.describe Valkyrie::Persistence::CompositePersister do
     it "can find the object in the solr persister" do
       book = persister.save(resource: CustomResource.new)
       expect { query_service.find_by(id: book.id) }.not_to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+    end
+    it "can save in postgres and then index freshly into solr" do
+      book = postgres_adapter.persister.save(resource: CustomResource.new)
+      expect { adapter.persister.save(resource: book) }.not_to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
     end
   end
 end
