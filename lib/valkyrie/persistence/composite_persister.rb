@@ -33,7 +33,7 @@ module Valkyrie::Persistence
       internal_resource.clear_optimistic_lock_token!
       # Reset new_record to avoid not-saved checks.
       internal_resource.new_record = resource.new_record
-      rest.inject(internal_resource) { |m, persister| persister.save(resource: m) }
+      rest.inject(internal_resource) { |m, persister| persister.save(resource: m, external_resource: true) }
       # return the one with the desired opt lock token
       cached_resource
     end
