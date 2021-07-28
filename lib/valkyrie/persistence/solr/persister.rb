@@ -15,8 +15,8 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(resource:)
-      raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." unless valid_for_save?(resource)
+    def save(resource:, external_resource: false)
+      raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." unless external_resource || valid_for_save?(resource)
       if write_only?
         repository([resource]).persist
       else
