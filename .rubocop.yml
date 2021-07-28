@@ -39,3 +39,10 @@ Naming/FileName:
   Exclude:
     - 'Appraisals'
     - 'Gemfile'
+Metrics/MethodLength:
+  Exclude:
+    - 'lib/valkyrie/persistence/postgres/persister.rb'
+    - 'lib/valkyrie/persistence/fedora/persister.rb'
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'lib/valkyrie/persistence/postgres/persister.rb'
