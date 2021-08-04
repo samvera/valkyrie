@@ -13,4 +13,9 @@ RSpec.describe Valkyrie::Persistence::Solr::MetadataAdapter do
       expect(adapter.id.to_s).to eq expected
     end
   end
+
+  describe "write-only mode" do
+    let(:adapter) { described_class.new(connection: client, write_only: true) }
+    it_behaves_like "a write-only Valkyrie::MetadataAdapter"
+  end
 end
