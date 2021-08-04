@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Solr
   # Most methods are delegated to {Valkyrie::Persistence::Solr::Repository}
   class Persister
     attr_reader :adapter
-    delegate :connection, :resource_factory, to: :adapter
+    delegate :connection, :resource_factory, :write_only?, to: :adapter
 
     # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
@@ -16,7 +16,11 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
     def save(resource:)
-      repository([resource]).persist.first
+      if write_only?
+        repository([resource]).persist
+      else
+        repository([resource]).persist.first
+      end
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
@@ -39,7 +43,7 @@ module Valkyrie::Persistence::Solr
     # @param [Array<Valkyrie::Resource>] resources
     # @return [Valkyrie::Persistence::Solr::Repository]
     def repository(resources)
-      Valkyrie::Persistence::Solr::Repository.new(resources: resources, connection: connection, resource_factory: resource_factory)
+      Valkyrie::Persistence::Solr::Repository.new(resources: resources, persister: self)
     end
   end
 end
