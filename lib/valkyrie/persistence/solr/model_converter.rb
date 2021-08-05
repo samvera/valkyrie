@@ -114,6 +114,7 @@ module Valkyrie::Persistence::Solr
       properties.each_with_object({}) do |property, hsh|
         next if property == Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK
         attr = resource_attributes[property]
+        next if attr.nil?
         mapper_val = SolrMapperValue.for(Property.new(property, attr)).result
         unless mapper_val.respond_to?(:apply_to)
           raise "Unable to cast #{resource_attributes[:internal_resource]}#" \
@@ -162,8 +163,8 @@ module Valkyrie::Persistence::Solr
       # @param values [Array] Values to index into the given fields.
       def initialize(key:, fields:, values:)
         @key = key
-        @fields = Array.wrap(fields)
-        @values = Array.wrap(values)
+        @fields = fields
+        @values = values
       end
 
       # @param hsh [Hash] The solr hash to apply to.
@@ -241,7 +242,7 @@ module Valkyrie::Persistence::Solr
       # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [SolrRow]
       def result
-        SolrRow.new(key: value.key, fields: ["tsim"], values: "serialized-#{value.value.to_json}")
+        SolrRow.new(key: value.key, fields: ["tsim"], values: ["serialized-#{value.value.to_json}"])
       end
     end
 
@@ -264,24 +265,6 @@ module Valkyrie::Persistence::Solr
             calling_mapper.for(Property.new(value.key, val, value.value)).result
           end
         )
-      end
-    end
-
-    # Skips nil values.
-    class NilPropertyValue < ::Valkyrie::ValueMapper
-      SolrMapperValue.register(self)
-
-      # Determines whether or not a Property value responds as nil
-      # @param [Object] value
-      # @return [Boolean]
-      def self.handles?(value)
-        value.is_a?(Property) && value.value.nil?
-      end
-
-      # Constructs a SolrRow object for a Property with a nil value
-      # @return [SolrRow]
-      def result
-        SolrRow.new(key: value.key, fields: [], values: nil)
       end
     end
 
@@ -423,7 +406,7 @@ module Valkyrie::Persistence::Solr
       # Constructs a SolrRow object with the String values and Solr field settings
       # @return [SolrRow]
       def result
-        SolrRow.new(key: value.key, fields: fields, values: value.value)
+        SolrRow.new(key: value.key, fields: fields, values: [value.value])
       end
 
       # Generates the Solr fields used during the indexing
