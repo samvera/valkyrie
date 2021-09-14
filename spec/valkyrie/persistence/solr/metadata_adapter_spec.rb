@@ -41,5 +41,16 @@ RSpec.describe Valkyrie::Persistence::Solr::MetadataAdapter do
       expect(doc["title_ssi"]).to eq("Test Title")
       expect(doc["title_tesi"]).to eq("Test Title")
     end
+    it "can save_all" do
+      adapter.persister.wipe!
+      adapter.persister.save_all(resources: [WriteOnlyResource.new(title: "First"), WriteOnlyResource.new(title: "Second")])
+
+      result = client.get("select", params: { q: "*:*" })
+
+      expect(result["response"]["numFound"]).to eq 2
+      docs = result["response"]["docs"]
+
+      expect(docs.flat_map { |doc| doc["title_tsim"] }).to contain_exactly "First", "Second"
+    end
   end
 end
