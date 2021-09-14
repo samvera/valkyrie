@@ -15,6 +15,7 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
+    # @return [Boolean] If write_only, whether saving succeeded.
     def save(resource:)
       if write_only?
         repository([resource]).persist
@@ -24,6 +25,7 @@ module Valkyrie::Persistence::Solr
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
+    # @return [Boolean] If write_only, whether saving succeeded.
     def save_all(resources:)
       repository(resources).persist
     end
