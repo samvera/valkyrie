@@ -5,15 +5,15 @@ module Valkyrie::Persistence::Solr
   class Repository
     COMMIT_PARAMS = { softCommit: true, versions: true }.freeze
 
-    attr_reader :resources, :connection, :resource_factory
+    attr_reader :resources, :persister
+    delegate :connection, :resource_factory, :write_only?, to: :persister
 
     # @param [Array<Valkyrie::Resource>] resources
     # @param [RSolr::Client] connection
     # @param [ResourceFactory] resource_factory
-    def initialize(resources:, connection:, resource_factory:)
+    def initialize(resources:, persister:)
       @resources = resources
-      @connection = connection
-      @resource_factory = resource_factory
+      @persister = persister
     end
 
     # Persist the resources into Solr
@@ -24,6 +24,7 @@ module Valkyrie::Persistence::Solr
         solr_document(resource)
       end
       results = add_documents(documents)
+      return true if write_only?
       versions = results["adds"]&.each_slice(2)&.to_h
       documents.map do |document|
         document["_version_"] = versions.fetch(document[:id])
