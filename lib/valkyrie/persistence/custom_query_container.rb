@@ -47,7 +47,11 @@ module Valkyrie::Persistence
     end
 
     def method_missing(meth_name, *args, &block)
-      query_handler = find_query_handler(meth_name).new(query_service: query_service)
+      handler_class =
+        find_query_handler(meth_name) ||
+        raise(NoMethodError, "Custom query #{meth_name} is not registered. The registered queries are: #{queries}")
+
+      query_handler = handler_class.new(query_service: query_service)
       return super unless query_handler
       query_handler.__send__(meth_name, *args, &block)
     end
@@ -58,6 +62,12 @@ module Valkyrie::Persistence
 
     def respond_to_missing?(meth_name, _args)
       find_query_handler(meth_name).present?
+    end
+
+    private
+
+    def queries
+      query_handlers.map(&:queries).flatten
     end
   end
 end
