@@ -464,6 +464,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
   end
 
+  describe ".custom_queries" do
+    it "raises NoMethodError when the custom query does not exist" do
+      expect(query_service.custom_queries).not_to respond_to :very_fake_query
+      expect { query_service.custom_queries.very_fake_query }.to raise_error(NoMethodError)
+    end
+  end
+
   describe ".register_query_handler" do
     it "can register a query handler" do
       class QueryHandler
