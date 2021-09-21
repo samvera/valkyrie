@@ -39,35 +39,17 @@ module Valkyrie::Persistence
     attr_reader :query_service, :query_handlers
     def initialize(query_service:)
       @query_service = query_service
-      @query_handlers = []
+      @query_handlers = {}
     end
 
     def register_query_handler(query_handler)
-      @query_handlers << query_handler
-    end
-
-    def method_missing(meth_name, *args, &block)
-      handler_class =
-        find_query_handler(meth_name) ||
-        raise(NoMethodError, "Custom query #{meth_name} is not registered. The registered queries are: #{queries}")
-
-      query_handler = handler_class.new(query_service: query_service)
-      return super unless query_handler
-      query_handler.__send__(meth_name, *args, &block)
-    end
-
-    def find_query_handler(method)
-      query_handlers.find { |x| x.queries.include?(method) }
-    end
-
-    def respond_to_missing?(meth_name, _args)
-      find_query_handler(meth_name).present?
-    end
-
-    private
-
-    def queries
-      query_handlers.map(&:queries).flatten
+      query_handler.queries.each do |query|
+        handler = query_handler.new(query_service: query_service)
+        query_handlers[query.to_sym] = handler
+        define_singleton_method query do |*args, &block|
+          query_handlers[query.to_sym].__send__(query, *args, &block)
+        end
+      end
     end
   end
 end
