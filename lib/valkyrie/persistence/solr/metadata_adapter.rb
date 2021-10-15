@@ -39,7 +39,7 @@ module Valkyrie::Persistence::Solr
 
     # @return [Valkyrie::Persistence::Solr::Persister] The solr persister.
     def persister
-      Valkyrie::Persistence::Solr::Persister.new(adapter: self)
+      @persister ||= Valkyrie::Persistence::Solr::Persister.new(adapter: self)
     end
 
     def write_only?

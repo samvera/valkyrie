@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Solr
   # Most methods are delegated to {Valkyrie::Persistence::Solr::Repository}
   class Persister
     attr_reader :adapter
-    delegate :connection, :resource_factory, :write_only?, to: :adapter
+    delegate :connection, :query_service, :resource_factory, :write_only?, to: :adapter
 
     # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
@@ -16,12 +16,18 @@ module Valkyrie::Persistence::Solr
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
     # @return [Boolean] If write_only, whether saving succeeded.
-    def save(resource:)
+    def save(resource:, external_resource: false)
       if write_only?
         repository([resource]).persist
       else
+        raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time." unless external_resource || valid_for_save?(resource)
         repository([resource]).persist.first
       end
+    end
+
+    def valid_for_save?(resource)
+      return true unless resource.persisted? # a new resource
+      query_service.find_by(id: resource.id).present? # a persisted resource must be found
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)

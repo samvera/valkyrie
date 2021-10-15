@@ -50,6 +50,24 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     expect(reloaded.nested_resource.first.title).to eq ["Nested"]
   end
 
+  context "when a persisted resource is not in the database" do
+    it "throws an ObjectNotFoundError" do
+      expect(resource).not_to be_persisted
+      saved = persister.save(resource: resource)
+
+      expect(saved).to be_persisted
+      persister.delete(resource: saved)
+
+      expect { persister.save(resource: saved) }.to raise_error(Valkyrie::Persistence::ObjectNotFoundError)
+    end
+    it "is okay if it's from another persister" do
+      memory_adapter = Valkyrie::Persistence::Memory::MetadataAdapter.new
+      saved = memory_adapter.persister.save(resource: resource)
+
+      expect { persister.save(resource: saved, external_resource: true) }.not_to raise_error
+    end
+  end
+
   it "can persist single values" do
     resource.single_value = "A single value"
 

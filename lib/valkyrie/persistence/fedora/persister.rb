@@ -13,7 +13,7 @@ module Valkyrie::Persistence::Fedora
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save)
-    def save(resource:)
+    def save(resource:, external_resource: false)
       initialize_repository
       internal_resource = resource.dup
       internal_resource.created_at ||= Time.current
@@ -35,6 +35,8 @@ module Valkyrie::Persistence::Fedora
       alternate_resources ? save_reference_to_resource(persisted_resource, alternate_resources) : persisted_resource
     rescue Ldp::PreconditionFailed
       raise Valkyrie::Persistence::StaleObjectError, "The object #{internal_resource.id} has been updated by another process."
+    rescue Ldp::Gone
+      raise Valkyrie::Persistence::ObjectNotFoundError, "The object #{resource.id} is previously persisted but not found at save time."
     end
 
     # (see Valkyrie::Persistence::Memory::Persister#save_all)
