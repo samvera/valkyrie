@@ -30,6 +30,24 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(uploaded_file.valid?(digests: { sha1: sha1 })).to be true
   end
 
+  it "doesn't open a file handle on discovery" do
+    resource = Valkyrie::Specs::CustomResource.new(id: "testdiscovery")
+    pre_open_files = open_files
+    uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
+    expect(pre_open_files.size).to eq open_files.size
+    file.close
+
+    pre_open_files = open_files
+    the_file = storage_adapter.find_by(id: uploaded_file.id)
+    expect(the_file).to be_kind_of Valkyrie::StorageAdapter::File
+    # the_file.io
+    expect(pre_open_files.size).to eq open_files.size
+  end
+
+  def open_files
+    `lsof +D . | awk '{print $9}'`.split.uniq[1..-1]
+  end
+
   it "can upload, validate, re-fetch, and delete a file" do
     resource = Valkyrie::Specs::CustomResource.new(id: "test")
     sha1 = Digest::SHA1.file(file).to_s
