@@ -18,7 +18,7 @@ module Valkyrie::Storage
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
-      file.close
+      file.try(:close)
       find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
     end
 
