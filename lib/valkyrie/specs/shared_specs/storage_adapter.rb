@@ -34,8 +34,8 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     resource = Valkyrie::Specs::CustomResource.new(id: "testdiscovery")
     pre_open_files = open_files
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
-    expect(pre_open_files.size).to eq open_files.size
     file.close
+    expect(pre_open_files.size).to eq open_files.size
 
     pre_open_files = open_files
     the_file = storage_adapter.find_by(id: uploaded_file.id)
