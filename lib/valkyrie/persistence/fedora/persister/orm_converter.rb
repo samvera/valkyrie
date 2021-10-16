@@ -113,14 +113,6 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
-        # @deprecated
-        # Class for handling cases where deny listed values should not be mapped
-        # @see DenylistedValue
-        class BlacklistedValue < DenylistedValue
-          FedoraValue.register(self)
-          warn "[DEPRECATION] Samvera is deprecating '#{self}' in 3.0.0. Use #{DenylistedValue} instead."
-        end
-
         # Class for handling cases where the RDF subject of a Property references a separate resource using a hash URI
         class DifferentSubject < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
