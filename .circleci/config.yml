@@ -65,7 +65,7 @@ jobs:
       - restore_cache:
          keys:
            - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
-      - run: sudo apt update -y && sudo apt-get install -y libpq-dev
+      - run: sudo apt update -y && sudo apt-get install -y libpq-dev lsof
       - run:
           name: Set BUNDLE_GEMFILE
           command: |

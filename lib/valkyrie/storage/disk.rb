@@ -36,9 +36,32 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::File]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: ::File.open(file_path(id), 'rb'))
+      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: LazyFile.open(file_path(id), 'rb'))
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
+    end
+
+    ## LazyFile takes File.open parameters but doesn't leave a file handle open on
+    # instantiation. This way StorageAdapter#find_by doesn't open a handle
+    # silently and never clean up after itself.
+    class LazyFile
+      def self.open(path, mode)
+        # Open the file regularly and close it, so it can error if it doesn't
+        # exist.
+        File.open(path, mode).close
+        new(path, mode)
+      end
+
+      delegate(*(File.instance_methods - Object.instance_methods), to: :_inner_file)
+
+      def initialize(path, mode)
+        @__path = path
+        @__mode = mode
+      end
+
+      def _inner_file
+        @_inner_file ||= File.open(@__path, @__mode)
+      end
     end
 
     # Delete the file on disk associated with the given identifier.
