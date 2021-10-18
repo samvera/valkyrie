@@ -99,6 +99,7 @@ module Valkyrie::Persistence::Fedora
 
         # Class for handling cases where deny listed values should not be mapped
         class DenylistedValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
           # Determines whether or not the value has a denied namespace for the RDF statement object
           # (i. e. avoid attempting to map any RDF statements making assertions about LDP containers or resource internal to Fedora)
           # @param [Property] value
@@ -111,14 +112,6 @@ module Valkyrie::Persistence::Fedora
           def result
             NullApplicator
           end
-        end
-
-        # @deprecated
-        # Class for handling cases where deny listed values should not be mapped
-        # @see DenylistedValue
-        class BlacklistedValue < DenylistedValue
-          FedoraValue.register(self)
-          warn "[DEPRECATION] Samvera is deprecating '#{self}' in 3.0.0. Use #{DenylistedValue} instead."
         end
 
         # Class for handling cases where the RDF subject of a Property references a separate resource using a hash URI
@@ -547,16 +540,6 @@ module Valkyrie::Persistence::Fedora
             key
           end
 
-          # @deprecated
-          # Determines whether or not a key is on the deny list for mapping
-          # (For example <http://fedora.info/definitions> assertions are not mapped to Valkyrie attributes)
-          # @param [Symbol] key
-          # @return [Boolean]
-          def blacklist?(key)
-            warn "[DEPRECATION] Samvera is deprecating '#{self.class}#blacklist?' in 3.0.0. Use #{self.class}#deny? instead."
-            deny?(key)
-          end
-
           # Determines whether or not a key is on the deny list for mapping
           # (For example <http://fedora.info/definitions> assertions are not mapped to Valkyrie attributes)
           # @param [Symbol] key
@@ -573,14 +556,6 @@ module Valkyrie::Persistence::Fedora
           # @return [Array<Object>]
           def cast_array(values)
             Array(values)
-          end
-
-          # @deprecated
-          # Retrieve a list of denied URIs for predicates
-          # @return [Array<String>]
-          def blacklist
-            warn "[DEPRECATION] Samvera is deprecating '#{self.class}#blacklist' in 3.0.0. Use #{self.class}#denylist instead."
-            denylist
           end
 
           # Retrieve a list of denied URIs for predicates
