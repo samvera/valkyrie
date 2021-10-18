@@ -15,7 +15,6 @@ module Valkyrie
   # @see lib/valkyrie/specs/shared_specs/resource.rb
   # rubocop:disable Metrics/ClassLength
   class Resource < Dry::Struct
-    include Draper::Decoratable
     # Allows a Valkyrie::Resource to be instantiated without providing every
     # available key, and makes sure the defaults are set up if no value is
     # given.

@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'dry-struct'
-  spec.add_dependency 'draper'
   spec.add_dependency 'activemodel'
   spec.add_dependency 'dry-types', '~> 1.0'
   spec.add_dependency 'rdf', '~> 3.0', '>= 3.0.10'
