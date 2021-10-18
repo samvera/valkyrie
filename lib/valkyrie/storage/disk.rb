@@ -41,9 +41,9 @@ module Valkyrie::Storage
       raise Valkyrie::StorageAdapter::FileNotFound
     end
 
-    ## Lazy file takes open parameters but doesn't open up a file handle. This
-    # way StorageAdapter#find_by doesn't open a handle silently and never clean
-    # up after itself.
+    ## LazyFile takes File.open parameters but doesn't leave a file handle open on
+    # instantiation. This way StorageAdapter#find_by doesn't open a handle
+    # silently and never clean up after itself.
     class LazyFile
       def self.open(path, mode)
         # Open the file regularly and close it, so it can error if it doesn't
