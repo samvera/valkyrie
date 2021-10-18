@@ -1,3 +1,29 @@
+# v3.0.0.beta1 2021-10-18
+
+## Changes since last release
+
+* More informative NoMethodError for missing custom queries.
+  [no-reply](https://github.com/no-reply)
+* Persisters error if you save something which existed at query time, but has
+  since been deleted.
+* Shared write-only persisters.
+* Solr ModelConverter performance.
+* Don't hold open a file handle from StorageAdapter#upload/find_by
+* Files can be #close'd.
+* Remove Draper
+* Remove deprecated string equality function.
+* Remove deprecated BlacklistedValue.
+* Allow reform upgrade to 2.6.
+* Don't require a specific error message in shared specs
+  [tpendragon](https://github.com/tpendragon)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[hackartisan](https://github.com/hackartisan)
+[eliotjordan](https://github.com/eliotjordan)
+
+
 # v2.2.0 2021-05-06
 
 ## Changes since last release
