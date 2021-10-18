@@ -87,19 +87,6 @@ module Valkyrie
     end
 
     # @api public
-    # Configure id_string_equality to be true in order to make Valkyrie::ID
-    # equal to the string value they contain. This will be the default behavior
-    # in v3.0.0.
-    #
-    # @return [Boolean] Whether `Valkyrie::ID` should be equal to their string counterpart.
-    def id_string_equality
-      super
-    end
-
-    # @!attribute [w] id_string_equality=
-    #   The setter for #id_string_equality; see it's implementation
-
-    # @api public
     #
     # The returned anonymous method (e.g. responds to #call) has a signature of
     # an unamed parameter that is a string. Calling the anonymous method should
