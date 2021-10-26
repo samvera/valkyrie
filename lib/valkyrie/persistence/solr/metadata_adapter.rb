@@ -31,10 +31,13 @@ module Valkyrie::Persistence::Solr
     # @param connection [RSolr::Client] The RSolr connection to index to.
     # @param resource_indexer [Class, #to_solr] An indexer which is able to
     #   receive a `resource` argument and then has an instance method `#to_solr`
-    def initialize(connection:, resource_indexer: NullIndexer, write_only: false)
+    # @param write_only [Boolean] If true act as a write only adapter.
+    # @param soft_commit [Boolean] If false, don't soft commit.
+    def initialize(connection:, resource_indexer: NullIndexer, write_only: false, soft_commit: true)
       @connection = connection
       @resource_indexer = resource_indexer
       @write_only = write_only
+      @soft_commit = soft_commit
     end
 
     # @return [Valkyrie::Persistence::Solr::Persister] The solr persister.
@@ -44,6 +47,10 @@ module Valkyrie::Persistence::Solr
 
     def write_only?
       write_only
+    end
+
+    def soft_commit?
+      @soft_commit
     end
 
     # @return [Valkyrie::Persistence::Solr::QueryService] The solr query

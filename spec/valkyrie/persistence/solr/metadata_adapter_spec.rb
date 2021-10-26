@@ -26,6 +26,29 @@ RSpec.describe Valkyrie::Persistence::Solr::MetadataAdapter do
     after do
       Object.send(:remove_const, :WriteOnlyResource)
     end
+    context "when soft_commit is false" do
+      let(:adapter) { described_class.new(connection: client, write_only: true, soft_commit: false) }
+      it_behaves_like "a write-only Valkyrie::MetadataAdapter"
+      it "doesn't commit to the repository" do
+        adapter.persister.wipe!
+
+        adapter.persister.save(resource: WriteOnlyResource.new(title: "Test Title"))
+        result = client.get("select", params: { q: "*:*" })
+
+        expect(result["response"]["numFound"]).to eq 0
+        client.commit
+        result = client.get("select", params: { q: "*:*" })
+        expect(result["response"]["numFound"]).to eq 1
+        doc = result["response"]["docs"][0]
+
+        expect(doc["title_tsim"]).to eq(["Test Title"])
+        expect(doc["title_ssim"]).to eq(["Test Title"])
+        expect(doc["title_tesim"]).to eq(["Test Title"])
+        expect(doc["title_tsi"]).to eq("Test Title")
+        expect(doc["title_ssi"]).to eq("Test Title")
+        expect(doc["title_tesi"]).to eq("Test Title")
+      end
+    end
     it "can persist a resource" do
       adapter.persister.wipe!
       adapter.persister.save(resource: WriteOnlyResource.new(title: "Test Title"))
