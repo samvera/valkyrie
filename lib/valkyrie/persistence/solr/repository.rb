@@ -3,10 +3,11 @@ module Valkyrie::Persistence::Solr
   # Responsible for handling the logic for persisting or deleting multiple
   # objects into or out of solr.
   class Repository
-    COMMIT_PARAMS = { softCommit: true, versions: true }.freeze
+    SOFT_COMMIT_PARAMS = { softCommit: true, versions: true }.freeze
+    NO_COMMIT_PARAMS = { versions: true }.freeze
 
     attr_reader :resources, :persister
-    delegate :connection, :resource_factory, :write_only?, to: :persister
+    delegate :connection, :resource_factory, :write_only?, :soft_commit?, to: :persister
 
     # @param [Array<Valkyrie::Resource>] resources
     # @param [RSolr::Client] connection
@@ -36,7 +37,7 @@ module Valkyrie::Persistence::Solr
     # @return [RSolr::HashWithResponse]
     # rubocop:disable Style/IfUnlessModifier
     def add_documents(documents)
-      connection.add documents, params: COMMIT_PARAMS
+      connection.add documents, params: commit_params
     rescue RSolr::Error::Http => exception
       # Error 409 conflict is returned when versions do not match
       if exception.response&.fetch(:status) == 409
@@ -49,7 +50,7 @@ module Valkyrie::Persistence::Solr
     # Deletes a Solr Document using the ID
     # @return [Array<Valkyrie::Resource>] resources which have been deleted from Solr
     def delete
-      connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: COMMIT_PARAMS
+      connection.delete_by_id resources.map { |resource| resource.id.to_s }, params: commit_params
       resources
     end
 
@@ -75,6 +76,14 @@ module Valkyrie::Persistence::Solr
     def handle_conflict
       raise Valkyrie::Persistence::StaleObjectError, "One or more resources have been updated by another process." if resources.count > 1
       raise Valkyrie::Persistence::StaleObjectError, "The object #{resources.first.id} has been updated by another process."
+    end
+
+    def commit_params
+      if persister.soft_commit?
+        SOFT_COMMIT_PARAMS
+      else
+        NO_COMMIT_PARAMS
+      end
     end
   end
 end

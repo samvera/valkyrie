@@ -6,7 +6,7 @@ module Valkyrie::Persistence::Solr
   # Most methods are delegated to {Valkyrie::Persistence::Solr::Repository}
   class Persister
     attr_reader :adapter
-    delegate :connection, :query_service, :resource_factory, :write_only?, to: :adapter
+    delegate :connection, :query_service, :resource_factory, :write_only?, :soft_commit?, to: :adapter
 
     # @param adapter [Valkyrie::Persistence::Solr::MetadataAdapter] The adapter with the
     #   configured solr connection.
