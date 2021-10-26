@@ -3,6 +3,9 @@ module Valkyrie::Persistence::Solr
   # Responsible for handling the logic for persisting or deleting multiple
   # objects into or out of solr.
   class Repository
+    SOFT_COMMIT_PARAMS = { softCommit: true, versions: true }.freeze
+    NO_COMMIT_PARAMS = { versions: true }.freeze
+
     attr_reader :resources, :persister
     delegate :connection, :resource_factory, :write_only?, :soft_commit?, to: :persister
 
@@ -77,9 +80,9 @@ module Valkyrie::Persistence::Solr
 
     def commit_params
       if persister.soft_commit?
-        { softCommit: true, versions: true }
+        SOFT_COMMIT_PARAMS
       else
-        { versions: true }
+        NO_COMMIT_PARAMS
       end
     end
   end
