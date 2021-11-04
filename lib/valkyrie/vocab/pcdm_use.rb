@@ -47,7 +47,8 @@ module Valkyrie::Vocab
          "rdf:subClassOf": %(http://pcdm.org/resources#File),
          "rdfs:isDefinedBy": %(pcdmuse:),
          type: "rdfs:Class"
-    warn "[DEPRECATION] PCDM is deprecating '#{self.class}#PreservationMasterFile'. Use #{self.class}#PreservationFile instead."
+    warn "[DEPRECATION] PCDM is deprecating '#{name}#PreservationMasterFile'. Use '#{name}#PreservationFile' instead. " \
+         "This warning does *not* indicate that usage of the deprecated term has been detected."
     # @deprecated
     term :PreservationMasterFile,
          comment: %(Best quality representation of the Object appropriate for long-term
