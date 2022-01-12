@@ -33,7 +33,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'json'
   spec.add_dependency 'rdf-vocab'
   spec.add_dependency 'disposable', '~> 0.4.5'
-  spec.add_dependency 'faraday', '< 1.0'
+  spec.add_dependency 'faraday', '>= 0.9', '!= 2.0.0', '< 3'
+  spec.add_dependency 'faraday-multipart'
 
   spec.add_development_dependency "bundler", "> 1.16.0", "< 3"
   spec.add_development_dependency "rake", ">= 10"
