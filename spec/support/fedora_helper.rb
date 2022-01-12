@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'faraday'
+require 'faraday/multipart'
 module FedoraHelper
   def fedora_adapter_config(base_path:, schema: nil, fedora_version: 4)
     port = 8988
@@ -21,7 +23,11 @@ module FedoraHelper
     Faraday.new(url) do |f|
       f.request :multipart
       f.request :url_encoded
-      f.basic_auth 'fedoraAdmin', 'fedoraAdmin'
+      if f.respond_to?(:basic_auth)
+        f.basic_auth 'fedoraAdmin', 'fedoraAdmin'
+      else
+        f.request(:authorization, :basic, 'fedoraAdmin', 'fedoraAdmin')
+      end
       f.adapter Faraday.default_adapter
     end
   end
