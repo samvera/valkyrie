@@ -12,6 +12,10 @@ module Valkyrie::Persistence
   # Implements the DataMapper Pattern to store metadata into Fedora
   module Fedora
     require 'ldp'
+    require 'json/ld'
+    require 'rdf/vocab'
+    require 'valkyrie/vocab/pcdm_use'
+    require 'valkyrie/rdf_patches'
     require 'valkyrie/persistence/fedora/permissive_schema'
     require 'valkyrie/persistence/fedora/metadata_adapter'
     require 'valkyrie/persistence/fedora/persister'

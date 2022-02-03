@@ -7,10 +7,7 @@ require 'dry-types'
 require 'dry-struct'
 require 'reform'
 require 'rdf'
-require 'valkyrie/rdf_patches'
-require 'json/ld'
 require 'logger'
-require 'rdf/vocab'
 
 module Valkyrie
   require 'valkyrie/logging'
@@ -26,7 +23,6 @@ module Valkyrie
   require 'valkyrie/resource/access_controls'
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/storage'
-  require 'valkyrie/vocab/pcdm_use'
   require 'generators/valkyrie/resource_generator'
   require 'valkyrie/engine' if defined?(Rails)
   def config
