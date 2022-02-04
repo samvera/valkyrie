@@ -16,12 +16,14 @@ require 'action_dispatch'
 require 'webmock/rspec'
 require 'timecop'
 
-SOLR_TEST_URL = "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8994}/solr/valkyrie-core-test"
+SOLR_TEST_URL = ENV['SOLR_URL'] || "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8994}/solr/valkyrie-core-test"
 
 ROOT_PATH = Pathname.new(Dir.pwd)
 Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }
 
-WebMock.disable_net_connect!(allow_localhost: true)
+# TODO - replace solr and fcrepo hosts with vars
+# WebMock.disable_net_connect!(allow: ['localhost', 'solr:8983', 'fcrepo4:8080', 'fcrepo5:8080', 'fcrepo6:8080'])
+WebMock.allow_net_connect!
 
 RSpec.configure do |config|
   config.order = :random

@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  valkyrie:
+    image: valkyrie
+    build:
+      context: .
+    volumes:
+      - .:/opt/valkyrie
+    environment:
+      - SOLR_URL=http://solr:8983/solr/valkyrie-core-test
+      - DATABASE_URL=postgresql://postgres:valkyrie@db:5432/Valkyrie_gem_development
+      - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+      - RAILS_ENV=development
+      - RACK_ENV=development
+      - FEDORA_4_PORT=8080
+      - FEDORA_4_HOST=fcrepo4
+      - FEDORA_5_PORT=8080
+      - FEDORA_5_HOST=fcrepo5
+      - FEDORA_6_PORT=8080
+      - FEDORA_6_HOST=fcrepo6
+    command:
+      - sleep
+      - infinity
+
+  solr:
+    image: solr:7
+    ports:
+      - "8994:8983"
+    volumes:
+      - ./solr/config:/solr_config
+      - solr:/opt/solr/server/solr/mycores
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr-precreate
+      - valkyrie-core-test
+      - /solr_config
+
+  db:
+    image: postgres:10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=Valkyrie_gem_development
+      - POSTGRES_PASSWORD=valkyrie
+
+  fcrepo4:
+    image: samvera/fcrepo4:4.7.5
+    command:
+      - /fedora-entrypoint.sh
+    volumes:
+      - fcrepo4:/data
+    ports:
+      - "8988:8080"
+
+  fcrepo5:
+    image: samvera/fcrepo4:5.1.0
+    command:
+      - /fedora-entrypoint.sh
+    volumes:
+      - fcrepo5:/data
+    ports:
+      - "8998:8080"
+
+  fcrepo6:
+    image: fcrepo/fcrepo:6.0.0
+    command:
+      - "catalina.sh"
+      - "run"
+    volumes:
+      - fcrepo6:/data
+    ports:
+      - "8978:8080"
+    environment:
+      CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+      JAVA_OPTS: "-Dfcrepo.dynamic.jms.port=61619 -Dfcrepo.dynamic.stomp.port=61615 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+
+volumes:
+  fcrepo4:
+  fcrepo5:
+  fcrepo6:
+  solr:
+  pgdata:

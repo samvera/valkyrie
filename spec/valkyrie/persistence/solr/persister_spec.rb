@@ -101,11 +101,11 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
 
     context "when solr does not return a response" do
       before do
-        WebMock.disable_net_connect!
+        # WebMock.disable_net_connect!
         stub_request(:post, "#{SOLR_TEST_URL}/update?softCommit=true&versions=true&wt=json").to_raise(RSolr::Error::Http.new(nil, nil))
       end
       after do
-        WebMock.disable_net_connect!(allow_localhost: true)
+        # WebMock.disable_net_connect!(allow_localhost: true)
       end
       it "passes the exception through" do
         resource = MyLockingResource.new(title: ["My Locked Resource"])

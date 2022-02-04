@@ -1,16 +1,23 @@
 # frozen_string_literal: true
 module FedoraHelper
   def fedora_adapter_config(base_path:, schema: nil, fedora_version: 4)
-    port = 8988
-    if fedora_version == 5
-      port = 8998
-    elsif fedora_version == 6
+    host = 'localhost'
+
+    case fedora_version
+    when 4
+      port = ENV["FEDORA_4_PORT"] || 8988
+      host = ENV["FEDORA_4_HOST"] if ENV["FEDORA_4_HOST"].present?
+    when 5
+      port = ENV["FEDORA_5_PORT"] || 8998
+      host = ENV["FEDORA_5_HOST"] if ENV["FEDORA_5_HOST"].present?
+    when 6
       port = ENV["FEDORA_6_PORT"] || 8978
+      host = ENV["FEDORA_6_HOST"] if ENV["FEDORA_6_HOST"].present?
     end
     connection_url = fedora_version == 6 ? "/fcrepo/rest" : "/rest"
     opts = {
       base_path: base_path,
-      connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}localhost:#{port}#{connection_url}")),
+      connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}#{host}:#{port}#{connection_url}")),
       fedora_version: fedora_version
     }
     opts[:schema] = schema if schema

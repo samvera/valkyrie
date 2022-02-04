@@ -7,12 +7,12 @@ default: &default
   timeout: 5000
   host: localhost
   username: postgres
-  password: 
+  password:
 
 development:
   <<: *default
   database: Valkyrie_gem_development
-  port: 5433
+  url: <%= ENV['DATABASE_URL'] %>
 
 test:
   <<: *default
