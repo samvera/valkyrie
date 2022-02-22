@@ -1,3 +1,5 @@
+test of cla-bot
+
 # Valkyrie
 
 Valkyrie is a gem for enabling multiple backends for storage of files and metadata in Samvera.
