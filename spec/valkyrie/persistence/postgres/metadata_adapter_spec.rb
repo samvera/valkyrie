@@ -4,6 +4,7 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Postgres::MetadataAdapter do
   let(:adapter) { described_class.new }
+  let(:orm_class) { adapter.resource_factory.orm_class }
   it_behaves_like "a Valkyrie::MetadataAdapter"
 
   describe "#id" do
@@ -13,6 +14,23 @@ RSpec.describe Valkyrie::Persistence::Postgres::MetadataAdapter do
       to_hash = "#{db_config[:host]}:#{db_config[:database]}"
       expected = Digest::MD5.hexdigest to_hash
       expect(adapter.id.to_s).to eq expected
+    end
+
+    it "works in Rails < 7, when config is in connection_config" do
+      allow(orm_class).to receive(:respond_to?).and_call_original
+      allow(orm_class).to receive(:respond_to?).with(:connection_db_config).and_return(false)
+      allow(Valkyrie::Persistence::Postgres::ORM::Resource).to receive(:connection_config).and_return({ host: "127.0.0.1", database: "test" })
+
+      expect(adapter.id.to_s).to eq Digest::MD5.hexdigest("127.0.0.1:test")
+    end
+
+    it "works in Rails > 7, when config is in connection_db_config" do
+      allow(orm_class).to receive(:respond_to?).and_call_original
+      allow(orm_class).to receive(:respond_to?).with(:connection__config).and_return(false)
+      allow(Valkyrie::Persistence::Postgres::ORM::Resource).to receive(:connection_db_config)
+        .and_return(double("ActiveRecord::DatabaseConfigurations::HashConfig", configuration_hash: { host: "127.0.0.1", database: "test" }))
+
+      expect(adapter.id.to_s).to eq Digest::MD5.hexdigest("127.0.0.1:test")
     end
   end
 
