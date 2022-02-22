@@ -5,7 +5,7 @@ default: &default
   pool: <%= Integer(ENV.fetch("DB_POOL", 5)) %>
   reaping_frequency: <%= Integer(ENV.fetch("DB_REAPING_FREQUENCY", 10)) %>
   timeout: 5000
-  host: localhost
+  host: 127.0.0.1
   username: postgres
   password: 
 

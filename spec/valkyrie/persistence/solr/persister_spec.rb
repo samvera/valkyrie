@@ -84,7 +84,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     end
 
     after do
-      ActiveSupport::Dependencies.remove_constant("MyLockingResource")
+      Object.send(:remove_const, :MyLockingResource)
     end
 
     # supplement specs from shared_specs/locking_persister with a solr-specific test
