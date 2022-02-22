@@ -27,7 +27,6 @@ module Valkyrie
   require 'valkyrie/indexers/access_controls_indexer'
   require 'valkyrie/storage'
   require 'valkyrie/vocab/pcdm_use'
-  require 'generators/valkyrie/resource_generator'
   require 'valkyrie/engine' if defined?(Rails)
   def config
     @config ||= Config.new(

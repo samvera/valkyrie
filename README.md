@@ -180,21 +180,6 @@ attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 Defining resource attributes is explained in greater detail on the [Using Types Wiki
 page](https://github.com/samvera/valkyrie/wiki/Using-Types).
 
-#### Work Types Generator
-
-To create a custom Valkyrie model in your application, you can use the Rails generator.  For example, to
-generate a model named `FooBar` with an unordered `title` field and an ordered `member_ids` field:
-
-```
-rails generate valkyrie:resource FooBar title member_ids:array
-```
-
-You can namespace your model class by including a slash in the model name:
-
-```
-rails generate valkyrie:resource Foo/Bar title member_ids:array
-```
-
 ### Read and Write Data
 ```
 # initialize a metadata adapter
