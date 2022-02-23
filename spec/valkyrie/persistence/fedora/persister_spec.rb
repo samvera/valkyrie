@@ -154,7 +154,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
         end
 
         after do
-          ActiveSupport::Dependencies.remove_constant("FedoraLockingResource")
+          Object.send(:remove_const, :FedoraLockingResource)
         end
 
         it "does not raise an error when the object hasn't been updated by another client" do

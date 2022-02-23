@@ -340,7 +340,7 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     end
 
     after do
-      ActiveSupport::Dependencies.remove_constant("MyLockingResource")
+      Object.send(:remove_const, :MyLockingResource)
     end
 
     describe "#save" do

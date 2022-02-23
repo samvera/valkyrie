@@ -46,3 +46,6 @@ Metrics/MethodLength:
 Metrics/CyclomaticComplexity:
   Exclude:
     - 'lib/valkyrie/persistence/postgres/persister.rb'
+RSpec/VerifiedDoubles:
+  Exclude:
+    - 'spec/valkyrie/persistence/postgres/metadata_adapter_spec.rb'

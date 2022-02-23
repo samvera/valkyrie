@@ -2,7 +2,7 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require 'yaml'
-require 'config/database_connection'
+require_relative 'spec/support/database_connection.rb'
 require 'active_record'
 require 'rubocop/rake_task'
 load 'tasks/dev.rake'

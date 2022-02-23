@@ -34,6 +34,10 @@ describe Valkyrie do
     Valkyrie::StorageAdapter.storage_adapters = {}
   end
   context "when Rails is defined and configured" do
+    before do
+      module Rails
+      end
+    end
     it "uses that path" do
       allow(Rails).to receive(:root).and_return(ROOT_PATH)
       allow(Rails).to receive(:env).and_return("test")
