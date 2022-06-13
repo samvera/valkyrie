@@ -24,7 +24,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("disk://")
+      id.to_s.start_with?("disk://#{base_path}")
     end
 
     def file_path(id)
