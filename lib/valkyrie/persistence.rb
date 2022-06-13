@@ -37,8 +37,10 @@ module Valkyrie
     autoload :Fedora, 'valkyrie/persistence/fedora'
     class ObjectNotFoundError < StandardError
     end
+
     class UnsupportedDatatype < StandardError
     end
+
     class StaleObjectError < StandardError
     end
 

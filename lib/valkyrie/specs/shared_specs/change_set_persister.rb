@@ -8,6 +8,7 @@ RSpec.shared_examples 'a Valkyrie::ChangeSetPersister' do |*_flags|
       attribute :member_ids
       attribute :nested_resource
     end
+
     class Valkyrie::Specs::CustomChangeSet < Valkyrie::ChangeSet
       self.fields = [:title]
     end

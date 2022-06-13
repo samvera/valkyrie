@@ -10,6 +10,7 @@ RSpec.describe Valkyrie::Indexers::AccessControlsIndexer do
       class Resource < Valkyrie::Resource
         include Valkyrie::Resource::AccessControls
       end
+
       class SimpleResource < Valkyrie::Resource
       end
     end
@@ -48,6 +49,7 @@ RSpec.describe Valkyrie::Indexers::AccessControlsIndexer do
             'test_edit_access_person'
           end
         end
+
         class ReadPermission
           def group
             'test_read_access_group'

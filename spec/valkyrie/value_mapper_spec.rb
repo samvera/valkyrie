@@ -5,6 +5,7 @@ RSpec.describe Valkyrie::ValueMapper do
   before do
     class SubMapper < Valkyrie::ValueMapper
     end
+
     class TestMapper < Valkyrie::ValueMapper
       SubMapper.register(self)
       def self.handles?(value)

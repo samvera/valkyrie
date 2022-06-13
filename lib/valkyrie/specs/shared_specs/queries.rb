@@ -10,8 +10,10 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       attribute :a_member_of, Valkyrie::Types::Array
       attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
     end
+
     class Valkyrie::Specs::SecondResource < Valkyrie::Resource
     end
+
     class Valkyrie::Specs::ThirdResource < Valkyrie::Resource
       attribute :a_member_of, Valkyrie::Types::Array
       attribute :an_ordered_member_of, Valkyrie::Types::Array.meta(ordered: true)
@@ -353,9 +355,11 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       context "when the property is ordered for one child but not the other" do
         before do
           class Valkyrie::Specs::Parent < Valkyrie::Resource; end
+
           class Valkyrie::Specs::ChildWithUnorderedParents < Valkyrie::Resource
             attribute :a_member_of, Valkyrie::Types::Array
           end
+
           class Valkyrie::Specs::ChildWithOrderedParents < Valkyrie::Resource
             attribute :a_member_of, Valkyrie::Types::Array.meta(ordered: true)
           end
