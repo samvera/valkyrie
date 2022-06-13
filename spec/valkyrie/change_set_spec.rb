@@ -8,6 +8,7 @@ RSpec.describe Valkyrie::ChangeSet do
     class Resource < Valkyrie::Resource
       attribute :author, Valkyrie::Types::Set
     end
+
     class ResourceChangeSet < Valkyrie::ChangeSet
       self.fields = [:author]
       property :title, virtual: true, required: true

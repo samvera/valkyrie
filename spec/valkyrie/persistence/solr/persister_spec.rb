@@ -25,6 +25,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
           }
         end
       end
+
       class Resource < Valkyrie::Resource
         attribute :title, Valkyrie::Types::Set
         attribute :other_title, Valkyrie::Types::Set

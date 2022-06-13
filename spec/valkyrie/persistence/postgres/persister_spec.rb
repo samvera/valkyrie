@@ -114,6 +114,7 @@ RSpec.describe Valkyrie::Persistence::Postgres::Persister do
       class MyLockingResource < Valkyrie::Resource
         enable_optimistic_locking
       end
+
       class CustomResource < Valkyrie::Resource
       end
     end

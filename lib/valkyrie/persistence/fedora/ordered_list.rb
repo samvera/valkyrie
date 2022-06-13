@@ -33,12 +33,10 @@ module Valkyrie::Persistence::Fedora
     #   empty, tail.prev is the first element.
     def tail
       @tail ||=
-        begin
-          if tail_subject
-            TailSentinel.new(self, prev_node: build_node(tail_subject))
-          else
-            head.next
-          end
+        if tail_subject
+          TailSentinel.new(self, prev_node: build_node(tail_subject))
+        else
+          head.next
         end
     end
 
