@@ -17,7 +17,15 @@ Jump in: [![Slack Status](http://slack.samvera.org/badge.svg)](http://slack.samv
 ## Primary Contacts
 
 ### Product Owner
-[Kate Lynch](https://github.com/kelynch)
+
+Vacant
+
+Valkyrie is currently seeking a product owner from a partner other than
+Princeton
+to support this core component. Responsibilities can be found here:
+[https://samvera.github.io/core_components.html#product-owner-responsibilities](https://samvera.github.io/core_components.html#product-owner-responsibilities)
+
+Until this role is filled, the technical lead will act in interim capacity.
 
 ### Technical Lead
 [Trey Pendragon](https://github.com/tpendragon)
