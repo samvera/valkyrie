@@ -10,11 +10,11 @@ RSpec.describe Valkyrie::Storage::Disk do
 
   describe ".handles?" do
     it "matches on base_path" do
-      described_class.handles?(ROOT_PATH.join("tmp", "files_test")).to eq true
+      expect(storage_adapter.handles?(id: "disk://#{ROOT_PATH.join('tmp', 'files_test')}")).to eq true
     end
 
     it "does not match when base_path differs" do
-      described_class.handles?(ROOT_PATH.join("tmp", "wrong")).to eq false
+      expect(storage_adapter.handles?(id: "disk://#{ROOT_PATH.join('tmp', 'wrong')}")).to eq false
     end
   end
 end
