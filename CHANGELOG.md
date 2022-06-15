@@ -1,3 +1,24 @@
+# v3.0.0.beta2 2022-06-15
+
+## Changes since last release
+
+* Update pcdm_use warning
+  [dchandekstark](https://github.com/dchandekstark)
+* Add support for Faraday 2
+  [tpendragon](https://github.com/tpendragon)
+* Rails 7 Support
+  [cgalarza](https://github.com/cgalarza)
+  [tpendragon](https://github.com/tpendragon)
+* Support discovery of multiple disk adapters on different paths.
+  [no-reply](https://github.com/tpendragon)
+* New Product Owner: Alexandra Dunn!
+  [dunn](https://github.com/dunn)
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+[cjcolvar](https://github.com/cjcolvar)
+
 # v3.0.0.beta1 2021-10-18
 
 ## Changes since last release
