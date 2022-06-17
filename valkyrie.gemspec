@@ -12,6 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'An ORM using the Data Mapper pattern, specifically built to solve Digital Repository use cases.'
   spec.homepage      = "https://github.com/samvera/valkyrie"
+  spec.metadata      = { "rubygems_mfa_required" => "true" }
 
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
