@@ -46,8 +46,8 @@ module Valkyrie::Persistence
       query_handler.queries.each do |query|
         handler = query_handler.new(query_service: query_service)
         query_handlers[query.to_sym] = handler
-        define_singleton_method query do |*args, &block|
-          query_handlers[query.to_sym].__send__(query, *args, &block)
+        define_singleton_method query do |*args, **kwargs, &block|
+          query_handlers[query.to_sym].__send__(query, *args, **kwargs, &block)
         end
       end
     end
