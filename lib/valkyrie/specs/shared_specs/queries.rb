@@ -495,6 +495,26 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect(query_service.custom_queries).to respond_to :find_by_user_id
       expect(query_service.custom_queries.find_by_user_id).to eq 1
     end
+
+    it "can register a query handler which takes keyword arguments" do
+      class QueryHandler
+        def self.queries
+          [:identity]
+        end
+
+        attr_reader :query_service
+        def initialize(query_service:)
+          @query_service = query_service
+        end
+
+        def identity(term:)
+          term
+        end
+      end
+      query_service.custom_queries.register_query_handler(QueryHandler)
+      expect(query_service.custom_queries).to respond_to :identity
+      expect(query_service.custom_queries.identity(term: :x)).to eq :x
+    end
   end
 
   context "optimistic locking" do
