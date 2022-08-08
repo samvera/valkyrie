@@ -73,16 +73,20 @@ module Valkyrie
   end
 
   class Config < OpenStruct
+    # Method lookup with OpenStruct appears to have issues in Ruby 3, so we
+    # unfortunately can’t just call +super+ when accessing values in the
+    # following methods. Using brackets works fine, though.
+
     def initialize(hsh = {})
       super(defaults.merge(hsh))
     end
 
     def metadata_adapter
-      Valkyrie::MetadataAdapter.find(super.to_sym)
+      Valkyrie::MetadataAdapter.find(self[:metadata_adapter].to_sym)
     end
 
     def storage_adapter
-      Valkyrie::StorageAdapter.find(super.to_sym)
+      Valkyrie::StorageAdapter.find(self[:storage_adapter].to_sym)
     end
 
     # @api public
@@ -96,7 +100,7 @@ module Valkyrie
     #
     # @see #default_resource_class_resolver for full interface
     def resource_class_resolver
-      super
+      self[:resource_class_resolver]
     end
 
     # @!attribute [w] resource_class_resolver=
