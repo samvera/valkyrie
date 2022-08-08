@@ -12,7 +12,7 @@ jobs:
         default: "2.6.5"
         type: "string"
     docker:
-      - image: circleci/ruby:<< parameters.ruby >>-node-browsers
+      - image: cimg/ruby:<< parameters.ruby >>
         environment:
           RAILS_ENV: test
       - image: postgres:10.6-alpine
