@@ -46,8 +46,14 @@ module Valkyrie::Persistence
       query_handler.queries.each do |query|
         handler = query_handler.new(query_service: query_service)
         query_handlers[query.to_sym] = handler
-        define_singleton_method query do |*args, &block|
-          query_handlers[query.to_sym].__send__(query, *args, &block)
+        define_singleton_method query do |*args, **kwargs, &block|
+          if kwargs.empty?
+            # This case needs to be specially handled in Ruby 2.6, or else an
+            # empty hash will be passed as the final argument.
+            query_handlers[query.to_sym].__send__(query, *args, &block)
+          else
+            query_handlers[query.to_sym].__send__(query, *args, **kwargs, &block)
+          end
         end
       end
     end
