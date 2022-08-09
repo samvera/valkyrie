@@ -1,3 +1,10 @@
+# v3.0.0.beta3 2022-08-09
+
+## Changes since last release
+
+* Fix Ruby 3.0 support issues
+  [marrus-sh](https://github.com/marrus-sh)
+
 # v3.0.0.beta2 2022-06-15
 
 ## Changes since last release
