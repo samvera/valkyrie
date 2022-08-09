@@ -1,3 +1,7 @@
+# v3.0.0.rc1 2022-08-09
+
+## Unchanged from 3.0.0.beta3
+
 # v3.0.0.beta3 2022-08-09
 
 ## Changes since last release
