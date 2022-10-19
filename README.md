@@ -243,7 +243,7 @@ using Docker containers for development.
 ### Running Tests
 
 1. Install the latest released > 3.0 version of Lando from [here](https://github.com/lando/lando/releases).
-2. `bundle install`
+2. `bundle install`(Ruby 2.6+ required)
 3. `bundle exec rake server:start`
 4. `bundle exec rspec spec`
 
