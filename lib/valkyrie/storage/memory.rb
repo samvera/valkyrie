@@ -16,8 +16,17 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource: nil, **_extra_arguments)
-      identifier = Valkyrie::ID.new("memory://#{resource.id}")
+      identifier = id_for(file: file, original_filename: original_filename, resource: resource)
       cache[identifier] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file)
+    end
+
+    # @param file [IO]
+    # @param original_filename [String]
+    # @param resource [Valkyrie::Resource]
+    # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @return [Valkyrie::StorageAdapter::StreamFile]
+    def id_for(file:, original_filename:, resource: nil, **_extra_arguments)
+      Valkyrie::ID.new("memory://#{resource.id}")
     end
 
     # Return the file associated with the given identifier

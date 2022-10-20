@@ -36,7 +36,10 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
                resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
+
+      # we can't use id_for here because this id requires furhter transformation below
       identifier = resource_uri_transformer.call(resource, base_url) + '/original'
+
       sha1 = [5, 6].include?(fedora_version) ? "sha" : "sha1"
       connection.http.put do |request|
         request.url identifier
@@ -48,7 +51,21 @@ module Valkyrie::Storage
         io = Faraday::UploadIO.new(file, content_type, original_filename)
         request.body = io
       end
+
       find_by(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)))
+    end
+
+    # @param file [IO]
+    # @param original_filename [String]
+    # @param resource [Valkyrie::Resource]
+    # @param content_type [String] content type of file (e.g. 'image/tiff') (default='application/octet-stream')
+    # @param resource_uri_transformer [Lambda] transforms the resource's id (e.g. 'DDS78RK') into a uri (optional)
+    # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @return [Valkyrie::StorageAdapter::StreamFile]
+    def id_for(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
+               resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
+      identifier = resource_uri_transformer.call(resource, base_url) + '/original'
+      Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL))
     end
 
     # Delete the file in Fedora associated with the given identifier.
