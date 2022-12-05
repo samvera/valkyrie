@@ -26,7 +26,7 @@ namespace :db do
   end
 
   task configuration: :environment do
-    @config = YAML.safe_load(ERB.new(File.read("db/config.yml")).result, [], [], true)[DATABASE_ENV]
+    @config = YAML.safe_load(ERB.new(File.read("db/config.yml")).result, aliases: true)[DATABASE_ENV]
   end
 
   task configure_connection: :configuration do

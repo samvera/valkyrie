@@ -7,7 +7,7 @@ module DatabaseConnection
     # Ref https://github.com/puma/puma#clustered-mode
     ActiveSupport.on_load(:active_record) do
       ::ActiveRecord::Base.connection_pool.disconnect! if ::ActiveRecord::Base.connected?
-      ::ActiveRecord::Base.configurations = YAML.safe_load(ERB.new(File.read("db/config.yml")).result, [], [], true) || {}
+      ::ActiveRecord::Base.configurations = YAML.safe_load(ERB.new(File.read("db/config.yml")).result, aliases: true) || {}
       ::ActiveRecord::Base.establish_connection(DatabaseConnection.database_config(env))
     end
   end
