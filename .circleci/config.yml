@@ -9,7 +9,7 @@ jobs:
         type: "string"
       ruby:
         description: "Ruby version"
-        default: "2.6.5"
+        default: "2.7.0"
         type: "string"
     docker:
       - image: cimg/ruby:<< parameters.ruby >>
@@ -38,6 +38,7 @@ jobs:
       BUNDLE_GEMFILE: << parameters.gemfile >>
       POSTGRES_PORT: 5432
       FEDORA_6_PORT: 8080
+    resource_class: medium+
     steps:
       - checkout
 
@@ -122,10 +123,6 @@ workflows:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.5
           name: "Ruby2-6_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.5.7
-          name: "Ruby2-5_Rails5-2"
   nightly:
     triggers:
       - schedule:
@@ -159,7 +156,3 @@ workflows:
           gemfile: "gemfiles/activerecord_5_2.gemfile"
           ruby: 2.6.5
           name: "Ruby2-6_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.5.7
-          name: "Ruby2-5_Rails5-2"
