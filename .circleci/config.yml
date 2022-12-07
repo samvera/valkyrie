@@ -38,6 +38,7 @@ jobs:
       BUNDLE_GEMFILE: << parameters.gemfile >>
       POSTGRES_PORT: 5432
       FEDORA_6_PORT: 8080
+    resource_class: medium+
     steps:
       - checkout
 
