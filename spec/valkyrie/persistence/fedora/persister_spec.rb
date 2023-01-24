@@ -9,7 +9,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
 
       let(:adapter) do
         Valkyrie::Persistence::Fedora::MetadataAdapter.new(
-          fedora_adapter_config(
+          **fedora_adapter_config(
             base_path: "test_fed",
             schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(title: RDF::URI("http://example.com/title")),
             fedora_version: version

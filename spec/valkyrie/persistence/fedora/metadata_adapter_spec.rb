@@ -6,7 +6,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
   [4, 5, 6].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
-      let(:adapter) { described_class.new(fedora_adapter_config(base_path: "test_fed", fedora_version: version)) }
+      let(:adapter) { described_class.new(**fedora_adapter_config(base_path: "test_fed", fedora_version: version)) }
       it_behaves_like "a Valkyrie::MetadataAdapter"
 
       describe "#schema" do
@@ -15,7 +15,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
         end
 
         context "with a custom schema" do
-          let(:adapter) { described_class.new(fedora_adapter_config(base_path: "test_fed", schema: "custom-schema", fedora_version: version)) }
+          let(:adapter) { described_class.new(**fedora_adapter_config(base_path: "test_fed", schema: "custom-schema", fedora_version: version)) }
           specify { expect(adapter.schema).to eq("custom-schema") }
         end
       end
