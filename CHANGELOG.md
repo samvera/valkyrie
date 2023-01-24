@@ -1,3 +1,13 @@
+# v3.0.0 2023-01-24
+
+## Changes since last release
+
+* Full Ruby 3.0 support: #919 ([cjcolvar](https://github.com/cjcolvar))
+* Fixed Ruby 2.7.x support: #916 ([tpendragon](https://github.com/tpendragon)), #918
+  ([jrgriffiniii](https://github.com/jrgriffiniii))
+* Dropped support for Ruby 2.5.x: #916 ([tpendragon](https://github.com/tpendragon))
+* see previous 3.0.0 beta release notes for further changes
+
 # v3.0.0.rc1 2022-08-09
 
 ## Unchanged from 3.0.0.beta3
