@@ -17,7 +17,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       wipe_fedora!(base_path: "test", fedora_version: 4)
     end
 
-    let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 4)) }
+    let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 4)) }
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
     it_behaves_like "a Valkyrie::StorageAdapter"
@@ -50,7 +50,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       wipe_fedora!(base_path: "test", fedora_version: 5)
     end
 
-    let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
+    let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
     it_behaves_like "a Valkyrie::StorageAdapter"
@@ -91,7 +91,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       end
       context 'when using default transformer' do
         context 'and basepath is passed in' do
-          let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
+          let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
 
           it 'produces a valid URI' do
             expected_uri = 'fedora://localhost:8998/rest/test/AN1D4UHA/original'
@@ -100,7 +100,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         end
 
         context "when basepath uses default (e.g. '/')" do
-          let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: '/', fedora_version: 5)) }
+          let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: '/', fedora_version: 5)) }
 
           it 'produces a valid URI' do
             expected_uri = RDF::URI.new('fedora://localhost:8998/rest/AN1D4UHA/original')
@@ -128,7 +128,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
             RDF::URI.new(base_url + (head.scan(/..?/).first(4) + [id]).join('/'))
           end
         end
-        let(:storage_adapter) { described_class.new(fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
+        let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
 
         it 'produces a valid URI' do
           expected_uri = 'fedora://localhost:8998/rest/test/AN/1D/4U/HA/AN1D4UHA/original'

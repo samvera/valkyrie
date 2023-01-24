@@ -7,7 +7,7 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
       let(:version) { fedora_version }
       let(:adapter) do
         Valkyrie::Persistence::Fedora::MetadataAdapter.new(
-          fedora_adapter_config(base_path: "test_fed", schema: schema, fedora_version: version)
+          **fedora_adapter_config(base_path: "test_fed", schema: schema, fedora_version: version)
         )
       end
 

@@ -156,7 +156,7 @@ module Valkyrie::Persistence::Fedora
       # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
       # @param next_node [ListNode]
       # @param prev_node [ListNode]
-      def initialize(*args)
+      def initialize(*args, **kwargs)
         super
         @next ||= TailSentinel.new(parent, prev_node: self)
       end
@@ -166,7 +166,7 @@ module Valkyrie::Persistence::Fedora
       # @param parent [Valkyrie::Persistence::Fedora::OrderedList]
       # @param next_node [ListNode]
       # @param prev_node [ListNode]
-      def initialize(*args)
+      def initialize(*args, **kwargs)
         super
         prev.next = self if prev&.next != self
       end

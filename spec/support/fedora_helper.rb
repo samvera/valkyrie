@@ -37,7 +37,7 @@ module FedoraHelper
   end
 
   def wipe_fedora!(base_path:, fedora_version: 4)
-    Valkyrie::Persistence::Fedora::MetadataAdapter.new(fedora_adapter_config(base_path: base_path, fedora_version: fedora_version)).persister.wipe!
+    Valkyrie::Persistence::Fedora::MetadataAdapter.new(**fedora_adapter_config(base_path: base_path, fedora_version: fedora_version)).persister.wipe!
   end
 end
 
