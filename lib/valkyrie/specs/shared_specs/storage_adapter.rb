@@ -46,7 +46,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   end
 
   def open_files
-    `lsof +D . | awk '{print $9}'`.split.uniq[1..-1]
+    `lsof +D .`.split("\n").map { |r| r.split("\t").last }
   end
 
   it "can upload, validate, re-fetch, and delete a file" do
