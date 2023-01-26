@@ -1,3 +1,9 @@
+# v3.0.1 2023-01-26
+
+## Changes since last release
+
+* Avoid using `awk` in shared specs: #921 ([dunn](https://github.com/dunn))
+
 # v3.0.0 2023-01-24
 
 ## Changes since last release
