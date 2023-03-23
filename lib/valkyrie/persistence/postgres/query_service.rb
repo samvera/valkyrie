@@ -20,7 +20,7 @@ module Valkyrie::Persistence::Postgres
     #   for each record
     # @return [Array<Valkyrie::Resource>]
     def find_all
-      orm_class.all.lazy.map do |orm_object|
+      orm_class.find_each.lazy.map do |orm_object|
         resource_factory.to_resource(object: orm_object)
       end
     end
@@ -30,7 +30,7 @@ module Valkyrie::Persistence::Postgres
     # @param [Class] model
     # @return [Array<Valkyrie::Resource>]
     def find_all_of_model(model:)
-      orm_class.where(internal_resource: model.to_s).lazy.map do |orm_object|
+      orm_class.where(internal_resource: model.to_s).find_each.lazy.map do |orm_object|
         resource_factory.to_resource(object: orm_object)
       end
     end
