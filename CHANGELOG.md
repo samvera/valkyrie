@@ -1,3 +1,15 @@
+# v3.0.2 2023-04-10
+
+## Changes since last release
+
+* Use `find_each` in ActiveRecord adapter: #925
+    ([tpendragon](https://github.com/tpendragon))
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+* [dchandekstark](https://github.com/dchandekstark)
+
 # v3.0.1 2023-01-26
 
 ## Changes since last release
