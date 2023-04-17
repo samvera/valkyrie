@@ -18,7 +18,19 @@ module Valkyrie::Storage
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
-      find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
+
+      identifier = id_for(file: file, original_filename: original_filename, resource: resource)
+      find_by(id: identifier)
+    end
+
+    # @param file [IO]
+    # @param original_filename [String]
+    # @param resource [Valkyrie::Resource]
+    # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
+    # @return [Valkyrie::ID]
+    def id_for(file:, original_filename:, resource: nil, **_extra_arguments)
+      new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
+      Valkyrie::ID.new("disk://#{new_path}")
     end
 
     # @param id [Valkyrie::ID]
