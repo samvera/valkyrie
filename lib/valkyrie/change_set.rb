@@ -77,9 +77,11 @@ module Valkyrie
       send(key) if respond_to?(key)
     end
 
-    delegate :attributes, to: :resource
-
-    delegate :internal_resource, :created_at, :updated_at, :model_name, :optimistic_locking_enabled?, to: :resource
+    [:internal_resource, :created_at, :updated_at, :model_name, :optimistic_locking_enabled?, :attributes].each do |method_name|
+      define_method(method_name) do |*args|
+        resource.public_send(method_name, *args)
+      end
+    end
 
     # Prepopulates all fields with defaults defined in the changeset. This is an
     # override of Reform::Form's method to allow for single-valued fields to
