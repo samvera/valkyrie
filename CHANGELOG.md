@@ -1,3 +1,15 @@
+# v3.0.3 2023-05-15
+
+## Changes since last release
+
+* Avoid `delegate` in ChangeSet. ([dlpierce](https://github.com/dlpierce))
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+* [ShanaLMoore](https://github.com/ShanaLMoore)
+* [jeremyf](https://github.com/jeremyf)
+
 # v3.0.2 2023-04-10
 
 ## Changes since last release
