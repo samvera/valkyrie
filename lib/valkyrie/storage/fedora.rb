@@ -19,6 +19,12 @@ module Valkyrie::Storage
       id.to_s.start_with?(PROTOCOL)
     end
 
+    # @param feature [Symbol] Feature to test for.
+    # @return [Boolean] true if the adapter supports the given feature
+    def supports?(_feature)
+      false
+    end
+
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::StreamFile]

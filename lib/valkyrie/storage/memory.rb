@@ -35,6 +35,12 @@ module Valkyrie::Storage
       id.to_s.start_with?("memory://")
     end
 
+    # @param feature [Symbol] Feature to test for.
+    # @return [Boolean] true if the adapter supports the given feature
+    def supports?(_feature)
+      false
+    end
+
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
