@@ -20,6 +20,20 @@ module Valkyrie::Storage
       cache[identifier] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file)
     end
 
+    # @param file [IO]
+    # @param original_filename [String]
+    # @param previous_version_id [Valkyrie::ID]
+    # @param _extra_arguments [Hash] additional arguments which may be passed to
+    #   other adapters.
+    # @return [Valkyrie::StorageAdapter::StreamFile]
+    def upload_version(file:, original_filename:, previous_version_id:)
+      previous_file = find_by(id: previous_version_id)
+      previous_file.id = Valkyrie::ID.new("#{previous_version_id}##{SecureRandom.uuid}")
+      cache[previous_file.id] = previous_file
+      cache["#{id}_versions"] ||= []
+      cache["#{id}_versions"] = [previous_file] + cache["#{id}_versions"]
+    end
+
     # Return the file associated with the given identifier
     # @param id [Valkyrie::ID]
     # @return [Valkyrie::StorageAdapter::StreamFile]
