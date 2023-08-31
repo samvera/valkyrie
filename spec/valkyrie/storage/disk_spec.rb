@@ -17,4 +17,8 @@ RSpec.describe Valkyrie::Storage::Disk do
       expect(storage_adapter.handles?(id: "disk://#{ROOT_PATH.join('tmp', 'wrong')}")).to eq false
     end
   end
+
+  # TODO: Add a toggle to enable versioning.
+  # Think more about what happens if someone turns versioning on for an existing
+  # repository.
 end

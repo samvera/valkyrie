@@ -100,6 +100,15 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     # 1. How do I delete a version
     # 2. Is there a way to delete all versions.
     # 3. If I delete the root version, can I still query for its versions.
+    #
+    # Feedback: previous_version_id implies that I can upload a version of a
+    # version, not just the root.
+    #
+    # I need a current ID (get the most recent version) and every version
+    # including the current one needs a stable ID.
+    #
+    # Deleting: when I delete a root node, find_versions should continue to
+    # work, but find_by with the root node ID and no version ID should NotFound.
   ensure
     f.close
   end
