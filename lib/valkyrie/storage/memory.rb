@@ -27,11 +27,19 @@ module Valkyrie::Storage
     #   other adapters.
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload_version(file:, original_filename:, previous_version_id:)
+      # Get previous file and add a UUID to the end of it.
       previous_file = find_by(id: previous_version_id)
-      previous_file.id = Valkyrie::ID.new("#{previous_version_id}##{SecureRandom.uuid}")
+      previous_file = previous_file.new(id: Valkyrie::ID.new("#{previous_version_id}##{SecureRandom.uuid}"))
       cache[previous_file.id] = previous_file
-      cache["#{id}_versions"] ||= []
-      cache["#{id}_versions"] = [previous_file] + cache["#{id}_versions"]
+      cache["#{previous_version_id}_versions"] ||= []
+      cache["#{previous_version_id}_versions"] = [previous_file] + cache["#{previous_version_id}_versions"]
+      cache[previous_version_id] = Valkyrie::StorageAdapter::StreamFile.new(id: previous_version_id, io: file)
+    end
+
+    # @param id [Valkyrie::ID]
+    # @return [Array<Valkyrie::StorageAdapter::StreamFile>]
+    def find_versions(id:)
+      [find_by(id: id)] + cache.fetch("#{id}_versions", [])
     end
 
     # Return the file associated with the given identifier
@@ -51,8 +59,13 @@ module Valkyrie::Storage
 
     # @param feature [Symbol] Feature to test for.
     # @return [Boolean] true if the adapter supports the given feature
-    def supports?(_feature)
-      false
+    def supports?(feature)
+      case feature
+      when :versions
+        true
+      else
+        false
+      end
     end
 
     # Delete the file on disk associated with the given identifier.

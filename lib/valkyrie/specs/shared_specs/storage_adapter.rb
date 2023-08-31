@@ -80,14 +80,23 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   end
 
   it "can upload and find new versions" do
+    pending "Versioning not supported" unless storage_adapter.supports?(:versions)
+    size = file.size
     resource = Valkyrie::Specs::CustomResource.new(id: "test")
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
 
-    new_version = storage_adapter.upload_version(file: file, original_filename: 'foo_final.jpg', previous_version_id: uploaded_file.id)
+    f = Tempfile.new
+    f.puts "Test File"
+    f.rewind
+
+    new_version = storage_adapter.upload_version(file: f, original_filename: 'foo_final.jpg', previous_version_id: uploaded_file.id)
     expect(uploaded_file.id).to eq new_version.id
 
     versions = storage_adapter.find_versions(id: new_version.id)
     expect(versions.length).to eq 2
     expect(versions.first.id).to eq new_version.id
+    expect(versions.first.size).not_to eq size
+  ensure
+    f.close
   end
 end
