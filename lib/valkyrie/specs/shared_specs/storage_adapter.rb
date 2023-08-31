@@ -96,6 +96,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(versions.length).to eq 2
     expect(versions.first.id).to eq new_version.id
     expect(versions.first.size).not_to eq size
+    # TODO
+    # 1. How do I delete a version
+    # 2. Is there a way to delete all versions.
+    # 3. If I delete the root version, can I still query for its versions.
   ensure
     f.close
   end
