@@ -17,7 +17,9 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource: nil, **_extra_arguments)
       identifier = Valkyrie::ID.new("memory://#{resource.id}")
-      cache[identifier] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file)
+      version_id = Valkyrie::ID.new("#{identifier}##{SecureRandom.uuid}")
+      cache[identifier] ||= {}
+      cache[identifier][:current] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file, version_id: version_id)
     end
 
     # @param file [IO]
@@ -26,20 +28,20 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to
     #   other adapters.
     # @return [Valkyrie::StorageAdapter::StreamFile]
-    def upload_version(file:, original_filename:, previous_version_id:)
+    def upload_version(id:, file:)
       # Get previous file and add a UUID to the end of it.
-      previous_file = find_by(id: previous_version_id)
-      previous_file = previous_file.new(id: Valkyrie::ID.new("#{previous_version_id}##{SecureRandom.uuid}"))
-      cache[previous_file.id] = previous_file
-      cache["#{previous_version_id}_versions"] ||= []
-      cache["#{previous_version_id}_versions"] = [previous_file] + cache["#{previous_version_id}_versions"]
-      cache[previous_version_id] = Valkyrie::StorageAdapter::StreamFile.new(id: previous_version_id, io: file)
+      current_file = find_by(id: id)
+      new_file = current_file.new(io: file, version_id: Valkyrie::ID.new("#{id}##{SecureRandom.uuid}"))
+      cache[current_file.id][:current] = new_file
+      cache[current_file.id][:versions] ||= []
+      cache[current_file.id][:versions] = [current_file] + cache[current_file.id][:versions]
+      new_file
     end
 
     # @param id [Valkyrie::ID]
     # @return [Array<Valkyrie::StorageAdapter::StreamFile>]
     def find_versions(id:)
-      [find_by(id: id)] + cache.fetch("#{id}_versions", [])
+      [cache[id][:current]] + cache[id].fetch(:versions, [])
     end
 
     # Return the file associated with the given identifier
@@ -47,8 +49,15 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      raise Valkyrie::StorageAdapter::FileNotFound unless cache[id]
-      cache[id]
+      no_version_id = Valkyrie::ID.new(id.to_s.split("#").first)
+      raise Valkyrie::StorageAdapter::FileNotFound unless cache[no_version_id]
+      if id == no_version_id
+        cache[id][:current]
+      else
+        find_versions(id: no_version_id).find do |file|
+          file.version_id == id
+        end
+      end
     end
 
     # @param id [Valkyrie::ID]

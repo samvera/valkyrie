@@ -81,35 +81,43 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "can upload and find new versions" do
     pending "Versioning not supported" unless storage_adapter.supports?(:versions)
-    size = file.size
     resource = Valkyrie::Specs::CustomResource.new(id: "test")
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
+    expect(uploaded_file.version_id).not_to be_blank
 
     f = Tempfile.new
     f.puts "Test File"
     f.rewind
 
-    new_version = storage_adapter.upload_version(file: f, original_filename: 'foo_final.jpg', previous_version_id: uploaded_file.id)
+    # upload_version
+    new_version = storage_adapter.upload_version(id: uploaded_file.id, file: f)
     expect(uploaded_file.id).to eq new_version.id
+    expect(uploaded_file.version_id).not_to eq new_version.version_id
 
+    # find_versions
+    # Two versions of the same file have the same id, but different version_ids,
+    # use case: I want to store metadata about a file when it's uploaded as a
+    #   version and refer to it consistently.
     versions = storage_adapter.find_versions(id: new_version.id)
     expect(versions.length).to eq 2
     expect(versions.first.id).to eq new_version.id
-    expect(versions.first.size).not_to eq size
+    expect(versions.first.version_id).to eq new_version.version_id
+
+    expect(versions.last.id).to eq uploaded_file.id
+    expect(versions.last.version_id).to eq uploaded_file.version_id
+
+    expect(versions.first.size).not_to eq versions.last.size
+
+    expect(storage_adapter.find_by(id: uploaded_file.version_id).version_id).to eq uploaded_file.version_id
     # TODO
-    # 1. How do I delete a version
-    # 2. Is there a way to delete all versions.
-    # 3. If I delete the root version, can I still query for its versions.
-    #
-    # Feedback: previous_version_id implies that I can upload a version of a
-    # version, not just the root.
-    #
-    # I need a current ID (get the most recent version) and every version
-    # including the current one needs a stable ID.
+    # 1. How do I delete a version: storage_adapter.delete(id: version_id)
+    # 2. Is there a way to delete all versions: storage_adapter.delete(id: id, purge_versions: true)
+    # 3. If I delete the root version, can I still query for its versions. Yes.
+    # 4. I can find_by a version ID and get it.
     #
     # Deleting: when I delete a root node, find_versions should continue to
     # work, but find_by with the root node ID and no version ID should NotFound.
   ensure
-    f.close
+    f&.close
   end
 end
