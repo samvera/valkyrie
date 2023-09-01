@@ -30,18 +30,18 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload_version(id:, file:)
       # Get previous file and add a UUID to the end of it.
-      current_file = find_by(id: id)
-      new_file = current_file.new(io: file, version_id: Valkyrie::ID.new("#{id}##{SecureRandom.uuid}"))
-      cache[current_file.id][:current] = new_file
-      cache[current_file.id][:versions] ||= []
-      cache[current_file.id][:versions] = [current_file] + cache[current_file.id][:versions]
+      new_file = Valkyrie::StorageAdapter::StreamFile.new(id: id, io: file, version_id: Valkyrie::ID.new("#{id}##{SecureRandom.uuid}"))
+      current_file = cache[id][:current]
+      cache[id][:current] = new_file
+      cache[id][:versions] ||= []
+      cache[id][:versions].prepend(current_file) if current_file
       new_file
     end
 
     # @param id [Valkyrie::ID]
     # @return [Array<Valkyrie::StorageAdapter::StreamFile>]
     def find_versions(id:)
-      [cache[id][:current]] + cache[id].fetch(:versions, [])
+      [cache[id][:current] || nil].compact + cache[id].fetch(:versions, [])
     end
 
     # Return the file associated with the given identifier
@@ -49,15 +49,18 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::StreamFile]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      no_version_id = Valkyrie::ID.new(id.to_s.split("#").first)
+      no_version_id, _version = id_and_version(id)
       raise Valkyrie::StorageAdapter::FileNotFound unless cache[no_version_id]
-      if id == no_version_id
-        cache[id][:current]
-      else
-        find_versions(id: no_version_id).find do |file|
-          file.version_id == id
+      version =
+        if id == no_version_id
+          cache[id][:current]
+        else
+          find_versions(id: no_version_id).find do |file|
+            file.version_id == id
+          end
         end
-      end
+      raise Valkyrie::StorageAdapter::FileNotFound unless version
+      version
     end
 
     # @param id [Valkyrie::ID]
@@ -77,10 +80,24 @@ module Valkyrie::Storage
       end
     end
 
+    def id_and_version(id)
+      id, version = id.to_s.split("#")
+      [Valkyrie::ID.new(id), version]
+    end
+
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
-      cache.delete(id)
+      base_id, version = id_and_version(id)
+      if version && cache[base_id][:current]&.version_id != id
+        cache[base_id][:versions].reject! do |file|
+          file.version_id == id
+        end
+      else
+        cache[base_id][:versions] ||= []
+        cache[base_id][:versions].prepend(cache[base_id][:current])
+        cache[base_id][:current] = nil
+      end
       nil
     end
   end

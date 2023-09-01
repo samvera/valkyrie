@@ -109,6 +109,30 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(versions.first.size).not_to eq versions.last.size
 
     expect(storage_adapter.find_by(id: uploaded_file.version_id).version_id).to eq uploaded_file.version_id
+
+    # Delete versions
+
+    # Deleting a version should leave the current version
+    storage_adapter.delete(id: uploaded_file.version_id)
+    expect(storage_adapter.find_versions(id: uploaded_file.id).length).to eq 1
+    expect { storage_adapter.find_by(id: uploaded_file.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+
+    # Deleting the current record should push it into the versions history.
+    storage_adapter.delete(id: new_version.id)
+    expect { storage_adapter.find_by(id: new_version.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+    expect(storage_adapter.find_versions(id: new_version.id).length).to eq 1
+
+    # Restoring a previous version is just pumping its file into upload_version
+    newest_version = storage_adapter.upload_version(file: new_version, id: new_version.id)
+    expect(newest_version.version_id).not_to eq new_version.id
+    expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
+
+    # I can restore a version twice
+    newest_version = storage_adapter.upload_version(file: new_version, id: new_version.id)
+    expect(newest_version.version_id).not_to eq new_version.id
+    expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
+    expect(storage_adapter.find_versions(id: newest_version.id).length).to eq 3
+
     # TODO
     # 1. How do I delete a version: storage_adapter.delete(id: version_id)
     # 2. Is there a way to delete all versions: storage_adapter.delete(id: id, purge_versions: true)
