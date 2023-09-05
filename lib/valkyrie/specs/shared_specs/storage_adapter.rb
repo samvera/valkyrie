@@ -140,14 +140,6 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.find_versions(id: new_version.id)).to eq []
     expect { storage_adapter.find_by(id: newest_version.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
 
-    # TODO
-    # 1. How do I delete a version: storage_adapter.delete(id: version_id)
-    # 2. Is there a way to delete all versions: storage_adapter.delete(id: id, purge_versions: true)
-    # 3. If I delete the root version, can I still query for its versions. Yes.
-    # 4. I can find_by a version ID and get it.
-    #
-    # Deleting: when I delete a root node, find_versions should continue to
-    # work, but find_by with the root node ID and no version ID should NotFound.
   ensure
     f&.close
   end
