@@ -7,6 +7,9 @@ RSpec.describe Valkyrie::Storage::VersionedDisk do
   it_behaves_like "a Valkyrie::StorageAdapter"
   let(:storage_adapter) { described_class.new(base_path: ROOT_PATH.join("tmp", "files_test")) }
   let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
+  before do
+    FileUtils.rm_rf(ROOT_PATH.join("tmp", "files_test"))
+  end
 
   describe ".handles?" do
     it "matches on base_path" do

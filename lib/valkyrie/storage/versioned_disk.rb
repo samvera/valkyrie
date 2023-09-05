@@ -35,8 +35,8 @@ module Valkyrie::Storage
       false
     end
 
-    def file_path(id, version)
-      version_id(id, version).to_s.gsub(/^versiondisk:\/\//, '')
+    def file_path(version_id)
+      version_id.to_s.gsub(/^versiondisk:\/\//, '')
     end
 
     # Return the file associated with the given identifier
@@ -44,26 +44,40 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::File]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      id, version = id_and_version(id)
-      version = get_current_version(id) if version == "current"
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: LazyFile.open(file_path(id, version), 'rb'), version_id: version_id(id, version))
+      version_id = version_id(id)
+      current_version = current_version_id(id)
+      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(current_version.to_s), io: LazyFile.open(file_path(version_id), 'rb'), version_id: version_id)
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
     end
 
-    def get_current_version(id)
-      root = Pathname.new(file_path(id, "current"))
-      original_name = root.basename.to_s.split("v-").last.split("-", 2).last
+    def version_id(id)
+      return id unless id.to_s.include?("v-")
+      pre_version, version, post_version = split_version(id)
+      version = get_current_version(id) if version == "current"
+      Valkyrie::ID.new("#{pre_version}v-#{version}-#{post_version}")
     end
 
-    def id_and_version(id)
+    def current_version_id(id)
+      return id unless id.to_s.include?("v-")
+      pre_version, version, post_version = split_version(id)
+      return id if version == "current"
+      Valkyrie::ID.new("#{pre_version}v-current-#{post_version}")
+    end
+
+    def get_current_version(id)
+      root = Pathname.new(file_path(id))
+      _, _version, original_name = split_version(id)
+      files = root.parent.children.select { |file| file.basename.to_s.end_with?(original_name) }
+      return nil if files.blank?
+      _, version, _post_version = split_version(files.first)
+      version
+    end
+
+    def split_version(id)
       pre_version, post_version = id.to_s.split("v-")
       version, post_version = post_version.split("-", 2)
-      [Valkyrie::ID.new("#{pre_version}v-current-#{post_version}"), version]
-    end
-
-    def version_id(id, version)
-      Valkyrie::ID.new(id.to_s.gsub("v-current", "v-#{version}"))
+      [pre_version, version, post_version]
     end
 
     ## LazyFile takes File.open parameters but doesn't leave a file handle open on
@@ -92,7 +106,7 @@ module Valkyrie::Storage
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
-      path = file_path(id)
+      path = file_path(version_id(id))
       FileUtils.rm_rf(path) if File.exist?(path)
     end
   end
