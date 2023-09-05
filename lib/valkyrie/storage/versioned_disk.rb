@@ -15,11 +15,35 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::File]
     def upload(file:, original_filename:, resource: nil, **_extra_arguments)
-      version_timestamp = Time.now.to_i
+      version_timestamp = current_timestamp
       new_path = path_generator.generate(resource: resource, file: file, original_filename: "v-#{version_timestamp}-#{original_filename}")
       FileUtils.mkdir_p(new_path.parent)
-      file_mover.call(file.path, new_path)
+      file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
+    end
+
+    def current_timestamp
+      Time.now.strftime("%s%N")
+    end
+
+    def upload_version(id:, file:)
+      version_timestamp = current_timestamp
+      version_id = version_id(id)
+      existing_path = file_path(version_id)
+      _, version, _post = split_version(version_id)
+      new_path = Pathname.new(existing_path.gsub(version, version_timestamp.to_s))
+      FileUtils.mkdir_p(new_path.parent)
+      file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
+      find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
+    end
+
+    def find_versions(id:)
+      root = Pathname.new(file_path(id))
+      _, _version, original_name = split_version(id)
+      files = root.parent.children.select { |file| file.basename.to_s.end_with?(original_name) && !file.basename.to_s.include?("deletionmarker") }.sort.reverse
+      files.map do |file|
+        find_by(id: Valkyrie::ID.new("versiondisk://#{file}"))
+      end
     end
 
     # @param id [Valkyrie::ID]
@@ -46,7 +70,7 @@ module Valkyrie::Storage
     def find_by(id:)
       version_id = version_id(id)
       current_version = current_version_id(id)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(current_version.to_s), io: LazyFile.open(file_path(version_id), 'rb'), version_id: version_id)
+      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(current_version.to_s), io: ::Valkyrie::Storage::Disk::LazyFile.open(file_path(version_id), 'rb'), version_id: version_id)
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
     end
@@ -66,11 +90,9 @@ module Valkyrie::Storage
     end
 
     def get_current_version(id)
-      root = Pathname.new(file_path(id))
-      _, _version, original_name = split_version(id)
-      files = root.parent.children.select { |file| file.basename.to_s.end_with?(original_name) }
-      return nil if files.blank?
-      _, version, _post_version = split_version(files.first)
+      current_version_id = find_versions(id: id).first&.version_id
+      return nil if current_version_id.nil?
+      _, version, _post_version = split_version(current_version_id)
       version
     end
 
@@ -80,34 +102,22 @@ module Valkyrie::Storage
       [pre_version, version, post_version]
     end
 
-    ## LazyFile takes File.open parameters but doesn't leave a file handle open on
-    # instantiation. This way StorageAdapter#find_by doesn't open a handle
-    # silently and never clean up after itself.
-    class LazyFile
-      def self.open(path, mode)
-        # Open the file regularly and close it, so it can error if it doesn't
-        # exist.
-        File.open(path, mode).close
-        new(path, mode)
-      end
-
-      delegate(*(File.instance_methods - Object.instance_methods), to: :_inner_file)
-
-      def initialize(path, mode)
-        @__path = path
-        @__mode = mode
-      end
-
-      def _inner_file
-        @_inner_file ||= File.open(@__path, @__mode)
-      end
-    end
-
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)
       path = file_path(version_id(id))
-      FileUtils.rm_rf(path) if File.exist?(path)
+      if version_id(id).to_s.include?(get_current_version(id))
+        # Leave a deletion marker behind.
+        version_timestamp = current_timestamp
+        version_id = version_id(id)
+        existing_path = file_path(version_id)
+        _, version, _post = split_version(version_id)
+        new_path = Pathname.new(existing_path.gsub(version, "#{version_timestamp}-deletionmarker"))
+        FileUtils.mkdir_p(new_path.parent)
+        File.open(new_path, 'w') { |f| f.puts "Deleted" }
+      elsif File.exist?(path)
+        FileUtils.rm_rf(path)
+      end
     end
   end
 end
