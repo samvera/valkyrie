@@ -133,6 +133,13 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
     expect(storage_adapter.find_versions(id: newest_version.id).length).to eq 3
 
+    # I can delete all versions.
+
+    storage_adapter.delete(id: newest_version.id, purge_versions: true)
+
+    expect(storage_adapter.find_versions(id: new_version.id)).to eq []
+    expect { storage_adapter.find_by(id: newest_version.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+
     # TODO
     # 1. How do I delete a version: storage_adapter.delete(id: version_id)
     # 2. Is there a way to delete all versions: storage_adapter.delete(id: id, purge_versions: true)

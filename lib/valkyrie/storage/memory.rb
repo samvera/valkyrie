@@ -41,6 +41,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Array<Valkyrie::StorageAdapter::StreamFile>]
     def find_versions(id:)
+      return [] if cache[id].nil?
       [cache[id][:current] || nil].compact + cache[id].fetch(:versions, [])
     end
 
@@ -87,7 +88,7 @@ module Valkyrie::Storage
 
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
-    def delete(id:)
+    def delete(id:, purge_versions: false)
       base_id, version = id_and_version(id)
       if version && cache[base_id][:current]&.version_id != id
         cache[base_id][:versions].reject! do |file|
@@ -98,6 +99,7 @@ module Valkyrie::Storage
         cache[base_id][:versions].prepend(cache[base_id][:current])
         cache[base_id][:current] = nil
       end
+      cache.delete(base_id) if purge_versions
       nil
     end
   end
