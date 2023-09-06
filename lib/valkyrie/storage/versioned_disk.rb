@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 module Valkyrie::Storage
-  # Implements the DataMapper Pattern to store binary data on disk
+  # The VersionedDisk adapter implements versioned storage on disk by storing
+  # the timestamp of the file's creation as part of the file name
+  # (v-timestamp-filename.jpg). If the
+  # current file is deleted it creates a DeletionMarker, which is an empty file
+  # with "deletionmarker" in the name of the file.
   class VersionedDisk
     class VersionId
       attr_reader :id
