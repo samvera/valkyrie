@@ -18,6 +18,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
   it { is_expected.to respond_to(:supports?) }
 
+  it "returns false for non-existing features" do
+    expect(storage_adapter.supports?(:bad_feature_not_real_dont_implement)).to eq false
+  end
+
   it "can upload a file which is just an IO" do
     io_file = Tempfile.new('temp_io')
     io_file.write "Stuff"

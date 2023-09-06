@@ -48,10 +48,6 @@ module Valkyrie::Storage
         string_id.include?("v-")
       end
 
-      def file_root
-        string_id.split("v-").first
-      end
-
       def version
         string_id.split("v-").last.split("-", 2).first
       end
