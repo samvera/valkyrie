@@ -2,6 +2,64 @@
 module Valkyrie::Storage
   # Implements the DataMapper Pattern to store binary data on disk
   class VersionedDisk
+    class VersionId
+      attr_reader :id
+      def initialize(id)
+        @id = id
+      end
+
+      def current_reference_id
+        self.class.new(Valkyrie::ID.new(string_id.gsub(version, "current")))
+      end
+
+      def resolve_current
+        return self unless reference?
+        version_files.first
+      end
+
+      def file_path
+        @file_path ||= string_id.gsub(/^versiondisk:\/\//, '')
+      end
+
+      def version_files
+        root = Pathname.new(file_path)
+        root.parent.children.select { |file| file.basename.to_s.end_with?(filename) }.sort.reverse.map do |file|
+          VersionId.new(Valkyrie::ID.new("versiondisk://#{file}"))
+        end
+      end
+
+      def deletion_marker?
+        string_id.include?("deletionmarker")
+      end
+
+      def current?
+        version_files.first.id == id
+      end
+
+      def reference?
+        version == "current"
+      end
+
+      def versioned?
+        string_id.include?("v-")
+      end
+
+      def file_root
+        string_id.split("v-").first
+      end
+
+      def version
+        string_id.split("v-").last.split("-", 2).first
+      end
+
+      def filename
+        string_id.split("v-").last.split("-", 2).last.gsub("deletionmarker-", "")
+      end
+
+      def string_id
+        id.to_s
+      end
+    end
     attr_reader :base_path, :path_generator, :file_mover
     def initialize(base_path:, path_generator: ::Valkyrie::Storage::Disk::BucketedStorage, file_mover: FileUtils.method(:cp))
       @base_path = Pathname.new(base_path.to_s)
@@ -29,11 +87,9 @@ module Valkyrie::Storage
     def upload_version(id:, file:)
       version_timestamp = current_timestamp
       version_id = version_id(id)
-      # It's a deletion marker..
-      version_id = version_files(id: id)[1] if version_id.to_s.include?("v--")
-      existing_path = file_path(version_id)
-      _, version, _post = split_version(version_id)
-      new_path = Pathname.new(existing_path.gsub(version, version_timestamp.to_s))
+      version_id = version_id.version_files[1] if version_id.deletion_marker?
+      existing_path = version_id.file_path
+      new_path = Pathname.new(existing_path.gsub(version_id.version, version_timestamp.to_s))
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
@@ -47,8 +103,8 @@ module Valkyrie::Storage
 
     def version_files(id:)
       root = Pathname.new(file_path(id))
-      _, _version, original_name = split_version(id)
-      root.parent.children.select { |file| file.basename.to_s.end_with?(original_name) }.sort.reverse
+      id = VersionId.new(id)
+      root.parent.children.select { |file| file.basename.to_s.end_with?(id.filename) }.sort.reverse
     end
 
     # @param id [Valkyrie::ID]
@@ -74,59 +130,34 @@ module Valkyrie::Storage
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
       version_id = version_id(id)
-      current_version = current_version_id(id)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(current_version.to_s), io: ::Valkyrie::Storage::Disk::LazyFile.open(file_path(version_id), 'rb'), version_id: version_id)
+      raise Valkyrie::StorageAdapter::FileNotFound if version_id.deletion_marker?
+      Valkyrie::StorageAdapter::File.new(id: version_id.current_reference_id.id, io: ::Valkyrie::Storage::Disk::LazyFile.open(version_id.file_path, 'rb'), version_id: version_id.id)
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
     end
 
     def version_id(id)
-      return id unless id.to_s.include?("v-")
-      pre_version, version, post_version = split_version(id)
-      version = get_current_version(id) if version == "current"
-      Valkyrie::ID.new("#{pre_version}v-#{version}-#{post_version}")
-    end
-
-    def current_version_id(id)
-      return id unless id.to_s.include?("v-")
-      pre_version, version, post_version = split_version(id)
-      return id if version == "current"
-      Valkyrie::ID.new("#{pre_version}v-current-#{post_version}")
-    end
-
-    def get_current_version(id)
-      current_version_id = version_files(id: id)&.first
-      return nil if current_version_id.nil?
-      return nil if current_version_id.to_s.include?("deletionmarker")
-      _, version, _post_version = split_version(current_version_id)
-      version
-    end
-
-    def split_version(id)
-      pre_version, post_version = id.to_s.split("v-")
-      version, post_version = post_version.split("-", 2)
-      [pre_version, version, post_version]
+      id = VersionId.new(id)
+      return id unless id.versioned?
+      id.resolve_current
     end
 
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:, purge_versions: false)
-      path = file_path(version_id(id))
+      id = version_id(id).resolve_current
       if purge_versions
-        version_files(id: id).each do |file|
-          FileUtils.rm_rf(file)
+        id.version_files.each do |version_id|
+          FileUtils.rm_rf(version_id.file_path)
         end
-      elsif version_id(id).to_s.include?(get_current_version(id))
+      elsif id.current?
         # Leave a deletion marker behind.
         version_timestamp = current_timestamp
-        version_id = version_id(id)
-        existing_path = file_path(version_id)
-        _, version, _post = split_version(version_id)
-        new_path = Pathname.new(existing_path.gsub(version, "#{version_timestamp}-deletionmarker"))
+        new_path = Pathname.new(id.file_path.gsub(id.version, "#{version_timestamp}-deletionmarker"))
         FileUtils.mkdir_p(new_path.parent)
         File.open(new_path, 'w') { |f| f.puts "Deleted" }
-      elsif File.exist?(path)
-        FileUtils.rm_rf(path)
+      elsif File.exist?(id.file_path)
+        FileUtils.rm_rf(id.file_path)
       end
     end
   end
