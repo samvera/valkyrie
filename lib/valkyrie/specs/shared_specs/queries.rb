@@ -65,6 +65,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
   describe ".find_by" do
     it "returns a resource by id or string representation of an id" do
+      before_find_by.call if defined? before_find_by
       resource = persister.save(resource: resource_class.new)
 
       found = query_service.find_by(id: resource.id)
@@ -87,6 +88,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
   describe ".find_by_alternate_identifier" do
     it "returns a resource by alternate identifier or string representation of an alternate identifier" do
+      before_find_by_alternate_identifier.call if defined? before_find_by_alternate_identifier
+
       resource = resource_class.new
       resource.alternate_ids = [Valkyrie::ID.new('p9s0xfj')]
       resource = persister.save(resource: resource)
@@ -114,6 +117,8 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
 
     it 'can have multiple alternate identifiers' do
+      before_find_by_alternate_identifier.call if defined? before_find_by_alternate_identifier
+
       resource = resource_class.new
       resource.alternate_ids = [Valkyrie::ID.new('p9s0xfj'), Valkyrie::ID.new('jks0xfj')]
       resource = persister.save(resource: resource)
