@@ -24,19 +24,26 @@ services:
       - fedora4:/data
       ports:
       - 8988:8080
-    portforward: true
+    environment:
+      CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
+    portforward: 8988
   valkyrie_fedora_5:
     type: compose
     app_mount: false
     volumes:
       fedora5:
     services:
-      image: samvera/fcrepo4:5.1.0
-      command: /fedora-entrypoint.sh
+      image: fcrepo/fcrepo:5.1.1-multiplatform
+      command:
+        - "catalina.sh"
+        - "run"
       volumes:
       - fedora5:/data
       ports:
       - 8998:8080
+      environment:
+        CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+        JAVA_OPTS: "-Dfcrepo.dynamic.jms.port=61620 -Dfcrepo.dynamic.stomp.port=61617 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     portforward: true
   valkyrie_fedora_6:
     type: compose

@@ -94,7 +94,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
           let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
 
           it 'produces a valid URI' do
-            expected_uri = 'fedora://localhost:8998/rest/test/AN1D4UHA/original'
+            expected_uri = "fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/test/AN1D4UHA/original"
             expect(uploaded_file.id.to_s).to eq expected_uri
           end
         end
@@ -103,7 +103,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
           let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: '/', fedora_version: 5)) }
 
           it 'produces a valid URI' do
-            expected_uri = RDF::URI.new('fedora://localhost:8998/rest/AN1D4UHA/original')
+            expected_uri = RDF::URI.new("fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/AN1D4UHA/original")
             expect(uploaded_file.id.to_s).to eq expected_uri
           end
         end
@@ -131,7 +131,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
         let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5)) }
 
         it 'produces a valid URI' do
-          expected_uri = 'fedora://localhost:8998/rest/test/AN/1D/4U/HA/AN1D4UHA/original'
+          expected_uri = "fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/test/AN/1D/4U/HA/AN1D4UHA/original"
           expect(uploaded_file.id.to_s).to eq expected_uri
         end
       end
