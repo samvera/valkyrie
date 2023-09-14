@@ -6,6 +6,11 @@ module Valkyrie::Storage
   # current file is deleted it creates a DeletionMarker, which is an empty file
   # with "deletionmarker" in the name of the file.
   class VersionedDisk
+    # A small value class that holds a version id and methods for knowing things about it.
+    # Examples of version ids in this adapter:
+    #   * "versiondisk://te/st/test/v-current-filename.jpg" (never actually saved this way on disk, just used as a reference)
+    #   * "versiondisk://te/st/test/v-1694195675462560794-filename.jpg" (this timestamped form would be saved on disk)
+    #   * "versiondisk://te/st/test/v-1694195675462560794-deletionmarker-filename.jpg" (this file is saved on disk but empty)
     class VersionId
       attr_reader :id
       def initialize(id)
