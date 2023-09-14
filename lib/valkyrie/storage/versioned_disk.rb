@@ -33,10 +33,10 @@ module Valkyrie::Storage
     def upload_version(id:, file:)
       version_timestamp = current_timestamp
       # Get the existing version_id so we can calculate the next path from it.
-      version_id = version_id(id)
-      version_id = version_id.version_files[1] if version_id.deletion_marker?
-      existing_path = version_id.file_path
-      new_path = Pathname.new(existing_path.gsub(version_id.version, version_timestamp.to_s))
+      current_version_id = version_id(id)
+      current_version_id = current_version_id.version_files[1] if current_version_id.deletion_marker?
+      existing_path = current_version_id.file_path
+      new_path = Pathname.new(existing_path.gsub(current_version_id.version, version_timestamp.to_s))
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
