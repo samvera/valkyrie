@@ -85,7 +85,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "can upload and find new versions" do
     pending "Versioning not supported" unless storage_adapter.supports?(:versions)
-    resource = Valkyrie::Specs::CustomResource.new(id: "test")
+    resource = Valkyrie::Specs::CustomResource.new(id: "test2")
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
     expect(uploaded_file.version_id).not_to be_blank
 
