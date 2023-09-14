@@ -61,9 +61,9 @@ module Valkyrie::Storage
       connection.http.put do |request|
         request.url fedora_uri
         request.headers['Content-Type'] = content_type
-        request.headers['Content-Length'] = io.length.to_s
+        request.headers['Content-Length'] = io.length.to_s if io.respond_to?(:length)
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
-        request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(io)}"
+        request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(io)}" if io.respond_to?(:to_str)
         request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
         io = Faraday::UploadIO.new(io, content_type, original_filename)
         request.body = io
@@ -85,10 +85,16 @@ module Valkyrie::Storage
         request.headers["Accept"] = "application/ld+json"
       end
       return [] unless version_list.success?
-      JSON.parse(version_list.body)&.first&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
+      version_graph = JSON.parse(version_list.body)&.first
+      if fedora_version == 4
+        version_graph&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
+      else
+        version_graph&.fetch("http://www.w3.org/ns/ldp#contains", [])&.sort_by { |x| x["@id"] }&.reverse
+      end
     end
 
     def latest_version(identifier)
+      return :not_applicable if fedora_version != 4
       version_list = version_list(identifier)
       return "version1" if version_list.blank?
       last_version = version_list.first["@id"]
@@ -96,9 +102,20 @@ module Valkyrie::Storage
       "version#{last_version_number + 1}"
     end
 
+    # @param [Valkyrie::ID] id A storage ID that's not a version, to get the
+    #   version ID of.
+    def current_version_id(id:)
+      version_list = version_list(fedora_identifier(id: id))
+      return nil if version_list.blank?
+      valkyrie_identifier(uri: version_list.first["@id"])
+    end
+
     def perform_find(id:, version_id: nil)
       current_id = Valkyrie::ID.new(id.to_s.split("/fcr:versions").first)
       version_id ||= id if id != current_id
+      # No version got passed and we're asking for a current_id, gotta get the
+      # version ID
+      return perform_find(id: current_id, version_id: (current_version_id(id: id) || :empty)) if version_id.nil?
       Valkyrie::StorageAdapter::StreamFile.new(id: current_id, io: response(id: id), version_id: version_id)
     end
 
@@ -108,10 +125,15 @@ module Valkyrie::Storage
     def mint_version(identifier, version_name = "version1")
       response = connection.http.post do |request|
         request.url "#{identifier}/fcr:versions"
-        request.headers['Slug'] = version_name
+        request.headers['Slug'] = version_name if fedora_version == 4
       end
       # If there's a deletion marker, don't return anything.
       return nil if response.status == 410
+      # This is awful, but versioning is locked to per-second increments.
+      if response.status == 409
+        sleep(0.5)
+        return mint_version(identifier, version_name)
+      end
       raise "Version unable to be created" unless response.status == 201
       valkyrie_identifier(uri: response.headers["location"].gsub("/fcr:metadata", ""))
     end
