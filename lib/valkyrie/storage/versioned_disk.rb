@@ -16,6 +16,7 @@ module Valkyrie::Storage
         self.class.new(Valkyrie::ID.new(string_id.gsub(version, "current")))
       end
 
+      # @return [VersionID] the version_id for the current file
       def resolve_current
         return self unless reference?
         version_files.first
