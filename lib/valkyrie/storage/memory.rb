@@ -88,18 +88,15 @@ module Valkyrie::Storage
 
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
-    def delete(id:, purge_versions: false)
+    def delete(id:)
       base_id, version = id_and_version(id)
       if version && cache[base_id][:current]&.version_id != id
         cache[base_id][:versions].reject! do |file|
           file.version_id == id
         end
       else
-        cache[base_id][:versions] ||= []
-        cache[base_id][:versions].prepend(cache[base_id][:current])
-        cache[base_id][:current] = nil
+        cache.delete(base_id)
       end
-      cache.delete(base_id) if purge_versions
       nil
     end
   end

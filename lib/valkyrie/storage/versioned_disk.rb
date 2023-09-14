@@ -130,7 +130,7 @@ module Valkyrie::Storage
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
       version_id = version_id(id)
-      raise Valkyrie::StorageAdapter::FileNotFound if version_id.deletion_marker?
+      raise Valkyrie::StorageAdapter::FileNotFound if version_id.nil? || version_id&.deletion_marker?
       Valkyrie::StorageAdapter::File.new(id: version_id.current_reference_id.id, io: ::Valkyrie::Storage::Disk::LazyFile.open(version_id.file_path, 'rb'), version_id: version_id.id)
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
@@ -146,16 +146,10 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     def delete(id:, purge_versions: false)
       id = version_id(id).resolve_current
-      if purge_versions
+      if id.current?
         id.version_files.each do |version_id|
           FileUtils.rm_rf(version_id.file_path)
         end
-      elsif id.current?
-        # Leave a deletion marker behind.
-        version_timestamp = current_timestamp
-        new_path = Pathname.new(id.file_path.gsub(id.version, "#{version_timestamp}-deletionmarker"))
-        FileUtils.mkdir_p(new_path.parent)
-        File.open(new_path, 'w') { |f| f.puts "Deleted" }
       elsif File.exist?(id.file_path)
         FileUtils.rm_rf(id.file_path)
       end

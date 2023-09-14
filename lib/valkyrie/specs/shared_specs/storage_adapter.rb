@@ -114,17 +114,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
     expect(storage_adapter.find_by(id: uploaded_file.version_id).version_id).to eq uploaded_file.version_id
 
-    # Delete versions
-
-    # Deleting a version should leave the current version
+    # Deleting a version should leave the current versions
     storage_adapter.delete(id: uploaded_file.version_id)
     expect(storage_adapter.find_versions(id: uploaded_file.id).length).to eq 1
     expect { storage_adapter.find_by(id: uploaded_file.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
-
-    # Deleting the current record should push it into the versions history.
-    storage_adapter.delete(id: new_version.id)
-    expect { storage_adapter.find_by(id: new_version.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
-    expect(storage_adapter.find_versions(id: new_version.id).length).to eq 1
 
     # Restoring a previous version is just pumping its file into upload_version
     newest_version = storage_adapter.upload_version(file: new_version, id: new_version.id)
@@ -137,13 +130,12 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
     expect(storage_adapter.find_versions(id: newest_version.id).length).to eq 3
 
-    # I can delete all versions.
-
-    storage_adapter.delete(id: newest_version.id, purge_versions: true)
-
-    expect(storage_adapter.find_versions(id: new_version.id)).to eq []
-    expect { storage_adapter.find_by(id: newest_version.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
-
+    # NOTE: We originally wanted deleting the current record to push it into the
+    # versions history, but FCRepo 4/5/6 doesn't work that way, so we changed to
+    # instead make deleting delete everything.
+    storage_adapter.delete(id: new_version.id)
+    expect { storage_adapter.find_by(id: new_version.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+    expect(storage_adapter.find_versions(id: new_version.id).length).to eq 0
   ensure
     f&.close
   end
