@@ -54,8 +54,9 @@ module Valkyrie::Storage
       uri = fedora_identifier(id: id)
       # Auto versioning is on, so have to sleep if it's too soon after last
       # upload.
-      if fedora_version == 6
-        return upload_version(id: id, file: file) if current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
+      if fedora_version == 6 && current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
+        sleep(0.5)
+        return upload_version(id: id, file: file)
       end
       upload_file(fedora_uri: uri, io: file)
       version_id = mint_version(uri, latest_version(uri))
