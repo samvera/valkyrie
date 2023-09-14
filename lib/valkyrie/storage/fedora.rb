@@ -23,6 +23,7 @@ module Valkyrie::Storage
     # @return [Boolean] true if the adapter supports the given feature
     def supports?(feature)
       return true if feature == :versions
+      return true if feature == :version_deletion && fedora_version != 6
       false
     end
 
@@ -45,12 +46,17 @@ module Valkyrie::Storage
                resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
       identifier = resource_uri_transformer.call(resource, base_url) + '/original'
       upload_file(fedora_uri: identifier, io: file, content_type: content_type, original_filename: original_filename)
-      version_id = mint_version(identifier, latest_version(identifier))
+      version_id = current_version_id(id: valkyrie_identifier(uri: identifier)) || mint_version(identifier, latest_version(identifier))
       perform_find(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)
     end
 
     def upload_version(id:, file:)
       uri = fedora_identifier(id: id)
+      # Auto versioning is on, so have to sleep if it's too soon after last
+      # upload.
+      if fedora_version == 6
+        return upload_version(id: id, file: file) if current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
+      end
       upload_file(fedora_uri: uri, io: file)
       version_id = mint_version(uri, latest_version(uri))
       perform_find(id: Valkyrie::ID.new(uri.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)

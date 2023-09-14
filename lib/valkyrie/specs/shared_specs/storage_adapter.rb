@@ -55,7 +55,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   end
 
   it "can upload, validate, re-fetch, and delete a file" do
-    resource = Valkyrie::Specs::CustomResource.new(id: "test")
+    resource = Valkyrie::Specs::CustomResource.new(id: "test#{SecureRandom.uuid}")
     sha1 = Digest::SHA1.file(file).to_s
     size = file.size
     expect(uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)).to be_kind_of Valkyrie::StorageAdapter::File
@@ -85,7 +85,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "can upload and find new versions" do
     pending "Versioning not supported" unless storage_adapter.supports?(:versions)
-    resource = Valkyrie::Specs::CustomResource.new(id: "test2")
+    resource = Valkyrie::Specs::CustomResource.new(id: "test#{SecureRandom.uuid}")
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
     expect(uploaded_file.version_id).not_to be_blank
 
@@ -115,9 +115,12 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.find_by(id: uploaded_file.version_id).version_id).to eq uploaded_file.version_id
 
     # Deleting a version should leave the current versions
-    storage_adapter.delete(id: uploaded_file.version_id)
-    expect(storage_adapter.find_versions(id: uploaded_file.id).length).to eq 1
-    expect { storage_adapter.find_by(id: uploaded_file.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+    if storage_adapter.supports?(:version_deletion)
+      storage_adapter.delete(id: uploaded_file.version_id)
+      expect(storage_adapter.find_versions(id: uploaded_file.id).length).to eq 1
+      expect { storage_adapter.find_by(id: uploaded_file.version_id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+    end
+    current_length = storage_adapter.find_versions(id: new_version.id).length
 
     # Restoring a previous version is just pumping its file into upload_version
     newest_version = storage_adapter.upload_version(file: new_version, id: new_version.id)
@@ -128,7 +131,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     newest_version = storage_adapter.upload_version(file: new_version, id: new_version.id)
     expect(newest_version.version_id).not_to eq new_version.id
     expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
-    expect(storage_adapter.find_versions(id: newest_version.id).length).to eq 3
+    expect(storage_adapter.find_versions(id: newest_version.id).length).to eq current_length + 2
 
     # NOTE: We originally wanted deleting the current record to push it into the
     # versions history, but FCRepo 4/5/6 doesn't work that way, so we changed to

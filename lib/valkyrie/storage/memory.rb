@@ -76,6 +76,8 @@ module Valkyrie::Storage
       case feature
       when :versions
         true
+      when :version_deletion
+        true
       else
         false
       end

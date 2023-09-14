@@ -51,7 +51,7 @@ services:
     volumes:
       fedora6:
     services:
-      image: fcrepo/fcrepo:6.0.0
+      image: fcrepo/fcrepo:6.4.0
       command:
         - "catalina.sh"
         - "run"

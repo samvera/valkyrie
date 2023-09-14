@@ -116,7 +116,7 @@ module Valkyrie::Storage
     # @param feature [Symbol] Feature to test for.
     # @return [Boolean] true if the adapter supports the given feature
     def supports?(feature)
-      return true if feature == :versions
+      return true if feature == :versions || feature == :version_deletion
       false
     end
 
