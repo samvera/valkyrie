@@ -41,6 +41,7 @@ module Valkyrie::Storage
         version_files.first.id == id
       end
 
+      # @return [Boolean] Whether this id is referential (e.g. "current") or absolute (e.g. a timestamp)
       def reference?
         version == "current"
       end
