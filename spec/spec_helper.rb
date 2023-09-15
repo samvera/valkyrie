@@ -12,6 +12,7 @@ end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "valkyrie"
 require 'pry'
+require 'pry-byebug'
 require 'action_dispatch'
 require 'webmock/rspec'
 require 'timecop'

@@ -31,6 +31,7 @@ module Valkyrie
   # @see lib/valkyrie/specs/shared_specs/storage_adapter.rb
   module Storage
     require 'valkyrie/storage/disk'
+    require 'valkyrie/storage/versioned_disk'
     require 'valkyrie/storage/fedora'
     require 'valkyrie/storage/memory'
   end

@@ -9,7 +9,7 @@ module FedoraHelper
     elsif fedora_version == 6
       port = ENV["FEDORA_6_PORT"] || 8978
     end
-    connection_url = fedora_version == 6 ? "/fcrepo/rest" : "/rest"
+    connection_url = fedora_version == 6 || (fedora_version == 5 && !ENV["CI"]) ? "/fcrepo/rest" : "/rest"
     opts = {
       base_path: base_path,
       connection: ::Ldp::Client.new(faraday_client("http://#{fedora_auth}localhost:#{port}#{connection_url}")),

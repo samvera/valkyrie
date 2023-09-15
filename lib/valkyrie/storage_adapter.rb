@@ -67,6 +67,7 @@ module Valkyrie
     class File < Dry::Struct
       attribute :id, Valkyrie::Types::Any
       attribute :io, Valkyrie::Types::Any
+      attribute :version_id, Valkyrie::Types::Any.optional.default(nil)
       delegate :size, :read, :rewind, :close, to: :io
       def stream
         io
