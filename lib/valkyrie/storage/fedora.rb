@@ -23,6 +23,7 @@ module Valkyrie::Storage
     # @return [Boolean] true if the adapter supports the given feature
     def supports?(feature)
       return true if feature == :versions
+      # Fedora 6 auto versions and you can't delete versions.
       return true if feature == :version_deletion && fedora_version != 6
       false
     end
@@ -46,13 +47,18 @@ module Valkyrie::Storage
                resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
       identifier = resource_uri_transformer.call(resource, base_url) + '/original'
       upload_file(fedora_uri: identifier, io: file, content_type: content_type, original_filename: original_filename)
+      # Fedora 6 auto versions, so check to see if there's a version for this
+      # initial upload. If not, then mint one (fedora 4/5)
       version_id = current_version_id(id: valkyrie_identifier(uri: identifier)) || mint_version(identifier, latest_version(identifier))
       perform_find(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)
     end
 
+    # @param id [Valkyrie::ID] ID of the Valkyrie::StorageAdapter::StreamFile to
+    #   version.
+    # @param file [IO]
     def upload_version(id:, file:)
       uri = fedora_identifier(id: id)
-      # Auto versioning is on, so have to sleep if it's too soon after last
+      # Fedora 6 has auto versioning, so have to sleep if it's too soon after last
       # upload.
       if fedora_version == 6 && current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
         sleep(0.5)
@@ -61,6 +67,38 @@ module Valkyrie::Storage
       upload_file(fedora_uri: uri, io: file)
       version_id = mint_version(uri, latest_version(uri))
       perform_find(id: Valkyrie::ID.new(uri.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)
+    end
+
+    # @param id [Valkyrie::ID]
+    # @return [Array<Valkyrie::StorageAdapter::StreamFile>]
+    def find_versions(id:)
+      uri = fedora_identifier(id: id)
+      version_list = version_list(uri)
+      version_list.map do |version|
+        id = valkyrie_identifier(uri: version["@id"])
+        perform_find(id: id, version_id: id)
+      end
+    end
+
+    # Delete the file in Fedora associated with the given identifier.
+    # @param id [Valkyrie::ID]
+    def delete(id:)
+      connection.http.delete(fedora_identifier(id: id))
+    end
+
+    def version_list(fedora_uri)
+      version_list = connection.http.get do |request|
+        request.url "#{fedora_uri}/fcr:versions"
+        request.headers["Accept"] = "application/ld+json"
+      end
+      return [] unless version_list.success?
+      version_graph = JSON.parse(version_list.body)&.first
+      if fedora_version == 4
+        version_graph&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
+      else
+        # Fedora 5/6 use Memento.
+        version_graph&.fetch("http://www.w3.org/ns/ldp#contains", [])&.sort_by { |x| x["@id"] }&.reverse
+      end
     end
 
     def upload_file(fedora_uri:, io:, content_type: "application/octet-stream", original_filename: "default")
@@ -77,30 +115,10 @@ module Valkyrie::Storage
       end
     end
 
-    def find_versions(id:)
-      uri = fedora_identifier(id: id)
-      version_list = version_list(uri)
-      version_list.map do |version|
-        id = valkyrie_identifier(uri: version["@id"])
-        perform_find(id: id, version_id: id)
-      end
-    end
-
-    def version_list(fedora_uri)
-      version_list = connection.http.get do |request|
-        request.url "#{fedora_uri}/fcr:versions"
-        request.headers["Accept"] = "application/ld+json"
-      end
-      return [] unless version_list.success?
-      version_graph = JSON.parse(version_list.body)&.first
-      if fedora_version == 4
-        version_graph&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
-      else
-        version_graph&.fetch("http://www.w3.org/ns/ldp#contains", [])&.sort_by { |x| x["@id"] }&.reverse
-      end
-    end
-
+    # Returns a new version identifier to mint. Defaults to version1, but will
+    # increment to version2 etc if one found. Only for Fedora 4.
     def latest_version(identifier)
+      # Only version 4 needs a version ID, 5/6 both mint using timestamps.
       return :not_applicable if fedora_version != 4
       version_list = version_list(identifier)
       return "version1" if version_list.blank?
@@ -128,27 +146,23 @@ module Valkyrie::Storage
 
     # @param identifier [String] Fedora URI to mint a version for.
     # @return [Valkyrie::ID] version_id of the minted version.
-    # Versions are created AFTER content is uploaded.
+    # Versions are created AFTER content is uploaded, except for Fedora 6 which
+    #   auto versions.
     def mint_version(identifier, version_name = "version1")
       response = connection.http.post do |request|
         request.url "#{identifier}/fcr:versions"
         request.headers['Slug'] = version_name if fedora_version == 4
       end
-      # If there's a deletion marker, don't return anything.
+      # If there's a deletion marker, don't return anything. (Fedora 4)
       return nil if response.status == 410
-      # This is awful, but versioning is locked to per-second increments.
+      # This is awful, but versioning is locked to per-second increments,
+      # returns a 409 in Fedora 5 if there's a conflict.
       if response.status == 409
         sleep(0.5)
         return mint_version(identifier, version_name)
       end
       raise "Version unable to be created" unless response.status == 201
       valkyrie_identifier(uri: response.headers["location"].gsub("/fcr:metadata", ""))
-    end
-
-    # Delete the file in Fedora associated with the given identifier.
-    # @param id [Valkyrie::ID]
-    def delete(id:)
-      connection.http.delete(fedora_identifier(id: id))
     end
 
     class IOProxy
