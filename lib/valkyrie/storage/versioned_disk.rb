@@ -18,16 +18,19 @@ module Valkyrie::Storage
     # @param resource [Valkyrie::Resource]
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::File]
-    def upload(file:, original_filename:, resource: nil, **_extra_arguments)
+    def upload(file:, original_filename:, resource: nil, **extra_arguments)
       version_timestamp = current_timestamp
       new_path = path_generator.generate(resource: resource, file: file, original_filename: "v-#{version_timestamp}-#{original_filename}")
+      # If we've gone faster than milliseconds here, re-call. Probably only an
+      # issue for test suites.
+      return upload(file: file, original_filename: original_filename, resource: resource, **extra_arguments) if File.exist?(new_path)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
     end
 
     def current_timestamp
-      Time.now.strftime("%s%N")
+      Time.now.strftime("%s%L")
     end
 
     def upload_version(id:, file:)
@@ -37,6 +40,8 @@ module Valkyrie::Storage
       current_version_id = current_version_id.version_files[1] if current_version_id.deletion_marker?
       existing_path = current_version_id.file_path
       new_path = Pathname.new(existing_path.gsub(current_version_id.version, version_timestamp.to_s))
+      # If we've gone faster than milliseconds here, re-call.
+      return upload_version(id: id, file: file) if File.exist?(new_path)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
