@@ -33,6 +33,11 @@ module Valkyrie::Storage
       Time.now.strftime("%s%L")
     end
 
+    # @param id [Valkyrie::ID] ID of the Valkyrie::StorageAdapter::File to
+    #   version.
+    # @param file [IO]
+    # @param paused [Boolean] set to true when upload_version had to pause for a
+    #   millisecond to get a later timestamp. Internal only - do not set.
     def upload_version(id:, file:, paused: false)
       version_timestamp = current_timestamp
       # Get the existing version_id so we can calculate the next path from it.
@@ -48,18 +53,6 @@ module Valkyrie::Storage
       find_by(id: Valkyrie::ID.new("versiondisk://#{new_path}"))
     end
 
-    def find_versions(id:)
-      version_files(id: id).select { |x| !x.to_s.include?("deletionmarker") }.map do |file|
-        find_by(id: Valkyrie::ID.new("versiondisk://#{file}"))
-      end
-    end
-
-    def version_files(id:)
-      root = Pathname.new(file_path(id))
-      id = VersionId.new(id)
-      root.parent.children.select { |file| file.basename.to_s.end_with?(id.filename) }.sort.reverse
-    end
-
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
@@ -71,10 +64,6 @@ module Valkyrie::Storage
     def supports?(feature)
       return true if feature == :versions || feature == :version_deletion
       false
-    end
-
-    def file_path(version_id)
-      version_id.to_s.gsub(/^versiondisk:\/\//, '')
     end
 
     # Return the file associated with the given identifier
@@ -89,14 +78,6 @@ module Valkyrie::Storage
       raise Valkyrie::StorageAdapter::FileNotFound
     end
 
-    # @return VersionId A VersionId value that's resolved a current reference,
-    #   so we can access the `version_id` and current reference.
-    def version_id(id)
-      id = VersionId.new(id)
-      return id unless id.versioned?
-      id.resolve_current
-    end
-
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:, purge_versions: false)
@@ -108,6 +89,32 @@ module Valkyrie::Storage
       elsif File.exist?(id.file_path)
         FileUtils.rm_rf(id.file_path)
       end
+    end
+
+    # @param id [Valkyrie::ID]
+    # @return [Array<Valkyrie::StorageAdapter::File>]
+    def find_versions(id:)
+      version_files(id: id).select { |x| !x.to_s.include?("deletionmarker") }.map do |file|
+        find_by(id: Valkyrie::ID.new("versiondisk://#{file}"))
+      end
+    end
+
+    def version_files(id:)
+      root = Pathname.new(file_path(id))
+      id = VersionId.new(id)
+      root.parent.children.select { |file| file.basename.to_s.end_with?(id.filename) }.sort.reverse
+    end
+
+    def file_path(version_id)
+      version_id.to_s.gsub(/^versiondisk:\/\//, '')
+    end
+
+    # @return VersionId A VersionId value that's resolved a current reference,
+    #   so we can access the `version_id` and current reference.
+    def version_id(id)
+      id = VersionId.new(id)
+      return id unless id.versioned?
+      id.resolve_current
     end
 
     # A small value class that holds a version id and methods for knowing things about it.
