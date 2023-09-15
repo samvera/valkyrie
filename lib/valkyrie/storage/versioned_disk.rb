@@ -80,7 +80,7 @@ module Valkyrie::Storage
 
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
-    def delete(id:, purge_versions: false)
+    def delete(id:)
       id = version_id(id).resolve_current
       if id.current?
         id.version_files.each do |version_id|
