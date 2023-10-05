@@ -35,6 +35,22 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(uploaded_file.valid?(digests: { sha1: sha1 })).to be true
   end
 
+  it "can upload a ::File" do
+    # WebMock prevents the request from using send_request_with_body_stream as it can do IRL
+    WebMock.disable!
+    allow(storage_adapter).to receive(:file_mover).and_return(FileUtils.method(:cp))
+    File.open(ROOT_PATH.join("spec", "fixtures", "files", "tn_example.jpg")) do |io_file|
+      sha1 = Digest::SHA1.file(io_file).to_s
+
+      resource = Valkyrie::Specs::CustomResource.new(id: SecureRandom.uuid)
+
+      expect(uploaded_file = storage_adapter.upload(file: io_file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)).to be_kind_of Valkyrie::StorageAdapter::File
+
+      expect(uploaded_file.valid?(digests: { sha1: sha1 })).to be true
+    end
+    WebMock.enable!
+  end
+
   it "doesn't leave a file handle open on upload/find_by" do
     # No file handle left open from upload.
     resource = Valkyrie::Specs::CustomResource.new(id: "testdiscovery")
