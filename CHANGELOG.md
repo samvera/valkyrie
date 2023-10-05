@@ -1,3 +1,9 @@
+# v3.1.1 2023-10-05
+
+## Changes since last release
+
+* Add support  for coercible symbols in the Fedora persister. ([abelemlih](https://github.com/abelemlih))
+
 # v3.1.0 2023-09-15
 
 ## Changes since last release
