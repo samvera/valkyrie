@@ -106,7 +106,7 @@ module Valkyrie::Storage
       connection.http.put do |request|
         request.url fedora_uri
         request.headers['Content-Type'] = content_type
-        request.headers['Content-Length'] = io.length.to_s if io.respond_to?(:length)
+        request.headers['Content-Length'] = (io.length.to_s if io.respond_to?(:length)) || (io.size.to_s if io.respond_to?(:size))
         request.headers['Content-Disposition'] = "attachment; filename=\"#{original_filename}\""
         request.headers['digest'] = "#{sha1}=#{Digest::SHA1.file(io)}" if io.respond_to?(:to_str)
         request.headers['link'] = "<http://www.w3.org/ns/ldp#NonRDFSource>; rel=\"type\""
