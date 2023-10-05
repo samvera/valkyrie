@@ -64,6 +64,31 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
         end
       end
 
+      context "when given a Symbol" do
+        before do
+          raise 'persister must be set with `let(:persister)`' unless defined? persister
+          class CustomResource < Valkyrie::Resource
+            attribute :mode, Valkyrie::Types::Coercible::Symbol
+          end
+        end
+
+        after do
+          Object.send(:remove_const, :CustomResource)
+        end
+
+        let(:resource_class) { CustomResource }
+
+        it "works" do
+          id = Valkyrie::ID.new("test/symbol")
+          resource = resource_class.new(id: id, mode: :read)
+          persister.save(resource: resource)
+
+          resource = query_service.find_by(id: id)
+          expect(resource).to be_persisted
+          expect(resource.mode).to eq :read
+        end
+      end
+
       context "when given an alternate identifier" do
         before do
           raise 'persister must be set with `let(:persister)`' unless defined? persister
