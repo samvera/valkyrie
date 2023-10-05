@@ -538,6 +538,25 @@ module Valkyrie::Persistence::Fedora
           CompositeProperty.new(new_values)
         end
       end
+
+      # Class for mapping Property objects for Symbol values
+      class SymbolValue < MappedFedoraValue
+        FedoraValue.register(self)
+
+        # Determines whether or not the value is a Property for Symbol values
+        # @param [Object] value
+        # @return [Boolean]
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Symbol)
+        end
+
+        # Generates the Property for the Symbol value
+        # The Symbol value is converted into a String
+        # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
+        def result
+          map_value(converted_value: value.value.to_s)
+        end
+      end
     end
   end
 end
