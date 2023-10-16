@@ -88,6 +88,12 @@ module Valkyrie::Storage
       [Valkyrie::ID.new(id), version]
     end
 
+    # Return only the version portion of the given identifier
+    # @param id [Valkyrie::ID]
+    def version(id:)
+      id_and_version(id).last
+    end
+
     # Delete the file on disk associated with the given identifier.
     # @param id [Valkyrie::ID]
     def delete(id:)

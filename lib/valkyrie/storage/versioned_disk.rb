@@ -91,6 +91,13 @@ module Valkyrie::Storage
       end
     end
 
+    # Return only the version portion of the given identifier.
+    # If version cannot be determined, assume it is current.
+    # @param id [Valkyrie::ID]
+    def version(id:)
+      version_id(id).version
+    end
+
     # @param id [Valkyrie::ID]
     # @return [Array<Valkyrie::StorageAdapter::File>]
     def find_versions(id:)

@@ -63,4 +63,16 @@ RSpec.describe Valkyrie::StorageAdapter do
       expect(storage_adapter).to have_received(:delete).with(id: "yo")
     end
   end
+
+  describe ".version" do
+    it "calls version on the matching identifier" do
+      file = instance_double(Valkyrie::StorageAdapter::StreamFile, id: "yo")
+      allow(storage_adapter).to receive(:handles?).and_return(true)
+      allow(storage_adapter).to receive(:version)
+      described_class.register(storage_adapter, :find_test)
+
+      described_class.version(id: file.id)
+      expect(storage_adapter).to have_received(:version).with(id: "yo")
+    end
+  end
 end

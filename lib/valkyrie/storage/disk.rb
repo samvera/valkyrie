@@ -77,6 +77,12 @@ module Valkyrie::Storage
       FileUtils.rm_rf(path) if File.exist?(path)
     end
 
+    # Versioning is unsupported, version is always "current"
+    # @param id [Valkyrie::ID]
+    def version(id:)
+      'current'
+    end
+
     class BucketedStorage
       attr_reader :base_path
       def initialize(base_path:)

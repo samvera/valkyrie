@@ -51,6 +51,14 @@ module Valkyrie
         adapter_for(id: id).delete(id: id)
       end
 
+      # Search through all registered storage adapters until it finds one that
+      # can handle the passed in identifier.  Then call version on that adapter
+      # with the given identifier.
+      # @param id [Valkyrie::ID]
+      def version(id:)
+        adapter_for(id: id).version(id: id)
+      end
+
       # Return the registered storage adapter which handles the given ID.
       # @param id [Valkyrie::ID]
       # @return [Valkyrie::StorageAdapter]

@@ -86,6 +86,16 @@ module Valkyrie::Storage
       connection.http.delete(fedora_identifier(id: id))
     end
 
+    # Return only the version portion of the given identifier
+    # If version cannot be determined, assume it is current.
+    # @param id [Valkyrie::ID]
+    def version(id:)
+      raise ArgumentError('id cannot be nil') if id.nil? # escapes recursive call in case version_list is blank
+      id.to_s.match(/fcr:versions\/(\w+)/) do |m|
+        m[1]
+      end || version(id: current_version_id(id: id))
+    end
+
     def version_list(fedora_uri)
       version_list = connection.http.get do |request|
         request.url "#{fedora_uri}/fcr:versions"

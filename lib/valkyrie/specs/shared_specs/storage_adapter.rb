@@ -15,6 +15,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   it { is_expected.to respond_to(:handles?).with_keywords(:id) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
+  it { is_expected.to respond_to(:version).with_keywords(:id) }
   it { is_expected.to respond_to(:upload).with_keywords(:file, :resource, :original_filename) }
   it { is_expected.to respond_to(:supports?) }
 
@@ -106,9 +107,11 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(versions.length).to eq 2
     expect(versions.first.id).to eq new_version.id
     expect(versions.first.version_id).to eq new_version.version_id
+    expect(new_version.version_id.to_s).to include storage_adapter.version(id: versions.first.version_id)
 
     expect(versions.last.id).to eq uploaded_file.id
     expect(versions.last.version_id).to eq uploaded_file.version_id
+    expect(uploaded_file.version_id.to_s).to include storage_adapter.version(id: versions.last.version_id)
 
     expect(versions.first.size).not_to eq versions.last.size
 
