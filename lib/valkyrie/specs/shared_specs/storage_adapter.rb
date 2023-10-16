@@ -69,6 +69,8 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(uploaded_file.valid?(size: (size + 1), digests: { sha1: sha1 })).to be false
     expect(uploaded_file.valid?(size: size, digests: { sha1: 'bogus' })).to be false
 
+    expect(storage_adapter.version(id: uploaded_file.id)).to be_instance_of String
+
     expect(storage_adapter.handles?(id: uploaded_file.id)).to eq true
     file = storage_adapter.find_by(id: uploaded_file.id)
     expect(file.id).to eq uploaded_file.id
