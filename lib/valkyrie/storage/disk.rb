@@ -42,7 +42,9 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::File]
     # @raise Valkyrie::StorageAdapter::FileNotFound if nothing is found
     def find_by(id:)
-      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: LazyFile.open(file_path(id), 'rb'))
+      Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s),
+                                         io: LazyFile.open(file_path(id), 'rb'),
+                                         version_id: version(id: id))
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
     end
