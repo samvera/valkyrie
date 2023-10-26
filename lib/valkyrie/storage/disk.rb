@@ -27,6 +27,12 @@ module Valkyrie::Storage
       id.to_s.start_with?("disk://#{base_path}")
     end
 
+    # @param feature [Symbol] Feature to test for.
+    # @return [Boolean] true if the adapter supports the given feature
+    def supports?(_feature)
+      false
+    end
+
     def file_path(id)
       id.to_s.gsub(/^disk:\/\//, '')
     end

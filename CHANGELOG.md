@@ -1,3 +1,26 @@
+# v3.1.1 2023-10-05
+
+## Changes since last release
+
+* Add support  for coercible symbols in the Fedora persister. ([abelemlih](https://github.com/abelemlih))
+
+# v3.1.0 2023-09-15
+
+## Changes since last release
+
+* Add storage adapter versioning. ([tpendragon](https://github.com/tpendragon))
+    - Special thanks to [marrus-sh](https://github.com/marrus-sh) and
+        [no-reply](https://github.com/no-reply) for their work testing and
+        finding a good interface for using versions in an application.
+
+Additional thanks to the following for code review and issue reports leading to
+this release:
+
+* [dlpierce](https://github.com/dlpierce)
+* [hackartisan](https://github.com/hackartisan)
+* [marrus-sh](https://github.com/marrus-sh)
+* [no-reply](https://github.com/no-reply)
+
 # v3.0.3 2023-05-15
 
 ## Changes since last release
