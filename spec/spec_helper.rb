@@ -11,6 +11,7 @@ SimpleCov.start do
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "valkyrie"
+require "valkyrie/engine"
 require 'pry'
 require 'pry-byebug'
 require 'action_dispatch'
@@ -19,7 +20,6 @@ require 'timecop'
 
 SOLR_TEST_URL = "http://127.0.0.1:#{ENV['TEST_JETTY_PORT'] || 8994}/solr/valkyrie-core-test"
 
-ROOT_PATH = Pathname.new(Dir.pwd)
 Dir[Pathname.new("./").join("spec", "support", "**", "*.rb")].sort.each { |file| require_relative file.gsub(/^spec\//, "") }
 
 WebMock.disable_net_connect!(allow_localhost: true)
