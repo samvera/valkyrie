@@ -39,7 +39,7 @@ describe Valkyrie do
       end
     end
     it "uses that path" do
-      allow(Rails).to receive(:root).and_return(ROOT_PATH)
+      allow(Rails).to receive(:root).and_return(Valkyrie::Engine.root)
       allow(Rails).to receive(:env).and_return("test")
 
       described_class.instance_variable_set(:@config, nil)

@@ -1,3 +1,9 @@
+# Upcoming
+
+* Remove spec dependency on `ROOT_PATH` and favor `Valkyrie::Engine.root`
+  instead.  Thus allowing downstream implementations to leverage the fixtures in
+  Valkyrie. ([jeremyf](https://github.com/jeremyf))
+  
 # v3.1.1 2023-10-05
 
 ## Changes since last release

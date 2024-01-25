@@ -4,7 +4,7 @@ require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::StorageAdapter::File do
   let(:io) do
-    File.open(ROOT_PATH.join("spec", "fixtures", "files", "example.tif"))
+    File.open(Valkyrie::Engine.root.join("spec", "fixtures", "files", "example.tif"))
   end
   let(:file) { described_class.new(id: "test_file", io: io) }
   it_behaves_like "a Valkyrie::StorageAdapter::File"

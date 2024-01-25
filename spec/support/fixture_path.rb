@@ -16,5 +16,5 @@ RSpec.configure do |config|
   config.add_setting :fixture_path
   config.extend FixturePath
   config.include FixturePath
-  config.fixture_path = "#{ROOT_PATH}/spec/fixtures"
+  config.fixture_path = "#{Valkyrie::Engine.root}/spec/fixtures"
 end
