@@ -1,4 +1,8 @@
 # frozen_string_literal: true
+
+# This shared example provides defaults (e.g. resource_class, second_resource_class, query_service,
+# etc.) but allows for the downstream implementer to specify those values.  See the various "unless
+# defined?" sections of this code.
 RSpec.shared_examples 'a Valkyrie query provider' do
   before do
     raise 'adapter must be set with `let(:adapter)`' unless
@@ -26,6 +30,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   end
   let(:resource_class) { Valkyrie::Specs::CustomResource } unless defined? resource_class
   let(:second_resource_class) { Valkyrie::Specs::SecondResource } unless defined? second_resource_class
+  let(:third_resource_class) { Valkyrie::Specs::ThirdResource } unless defined? third_resource_class
   let(:query_service) { adapter.query_service } unless defined? query_service
   let(:persister) { adapter.persister } unless defined? persister
   subject { adapter.query_service }
@@ -291,7 +296,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     context "filtering by model" do
       context "when the object has related resources that match the filter" do
         subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: second_resource_class) }
-        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent3.id, parent2.id, parent.id])) }
+        let(:child1) { persister.save(resource: third_resource_class.new(a_member_of: [parent3.id, parent2.id, parent.id])) }
         let(:parent) { persister.save(resource: second_resource_class.new) }
         let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
         let(:parent3) { persister.save(resource: second_resource_class.new) }
@@ -303,7 +308,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       context "when the object has ordered related resources that match the filter" do
         subject { query_service.find_references_by(resource: child1, property: :an_ordered_member_of, model: second_resource_class) }
-        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(an_ordered_member_of: [parent.id, parent3.id, parent2.id, parent.id])) }
+        let(:child1) { persister.save(resource: third_resource_class.new(an_ordered_member_of: [parent.id, parent3.id, parent2.id, parent.id])) }
         let(:parent) { persister.save(resource: second_resource_class.new) }
         let(:parent2) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
         let(:parent3) { persister.save(resource: second_resource_class.new) }
@@ -315,7 +320,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
       context "when there are no related resources that match the filter" do
         subject { query_service.find_references_by(resource: child1, property: :a_member_of, model: second_resource_class) }
-        let(:child1) { persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id])) }
+        let(:child1) { persister.save(resource: third_resource_class.new(a_member_of: [parent.id])) }
         let(:parent) { persister.save(resource: Valkyrie::Specs::CustomResource.new) }
 
         it "returns an empty array" do
@@ -422,7 +427,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
 
         it "returns only resources with the relationship filtered to the specified model" do
           child1 = persister.save(resource: Valkyrie::Specs::CustomResource.new(a_member_of: [parent.id]))
-          persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id]))
+          persister.save(resource: third_resource_class.new(a_member_of: [parent.id]))
           child3 = persister.save(resource: Valkyrie::Specs::CustomResource.new(a_member_of: [parent.id]))
 
           expect(subject.map(&:id).to_a).to match_array [child3.id, child1.id]
@@ -433,7 +438,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
         let(:parent) { persister.save(resource: second_resource_class.new) }
 
         it "returns an empty array" do
-          persister.save(resource: Valkyrie::Specs::ThirdResource.new(a_member_of: [parent.id]))
+          persister.save(resource: third_resource_class.new(a_member_of: [parent.id]))
 
           expect(subject.to_a).to eq []
         end
