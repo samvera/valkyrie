@@ -1,9 +1,17 @@
-# Upcoming
+# v3.1.2 2024-01-30
+
+## Changes since last release
 
 * Remove spec dependency on `ROOT_PATH` and favor `Valkyrie::Engine.root`
   instead.  Thus allowing downstream implementations to leverage the fixtures in
   Valkyrie. ([jeremyf](https://github.com/jeremyf))
-  
+* make the shared query specs more flexible for testing four_flight adapter. ([orangewolf](https://github.com/orangewolf) and [jeremyf](https://github.com/jeremyf))
+* Check for file size as well as length in shared StorageAdapter specs ([dlpierce](https://github.com/dlpierce))
+
+Additional thanks to the following for code review and issue reports leading to this release:
+
+* [dunn](https://github.com/dunn)
+
 # v3.1.1 2023-10-05
 
 ## Changes since last release
