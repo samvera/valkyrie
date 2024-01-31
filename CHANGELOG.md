@@ -1,3 +1,10 @@
+# v3.1.3 2024-01-30
+
+## Changes since last release
+
+* Include spec/fixtures in released gem.  This resolves a bug introduce in
+  v3.1.2 regarding shared specs. ([jeremyf](https://github.com/jeremyf))
+
 # v3.1.2 2024-01-30
 
 ## Changes since last release
