@@ -15,7 +15,8 @@ Gem::Specification.new do |spec|
   spec.metadata      = { "rubygems_mfa_required" => "true" }
 
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{^(test|spec|features)/})
+    # Due to the construction of shared specs, we want to include the fixtures.
+    f.match(%r{^(test|spec|features)}) && !f.start_with?('spec/fixtures')
   end
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
