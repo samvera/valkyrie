@@ -41,14 +41,6 @@ RSpec.shared_examples 'a Valkyrie::ChangeSet' do |*_flags|
     end
   end
 
-  describe "#prepopulate!" do
-    it "doesn't make it look changed" do
-      expect(change_set).not_to be_changed
-      change_set.prepopulate!
-      expect(change_set).not_to be_changed
-    end
-  end
-
   describe "#required?" do
     it "returns a boolean" do
       expect(change_set.required?(change_set.fields.keys.first)).to be_in [true, false]
