@@ -1,3 +1,9 @@
+# v3.1.4 2024-02-20
+
+## Changes since last release
+
+* Remove ChangeSet#prepopulate! test in shared specs. ([jeremyf](https://github.com/jeremyf))
+
 # v3.1.3 2024-01-30
 
 ## Changes since last release
