@@ -60,6 +60,14 @@ module Valkyrie
     end
   end
 
+  def root_path
+    if Valkyrie.const_defined?(:Engine)
+      Valkyrie::Engine.root
+    else
+      Pathname.new(__dir__).dirname
+    end
+  end
+
   # @return [Valkyrie::Logging]
   def logger
     @logger ||= Valkyrie::Logging.new(logger: Logger.new(STDOUT))
@@ -123,5 +131,5 @@ module Valkyrie
     end
   end
 
-  module_function :config, :logger, :logger=, :config_root_path, :environment, :config_file, :config_hash
+  module_function :config, :logger, :logger=, :config_root_path, :environment, :config_file, :config_hash, :root_path
 end

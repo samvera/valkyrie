@@ -39,7 +39,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     # WebMock prevents the request from using send_request_with_body_stream as it can do IRL
     WebMock.disable!
     allow(storage_adapter).to receive(:file_mover).and_return(FileUtils.method(:cp))
-    File.open(Valkyrie::Engine.root.join("spec", "fixtures", "files", "tn_example.jpg")) do |io_file|
+    File.open(Valkyrie.root_path.join("spec", "fixtures", "files", "tn_example.jpg")) do |io_file|
       sha1 = Digest::SHA1.file(io_file).to_s
 
       resource = Valkyrie::Specs::CustomResource.new(id: SecureRandom.uuid)

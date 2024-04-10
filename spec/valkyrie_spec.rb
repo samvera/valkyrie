@@ -49,6 +49,21 @@ describe Valkyrie do
       expect(described_class.environment).to eq "test"
     end
   end
+  context "when Valkyrie::Engine is loaded" do
+    it "uses its root for root_path" do
+      allow(Valkyrie::Engine).to receive(:root).and_return("bla")
+
+      expect(Valkyrie.root_path).to eq "bla"
+    end
+  end
+  context "when Valkyrie::Engine is not loaded" do
+    it "uses the directory of the Valkyrie gem" do
+      allow(Valkyrie).to receive(:const_defined?).and_call_original
+      allow(Valkyrie).to receive(:const_defined?).with(:Engine).and_return(false)
+
+      expect(Valkyrie.root_path).to eq Pathname.new(Dir.pwd)
+    end
+  end
   describe ".config" do
     describe '.resource_class_resolver' do
       subject(:resolver) { described_class.config.resource_class_resolver }
