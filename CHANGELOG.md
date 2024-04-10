@@ -1,3 +1,9 @@
+# v3.1.5 2024-04-10
+
+## Changes since last release
+
+* Add Valkyrie.root_path to access Valkyrie's gem location. ([tpendragon](https://github.com/tpendragon))
+
 # v3.1.4 2024-02-20
 
 ## Changes since last release
