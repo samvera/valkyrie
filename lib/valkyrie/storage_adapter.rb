@@ -91,7 +91,7 @@ module Valkyrie
       end
 
       # @param size [Integer]
-      # @param digests [Array<Hash>] array of hashes, each of which maps a digest algorithm name to a digest value.
+      # @param digests [Hash<String, String>] map of digest algorithm names to digest values.
       # @return [Boolean]
       def valid?(size: nil, digests:)
         return false if size && io.size.to_i != size.to_i
