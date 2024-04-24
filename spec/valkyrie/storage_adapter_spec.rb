@@ -18,7 +18,7 @@ RSpec.describe Valkyrie::StorageAdapter do
   describe '.find' do
     context "with an unregistered adapter" do
       it "raises a #{described_class}::AdapterNotFoundError" do
-        expect { described_class.find(:obviously_missing) }.to raise_error(RuntimeError, /:obviously_missing/)
+        expect { described_class.find(:obviously_missing) }.to raise_error(Valkyrie::StorageAdapter::AdapterNotFoundError, /:obviously_missing/)
       end
     end
   end

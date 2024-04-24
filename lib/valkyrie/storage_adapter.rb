@@ -25,12 +25,13 @@ module Valkyrie
 
       # Find the adapter associated with the provided short name
       # @param short_name [Symbol]
-      # @return [Valkyrie::StorageAdapter]
+      # @return [Object] the storage adapter
       # @raise Valkyrie::StorageAdapter::AdapterNotFoundError when we are unable to find the named adapter
       def find(short_name)
         storage_adapters.fetch(short_name)
       rescue KeyError
-        raise "Unable to find #{self} with short_name of #{short_name.inspect}. Registered adapters are #{storage_adapters.keys.inspect}"
+        raise AdapterNotFoundError, "Unable to find #{self} with short_name of #{short_name.inspect}. " \
+                                    "Registered adapters are #{storage_adapters.keys.inspect}"
       end
 
       # Search through all registered storage adapters until it finds one that
@@ -53,7 +54,8 @@ module Valkyrie
 
       # Return the registered storage adapter which handles the given ID.
       # @param id [Valkyrie::ID]
-      # @return [Valkyrie::StorageAdapter]
+      # @return [Object] the storage adapter
+      # @raise [Valkyrie::StorageAdapter::AdapterNotFoundError]
       def adapter_for(id:)
         handler = storage_adapters.values.find do |storage_adapter|
           storage_adapter.handles?(id: id)
@@ -89,7 +91,7 @@ module Valkyrie
       end
 
       # @param size [Integer]
-      # @param digests [Array<Digest>]
+      # @param digests [Array<Hash>] array of hashes, each of which maps a digest algorithm name to a digest value.
       # @return [Boolean]
       def valid?(size: nil, digests:)
         return false if size && io.size.to_i != size.to_i
