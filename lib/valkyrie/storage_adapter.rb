@@ -76,7 +76,12 @@ module Valkyrie
       end
 
       def disk_path
-        Pathname.new(io.path)
+        path = Pathname.new(io.path)
+        if block_given?
+          yield path
+        else
+          path
+        end
       end
 
       # @param digests [Array<Digest>]
@@ -104,10 +109,27 @@ module Valkyrie
 
     class StreamFile < File
       def disk_path
-        Pathname.new(tmp_file.path)
+        path = Pathname.new(tmp_file.path)
+        if block_given?
+          yield path
+          clean_tmp_file
+        else
+          path
+        end
+      end
+
+      def close
+        super
+        clean_tmp_file
       end
 
       private
+
+      def clean_tmp_file
+        return unless @tmp_file
+        ::File.delete(tmp_file.path)
+        @tmp_file = nil
+      end
 
       def tmp_file_name
         id.to_s.tr(':/', '__')

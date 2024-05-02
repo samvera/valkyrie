@@ -12,5 +12,17 @@ RSpec.describe Valkyrie::StorageAdapter::StreamFile do
         expect(file.disk_path).to be_a Pathname
       end
     end
+    it "cleans up any tmp files when using a block" do
+      disk_path = nil
+      file.disk_path do |f_path|
+        disk_path = f_path
+      end
+      expect(File.exist?(disk_path)).to eq false
+    end
+    it "cleans up tmp files when closing the reference" do
+      path = file.disk_path
+      file.close
+      expect(File.exist?(path)).to eq false
+    end
   end
 end
