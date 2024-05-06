@@ -136,7 +136,7 @@ module Valkyrie
       end
 
       def tmp_file_path
-        ::File.join(Dir.tmpdir, tmp_file_name)
+        ::File.join(Dir.tmpdir, "#{SecureRandom.uuid}-#{tmp_file_name}")
       end
 
       def tmp_file

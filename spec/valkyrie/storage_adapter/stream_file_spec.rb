@@ -24,5 +24,12 @@ RSpec.describe Valkyrie::StorageAdapter::StreamFile do
       file.close
       expect(File.exist?(path)).to eq false
     end
+    it "generates a unique path each time it opens a file" do
+      current_path = nil
+      file.disk_path do |f_path|
+        current_path = f_path
+      end
+      expect(file.disk_path).not_to eq current_path
+    end
   end
 end
