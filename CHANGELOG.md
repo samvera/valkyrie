@@ -1,3 +1,14 @@
+# v3.2.0 2024-04-10
+
+## Changes since last release
+
+* Add cleanup functionality to StreamFile#disk_path. ([tpendragon](https://github.com/tpendragon))
+
+Additional thanks to the following for code review and issue reports leading to this release:
+
+* [dchandekstark](https://github.com/dchandekstark)
+* [cgalarza](https://github.com/cgalarza)
+
 # v3.1.5 2024-04-10
 
 ## Changes since last release
