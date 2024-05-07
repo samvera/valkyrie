@@ -14,5 +14,13 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter::File' do
     it "returns an existing disk path" do
       expect(File.exist?(file.disk_path)).to eq true
     end
+    it "can accept a block" do
+      disk_path = nil
+      file.disk_path do |f_path|
+        expect(File.exist?(f_path)).to eq true
+        disk_path = f_path
+      end
+      expect(disk_path).not_to be_nil
+    end
   end
 end
