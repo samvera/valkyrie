@@ -234,6 +234,39 @@ config.  If Fedora requires auth, you can also include that in the URL, e.g.:
      fedora_version: 5
    )
    ```
+#### Pairtree paths in Fedora 4/6
+Fedora 4 and 6.5+ support automatic creation of "pairtree" paths, which means that identifiers are stored in
+a hashed directory structure to avoid excessive child nodes directly in the root node.
+
+Unlike Fedora 4 where this is the default behavior, it has to be enabled via options in Fedora 6.5. This is 
+done by configuring both the count and length of the pairtree algorithm, so it needs to be configured
+in the Fedora adapters so that both sides match.
+
+In the following example, Fedora 6.5 is being started with options to create pairtree paths consisting of 
+4 segments, 2 characters in length:  
+
+```angular2html
+CATALINA_OPTS=-Dfcrepo.home=/fcrepo-home ...
+...
+-Dfcrepo.pid.minter.length=2 -Dfcrepo.pid.minter.count=4
+```
+For the Fedora metadata/storage adapters to correctly translate identifiers into URI's, they should be initialized
+like:
+
+```angular2html
+Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+    connection: ::Ldp::Client.new("http://localhost:8080/fcrepo/rest"),
+    fedora_version: 6.5,
+    fedora_pairtree_count: 4,
+    fedora_pairtree_length: 2
+  )
+```
+
+In the configuration above, an ID of `AaBbCcDd` will be created in Fedora under the root node as `/Aa/Bb/Cc/Dd/AaBbCcDd`. 
+If count and length correctly match in the Fedora adapters, that same path will be calculated and returned.
+
+Note that the configuration above is not required for pairtree paths to work correctly in Fedora 4, and automatic
+pairtree creation is not supported under Fedora 5 or Fedora 6 < 6.5. 
 
 ## Installing a Development environment
 
