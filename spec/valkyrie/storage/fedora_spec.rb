@@ -135,6 +135,28 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
           expect(uploaded_file.id.to_s).to eq expected_uri
         end
       end
+
+      context 'when sending pairtree configuration parameters' do
+        let(:storage_adapter) do
+          described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 5,
+                                                      fedora_pairtree_count: 4,
+                                                      fedora_pairtree_length: 2))
+        end
+        let(:uploaded_file) do
+          storage_adapter.upload(
+            file: io_file,
+            original_filename: 'foo.jpg',
+            resource: resource,
+            fake_upload_argument: true,
+            content_type: "image/tiff"
+          )
+        end
+
+        it 'is unaffected and produces expected URI' do
+          expected_uri = "fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/test/AN1D4UHA/original"
+          expect(uploaded_file.id.to_s).to eq expected_uri
+        end
+      end
     end
   end
 
@@ -200,6 +222,19 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
             expected_uri = RDF::URI.new("fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/AN1D4UHA/original")
             expect(uploaded_file.id.to_s).to eq expected_uri
           end
+        end
+      end
+
+      context 'when using pairtree resource uri transformer' do
+        let(:storage_adapter) do
+          described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 6.5,
+                                                      fedora_pairtree_count: 4,
+                                                      fedora_pairtree_length: 2))
+        end
+
+        it 'produces a valid URI' do
+          expected_uri = "fedora://#{storage_adapter.connection.http.url_prefix.to_s.gsub('http://', '')}/test/AN/1D/4U/HA/AN1D4UHA/original"
+          expect(uploaded_file.id.to_s).to eq expected_uri
         end
       end
 

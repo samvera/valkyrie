@@ -2,15 +2,26 @@
 module Valkyrie::Storage
   # Implements the DataMapper Pattern to store binary data in fedora
   class Fedora
-    attr_reader :connection, :base_path, :fedora_version
+    attr_reader :connection, :base_path, :fedora_version, :pairtree_count, :pairtree_length, :uri_transformer
     PROTOCOL = 'fedora://'
     SLASH = '/'
 
     # @param [Ldp::Client] connection
-    def initialize(connection:, base_path: "/", fedora_version: Valkyrie::Persistence::Fedora::DEFAULT_FEDORA_VERSION)
+    # @param [Integer] fedora_pairtree_count
+    # @param [Integer] fedora_pairtree_length
+    def initialize(connection:, base_path: "/", fedora_version: Valkyrie::Persistence::Fedora::DEFAULT_FEDORA_VERSION,
+                   fedora_pairtree_count: 0, fedora_pairtree_length: 0)
       @connection = connection
       @base_path = base_path
       @fedora_version = fedora_version
+      @pairtree_count = fedora_pairtree_count
+      @pairtree_length = fedora_pairtree_length
+
+      @uri_transformer = if fedora_version >= 6.5 && (pairtree_count * pairtree_length).positive?
+                           pairtree_resource_uri_transformer
+                         else
+                           default_resource_uri_transformer
+                         end
     end
 
     # @param id [Valkyrie::ID]
@@ -24,7 +35,7 @@ module Valkyrie::Storage
     def supports?(feature)
       return true if feature == :versions
       # Fedora 6 auto versions and you can't delete versions.
-      return true if feature == :version_deletion && fedora_version != 6
+      return true if feature == :version_deletion && fedora_version < 6
       false
     end
 
@@ -44,7 +55,7 @@ module Valkyrie::Storage
     # @param extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource:, content_type: "application/octet-stream", # rubocop:disable Metrics/ParameterLists
-               resource_uri_transformer: default_resource_uri_transformer, **_extra_arguments)
+               resource_uri_transformer: uri_transformer, **_extra_arguments)
       identifier = resource_uri_transformer.call(resource, base_url) + '/original'
       upload_file(fedora_uri: identifier, io: file, content_type: content_type, original_filename: original_filename)
       # Fedora 6 auto versions, so check to see if there's a version for this
@@ -60,7 +71,7 @@ module Valkyrie::Storage
       uri = fedora_identifier(id: id)
       # Fedora 6 has auto versioning, so have to sleep if it's too soon after last
       # upload.
-      if fedora_version == 6 && current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
+      if fedora_version >= 6 && current_version_id(id: id).to_s.split("/").last == Time.current.utc.strftime("%Y%m%d%H%M%S")
         sleep(0.5)
         return upload_version(id: id, file: file)
       end
@@ -102,7 +113,7 @@ module Valkyrie::Storage
     end
 
     def upload_file(fedora_uri:, io:, content_type: "application/octet-stream", original_filename: "default")
-      sha1 = [5, 6].include?(fedora_version) ? "sha" : "sha1"
+      sha1 = fedora_version >= 5 ? "sha" : "sha1"
       connection.http.put do |request|
         request.url fedora_uri
         request.headers['Content-Type'] = content_type
@@ -141,7 +152,7 @@ module Valkyrie::Storage
       version_id ||= id if id != current_id
       # No version got passed and we're asking for a current_id, gotta get the
       # version ID
-      return perform_find(id: current_id, version_id: (current_version_id(id: id) || :empty)) if version_id.nil?
+      return perform_find(id: current_id, version_id: current_version_id(id: id) || :empty) if version_id.nil?
       Valkyrie::StorageAdapter::StreamFile.new(id: current_id, io: response(id: id), version_id: version_id)
     end
 
@@ -208,6 +219,18 @@ module Valkyrie::Storage
       lambda do |resource, base_url|
         id = CGI.escape(resource.id.to_s)
         RDF::URI.new(base_url + id)
+      end
+    end
+
+    def pairtree_resource_uri_transformer
+      lambda do |resource, base_url|
+        id = CGI.escape(resource.id.to_s)
+        return RDF::URI.new(base_url + id) unless (pairtree_count * pairtree_length).positive?
+
+        pair_part = id.to_s[0, pairtree_count * pairtree_length].split(/[\/]/).first
+        slice_length = pairtree_length
+        prefix = pair_part.split("").each_slice(slice_length).map(&:join).join("/")
+        RDF::URI.new(base_url + "#{prefix}/" + id)
       end
     end
 

@@ -3,10 +3,16 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
-  [4, 5, 6].each do |fedora_version|
+  [4, 5, 6, 6.5].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
-      let(:adapter) { described_class.new(**fedora_adapter_config(base_path: "test_fed", fedora_version: version)) }
+      let(:fedora_pairtree_count) { 4 }
+      let(:fedora_pairtree_length) { 2 }
+      let(:adapter) do
+        described_class.new(**fedora_adapter_config(base_path: "test_fed", fedora_version: version,
+                                                    fedora_pairtree_count: fedora_pairtree_count,
+                                                    fedora_pairtree_length: fedora_pairtree_length))
+      end
       it_behaves_like "a Valkyrie::MetadataAdapter"
 
       describe "#schema" do
@@ -25,7 +31,11 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
           id = "test/default"
           if adapter.fedora_version == 4
 
+            id = "test/default"
             expect(adapter.id_to_uri(id).to_s).to eq "http://localhost:8988/rest/test_fed/te/st/test%2Fdefault"
+          elsif adapter.fedora_version >= 6.5
+
+            expect(adapter.id_to_uri(id).to_s).to eq "#{adapter.url_prefix}/test_fed/te/st/test%2Fdefault"
           else
             expect(adapter.id_to_uri(id).to_s).to eq "#{adapter.url_prefix}/test_fed/test%2Fdefault"
           end
@@ -41,10 +51,19 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
 
       describe "#pair_path" do
         it "creates pairs until the first dash" do
-          expect(adapter.pair_path('abcdef-ghijkl')).to eq('ab/cd/ef')
+          id = 'abcdef-ghijkl'
+          if adapter.fedora_version >= 6.5
+            expect(adapter.pair_path(id)).to eq('ab/cd/ef/-g')
+          else
+            expect(adapter.pair_path(id)).to eq('ab/cd/ef')
+          end
         end
         it "creates pairs until the first slash" do
-          expect(adapter.pair_path('admin_set/default')).to eq('ad/mi/n_/se/t')
+          if adapter.fedora_version >= 6.5
+            expect(adapter.pair_path('admin_set/default')).to eq('ad/mi/n_/se')
+          else
+            expect(adapter.pair_path('admin_set/default')).to eq('ad/mi/n_/se/t')
+          end
         end
       end
 
@@ -54,6 +73,20 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
           expect(adapter.id.to_s).to eq expected
         end
       end
+    end
+  end
+  context "fedora >= 6.5 with a non-standard pairtree count and length" do
+    let(:version) { 6.5 }
+    let(:fedora_pairtree_count) { 6 }
+    let(:fedora_pairtree_length) { 1 }
+    let(:adapter) do
+      described_class.new(**fedora_adapter_config(base_path: "test_fed", fedora_version: version,
+                                                  fedora_pairtree_count: fedora_pairtree_count,
+                                                  fedora_pairtree_length: fedora_pairtree_length))
+    end
+    it_behaves_like "a Valkyrie::MetadataAdapter"
+    it "creates the right pairtree segments" do
+      expect(adapter.pair_path('abcdefghijkl')).to eq('a/b/c/d/e/f')
     end
   end
 end
