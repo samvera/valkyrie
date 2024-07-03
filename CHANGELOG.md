@@ -1,3 +1,9 @@
+# v3.3.0 2024-07-03
+
+## Changes since last release
+
+* Add support for configurable pairtree IDs in Fedora 6. ([randalldfloyd](https://github.com/randalldfloyd))
+
 # v3.2.0 2024-04-10
 
 ## Changes since last release
