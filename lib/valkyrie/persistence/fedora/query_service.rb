@@ -68,7 +68,7 @@ module Valkyrie::Persistence::Fedora
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_all)
     def find_all
-      resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path))
+      resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path.to_s))
       ids = resource.graph.query([nil, RDF::Vocab::LDP.contains, nil]).map(&:object).map { |x| adapter.uri_to_id(x) }
       ids.lazy.map do |id|
         find_by(id: id)
@@ -105,7 +105,7 @@ module Valkyrie::Persistence::Fedora
     # @return [Faraday::Response]
     def content_with_inbound(id:)
       uri = adapter.id_to_uri(id)
-      connection.get(uri) do |req|
+      connection.get(uri.to_s) do |req|
         prefer_headers = Ldp::PreferHeaders.new(req.headers["Prefer"])
         prefer_headers.include = prefer_headers.include | include_uris
         req.headers["Prefer"] = prefer_headers.to_s
@@ -162,7 +162,7 @@ module Valkyrie::Persistence::Fedora
     # @return [Valkyrie::Resource]
     # @raise [Valkyrie::Persistence::ObjectNotFoundError]
     def resource_from_uri(uri)
-      resource = Ldp::Resource.for(connection, uri, connection.get(uri))
+      resource = Ldp::Resource.for(connection, uri, connection.get(uri.to_s))
       resource_factory.to_resource(object: resource)
     rescue ::Ldp::Gone, ::Ldp::NotFound
       raise ::Valkyrie::Persistence::ObjectNotFoundError

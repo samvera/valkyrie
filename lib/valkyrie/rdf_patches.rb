@@ -15,4 +15,12 @@ module RDF
       ::JSON::LD::API.fromRdf([RDF::Statement.new(RDF::URI(""), RDF::URI(""), self)])[0][""][0]
     end
   end
+
+  # Value needs to respond to all possible arguments of to_s, and the upstream
+  # doesn't. Remove this when https://github.com/ruby-rdf/rdf/pull/444 is fixed.
+  module Value
+    def start_with?(*args)
+      to_s.start_with?(*args.map(&:to_s))
+    end
+  end
 end
