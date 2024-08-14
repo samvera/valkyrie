@@ -64,6 +64,7 @@ module Valkyrie::Persistence::Fedora
     # @param [RDF::URI] id the Valkyrie ID
     # @return [RDF::URI]
     def id_to_uri(id)
+      return if id.to_s.empty?
       prefix = ""
       prefix = "#{pair_path(id)}/" if fedora_version == 4 || (fedora_version >= 6.5 && (pairtree_count * pairtree_length).positive?)
       RDF::URI("#{connection_prefix}/#{prefix}#{CGI.escape(id.to_s)}")
