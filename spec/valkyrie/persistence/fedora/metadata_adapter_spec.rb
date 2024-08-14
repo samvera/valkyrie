@@ -27,6 +27,10 @@ RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
       end
 
       describe "#id_to_uri" do
+        it 'returns nil if all forms of id are empty strings' do
+          ['', Valkyrie::ID.new('')].each { |id| expect(adapter.id_to_uri(id)).to be_nil }
+        end
+
         it "converts ids with a slash" do
           id = "test/default"
           if adapter.fedora_version == 4
