@@ -41,7 +41,7 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     end
     context "when told to index a really long string" do
       let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client) }
-      let(:title) { File.read(Rails.root.join('spec', 'fixtures', 'files', 'long_en.txt')) }
+      let(:title) { File.read(File.expand_path('../../../fixtures/files/long_en.txt', __FILE__)) }
       it "works" do
         b = Resource.new(title: title)
         expect { adapter.persister.save(resource: b) }.not_to raise_error
