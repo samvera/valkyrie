@@ -417,13 +417,14 @@ module Valkyrie::Persistence::Solr
       #   - multivalued string
       #   - stored multivalued text
       #   - stored multivalued english text
-      # If the string is greater than 1000 characters in length, it is only indexed as a stored multivalued text
-      # @see https://lucene.apache.org/solr/guide/defining-fields.html#defining-fields
+      # If the string is greater than 1000 characters in length, it is only indexed as text.
+      # N.B. Technically, string index fields can contain "slightly less than 32K" of data.
+      # @see https://solr.apache.org/guide/solr/latest/indexing-guide/field-types-included-with-solr.html
       # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [Array<Symbol>]
       def fields
         if value.value.length > 1000
-          [:tsim]
+          [:tsim, :tesim, :tsi, :tesi]
         else
           [:tsim, :ssim, :tesim, :tsi, :ssi, :tesi]
         end
