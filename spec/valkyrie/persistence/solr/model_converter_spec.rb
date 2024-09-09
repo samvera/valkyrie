@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+># frozen_string_literal: true
 require 'spec_helper'
 
 RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
@@ -132,6 +132,13 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
                           author: ["Author"],
                           creator: creator
                         })
+    end
+
+    before do
+      Timecop.freeze
+    end
+    after do
+      Timecop.return
     end
 
     it "only maps the long value to the _tsim Solr field" do
