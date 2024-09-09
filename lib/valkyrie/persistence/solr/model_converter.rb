@@ -6,8 +6,6 @@ module Valkyrie::Persistence::Solr
     attr_reader :resource, :resource_factory
     delegate :resource_indexer, to: :resource_factory
 
-    INDEX_TSIM_ONLY_THRESHOLD = ENV.fetch('INDEX_TSIM_ONLY_THRESHOLD', 1000).to_i
-
     # @param [Valkyrie::Resource] resource
     # @param [ResourceFactory] resource_factory
     def initialize(resource, resource_factory:)
@@ -424,7 +422,7 @@ module Valkyrie::Persistence::Solr
       # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [Array<Symbol>]
       def fields
-        if value.value.length > INDEX_TSIM_ONLY_THRESHOLD
+        if value.value.length > Valkyrie.config.index_tsim_only_threshold
           [:tsim]
         else
           [:tsim, :ssim, :tesim, :tsi, :ssi, :tesi]
