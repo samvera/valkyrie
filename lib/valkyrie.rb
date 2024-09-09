@@ -123,7 +123,7 @@ module Valkyrie
     def defaults
       {
         resource_class_resolver: method(:default_resource_class_resolver),
-        index_tsim_only_threshold: 1000,
+        index_tsim_only_threshold: 1000
       }
     end
 
