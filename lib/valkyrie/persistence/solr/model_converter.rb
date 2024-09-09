@@ -422,7 +422,7 @@ module Valkyrie::Persistence::Solr
       # @see https://github.com/samvera-labs/valkyrie/blob/main/solr/config/schema.xml
       # @return [Array<Symbol>]
       def fields
-        if value.value.length > 1000
+        if value.value.length > Valkyrie.config.index_tsim_only_threshold
           [:tsim]
         else
           [:tsim, :ssim, :tesim, :tsi, :ssi, :tesi]

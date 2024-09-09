@@ -114,4 +114,59 @@ RSpec.describe Valkyrie::Persistence::Solr::ModelConverter do
       end
     end
   end
+
+  describe "with a long string value" do
+    let(:creator) { ("Creator " * 1000).strip }
+    let(:resource) do
+      instance_double(Resource,
+                      id: "1",
+                      internal_resource: 'Resource',
+                      title: ["Test", RDF::Literal.new("French", language: :fr)],
+                      author: ["Author"],
+                      creator: creator,
+                      attributes:
+                        {
+                          created_at: created_at,
+                          internal_resource: 'Resource',
+                          title: ["Test", RDF::Literal.new("French", language: :fr)],
+                          author: ["Author"],
+                          creator: creator
+                        })
+    end
+
+    before do
+      Timecop.freeze
+    end
+    after do
+      Timecop.return
+    end
+
+    it "only maps the long value to the _tsim Solr field" do
+      expect(mapper.convert!).to eq(
+        id: resource.id.to_s,
+        join_id_ssi: "id-#{resource.id}",
+        title_ssim: ["Test", "French"],
+        title_tesim: ["Test", "French"],
+        title_tsim: ["Test", "French"],
+        title_lang_ssim: ["eng", "fr"],
+        title_lang_tesim: ["eng", "fr"],
+        title_lang_tsim: ["eng", "fr"],
+        title_type_tsim: ["http://www.w3.org/1999/02/22-rdf-syntax-ns#langString", "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"],
+        title_type_ssim: ["http://www.w3.org/1999/02/22-rdf-syntax-ns#langString", "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"],
+        title_type_tesim: ["http://www.w3.org/1999/02/22-rdf-syntax-ns#langString", "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"],
+        author_ssim: ["Author"],
+        author_tesim: ["Author"],
+        author_tsim: ["Author"],
+        author_ssi: ["Author"],
+        author_tesi: ["Author"],
+        author_tsi: ["Author"],
+        created_at_dtsi: created_at.iso8601,
+        updated_at_dtsi: Time.current.utc.iso8601(6),
+        internal_resource_ssim: ["Resource"],
+        internal_resource_tesim: ["Resource"],
+        internal_resource_tsim: ["Resource"],
+        creator_tsim: [creator]
+      )
+    end
+  end
 end
