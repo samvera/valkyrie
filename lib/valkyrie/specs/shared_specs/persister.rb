@@ -520,6 +520,20 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       expect(reloaded.ordered_nested.map(&:id)).to eq values.map(&:id)
     end
 
+    it "defaults to a frozen empty array" do
+      book = resource_class.new
+      expect(book.ordered_nested).to eq []
+      expect(book.ordered_nested).to be_frozen
+
+      saved = persister.save(resource: book)
+      expect(saved.ordered_nested).to eq []
+      expect(saved.ordered_nested).to be_frozen
+
+      reloaded = query_service.find_by(id: saved.id)
+      expect(reloaded.ordered_nested).to eq []
+      expect(reloaded.ordered_nested).to be_frozen
+    end
+
     def validate_order(values)
       resource.ordered_authors = values
       output = persister.save(resource: resource)
