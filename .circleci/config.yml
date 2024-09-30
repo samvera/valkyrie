@@ -135,10 +135,6 @@ workflows:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
           name: "Faraday1"
-      - build:
-          gemfile: "gemfiles/faraday_0.gemfile"
-          ruby: 3.1.6
-          name: "Faraday0"
 
   nightly:
     triggers:
@@ -189,7 +185,3 @@ workflows:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
           name: "Faraday1"
-      - build:
-          gemfile: "gemfiles/faraday_0.gemfile"
-          ruby: 3.1.6
-          name: "Faraday0"
