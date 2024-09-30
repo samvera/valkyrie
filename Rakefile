@@ -68,8 +68,12 @@ namespace :db do
       ActiveRecord::Migrator.migrate(MIGRATIONS_DIR, version) do |migration|
         scope.blank? || scope == migration.scope
       end
-    else
+    elsif ActiveRecord.version < Gem::Version.new("7.2.0")
       ActiveRecord::Base.connection.migration_context.migrate(version) do |migration|
+        scope.blank? || scope == migration.scope
+      end
+    else
+      ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate(version) do |migration|
         scope.blank? || scope == migration.scope
       end
     end

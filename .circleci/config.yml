@@ -9,7 +9,7 @@ jobs:
         type: "string"
       ruby:
         description: "Ruby version"
-        default: "2.7.7"
+        default: "3.1.6"
         type: "string"
     docker:
       - image: cimg/ruby:<< parameters.ruby >>
@@ -96,57 +96,45 @@ workflows:
   build:
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-1"
+      - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.2.0
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-0"
+      - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-1"
+      - build:
+          gemfile: "gemfiles/activerecord_7_0.gemfile"
+          ruby: 3.2.5
           name: "Ruby3-2_rails7-0"
       - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.2.0
-          name: "Ruby3-2_Rails6-0"
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.1.6
+          name: "Ruby3-1_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.1.6
+          name: "Ruby3-1_rails7-1"
       - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.3
+          ruby: 3.1.6
           name: "Ruby3-1_rails7-0"
       - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.1.3
-          name: "Ruby3-1_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.0.5
-          name: "Ruby3-0_rails7-0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.0.5
-          name: "Ruby3-0_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_rails7-0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_Rails6-0"
-      - build:
           gemfile: "gemfiles/faraday_1.gemfile"
-          ruby: 2.7.7
+          ruby: 3.1.6
           name: "Faraday1"
-      - build:
-          gemfile: "gemfiles/faraday_0.gemfile"
-          ruby: 2.7.7
-          name: "Faraday0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 2.6.10
-          name: "Ruby2-6_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.6.10
-          name: "Ruby2-6_Rails5-2"
 
   nightly:
     triggers:
@@ -158,54 +146,42 @@ workflows:
                 - master
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-1"
+      - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.2.0
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-0"
+      - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-1"
+      - build:
+          gemfile: "gemfiles/activerecord_7_0.gemfile"
+          ruby: 3.2.5
           name: "Ruby3-2_rails7-0"
       - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.2.0
-          name: "Ruby3-2_Rails6-0"
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.1.6
+          name: "Ruby3-1_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.1.6
+          name: "Ruby3-1_rails7-1"
       - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.3
+          ruby: 3.1.6
           name: "Ruby3-1_rails7-0"
       - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.1.3
-          name: "Ruby3-1_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.0.5
-          name: "Ruby3-0_rails7-0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 3.0.5
-          name: "Ruby3-0_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_rails7-0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_Rails6-0"
-      - build:
           gemfile: "gemfiles/faraday_1.gemfile"
-          ruby: 2.7.7
+          ruby: 3.1.6
           name: "Faraday1"
-      - build:
-          gemfile: "gemfiles/faraday_0.gemfile"
-          ruby: 2.7.7
-          name: "Faraday0"
-      - build:
-          gemfile: "gemfiles/activerecord_6_0.gemfile"
-          ruby: 2.6.10
-          name: "Ruby2-6_Rails6-0"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.7.7
-          name: "Ruby2-7_Rails5-2"
-      - build:
-          gemfile: "gemfiles/activerecord_5_2.gemfile"
-          ruby: 2.6.10
-          name: "Ruby2-6_Rails5-2"
