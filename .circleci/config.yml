@@ -96,6 +96,22 @@ workflows:
   build:
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-1"
+      - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-1"
+      - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
           ruby: 3.2.0
           name: "Ruby3-2_rails7-0"
@@ -157,6 +173,22 @@ workflows:
               only:
                 - master
     jobs:
+      - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails7-1"
+      - build:
+          gemfile: "gemfiles/activerecord_7_2.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-2"
+      - build:
+          gemfile: "gemfiles/activerecord_7_1.gemfile"
+          ruby: 3.2.5
+          name: "Ruby3-2_rails7-1"
       - build:
           gemfile: "gemfiles/activerecord_7_0.gemfile"
           ruby: 3.2.0
