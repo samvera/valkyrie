@@ -1,3 +1,12 @@
+# v3.4.0 2024-10-11
+
+## Changes since last release
+
+* Adds config setting index_tsim_only_threshold ([dchandekstark](https://github.com/dchandekstark))
+* Fix related URIs for pairtree paths in Fedora. ([randalldfloyd](https://github.com/randalldfloyd))
+* Return nil when #id_to_uri is passed empty strings. ([bwatson78](https://github.com/bwatson78))
+* Add support for Ruby 3.3 and Rails 7.2 ([cjcolvar](https://github.com/cjcolvar))
+
 # v3.3.0 2024-07-03
 
 ## Changes since last release
