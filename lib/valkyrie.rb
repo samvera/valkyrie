@@ -128,7 +128,7 @@ module Valkyrie
       {
         resource_class_resolver: method(:default_resource_class_resolver),
         index_tsim_only_threshold: 1000,
-        auto_cast_iso8601_as_datetime: true,
+        auto_cast_iso8601_as_datetime: true
       }
     end
 
