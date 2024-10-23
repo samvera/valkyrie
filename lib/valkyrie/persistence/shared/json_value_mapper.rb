@@ -131,7 +131,7 @@ module Valkyrie::Persistence::Shared
 
     # Converts Date strings to `DateTime`
     class DateValue < ::Valkyrie::ValueMapper
-      PostgresValue.register(self) if Valkyrie.config.auto_cast_iso8601_as_datetime
+      PostgresValue.register(self) if ::Valkyrie.config.auto_cast_iso8601_as_datetime
 
       # Determines whether or not a value is an ISO 8601 datestamp String
       # e. g. 1970-01-01
