@@ -131,7 +131,7 @@ module Valkyrie::Persistence::Shared
 
     # Converts Date strings to `DateTime`
     class DateValue < ::Valkyrie::ValueMapper
-      PostgresValue.register(self) if ::Valkyrie.config.auto_cast_iso8601_as_datetime
+      PostgresValue.register(self)
 
       # Determines whether or not a value is an ISO 8601 datestamp String
       # e. g. 1970-01-01
@@ -139,6 +139,7 @@ module Valkyrie::Persistence::Shared
       # @return [Boolean]
       # rubocop:disable Metrics/CyclomaticComplexity
       def self.handles?(value)
+        return false unless ::Valkyrie.config.auto_cast_iso8601_as_datetime
         return false unless value.is_a?(String)
         return false unless value[4] == "-" && value[10] == "T"
         year = value.to_s[0..3]
