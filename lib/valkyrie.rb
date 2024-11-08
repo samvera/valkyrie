@@ -101,6 +101,10 @@ module Valkyrie
       self[:index_tsim_only_threshold].to_i
     end
 
+    def auto_cast_iso8601_as_datetime
+      self[:auto_cast_iso8601_as_datetime]
+    end
+
     # @api public
     #
     # The returned anonymous method (e.g. responds to #call) has a signature of
@@ -123,7 +127,8 @@ module Valkyrie
     def defaults
       {
         resource_class_resolver: method(:default_resource_class_resolver),
-        index_tsim_only_threshold: 1000
+        index_tsim_only_threshold: 1000,
+        auto_cast_iso8601_as_datetime: true
       }
     end
 

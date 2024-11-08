@@ -139,6 +139,7 @@ module Valkyrie::Persistence::Shared
       # @return [Boolean]
       # rubocop:disable Metrics/CyclomaticComplexity
       def self.handles?(value)
+        return false unless ::Valkyrie.config.auto_cast_iso8601_as_datetime
         return false unless value.is_a?(String)
         return false unless value[4] == "-" && value[10] == "T"
         year = value.to_s[0..3]
