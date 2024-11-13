@@ -89,6 +89,61 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
         end
       end
 
+      context "saving a server managed predicate" do
+        before do
+          raise 'persister must be set with `let(:persister)`' unless defined? persister
+          class CustomResource < Valkyrie::Resource
+            attribute :test_managed
+          end
+        end
+        after do
+          Object.send(:remove_const, :CustomResource)
+        end
+        let(:resource_class) { CustomResource }
+        let(:adapter) do
+          Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+            **fedora_adapter_config(
+              base_path: "test_fed",
+              schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(test_managed: RDF::Vocab::Fcrepo4.created),
+              fedora_version: version
+            )
+          )
+        end
+
+        it "raises an error" do
+          expect { persister.save(resource: resource_class.new(test_managed: 'whatever')) }.to raise_error ::Ldp::Conflict
+        end
+      end
+
+      context "saving a fedora.info predicate that is not managed" do
+        before do
+          raise 'persister must be set with `let(:persister)`' unless defined? persister
+          class CustomResource < Valkyrie::Resource
+            attribute :state, Valkyrie::Types::URI
+          end
+        end
+        after do
+          Object.send(:remove_const, :CustomResource)
+        end
+        let(:resource_class) { CustomResource }
+        let(:adapter) do
+          Valkyrie::Persistence::Fedora::MetadataAdapter.new(
+            **fedora_adapter_config(
+              base_path: "test_fed",
+              schema: Valkyrie::Persistence::Fedora::PermissiveSchema.new(
+                state: RDF::URI('http://fedora.info/definitions/1/0/access/ObjState#objState')
+              ),
+              fedora_version: version
+            )
+          )
+        end
+
+        it "succeeds" do
+          id = persister.save(resource: resource_class.new(state: RDF::URI('http://fedora.info/definitions/1/0/access/ObjState#inactive'))).id
+          expect(query_service.find_by(id: id).state).to eq RDF::URI('http://fedora.info/definitions/1/0/access/ObjState#inactive')
+        end
+      end
+
       context "when given an alternate identifier" do
         before do
           raise 'persister must be set with `let(:persister)`' unless defined? persister

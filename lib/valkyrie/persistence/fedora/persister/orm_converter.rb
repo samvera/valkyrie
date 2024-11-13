@@ -105,7 +105,8 @@ module Valkyrie::Persistence::Fedora
           # @param [Property] value
           # @return [Boolean]
           def self.handles?(value)
-            value.statement.object.to_s.start_with?("http://www.w3.org/ns/ldp", "http://fedora.info")
+            value.statement.predicate == RDF.type &&
+              value.statement.object.to_s.start_with?('http://www.w3.org/ns/ldp#', 'http://fedora.info/definitions/v4/repository#')
           end
 
           # Provide the NullApplicator Class for any Property in a deny listed namespace
@@ -562,7 +563,7 @@ module Valkyrie::Persistence::Fedora
           # @return [Array<String>]
           def denylist
             [
-              "http://fedora.info/definitions",
+              "http://fedora.info/definitions/v4/repository#",
               "http://www.iana.org/assignments/relation/last"
             ]
           end
