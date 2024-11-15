@@ -162,6 +162,7 @@ module Valkyrie::Persistence::Fedora
     # @return [Valkyrie::Resource]
     # @raise [Valkyrie::Persistence::ObjectNotFoundError]
     def resource_from_uri(uri)
+      raise ::Valkyrie::Persistence::ObjectNotFoundError if uri.nil?
       resource = Ldp::Resource.for(connection, uri, connection.get(uri))
       resource_factory.to_resource(object: resource)
     rescue ::Ldp::Gone, ::Ldp::NotFound
