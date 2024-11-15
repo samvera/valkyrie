@@ -86,8 +86,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect { query_service.find_by(id: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
 
+    it 'returns a Valkyrie::Persistence::ObjectNotFoundError for an empty string' do
+      expect { query_service.find_by(id: '') }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+
     it 'raises an error if the id is not a Valkyrie::ID or a string' do
       expect { query_service.find_by(id: 123) }.to raise_error ArgumentError
+      expect { query_service.find_by(id: nil) }.to raise_error ArgumentError
     end
   end
 
@@ -117,8 +122,13 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       expect { query_service.find_by_alternate_identifier(alternate_identifier: Valkyrie::ID.new("123123123")) }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
     end
 
+    it "raises a Valkyrie::Persistence::ObjectNotFoundError for a non-found alternate identifier" do
+      expect { query_service.find_by_alternate_identifier(alternate_identifier: '') }.to raise_error ::Valkyrie::Persistence::ObjectNotFoundError
+    end
+
     it 'raises an error if the alternate identifier is not a Valkyrie::ID or a string' do
       expect { query_service.find_by_alternate_identifier(alternate_identifier: 123) }.to raise_error ArgumentError
+      expect { query_service.find_by_alternate_identifier(alternate_identifier: nil) }.to raise_error ArgumentError
     end
 
     it 'can have multiple alternate identifiers' do
