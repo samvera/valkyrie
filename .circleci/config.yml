@@ -28,7 +28,7 @@ jobs:
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
           JAVA_OPTIONS: "-Djetty.http.port=8998 -Dfcrepo.dynamic.jms.port=61618 -Dfcrepo.dynamic.stomp.port=61614"
-      - image: fcrepo/fcrepo:6.4.0
+      - image: fcrepo/fcrepo:6.5.1-RC3-tomcat9
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
           JAVA_OPTS: "-Djetty.http.port=8978 -Dfcrepo.dynamic.jms.port=61619 -Dfcrepo.dynamic.stomp.port=61615 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
