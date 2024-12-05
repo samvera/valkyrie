@@ -215,7 +215,7 @@ module Valkyrie::Storage
     # @return [IOProxy]
     def response(id:)
       response = connection.http.get(fedora_identifier(id: id))
-      raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
+      raise Valkyrie::StorageAdapter::FileNotFound, "HTTP #{response.status} #{response.body}" unless response.success?
       IOProxy.new(response.body)
     end
 
