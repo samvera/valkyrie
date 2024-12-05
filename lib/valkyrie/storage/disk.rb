@@ -3,6 +3,8 @@ module Valkyrie::Storage
   # Implements the DataMapper Pattern to store binary data on disk
   class Disk
     attr_reader :base_path, :path_generator, :file_mover
+    PROTOCOL = 'disk://'
+
     def initialize(base_path:, path_generator: BucketedStorage, file_mover: FileUtils.method(:mv))
       @base_path = Pathname.new(base_path.to_s)
       @path_generator = path_generator.new(base_path: base_path)
@@ -18,13 +20,13 @@ module Valkyrie::Storage
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
-      find_by(id: Valkyrie::ID.new("disk://#{new_path}"))
+      find_by(id: Valkyrie::ID.new("#{PROTOCOL}#{new_path}"))
     end
 
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("disk://#{base_path}")
+      id.to_s.start_with?("#{PROTOCOL}#{base_path}")
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -34,7 +36,7 @@ module Valkyrie::Storage
     end
 
     def file_path(id)
-      id.to_s.gsub(/^disk:\/\//, '')
+      id.to_s.gsub(/^#{Regexp.escape(PROTOCOL)}/, '')
     end
 
     # Return the file associated with the given identifier
