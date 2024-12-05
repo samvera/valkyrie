@@ -166,7 +166,7 @@ RSpec.describe Valkyrie::Storage::Fedora, :wipe_fedora do
       wipe_fedora!(base_path: "test", fedora_version: 6)
     end
 
-    let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 6)) }
+    let(:storage_adapter) { described_class.new(**fedora_adapter_config(base_path: 'test', fedora_version: 6.5)) }
     let(:file) { fixture_file_upload('files/example.tif', 'image/tiff') }
 
     it_behaves_like "a Valkyrie::StorageAdapter"

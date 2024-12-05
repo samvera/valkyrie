@@ -154,7 +154,13 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     # instead make deleting delete everything.
     storage_adapter.delete(id: new_version.id)
     expect { storage_adapter.find_by(id: new_version.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
-    expect(storage_adapter.find_versions(id: new_version.id).length).to eq 0
+
+    if storage_adapter.supports?(:list_deleted_versions)
+      expect(storage_adapter.find_versions(id: new_version.id).length).to eq current_length
+    else
+      expect(storage_adapter.find_versions(id: new_version.id).length).to eq 0
+    end
+
   ensure
     f&.close
   end
