@@ -154,6 +154,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.find_by(id: newest_version.id).version_id).to eq newest_version.version_id
     expect(storage_adapter.find_versions(id: newest_version.id).length).to eq current_length
 
+    # Fedora 6.5 may not create versions when the timestamp is the same?
+    # See: https://fedora-repository.atlassian.net/browse/FCREPO-3958
+    sleep 1 if storage_adapter.supports?(:list_deleted_versions)
+
     # NOTE: We originally wanted deleting the current record to push it into the
     # versions history, but FCRepo 4/5/6 doesn't work that way, so we changed to
     # instead make deleting delete everything.
