@@ -22,6 +22,10 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(storage_adapter.supports?(:bad_feature_not_real_dont_implement)).to eq false
   end
 
+  it "defines a protocol" do
+    expect(described_class::PROTOCOL).to be_a String
+  end
+
   it "can upload a file which is just an IO" do
     io_file = Tempfile.new('temp_io')
     io_file.write "Stuff"
