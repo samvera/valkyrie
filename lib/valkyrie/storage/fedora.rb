@@ -36,6 +36,8 @@ module Valkyrie::Storage
       return true if feature == :versions
       # Fedora 6 auto versions and you can't delete versions.
       return true if feature == :version_deletion && fedora_version < 6
+      # Fedora 6.5+ lists versions for deleted objects
+      return true if feature == :list_deleted_versions && fedora_version >= 6.5
       false
     end
 
@@ -88,7 +90,9 @@ module Valkyrie::Storage
       version_list.map do |version|
         id = valkyrie_identifier(uri: version["@id"])
         perform_find(id: id, version_id: id)
-      end
+      rescue Valkyrie::StorageAdapter::FileNotFound
+        nil
+      end.compact
     end
 
     # Delete the file in Fedora associated with the given identifier.
@@ -211,7 +215,7 @@ module Valkyrie::Storage
     # @return [IOProxy]
     def response(id:)
       response = connection.http.get(fedora_identifier(id: id))
-      raise Valkyrie::StorageAdapter::FileNotFound unless response.success?
+      raise Valkyrie::StorageAdapter::FileNotFound, "HTTP #{response.status} #{response.body}" unless response.success?
       IOProxy.new(response.body)
     end
 
