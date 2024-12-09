@@ -6,6 +6,8 @@ module Valkyrie::Storage
   #   in cases where you want to preserve real data
   class Memory
     attr_reader :cache
+    PROTOCOL = 'memory://'
+
     def initialize
       @cache = {}
     end
@@ -16,7 +18,7 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::StreamFile]
     def upload(file:, original_filename:, resource: nil, **_extra_arguments)
-      identifier = Valkyrie::ID.new("memory://#{resource.id}")
+      identifier = Valkyrie::ID.new("#{protocol}#{resource.id}")
       version_id = Valkyrie::ID.new("#{identifier}##{SecureRandom.uuid}")
       cache[identifier] ||= {}
       cache[identifier][:current] = Valkyrie::StorageAdapter::StreamFile.new(id: identifier, io: file, version_id: version_id)
@@ -67,7 +69,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("memory://")
+      id.to_s.start_with?(protocol)
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -81,6 +83,11 @@ module Valkyrie::Storage
       else
         false
       end
+    end
+
+    # @return [String] identifier prefix
+    def protocol
+      PROTOCOL
     end
 
     def id_and_version(id)
