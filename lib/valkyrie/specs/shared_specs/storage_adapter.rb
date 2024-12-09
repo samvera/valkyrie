@@ -12,6 +12,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     Valkyrie::Specs.send(:remove_const, :CustomResource)
   end
   subject { storage_adapter }
+  it { is_expected.to respond_to(:protocol) }
   it { is_expected.to respond_to(:handles?).with_keywords(:id) }
   it { is_expected.to respond_to(:find_by).with_keywords(:id) }
   it { is_expected.to respond_to(:delete).with_keywords(:id) }
@@ -20,10 +21,6 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
 
   it "returns false for non-existing features" do
     expect(storage_adapter.supports?(:bad_feature_not_real_dont_implement)).to eq false
-  end
-
-  it "defines a protocol" do
-    expect(described_class::PROTOCOL).to be_a String
   end
 
   it "can upload a file which is just an IO" do

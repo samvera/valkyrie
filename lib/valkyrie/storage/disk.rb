@@ -20,13 +20,13 @@ module Valkyrie::Storage
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
-      find_by(id: Valkyrie::ID.new("#{PROTOCOL}#{new_path}"))
+      find_by(id: Valkyrie::ID.new("#{protocol}#{new_path}"))
     end
 
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("#{PROTOCOL}#{base_path}")
+      id.to_s.start_with?("#{protocol}#{base_path}")
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -35,8 +35,13 @@ module Valkyrie::Storage
       false
     end
 
+    # @return [String] identifier prefix
+    def protocol
+      PROTOCOL
+    end
+
     def file_path(id)
-      id.to_s.gsub(/^#{Regexp.escape(PROTOCOL)}/, '')
+      id.to_s.gsub(/^#{Regexp.escape(protocol)}/, '')
     end
 
     # Return the file associated with the given identifier

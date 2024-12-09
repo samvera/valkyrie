@@ -27,7 +27,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?(PROTOCOL)
+      id.to_s.start_with?(protocol)
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -37,6 +37,11 @@ module Valkyrie::Storage
       # Fedora 6 auto versions and you can't delete versions.
       return true if feature == :version_deletion && fedora_version < 6
       false
+    end
+
+    # @return [String] identifier prefix
+    def protocol
+      PROTOCOL
     end
 
     # Return the file associated with the given identifier
@@ -61,7 +66,7 @@ module Valkyrie::Storage
       # Fedora 6 auto versions, so check to see if there's a version for this
       # initial upload. If not, then mint one (fedora 4/5)
       version_id = current_version_id(id: valkyrie_identifier(uri: identifier)) || mint_version(identifier, latest_version(identifier))
-      perform_find(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)
+      perform_find(id: Valkyrie::ID.new(identifier.to_s.sub(/^.+\/\//, protocol)), version_id: version_id)
     end
 
     # @param id [Valkyrie::ID] ID of the Valkyrie::StorageAdapter::StreamFile to
@@ -77,7 +82,7 @@ module Valkyrie::Storage
       end
       upload_file(fedora_uri: uri, io: file)
       version_id = mint_version(uri, latest_version(uri))
-      perform_find(id: Valkyrie::ID.new(uri.to_s.sub(/^.+\/\//, PROTOCOL)), version_id: version_id)
+      perform_find(id: Valkyrie::ID.new(uri.to_s.sub(/^.+\/\//, protocol)), version_id: version_id)
     end
 
     # @param id [Valkyrie::ID]
@@ -197,12 +202,12 @@ module Valkyrie::Storage
     # Translate the Valkrie ID into a URL for the fedora file
     # @return [RDF::URI]
     def fedora_identifier(id:)
-      identifier = id.to_s.sub(PROTOCOL, "#{connection.http.scheme}://")
+      identifier = id.to_s.sub(protocol, "#{connection.http.scheme}://")
       RDF::URI(identifier)
     end
 
     def valkyrie_identifier(uri:)
-      id = uri.to_s.sub("http://", PROTOCOL)
+      id = uri.to_s.sub("http://", protocol)
       Valkyrie::ID.new(id)
     end
 

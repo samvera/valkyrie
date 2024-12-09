@@ -28,7 +28,7 @@ module Valkyrie::Storage
       return sleep(0.001) && upload(file: file, original_filename: original_filename, resource: resource, paused: true, **extra_arguments) if !paused && File.exist?(new_path)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
-      find_by(id: Valkyrie::ID.new("#{PROTOCOL}#{new_path}"))
+      find_by(id: Valkyrie::ID.new("#{protocol}#{new_path}"))
     end
 
     def current_timestamp
@@ -52,13 +52,13 @@ module Valkyrie::Storage
       return sleep(0.001) && upload_version(id: id, file: file, paused: true) if !paused && File.exist?(new_path)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.try(:path) || file.try(:disk_path), new_path)
-      find_by(id: Valkyrie::ID.new("#{PROTOCOL}#{new_path}"))
+      find_by(id: Valkyrie::ID.new("#{protocol}#{new_path}"))
     end
 
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("#{PROTOCOL}#{base_path}")
+      id.to_s.start_with?("#{protocol}#{base_path}")
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -66,6 +66,11 @@ module Valkyrie::Storage
     def supports?(feature)
       return true if feature == :versions || feature == :version_deletion
       false
+    end
+
+    # @return [String] identifier prefix
+    def protocol
+      PROTOCOL
     end
 
     # Return the file associated with the given identifier
@@ -97,7 +102,7 @@ module Valkyrie::Storage
     # @return [Array<Valkyrie::StorageAdapter::File>]
     def find_versions(id:)
       version_files(id: id).select { |x| !x.to_s.include?("deletionmarker") }.map do |file|
-        find_by(id: Valkyrie::ID.new("#{PROTOCOL}#{file}"))
+        find_by(id: Valkyrie::ID.new("#{protocol}#{file}"))
       end
     end
 
@@ -108,7 +113,7 @@ module Valkyrie::Storage
     end
 
     def file_path(version_id)
-      version_id.to_s.gsub(/^#{Regexp.escape(PROTOCOL)}/, '')
+      version_id.to_s.gsub(/^#{Regexp.escape(protocol)}/, '')
     end
 
     # @return VersionId A VersionId value that's resolved a current reference,
@@ -130,6 +135,10 @@ module Valkyrie::Storage
         @id = id
       end
 
+      def protocol
+        PROTOCOL
+      end
+
       def current_reference_id
         self.class.new(Valkyrie::ID.new(string_id.gsub(version, "current")))
       end
@@ -141,13 +150,13 @@ module Valkyrie::Storage
       end
 
       def file_path
-        @file_path ||= string_id.gsub(/^versiondisk:\/\//, '')
+        @file_path ||= string_id.gsub(/^#{Regexp.escape(protocol)}/, '')
       end
 
       def version_files
         root = Pathname.new(file_path)
         root.parent.children.select { |file| file.basename.to_s.end_with?(filename) }.sort.reverse.map do |file|
-          VersionId.new(Valkyrie::ID.new("#{PROTOCOL}#{file}"))
+          VersionId.new(Valkyrie::ID.new("#{protocol}#{file}"))
         end
       end
 
