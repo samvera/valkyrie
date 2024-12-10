@@ -1,3 +1,11 @@
+# v3.5.0 2024-12-10
+
+* Provides new boolean configuration setting `auto_cast_iso8601_as_datetime`  ([dchandekstark](https://github.com/dchandekstark))
+* Align behavior of server managed properties with Fedora. ([dlpierce](https://github.com/dlpierce))
+* Check for nil id to avoid InvalidURIError ([dlpierce](https://github.com/dlpierce))
+* Support Fedora 6.5 ([dlpierce](https://github.com/dlpierce))
+* Make storage adapters report their protocol string ([dlpierce](https://github.com/dlpierce))
+
 # v3.4.0 2024-10-11
 
 ## Changes since last release
