@@ -9,12 +9,12 @@ module Valkyrie::Persistence::Postgres
   #
   # @see https://github.com/samvera-labs/valkyrie/wiki/Set-up-Valkyrie-database-in-a-Rails-Application
   class MetadataAdapter
-    # @return [Class] {Valkyrie::Persistence::Postgres::Persister}
+    # @return [Valkyrie::Persistence::Postgres::Persister]
     def persister
       Valkyrie::Persistence::Postgres::Persister.new(adapter: self)
     end
 
-    # @return [Class] {Valkyrie::Persistence::Postgres::QueryService}
+    # @return [Valkyrie::Persistence::Postgres::QueryService]
     def query_service
       @query_service ||= Valkyrie::Persistence::Postgres::QueryService.new(
         resource_factory: resource_factory,
@@ -22,7 +22,7 @@ module Valkyrie::Persistence::Postgres
       )
     end
 
-    # @return [Class] {Valkyrie::Persistence::Postgres::ResourceFactory}
+    # @return [Valkyrie::Persistence::Postgres::ResourceFactory]
     def resource_factory
       @resource_factory ||= Valkyrie::Persistence::Postgres::ResourceFactory.new(adapter: self)
     end
