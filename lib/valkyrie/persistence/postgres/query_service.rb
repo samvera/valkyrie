@@ -70,7 +70,7 @@ module Valkyrie::Persistence::Postgres
     # @param [Enumerable<Valkyrie::ID>] ids
     # @return [Enumerator<Valkyrie::Resource>]
     def find_many_by_ids(ids:)
-      ids.map! do |id|
+      ids = ids.map do |id|
         id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
         validate_id(id)
         id.to_s
