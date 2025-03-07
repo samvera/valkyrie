@@ -76,7 +76,7 @@ module Valkyrie::Persistence::Postgres
         id.to_s
       end
 
-      orm_class.where(id: ids).find_each.lazy.map do |orm_resource|
+      orm_class.where(id: ids).lazy.map do |orm_resource|
         resource_factory.to_resource(object: orm_resource)
       end
     end
