@@ -6,8 +6,9 @@ module Valkyrie::Persistence::Fedora
     delegate :connection, :resource_factory, to: :adapter
 
     # @note (see Valkyrie::Persistence::Memory::QueryService#initialize)
-    def initialize(adapter:)
+    def initialize(adapter:, cache: ActiveSupport::Cache::MemoryStore.new)
       @adapter = adapter
+      @cache = cache # value structure: {etag:, resource:}
     end
 
     # (see Valkyrie::Persistence::Memory::QueryService#find_by)
@@ -163,8 +164,17 @@ module Valkyrie::Persistence::Fedora
     # @raise [Valkyrie::Persistence::ObjectNotFoundError]
     def resource_from_uri(uri)
       raise ::Valkyrie::Persistence::ObjectNotFoundError if uri.nil?
-      resource = Ldp::Resource.for(connection, uri, connection.get(uri))
-      resource_factory.to_resource(object: resource)
+      cached = @cache.read(uri)
+      etag_header = { 'If-None-Match': cached[:etag] } if cached
+      response = connection.get(uri) do |req|
+        req.headers.merge!(etag_header) if etag_header
+      end
+      return cached[:resource] if response.response.status == 304
+
+      resource = resource_factory.to_resource(object: Ldp::Resource.for(connection, uri, response))
+      etag = response.etag
+      @cache.write(uri, { etag: etag, resource: resource }) if etag.present?
+      resource
     rescue ::Ldp::Gone, ::Ldp::NotFound
       raise ::Valkyrie::Persistence::ObjectNotFoundError
     end
