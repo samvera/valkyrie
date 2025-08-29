@@ -116,7 +116,7 @@ module Valkyrie::Storage
       if fedora_version == 4
         version_graph&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
       else
-        # Fedora 5/6 use Memento.
+        # Fedora 6 uses Memento.
         version_graph&.fetch("http://www.w3.org/ns/ldp#contains", [])&.sort_by { |x| x["@id"] }&.reverse
       end
     end
@@ -176,12 +176,6 @@ module Valkyrie::Storage
       end
       # If there's a deletion marker, don't return anything. (Fedora 4)
       return nil if response.status == 410
-      # This is awful, but versioning is locked to per-second increments,
-      # returns a 409 in Fedora 5 if there's a conflict.
-      if response.status == 409
-        sleep(0.5)
-        return mint_version(identifier, version_name)
-      end
       raise "Version unable to be created" unless response.status == 201
       valkyrie_identifier(uri: response.headers["location"].gsub("/fcr:metadata", ""))
     end

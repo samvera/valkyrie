@@ -20,6 +20,6 @@ module Valkyrie::Persistence
     require 'valkyrie/persistence/fedora/ordered_reader'
     require 'valkyrie/persistence/fedora/list_node'
 
-    DEFAULT_FEDORA_VERSION = 5
+    DEFAULT_FEDORA_VERSION = 6
   end
 end
