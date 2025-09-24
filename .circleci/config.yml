@@ -100,10 +100,6 @@ workflows:
           ruby: 3.3.5
           name: "Ruby3-3_rails7-1"
       - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.3.5
-          name: "Ruby3-3_rails7-0"
-      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.2.5
           name: "Ruby3-2_rails7-2"
@@ -112,10 +108,6 @@ workflows:
           ruby: 3.2.5
           name: "Ruby3-2_rails7-1"
       - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.2.5
-          name: "Ruby3-2_rails7-0"
-      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-2"
@@ -123,10 +115,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.6
-          name: "Ruby3-1_rails7-0"
       - build:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
@@ -142,6 +130,10 @@ workflows:
                 - master
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_8_0.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails8-0"
+      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.3.5
           name: "Ruby3-3_rails7-2"
@@ -149,10 +141,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.3.5
           name: "Ruby3-3_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.3.5
-          name: "Ruby3-3_rails7-0"
       - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.2.5
@@ -173,10 +161,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.6
-          name: "Ruby3-1_rails7-0"
       - build:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
