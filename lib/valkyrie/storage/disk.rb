@@ -41,7 +41,7 @@ module Valkyrie::Storage
     end
 
     def file_path(id)
-      id.to_s.gsub(/^#{Regexp.escape(protocol)}/, '')
+      id.to_s.delete_prefix(protocol)
     end
 
     # Return the file associated with the given identifier
