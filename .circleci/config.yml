@@ -61,7 +61,7 @@ jobs:
       - run: gem install bundler -v '~> 2.0'
       - restore_cache:
          keys:
-           - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
+           - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-7
       - run: sudo apt update -y && sudo apt-get install -y libpq-dev lsof
       - run:
           name: Set BUNDLE_GEMFILE
@@ -71,7 +71,7 @@ jobs:
           name: Install dependencies
           command: bundle install --path=vendor/bundle --jobs 4 --retry 3
       - save_cache:
-          key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
+          key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-7
           paths:
             - "vendor/bundle"
             - "gemfiles/vendor/bundle"
