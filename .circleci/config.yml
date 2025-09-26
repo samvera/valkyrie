@@ -24,10 +24,6 @@ jobs:
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
           JAVA_OPTIONS: "-Djetty.http.port=8988"
-      - image: samvera/fcrepo4:5.1.0
-        environment:
-          CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC"
-          JAVA_OPTIONS: "-Djetty.http.port=8998 -Dfcrepo.dynamic.jms.port=61618 -Dfcrepo.dynamic.stomp.port=61614"
       - image: fcrepo/fcrepo:6.5.1-RC3-tomcat9
         environment:
           CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
@@ -65,7 +61,7 @@ jobs:
       - run: gem install bundler -v '~> 2.0'
       - restore_cache:
          keys:
-           - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
+           - bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-7
       - run: sudo apt update -y && sudo apt-get install -y libpq-dev lsof
       - run:
           name: Set BUNDLE_GEMFILE
@@ -75,7 +71,7 @@ jobs:
           name: Install dependencies
           command: bundle install --path=vendor/bundle --jobs 4 --retry 3
       - save_cache:
-          key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-6
+          key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-7
           paths:
             - "vendor/bundle"
             - "gemfiles/vendor/bundle"
@@ -104,10 +100,6 @@ workflows:
           ruby: 3.3.5
           name: "Ruby3-3_rails7-1"
       - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.3.5
-          name: "Ruby3-3_rails7-0"
-      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.2.5
           name: "Ruby3-2_rails7-2"
@@ -116,10 +108,6 @@ workflows:
           ruby: 3.2.5
           name: "Ruby3-2_rails7-1"
       - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.2.5
-          name: "Ruby3-2_rails7-0"
-      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-2"
@@ -127,10 +115,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.6
-          name: "Ruby3-1_rails7-0"
       - build:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
@@ -146,6 +130,10 @@ workflows:
                 - master
     jobs:
       - build:
+          gemfile: "gemfiles/activerecord_8_0.gemfile"
+          ruby: 3.3.5
+          name: "Ruby3-3_rails8-0"
+      - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.3.5
           name: "Ruby3-3_rails7-2"
@@ -153,10 +141,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.3.5
           name: "Ruby3-3_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.3.5
-          name: "Ruby3-3_rails7-0"
       - build:
           gemfile: "gemfiles/activerecord_7_2.gemfile"
           ruby: 3.2.5
@@ -177,10 +161,6 @@ workflows:
           gemfile: "gemfiles/activerecord_7_1.gemfile"
           ruby: 3.1.6
           name: "Ruby3-1_rails7-1"
-      - build:
-          gemfile: "gemfiles/activerecord_7_0.gemfile"
-          ruby: 3.1.6
-          name: "Ruby3-1_rails7-0"
       - build:
           gemfile: "gemfiles/faraday_1.gemfile"
           ruby: 3.1.6
