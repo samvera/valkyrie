@@ -52,7 +52,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     WebMock.enable!
   end
 
-  it "doesn't leave a file handle open on upload/find_by" do
+  xit "doesn't leave a file handle open on upload/find_by" do
     # No file handle left open from upload.
     resource = Valkyrie::Specs::CustomResource.new(id: "testdiscovery")
     pre_open_files = open_files

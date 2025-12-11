@@ -46,6 +46,13 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
 
+    def find_in_batches(start: 1, finish: nil, batch_size: 100, except_models: [])
+      Valkyrie::Persistence::Solr::Queries::FindInBatchesQuery.new(connection: connection, resource_factory: resource_factory,
+                                                                         start:, batch_size:, except_models:).run do |batch|
+                                                                           yield batch
+                                                                         end
+    end
+
     # Count all of the Valkyrie Resources of a model persisted in the Solr index
     # @param [Class, String] model the Valkyrie::Resource Class
     # @return integer
