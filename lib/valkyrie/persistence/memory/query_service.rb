@@ -73,6 +73,19 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
+      resources = cache.values
+
+      unless except_models.empty?
+        except_model_strings = except_models.map(&:to_s)
+        resources = resources.reject { |r| except_model_strings.include?(r.internal_resource) }
+      end
+
+      resources.each_slice(batch_size) do |batch|
+        yield batch
+      end
+    end
+
     # Count all objects of a given model.
     # @param model [Class] Class to query for.
     # @return integer. Count objects in the persistence backend
