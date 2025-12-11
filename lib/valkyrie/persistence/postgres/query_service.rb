@@ -35,6 +35,28 @@ module Valkyrie::Persistence::Postgres
       end
     end
 
+
+    # Retrieve all records in batches and construct Valkyrie Resources for each record.
+    # Yields batches of resources to the given block for memory-efficient processing.
+    #
+    # @param [Integer] batch_size The number of records to retrieve per batch (default: 500)
+    # @param [Array<Class>] except_models Resource types to exclude from results
+    # @yield [Array<Valkyrie::Resource>] batch Yields each batch of Valkyrie Resources
+    # @return [void]
+    # @example Process all resources in batches
+    #   query_service.find_in_batches(batch_size: 100) do |resources|
+    #     resources.each { |resource| process(resource) }
+    #   end
+    # @example Process all resources except access controls
+    #   query_service.find_in_batches(except_models: [Hyrax::AccessControl]) do |resources|
+    #     resources.each { |resource| reindex(resource) }
+    #   end
+    def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
+      relation_for_find_in_batches(except_models).find_in_batches(start:, finish:, batch_size:) do |batch|
+        yield batch.map { |orm_object| resource_factory.to_resource(object: orm_object) }
+      end
+    end
+
     # Count all records for a specific resource type
     # @param [Class] model
     # @return integer
@@ -291,6 +313,18 @@ module Valkyrie::Persistence::Postgres
 
     def ordered_property?(resource:, property:)
       resource.ordered_attribute?(property)
+    end
+
+    # Build an ActiveRecord relation for find_in_batches based on excluded models
+    # @param [Array<Class>] except_models Resource types to exclude
+    # @return [ActiveRecord::Relation]
+    def relation_for_find_in_batches(except_models)
+      if except_models.empty?
+        orm_class.all
+      else
+        except_models_as_strings = except_models.map(&:to_s)
+        orm_class.where.not(internal_resource: except_models_as_strings)
+      end
     end
   end
 end
