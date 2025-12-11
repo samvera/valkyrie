@@ -84,6 +84,21 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
+      resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path))
+      ids = resource.graph.query([nil, RDF::Vocab::LDP.contains, nil]).map(&:object).map { |x| adapter.uri_to_id(x) }
+      ids.each_slice(batch_size) do |id_batch|
+        resources = id_batch.map { |id| find_by(id: id) }
+        unless except_models.empty?
+          except_model_strings = except_models.map(&:to_s)
+          resources.reject! { |res| except_model_strings.include?(res.internal_resource) }
+        end
+        yield resources unless resources.empty?
+      end
+    rescue ::Ldp::NotFound
+      nil
+    end
+
     # (see Valkyrie::Persistence::Memory::QueryService#count_all_of_model)
     def count_all_of_model(model:)
       find_all_of_model(model: model).count
