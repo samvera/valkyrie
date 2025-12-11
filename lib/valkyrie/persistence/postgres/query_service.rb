@@ -36,21 +36,7 @@ module Valkyrie::Persistence::Postgres
     end
 
 
-    # Retrieve all records in batches and construct Valkyrie Resources for each record.
-    # Yields batches of resources to the given block for memory-efficient processing.
-    #
-    # @param [Integer] batch_size The number of records to retrieve per batch (default: 500)
-    # @param [Array<Class>] except_models Resource types to exclude from results
-    # @yield [Array<Valkyrie::Resource>] batch Yields each batch of Valkyrie Resources
-    # @return [void]
-    # @example Process all resources in batches
-    #   query_service.find_in_batches(batch_size: 100) do |resources|
-    #     resources.each { |resource| process(resource) }
-    #   end
-    # @example Process all resources except access controls
-    #   query_service.find_in_batches(except_models: [Hyrax::AccessControl]) do |resources|
-    #     resources.each { |resource| reindex(resource) }
-    #   end
+    # (see Valkyrie::Persistence::Memory::QueryService#find_in_batches)
     def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
       relation_for_find_in_batches(except_models).find_in_batches(start:, finish:, batch_size:) do |batch|
         yield batch.map { |orm_object| resource_factory.to_resource(object: orm_object) }

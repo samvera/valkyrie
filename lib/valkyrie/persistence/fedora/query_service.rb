@@ -84,6 +84,7 @@ module Valkyrie::Persistence::Fedora
       end
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_in_batches)
     def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
       resource = Ldp::Resource.for(connection, adapter.base_path, connection.get(adapter.base_path))
       ids = resource.graph.query([nil, RDF::Vocab::LDP.contains, nil]).map(&:object).map { |x| adapter.uri_to_id(x) }

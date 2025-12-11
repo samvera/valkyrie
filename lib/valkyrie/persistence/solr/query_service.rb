@@ -46,6 +46,7 @@ module Valkyrie::Persistence::Solr
       Valkyrie::Persistence::Solr::Queries::FindAllQuery.new(connection: connection, resource_factory: resource_factory, model: model).run
     end
 
+    # (see Valkyrie::Persistence::Memory::QueryService#find_in_batches)
     def find_in_batches(start: 1, finish: nil, batch_size: 100, except_models: [])
       Valkyrie::Persistence::Solr::Queries::FindInBatchesQuery.new(connection: connection, resource_factory: resource_factory,
                                                                          start:, batch_size:, except_models:).run do |batch|
