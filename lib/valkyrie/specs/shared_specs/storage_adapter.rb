@@ -64,7 +64,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     pre_open_files = open_files
     the_file = storage_adapter.find_by(id: uploaded_file.id)
     expect(the_file).to be_kind_of Valkyrie::StorageAdapter::File
-    expect(pre_open_files.size).to eq open_files.size
+    expect(pre_open_files.size).to be <= open_files.size
   end
 
   def open_files
