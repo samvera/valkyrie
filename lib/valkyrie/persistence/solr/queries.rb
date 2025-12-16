@@ -13,6 +13,5 @@ module Valkyrie::Persistence::Solr
     require 'valkyrie/persistence/solr/queries/find_members_query'
     require 'valkyrie/persistence/solr/queries/find_references_query'
     require 'valkyrie/persistence/solr/queries/find_ordered_references_query'
-    require 'valkyrie/persistence/solr/queries/paginator'
   end
 end

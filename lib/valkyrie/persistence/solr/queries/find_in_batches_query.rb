@@ -6,7 +6,6 @@ module Valkyrie::Persistence::Solr::Queries
     # @param [RSolr::Client] connection
     # @param [ResourceFactory] resource_factory
     def initialize(connection:, resource_factory:, start:, batch_size:, except_models:)
-      Valkyrie.logger.warn("You are trying to query from Solr in batches larger than 1_000, this may cause issues for large Solr documents") if batch_size > 1_000
       @connection = connection
       @resource_factory = resource_factory
       @start = start
@@ -19,16 +18,32 @@ module Valkyrie::Persistence::Solr::Queries
     # @yield [Array<Valkyrie::Resource>] batch Yields each batch of Valkyrie Resources
     # @return [void]
     def run
-      docs = Paginator.new(start: start, batch_size: batch_size)
-      while docs.has_next?
-        docs = connection.paginate(docs.next_page, docs.per_page, "select", params: { q: query })["response"]["docs"]
+      all_ids_sorted.each_slice(batch_size) do |batch|
+        solr_params = { q: '*:*', fq: "id:(#{batch.join(' OR ')})", sort: 'id asc' }
+        resources = accumulate_from_solr(solr_params) { |doc| resource_factory.to_resource(object: doc) }
 
-        resources = docs.map do |doc|
-          resource_factory.to_resource(object: doc)
-        end
-
-        yield resources unless resources.empty?
+        yield resources.flatten unless resources.empty?
       end
+    end
+
+    private
+
+    # All ids in the index, sorted by id so we have a deterministic return
+    def all_ids_sorted
+      @all_ids_sorted ||= begin
+        solr_params = { q: query, sort: "id asc", fl: ['id'] }
+        accumulate_from_solr(solr_params) { |doc| doc["id"] }
+      end
+    end
+
+    def accumulate_from_solr(solr_params, &block)
+      accumulator = []
+      docs = DefaultPaginator.new
+      while docs.has_next?
+        docs = connection.paginate(docs.next_page, docs.per_page, 'select', params: solr_params)["response"]["docs"]
+        accumulator << docs.map(&block)
+      end
+      accumulator.flatten!
     end
 
     # Generates the Solr query for retrieving all Documents in the index in batches
