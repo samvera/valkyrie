@@ -110,6 +110,20 @@ RSpec.shared_examples 'a Valkyrie query provider' do
       end
       expect(batch_sizes).to eq [2, 2, 1]
     end
+
+    it "respects start parameter" do
+      resource1 = persister.save(resource: resource_class.new)
+      resource2 = persister.save(resource: resource_class.new)
+      resource3 = persister.save(resource: resource_class.new)
+      resource4 = persister.save(resource: resource_class.new)
+      resource5 = persister.save(resource: resource_class.new)
+      # resources.order_by(:id)
+      batch_sizes = []
+      query_service.find_in_batches(batch_size: 3, start: resource2.id) do |batch|
+        batch_sizes << batch.size
+      end
+      expect(batch_sizes).to eq([3, 1])
+    end
   end
 
   describe ".find_by" do

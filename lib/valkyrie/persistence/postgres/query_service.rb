@@ -306,10 +306,10 @@ module Valkyrie::Persistence::Postgres
     # @return [ActiveRecord::Relation]
     def relation_for_find_in_batches(except_models)
       if except_models.empty?
-        orm_class.all
+        orm_class.order(:id)
       else
         except_models_as_strings = except_models.map(&:to_s)
-        orm_class.where.not(internal_resource: except_models_as_strings)
+        orm_class.order(:id).where.not(internal_resource: except_models_as_strings)
       end
     end
   end
