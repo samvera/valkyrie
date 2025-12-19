@@ -73,6 +73,36 @@ module Valkyrie::Persistence::Memory
       end
     end
 
+    # Retrieve all records in batches and construct Valkyrie Resources for each record.
+    # Yields batches of resources to the given block for memory-efficient processing.
+    #
+    # @param [Integer] start page or id to start from
+    # @param [Integer] finish page or id to end on
+    # @param [Integer] batch_size The number of records to retrieve per batch (default: 500)
+    # @param [Array<Class>] except_models Resource types to exclude from results
+    # @yield [Array<Valkyrie::Resource>] batch Yields each batch of Valkyrie Resources
+    # @return [void]
+    # @example Process all resources in batches
+    #   query_service.find_in_batches(batch_size: 100) do |resources|
+    #     resources.each { |resource| process(resource) }
+    #   end
+    # @example Process all resources except access controls
+    #   query_service.find_in_batches(except_models: [Hyrax::AccessControl]) do |resources|
+    #     resources.each { |resource| reindex(resource) }
+    #   end
+    def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
+      resources = cache.values
+
+      unless except_models.empty?
+        except_model_strings = except_models.map(&:to_s)
+        resources = resources.reject { |r| except_model_strings.include?(r.internal_resource) }
+      end
+
+      resources.each_slice(batch_size) do |batch|
+        yield batch
+      end
+    end
+
     # Count all objects of a given model.
     # @param model [Class] Class to query for.
     # @return integer. Count objects in the persistence backend

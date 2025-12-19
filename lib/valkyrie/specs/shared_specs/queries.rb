@@ -46,6 +46,7 @@ RSpec.shared_examples 'a Valkyrie query provider' do
   it { is_expected.to respond_to(:find_inverse_references_by).with_keywords(:id, :property, :model) }
   it { is_expected.to respond_to(:find_parents).with_keywords(:resource) }
   it { is_expected.to respond_to(:count_all_of_model).with_keywords(:model) }
+  it { is_expected.to respond_to(:find_in_batches).with_keywords(:start, :finish, :batch_size, :except_models) }
 
   describe ".find_all" do
     it "returns all created resources" do
@@ -65,6 +66,63 @@ RSpec.shared_examples 'a Valkyrie query provider' do
     end
     it "returns an empty array if there are none" do
       expect(query_service.find_all_of_model(model: second_resource_class).to_a).to eq []
+    end
+  end
+
+  describe ".find_in_batches" do
+    it "yields all created resources" do
+      resource1 = persister.save(resource: resource_class.new)
+      resource2 = persister.save(resource: resource_class.new)
+      resource3 = persister.save(resource: resource_class.new)
+      resource4 = persister.save(resource: second_resource_class.new)
+      resource_ids = [resource1, resource2, resource3, resource4].map { |resource| resource.id.to_s }
+      # Test without except_models - should include all resources
+      all_resources = []
+      query_service.find_in_batches(batch_size: 2) do |batch|
+        expect(batch).not_to be_nil
+        all_resources.concat(batch)
+      end
+      expect(all_resources.size).to eq 4
+      expect(all_resources.map { |resource| resource.id.to_s }).to match_array(resource_ids)
+
+      # Test with except_models - should exclude second_resource_class
+      filtered_resource_ids = [resource1, resource2, resource3].map { |resource| resource.id.to_s }
+      filtered_resources = []
+      query_service.find_in_batches(batch_size: 2, except_models: [second_resource_class]) do |batch|
+        expect(batch.size).to be <= 2
+        filtered_resources.concat(batch)
+      end
+      expect(filtered_resources.size).to eq 3
+      expect(filtered_resources.map { |resource| resource.id.to_s }).to match_array(filtered_resource_ids)
+      expect(filtered_resources).not_to include(resource4)
+      expect(filtered_resources).to all(be_an_instance_of(resource_class))
+    end
+
+    it "handles empty results" do
+      expect { |b| query_service.find_in_batches(batch_size: 2, &b) }.not_to yield_control
+    end
+
+    it "respects batch_size parameter" do
+      5.times { persister.save(resource: resource_class.new) }
+      batch_sizes = []
+      query_service.find_in_batches(batch_size: 2) do |batch|
+        batch_sizes << batch.size
+      end
+      expect(batch_sizes).to eq [2, 2, 1]
+    end
+
+    it "respects start parameter" do
+      resource1 = persister.save(resource: resource_class.new)
+      resource2 = persister.save(resource: resource_class.new)
+      resource3 = persister.save(resource: resource_class.new)
+      resource4 = persister.save(resource: resource_class.new)
+      resource5 = persister.save(resource: resource_class.new)
+      # resources.order_by(:id)
+      batch_sizes = []
+      query_service.find_in_batches(batch_size: 3, start: resource2.id) do |batch|
+        batch_sizes << batch.size
+      end
+      expect(batch_sizes).to eq([3, 1])
     end
   end
 

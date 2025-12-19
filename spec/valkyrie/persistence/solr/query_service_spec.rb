@@ -96,4 +96,38 @@ RSpec.describe Valkyrie::Persistence::Solr::QueryService do
       expect(adapter.query_service.connection).to have_received(:get).once
     end
   end
+  describe "#find_in_batches" do
+    let(:resources) do
+      150.times do
+        adapter.persister.save(resource: CustomResource.new)
+      end
+    end
+
+    before do
+      class CustomResource < Valkyrie::Resource; end
+      resources
+    end
+
+    after do
+      Object.send(:remove_const, :CustomResource)
+    end
+
+    context 'with batch size larger than default page size' do
+      it "makes multiple Solr requests" do
+        allow(adapter.query_service.connection).to receive(:paginate).and_call_original
+        all_resources = []
+        adapter.query_service.find_in_batches(batch_size: 120) do |batch|
+          expect(batch).not_to be_nil
+          expect(batch.size).to be <= 120
+          all_resources.concat(batch)
+        end
+        expect(all_resources.flatten.size).to eq(150)
+        expect(adapter.query_service.connection).to have_received(:paginate).exactly(5).times
+      end
+
+      it 'yields control' do
+        expect { |b| adapter.query_service.find_in_batches(batch_size: 120, &b) }.to yield_control.exactly(2).times
+      end
+    end
+  end
 end
