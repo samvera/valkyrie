@@ -18,7 +18,7 @@ module Valkyrie::Persistence::Postgres
 
     # Retrieve all records for the resource and construct Valkyrie Resources
     #   for each record
-    # @return [Array<Valkyrie::Resource>]
+    # @return [Enumerator<Valkyrie::Resource>]
     def find_all
       orm_class.find_each.lazy.map do |orm_object|
         resource_factory.to_resource(object: orm_object)
@@ -28,7 +28,7 @@ module Valkyrie::Persistence::Postgres
     # Retrieve all records for a specific resource type and construct Valkyrie
     #   Resources for each record
     # @param [Class] model
-    # @return [Array<Valkyrie::Resource>]
+    # @return [Enumerator<Valkyrie::Resource>]
     def find_all_of_model(model:)
       orm_class.where(internal_resource: model.to_s).find_each.lazy.map do |orm_object|
         resource_factory.to_resource(object: orm_object)
@@ -67,16 +67,16 @@ module Valkyrie::Persistence::Postgres
 
     # Find records using a set of Valkyrie IDs, and map each to Valkyrie
     #   Resources
-    # @param [Array<Valkyrie::ID>] ids
-    # @return [Array<Valkyrie::Resource>]
+    # @param [Enumerable<Valkyrie::ID>] ids
+    # @return [Enumerator<Valkyrie::Resource>]
     def find_many_by_ids(ids:)
-      ids.map! do |id|
+      ids = ids.map do |id|
         id = Valkyrie::ID.new(id.to_s) if id.is_a?(String)
         validate_id(id)
         id.to_s
       end
 
-      orm_class.where(id: ids).map do |orm_resource|
+      orm_class.where(id: ids).lazy.map do |orm_resource|
         resource_factory.to_resource(object: orm_resource)
       end
     end
@@ -84,7 +84,7 @@ module Valkyrie::Persistence::Postgres
     # Find all member resources for a given Valkyrie Resource
     # @param [Valkyrie::Resource] resource
     # @param [Class] model
-    # @return [Array<Valkyrie::Resource>]
+    # @return [Enumerator<Valkyrie::Resource>]
     def find_members(resource:, model: nil)
       return [] if resource.id.blank?
       if model
@@ -96,7 +96,7 @@ module Valkyrie::Persistence::Postgres
 
     # Find all parent resources for a given Valkyrie Resource
     # @param [Valkyrie::Resource] resource
-    # @return [Array<Valkyrie::Resource>]
+    # @return [Enumerator<Valkyrie::Resource>]
     def find_parents(resource:)
       find_inverse_references_by(resource: resource, property: :member_ids)
     end
@@ -128,7 +128,7 @@ module Valkyrie::Persistence::Postgres
     # Execute a query in SQL for resource records and map them to Valkyrie
     #   Resources
     # @param [String] query
-    # @return [Array<Valkyrie::Resource>]
+    # @return [Enumerator<Valkyrie::Resource>]
     def run_query(query, *args)
       orm_class.find_by_sql(([query] + args)).lazy.map do |object|
         resource_factory.to_resource(object: object)
