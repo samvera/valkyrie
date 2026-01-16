@@ -68,7 +68,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   end
 
   def open_files
-    `lsof +D .`.split("\n").map { |r| r.split(/\s+/).last }
+    `lsof -p #{Process.pid}`.split("\n").map { |r| r.split(/\s+/).last }
   end
 
   it "can upload, validate, re-fetch, and delete a file" do
