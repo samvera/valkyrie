@@ -68,6 +68,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
   end
 
   def open_files
+    GC.start
     `lsof -p #{Process.pid}`.split("\n").map { |r| r.split(/\s+/).last }
   end
 
