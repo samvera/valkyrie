@@ -35,6 +35,14 @@ module Valkyrie::Persistence::Postgres
       end
     end
 
+
+    # (see Valkyrie::Persistence::Memory::QueryService#find_in_batches)
+    def find_in_batches(start: nil, finish: nil, batch_size: 500, except_models: [])
+      relation_for_find_in_batches(except_models).find_in_batches(start:, finish:, batch_size:) do |batch|
+        yield batch.map { |orm_object| resource_factory.to_resource(object: orm_object) }
+      end
+    end
+
     # Count all records for a specific resource type
     # @param [Class] model
     # @return integer
@@ -291,6 +299,18 @@ module Valkyrie::Persistence::Postgres
 
     def ordered_property?(resource:, property:)
       resource.ordered_attribute?(property)
+    end
+
+    # Build an ActiveRecord relation for find_in_batches based on excluded models
+    # @param [Array<Class>] except_models Resource types to exclude
+    # @return [ActiveRecord::Relation]
+    def relation_for_find_in_batches(except_models)
+      if except_models.empty?
+        orm_class.order(:id)
+      else
+        except_models_as_strings = except_models.map(&:to_s)
+        orm_class.order(:id).where.not(internal_resource: except_models_as_strings)
+      end
     end
   end
 end
