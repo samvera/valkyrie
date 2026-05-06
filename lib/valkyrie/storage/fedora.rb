@@ -180,23 +180,6 @@ module Valkyrie::Storage
       valkyrie_identifier(uri: response.headers["location"].gsub("/fcr:metadata", ""))
     end
 
-    class IOProxy
-      # @param response [Ldp::Resource::BinarySource]
-      attr_reader :size
-      def initialize(source)
-        @source = source
-        @size = source.size
-      end
-      delegate :each, :read, :rewind, to: :io
-
-      # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
-      # @return [StringIO]
-      def io
-        @io ||= StringIO.new(@source)
-      end
-    end
-    private_constant :IOProxy
-
     # Translate the Valkrie ID into a URL for the fedora file
     # @return [RDF::URI]
     def fedora_identifier(id:)
@@ -211,11 +194,15 @@ module Valkyrie::Storage
 
     private
 
-    # @return [IOProxy]
+    # @return [StringIO]
     def response(id:)
-      response = connection.http.get(fedora_identifier(id: id))
+      io = StringIO.new
+      response = connection.http.get(fedora_identifier(id: id)) do |request|
+        request.options.on_data = proc { |chunk, _size| io.write(chunk) }
+      end
       raise Valkyrie::StorageAdapter::FileNotFound, "HTTP #{response.status} #{response.body}" unless response.success?
-      IOProxy.new(response.body)
+      io.rewind
+      io
     end
 
     def default_resource_uri_transformer
