@@ -89,11 +89,17 @@ module Valkyrie::Persistence::Shared
     class NestedRecord < ::Valkyrie::ValueMapper
       PostgresValue.register(self)
 
-      # Determines whether or not a value is a Hash containing multiple keys
+      # Determines whether or not a value is a non-empty Hash.
+      #
+      # Any non-empty Hash is a nested record. A single-key Hash must be claimed
+      # here too: otherwise it falls through to EnumeratorValue (a Hash responds
+      # to #each), which unwraps it to a loose [key, value] pair and loses the
+      # entry. The RDF-literal, ID, and URI shapes are recognized by mappers
+      # registered ahead of this one, so they are unaffected.
       # @param [Object] value
       # @return [Boolean]
       def self.handles?(value)
-        value.is_a?(Hash) && value.keys.length > 1
+        value.is_a?(Hash) && !value.empty?
       end
 
       # Generates a Hash derived from the JSON for the value
