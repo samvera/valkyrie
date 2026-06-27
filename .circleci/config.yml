@@ -69,9 +69,8 @@ jobs:
           name: Set BUNDLE_GEMFILE
           command: |
             export BUNDLE_GEMFILE=~/project/<< parameters.gemfile >>
-      - run:
-          name: Install dependencies
-          command: bundle install --path=vendor/bundle --jobs 4 --retry 3
+      - run: bundle config set path 'vendor/bundle'
+      - run: bundle install
       - save_cache:
           key: bundle-{{ checksum "<< parameters.gemfile >>" }}-{{ checksum "valkyrie.gemspec" }}-<< parameters.ruby >>-7
           paths:
