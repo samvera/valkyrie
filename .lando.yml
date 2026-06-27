@@ -1,16 +1,19 @@
 name: valkyrie
 app_mount: false
 services:
-  valkyrie_test_solr_7:
+  valkyrie_test_solr_9:
     app_mount: false
-    type: solr:7
+    type: solr:9
     portforward: 8994
     core: valkyrie-core-test
     config:
       dir: solr/config
+    overrides:
+      environment:
+        SOLR_MODULES: "analysis-extras,extraction"
   valkyrie_database:
     app_mount: false
-    type: postgres:10
+    type: postgres:15
     portforward: 5433
   valkyrie_fedora_4:
     type: compose
