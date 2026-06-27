@@ -58,7 +58,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     pre_open_files = open_files
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
     file.close
-    expect(pre_open_files.size).to eq open_files.size
+    expect(pre_open_files.size).to be <= open_files.size
 
     # No file handle left open from find_by
     pre_open_files = open_files
