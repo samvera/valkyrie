@@ -1,3 +1,8 @@
+# v3.5.1 2026-01-16
+
+* Remove Fedora 5. ([tpendragon](https://github.com/tpendragon))
+* Limit LSOF command to the current process ID ([hackartisan](https://github.com/hackartisan))
+
 # v3.5.0 2024-12-10
 
 * Provides new boolean configuration setting `auto_cast_iso8601_as_datetime`  ([dchandekstark](https://github.com/dchandekstark))

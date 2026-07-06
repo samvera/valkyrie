@@ -3,7 +3,7 @@ require 'spec_helper'
 require 'valkyrie/specs/shared_specs'
 
 RSpec.describe Valkyrie::Persistence::Fedora::MetadataAdapter, :wipe_fedora do
-  [4, 5, 6, 6.5].each do |fedora_version|
+  [4, 6, 6.5].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
       let(:fedora_pairtree_count) { 4 }

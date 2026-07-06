@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-struct'
   spec.add_dependency 'activemodel'
   spec.add_dependency 'dry-types', '~> 1.0'
-  spec.add_dependency 'rdf', '~> 3.0', '>= 3.0.10'
+  spec.add_dependency 'rdf', '~> 3.0', '>= 3.3.2'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'railties' # To use generators and engines
   spec.add_dependency 'reform', '~> 2.2'
@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday', '>= 0.9', '!= 2.0.0', '< 3'
   spec.add_dependency 'faraday-multipart'
 
-  spec.add_development_dependency "bundler", "> 1.16.0", "< 3"
+  spec.add_development_dependency "bundler", "> 1.16.0"
   spec.add_development_dependency "rake", ">= 10"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"

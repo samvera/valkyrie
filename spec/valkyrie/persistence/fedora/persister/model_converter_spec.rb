@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe Valkyrie::Persistence::Fedora::Persister::ModelConverter do
-  [4, 5, 6, 6.5].each do |fedora_version|
+  [4, 6, 6.5].each do |fedora_version|
     context "fedora #{fedora_version}" do
       let(:version) { fedora_version }
       let(:adapter) do

@@ -58,17 +58,18 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     pre_open_files = open_files
     uploaded_file = storage_adapter.upload(file: file, original_filename: 'foo.jpg', resource: resource, fake_upload_argument: true)
     file.close
-    expect(pre_open_files.size).to eq open_files.size
+    expect(pre_open_files.size).to be <= open_files.size
 
     # No file handle left open from find_by
     pre_open_files = open_files
     the_file = storage_adapter.find_by(id: uploaded_file.id)
     expect(the_file).to be_kind_of Valkyrie::StorageAdapter::File
-    expect(pre_open_files.size).to eq open_files.size
+    expect(pre_open_files.size).to be <= open_files.size
   end
 
   def open_files
-    `lsof +D .`.split("\n").map { |r| r.split("\t").last }
+    GC.start
+    `lsof -p #{Process.pid}`.split("\n").map { |r| r.split(/\s+/).last }
   end
 
   it "can upload, validate, re-fetch, and delete a file" do

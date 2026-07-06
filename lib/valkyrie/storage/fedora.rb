@@ -116,7 +116,7 @@ module Valkyrie::Storage
       if fedora_version == 4
         version_graph&.fetch("http://fedora.info/definitions/v4/repository#hasVersion", [])
       else
-        # Fedora 5/6 use Memento.
+        # Fedora 6 uses Memento.
         version_graph&.fetch("http://www.w3.org/ns/ldp#contains", [])&.sort_by { |x| x["@id"] }&.reverse
       end
     end
@@ -176,32 +176,9 @@ module Valkyrie::Storage
       end
       # If there's a deletion marker, don't return anything. (Fedora 4)
       return nil if response.status == 410
-      # This is awful, but versioning is locked to per-second increments,
-      # returns a 409 in Fedora 5 if there's a conflict.
-      if response.status == 409
-        sleep(0.5)
-        return mint_version(identifier, version_name)
-      end
       raise "Version unable to be created" unless response.status == 201
       valkyrie_identifier(uri: response.headers["location"].gsub("/fcr:metadata", ""))
     end
-
-    class IOProxy
-      # @param response [Ldp::Resource::BinarySource]
-      attr_reader :size
-      def initialize(source)
-        @source = source
-        @size = source.size
-      end
-      delegate :each, :read, :rewind, to: :io
-
-      # There is no streaming support in faraday (https://github.com/lostisland/faraday/pull/604)
-      # @return [StringIO]
-      def io
-        @io ||= StringIO.new(@source)
-      end
-    end
-    private_constant :IOProxy
 
     # Translate the Valkrie ID into a URL for the fedora file
     # @return [RDF::URI]
@@ -217,11 +194,15 @@ module Valkyrie::Storage
 
     private
 
-    # @return [IOProxy]
+    # @return [StringIO]
     def response(id:)
-      response = connection.http.get(fedora_identifier(id: id))
+      io = StringIO.new
+      response = connection.http.get(fedora_identifier(id: id)) do |request|
+        request.options.on_data = proc { |chunk, _size| io.write(chunk) }
+      end
       raise Valkyrie::StorageAdapter::FileNotFound, "HTTP #{response.status} #{response.body}" unless response.success?
-      IOProxy.new(response.body)
+      io.rewind
+      io
     end
 
     def default_resource_uri_transformer

@@ -9,3 +9,4 @@
 /tmp/
 /vendor
 /gemfiles/*.lock
+.byebug_history
