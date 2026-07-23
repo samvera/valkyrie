@@ -1,3 +1,9 @@
+# v3.6.0 2026-07-23
+
+* Update dependencies. ([tpendragon](https://github.com/tpendragon))
+* Improve performance of Fedora 6. ([dolsysmith](https://github.com/dolsysmith))
+* Add streaming support to Fedora storage adapter. ([eltiffster](https://github.com/eltiffster))
+
 # v3.5.1 2026-01-16
 
 * Remove Fedora 5. ([tpendragon](https://github.com/tpendragon))
