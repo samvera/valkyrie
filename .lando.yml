@@ -36,7 +36,7 @@ services:
     volumes:
       fedora6:
     services:
-      image: fcrepo/fcrepo:6.5.1-RC3-tomcat9
+      image: fcrepo/fcrepo:6.5-tomcat9
       command:
         - "catalina.sh"
         - "run"
