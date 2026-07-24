@@ -6,6 +6,7 @@ module FedoraHelper
                             fedora_pairtree_length: 0)
     port = 8988
     port = ENV["FEDORA_6_PORT"] || 8978 if fedora_version >= 6
+    port = ENV["FEDORA_7_PORT"] || 8968 if fedora_version >= 7
     connection_url = fedora_version >= 6 ? "/fcrepo/rest" : "/rest"
     opts = {
       base_path: base_path,
@@ -44,6 +45,7 @@ RSpec.configure do |config|
   config.before(:example, :wipe_fedora) do
     wipe_fedora!(base_path: "test_fed", fedora_version: 4)
     wipe_fedora!(base_path: "test_fed", fedora_version: 6)
+    wipe_fedora!(base_path: "test_fed", fedora_version: 7)
   end
   config.include FedoraHelper
 end

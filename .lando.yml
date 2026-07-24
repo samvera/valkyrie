@@ -48,3 +48,21 @@ services:
         CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
         JAVA_OPTS: "-Dfcrepo.dynamic.jms.port=61619 -Dfcrepo.dynamic.stomp.port=61615 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     portforward: true
+  valkyrie_fedora_7:
+    type: compose
+    app_mount: false
+    volumes:
+      fedora7:
+    services:
+      image: fcrepo/fcrepo:7-tomcat10
+      command:
+        - "catalina.sh"
+        - "run"
+      volumes:
+      - fedora7:/data
+      ports:
+      - 8968:8080
+      environment:
+        CATALINA_OPTS: "-Djava.awt.headless=true -Dfile.encoding=UTF-8 -server -Xms512m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:+DisableExplicitGC -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+        JAVA_OPTS: "-Dfcrepo.dynamic.jms.port=61619 -Dfcrepo.dynamic.stomp.port=61615 -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+    portforward: true
