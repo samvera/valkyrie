@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# :nocov:
+# simplecov:disable
 begin
   gem 'rsolr'
 rescue Gem::LoadError => e
@@ -7,7 +7,7 @@ rescue Gem::LoadError => e
         "You are using the Solr adapter without installing the #{e.name} gem.  "\
         "Add `gem '#{e.name}'` to your Gemfile."
 end
-# :nocov:
+# simplecov:enable
 module Valkyrie::Persistence
   # Implements the DataMapper Pattern to store metadata into Solr
   module Solr

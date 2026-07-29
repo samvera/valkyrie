@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# :nocov:
+# simplecov:disable
 begin
   gem 'pg'
   gem 'activerecord'
@@ -8,7 +8,7 @@ rescue Gem::LoadError => e
         "You are using the Postgres adapter without installing the #{e.name} gem.  "\
         "Add `gem '#{e.name}'` to your Gemfile."
 end
-# :nocov:
+# simplecov:enable
 module Valkyrie::Persistence
   # Implements the DataMapper Pattern to store metadata into Postgres
   module Postgres

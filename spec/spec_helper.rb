@@ -5,8 +5,7 @@ ENV['environment'] = 'test'
 require 'simplecov'
 
 SimpleCov.start do
-  add_filter 'spec'
-  add_filter 'vendor'
+  skip 'lib/valkyrie/specs'
   minimum_coverage 100
 end
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
