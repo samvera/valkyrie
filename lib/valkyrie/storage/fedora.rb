@@ -196,7 +196,7 @@ module Valkyrie::Storage
 
     # @return [StringIO]
     def response(id:)
-      io = StringIO.new
+      io = StringIO.new.binmode
       response = connection.http.get(fedora_identifier(id: id)) do |request|
         request.options.on_data = proc { |chunk, _size| io.write(chunk) }
       end

@@ -94,6 +94,7 @@ RSpec.shared_examples 'a Valkyrie::StorageAdapter' do
     expect(file).to respond_to(:read).with(0).arguments
     expect(file).to respond_to(:rewind).with(0).arguments
     expect(file.stream).to respond_to(:read)
+    expect(file.stream.external_encoding).to eq(Encoding::ASCII_8BIT)
     new_file = Tempfile.new
     expect { IO.copy_stream(file, new_file) }.not_to raise_error
 
