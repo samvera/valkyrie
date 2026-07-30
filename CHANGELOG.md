@@ -1,3 +1,9 @@
+# v3.6.1 2026-07-30
+
+* Set binary encoding for fedora storage adapter responses. ([dlpierce](https://github.com/dlpierce))
+* Use new `ENCODED_SOLIDUS_HANDLING` option for OCFL Fedora containers. ([dlpierce](https://github.com/dlpierce))
+* Upgrade to simplecov 1.0. ([dlpierce](https://github.com/dlpierce))
+
 # v3.6.0 2026-07-23
 
 * Update dependencies. ([tpendragon](https://github.com/tpendragon))
