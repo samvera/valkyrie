@@ -14,9 +14,21 @@ module Valkyrie::Persistence::Fedora
       end
 
       # Convert a Fedora LDP container to a Valkyrie Resource
-      # @return [Valkyrie::Resource]
+      # @return [Valkyrie::Resource, Hash] the resource, or the Hash itself when
+      #   the container holds a stored plain Hash
       def convert
-        populate_native_lock(Valkyrie::Types::Anything[attributes])
+        attrs = attributes
+        return attrs.except(:id, :new_record, :internal_resource) if stored_hash?(attrs)
+        populate_native_lock(Valkyrie::Types::Anything[attrs])
+      end
+
+      # A plain Hash is stored as a nested graph marked with
+      # ModelConverter::NestedProperty::HashDummy::INTERNAL_RESOURCE; it reads
+      # back as just its own keys.
+      # @param [Hash] attrs
+      # @return [Boolean]
+      def stored_hash?(attrs)
+        attrs[:internal_resource] == ModelConverter::NestedProperty::HashDummy::INTERNAL_RESOURCE
       end
 
       # Generate a Hash resulting from the mapping of Fedora LDP graphs to Valkyrie Resource attributes
@@ -556,7 +568,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-            Array(values)
+            Array.wrap(values)
           end
 
           # Retrieve a list of denied URIs for predicates
