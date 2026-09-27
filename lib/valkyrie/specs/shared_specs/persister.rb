@@ -308,6 +308,22 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       expect(reload_with(hash_entries: entries).hash_entries).to eq entries
     end
 
+    it "keeps the values of an array inside a hash, though not necessarily their order" do
+      reloaded = reload_with(a_hash: { path: "/one", tags: ["a", "b"] }).a_hash
+      expect(reloaded[:path]).to eq "/one"
+      expect(reloaded[:tags]).to contain_exactly("a", "b")
+    end
+
+    it "keeps the value of a one-element array inside a hash, though it may come back unwrapped" do
+      reloaded = reload_with(a_hash: { path: "/one", tags: ["a"] }).a_hash
+      expect(Array.wrap(reloaded[:tags])).to eq ["a"]
+    end
+
+    it "round-trips a hash nested in a hash" do
+      value = { path: "/one", source: { system: "dspace", handle: "123/456" } }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
     it "keeps an ordered array of hashes in order" do
       entries = (1..6).map { |i| { name: "person-#{i}", role: "Author" } }
       expect(reload_with(ordered_hash_entries: entries).ordered_hash_entries).to eq entries

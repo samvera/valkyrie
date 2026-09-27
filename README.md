@@ -177,6 +177,18 @@ order of multiple values.
 attribute :authors, Valkyrie::Types::Array.meta(ordered: true)
 ```
 
+Hashes can be stored as attribute values, alone or in an array. A Hash whose values are scalars or other
+hashes reads back as it was saved, and an array of hashes can be ordered like any other attribute:
+
+```
+attribute :source, Valkyrie::Types::Hash.optional
+attribute :aliases, Valkyrie::Types::Array.of(Valkyrie::Types::Hash).meta(ordered: true)
+```
+
+Use symbol keys: the Postgres, Solr, and Fedora adapters return hash keys as symbols. Values inside a Hash
+have no declared type, so an array inside a Hash keeps its values but not necessarily their order, and a
+one-element array may read back as its single value.
+
 Defining resource attributes is explained in greater detail on the [Using Types Wiki
 page](https://github.com/samvera/valkyrie/wiki/Using-Types).
 
