@@ -14,6 +14,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       attribute :ordered_authors, Valkyrie::Types::Array.of(Valkyrie::Types::Anything).meta(ordered: true)
       attribute :ordered_nested, Valkyrie::Types::Array.of(CustomResource).meta(ordered: true)
       attribute :a_hash, Valkyrie::Types::Hash.optional
+      attribute :hash_entries, Valkyrie::Types::Array.of(Valkyrie::Types::Hash)
+      attribute :ordered_hash_entries, Valkyrie::Types::Array.of(Valkyrie::Types::Hash).meta(ordered: true)
     end
   end
   after do
@@ -279,6 +281,37 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
 
     reloaded = query_service.find_by(id: book.id)
     expect(reloaded.a_hash[:testing]).to eq "this"
+  end
+
+  context "with hash values" do
+    def reload_with(attributes)
+      query_service.find_by(id: persister.save(resource: resource_class.new(attributes.deep_dup)).id)
+    end
+
+    it "round-trips a hash exactly, keeping boolean and integer values" do
+      value = { path: "/one", is_display_url: true, count: 3 }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "round-trips an array of multi-key hashes" do
+      entries = [{ path: "/one", is_display_url: true }, { path: "/two", is_display_url: false }]
+      expect(reload_with(hash_entries: entries).hash_entries).to contain_exactly(*entries)
+    end
+
+    it "keeps single-key hashes in an array as separate entries" do
+      entries = [{ name: "Ada" }, { role: "Editor" }]
+      expect(reload_with(hash_entries: entries).hash_entries).to contain_exactly(*entries)
+    end
+
+    it "round-trips a single-entry array of hashes" do
+      entries = [{ path: "/solo" }]
+      expect(reload_with(hash_entries: entries).hash_entries).to eq entries
+    end
+
+    it "keeps an ordered array of hashes in order" do
+      entries = (1..6).map { |i| { name: "person-#{i}", role: "Author" } }
+      expect(reload_with(ordered_hash_entries: entries).ordered_hash_entries).to eq entries
+    end
   end
 
   it "can override default id generation with a provided id" do
