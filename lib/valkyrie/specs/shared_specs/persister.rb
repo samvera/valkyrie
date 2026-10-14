@@ -288,9 +288,80 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       query_service.find_by(id: persister.save(resource: resource_class.new(attributes.deep_dup)).id)
     end
 
-    it "round-trips a hash exactly, keeping boolean and integer values" do
-      value = { path: "/one", is_display_url: true, count: 3 }
+    it "round-trips a hash exactly, keeping string, integer, float, and boolean values" do
+      value = { path: "/one", is_display_url: true, count: 3, weight: 1.5 }
       expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "keeps a string that looks like a date as a string" do
+      value = { path: "/one", noted: "2024-01-02T03:04:05Z" }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "keeps an array inside a hash in order" do
+      value = { path: "/one", tags: ["b", "a", "c"] }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "keeps a one-element array inside a hash as an array" do
+      value = { path: "/one", tags: ["a"] }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "keeps an empty array inside a hash" do
+      value = { path: "/one", tags: [] }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "round-trips a hash nested in a hash" do
+      value = { path: "/one", source: { system: "dspace", handle: "123/456" } }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "round-trips an array of hashes inside a hash in order" do
+      value = { path: "/one", rows: [{ name: "Ada" }, { name: "Alan", role: "Editor" }] }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "returns string keys as symbols, at every level" do
+      value = { "path" => "/one", "source" => { "system" => "dspace" } }
+      expect(reload_with(a_hash: value).a_hash).to eq(path: "/one", source: { system: "dspace" })
+    end
+
+    it "omits nil values" do
+      expect(reload_with(a_hash: { path: "/one", note: nil }).a_hash).to eq(path: "/one")
+    end
+
+    it "rejects a reserved key" do
+      expect { resource_class.new(a_hash: { id: "abc" }) }.to raise_error(Dry::Struct::Error, /reserved key/)
+    end
+
+    it "rejects a key that is not letters, digits, underscores, or hyphens" do
+      expect { resource_class.new(a_hash: { "first name" => "Ada" }) }.to raise_error(Dry::Struct::Error, /invalid key/)
+    end
+
+    it "rejects a value that is not JSON-like" do
+      [Valkyrie::ID.new("abc"), RDF::URI("http://example.com"), :symbol, Time.current].each do |value|
+        expect { resource_class.new(a_hash: { ref: value }) }.to raise_error(Dry::Struct::Error, /JSON-like/)
+      end
+    end
+
+    it "rejects an array directly inside an array" do
+      expect { resource_class.new(a_hash: { rows: [["a"]] }) }.to raise_error(Dry::Struct::Error, /array inside an array/)
+    end
+
+    it "keeps an empty string value" do
+      value = { path: "/one", note: "" }
+      expect(reload_with(a_hash: value).a_hash).to eq value
+    end
+
+    it "drops nil and blank string elements from an array" do
+      expect(reload_with(a_hash: { tags: [nil, "", "a"] }).a_hash).to eq(tags: ["a"])
+    end
+
+    it "still rebuilds typed values in a hash stored in an untyped attribute" do
+      entry = { ref: Valkyrie::ID.new("abc"), name: "Ada" }
+      expect(reload_with(author: [entry]).author).to eq [entry]
     end
 
     it "round-trips an array of multi-key hashes" do
@@ -306,22 +377,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     it "round-trips a single-entry array of hashes" do
       entries = [{ path: "/solo" }]
       expect(reload_with(hash_entries: entries).hash_entries).to eq entries
-    end
-
-    it "keeps the values of an array inside a hash, though not necessarily their order" do
-      reloaded = reload_with(a_hash: { path: "/one", tags: ["a", "b"] }).a_hash
-      expect(reloaded[:path]).to eq "/one"
-      expect(reloaded[:tags]).to contain_exactly("a", "b")
-    end
-
-    it "keeps the value of a one-element array inside a hash, though it may come back unwrapped" do
-      reloaded = reload_with(a_hash: { path: "/one", tags: ["a"] }).a_hash
-      expect(Array.wrap(reloaded[:tags])).to eq ["a"]
-    end
-
-    it "round-trips a hash nested in a hash" do
-      value = { path: "/one", source: { system: "dspace", handle: "123/456" } }
-      expect(reload_with(a_hash: value).a_hash).to eq value
     end
 
     it "keeps an ordered array of hashes in order" do

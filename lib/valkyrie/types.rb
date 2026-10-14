@@ -50,6 +50,49 @@ module Valkyrie
       end
     end
 
+    # A Hash of JSON-like values, normalized so each adapter returns the same
+    # shape: keys are symbolized, and nil values (and nil or blank array
+    # elements) are dropped at every level. Anything an adapter cannot store
+    # and read back unchanged is rejected.
+    module HashValue
+      # Keys become RDF predicates on Fedora.
+      KEY_FORMAT = /\A[A-Za-z0-9_-]+\z/.freeze
+      # Keys that adapters use for IDs and resource bookkeeping.
+      RESERVED_KEYS = [:id, :internal_resource, :new_record, :member_ids, :created_at, :updated_at].freeze
+      SCALARS = [::String, ::Integer, ::Float, ::TrueClass, ::FalseClass].freeze
+
+      def self.normalize(value)
+        case value
+        when ::Hash
+          value.each_with_object({}) do |(key, val), result|
+            result[normalize_key(key)] = normalize(val) unless val.nil?
+          end
+        when ::Array
+          value.reject { |val| val.nil? || val == "" }.map { |val| normalize_element(val) }
+        when *SCALARS
+          value
+        else
+          raise ArgumentError, "#{value.inspect} is not a JSON-like value and cannot be stored in a Hash"
+        end
+      end
+
+      def self.normalize_key(key)
+        raise ArgumentError, "#{key.inspect} is an invalid key for a Hash" unless (key.is_a?(::String) || key.is_a?(::Symbol)) && key.match?(KEY_FORMAT)
+        key = key.to_sym
+        raise ArgumentError, "#{key.inspect} is a reserved key and cannot be stored in a Hash" if RESERVED_KEYS.include?(key)
+        key
+      end
+
+      def self.normalize_element(value)
+        raise ArgumentError, "a Hash cannot hold an array inside an array" if value.is_a?(::Array)
+        normalize(value)
+      end
+    end
+
+    Hash = Dry::Types['nominal.hash'].constructor do |value|
+      value.is_a?(::Hash) ? HashValue.normalize(value) : value
+    end
+
     # Optimistic Lock Token
     OptimisticLockToken =
       Dry::Types::Nominal
