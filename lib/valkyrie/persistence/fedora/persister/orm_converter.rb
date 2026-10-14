@@ -166,6 +166,41 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        # Applies the values of an RDF list as an Array, even when the list
+        #   holds a single value
+        class OrderedApplicator < CompositeApplicator
+          # @param [Array<Applicator>] applicators
+          # @param [Symbol] key
+          def initialize(applicators, key)
+            super(applicators)
+            @key = key.to_sym
+          end
+
+          # @param [Hash] hsh a new or existing Hash of attribute for Valkyrie resource attributes
+          # @return [Hash]
+          def apply_to(hsh)
+            super
+            hsh[@key] = Array.wrap(hsh[@key]) if hsh.key?(@key)
+            hsh
+          end
+        end
+
+        # Class for mapping an empty RDF list (rdf:nil) to an empty Array
+        class EmptyListValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+
+          # @param [Property] value
+          # @return [Boolean]
+          def self.handles?(value)
+            value.statement.object == RDF.nil
+          end
+
+          # @return [EmptyListApplicator]
+          def result
+            EmptyListApplicator.new(value)
+          end
+        end
+
         # Class for mapping resource member IDs in an RDF linked list
         class MemberID < ::Valkyrie::ValueMapper
           delegate :scope, :adapter, to: :value
@@ -217,7 +252,7 @@ module Valkyrie::Persistence::Fedora
             values = values.map do |val|
               calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
             end
-            CompositeApplicator.new(values)
+            OrderedApplicator.new(values, Applicator.new(value).key)
           end
 
           def head
@@ -593,6 +628,15 @@ module Valkyrie::Persistence::Fedora
           # @return [RDF::URI]
           def values
             statement.object
+          end
+        end
+
+        # Class for mapping an empty RDF list
+        class EmptyListApplicator < Applicator
+          # @param [Hash] hsh a new or existing Hash of attribute for Valkyrie resource attributes
+          # @return [Hash]
+          def apply_to(hsh)
+            hsh[key.to_sym] = Array.wrap(hsh[key.to_sym]) unless deny?(key)
           end
         end
 
