@@ -102,7 +102,7 @@ module Valkyrie::Persistence::Shared
       # @return [Hash]
       def result
         value.each_with_object({}) do |(key, val), result|
-          result[key.to_sym] = map_value(val)
+          result[key.to_sym] = map_value(val) unless val.nil?
         end
       end
 
