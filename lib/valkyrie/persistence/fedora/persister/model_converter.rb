@@ -207,6 +207,7 @@ module Valkyrie::Persistence::Fedora
         end
 
         def self.ordered?(value)
+          return value.resource.ordered_attribute?(value.key) if value.resource.is_a?(ModelConverter::NestedProperty::HashDummy)
           return false unless value.resource.class.attribute_names.include?(value.key)
           value.resource.ordered_attribute?(value.key)
         end
@@ -293,6 +294,23 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      # An empty Array in a Hash is written as rdf:nil, so it reads back as an
+      #   empty Array instead of being dropped.
+      class EmptyHashArray < ::Valkyrie::ValueMapper
+        FedoraValue.register(self)
+
+        # @param [Object] value
+        # @return [Boolean]
+        def self.handles?(value)
+          value.is_a?(Property) && value.resource.is_a?(ModelConverter::NestedProperty::HashDummy) && value.value == []
+        end
+
+        # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
+        def result
+          Property.new(value.subject, value.key, RDF.nil, value.adapter, value.resource)
+        end
+      end
+
       # Class mapping Valkyrie attribute values which have already been
       #   mapped to Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property objects
       class NestedProperty < ::Valkyrie::ValueMapper
@@ -302,7 +320,7 @@ module Valkyrie::Persistence::Fedora
         # @param [Object] value
         # @return [Boolean]
         def self.handles?(value)
-          value.is_a?(Property) && (value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource)) && value.value[:internal_resource]
+          value.is_a?(Property) && (value.value.is_a?(Hash) || value.value.is_a?(Valkyrie::Resource))
         end
 
         # Generate a new parent graph containing the child graph generated from the ModelConverter::Property objects
@@ -312,10 +330,43 @@ module Valkyrie::Persistence::Fedora
           GraphProperty.new(value.subject, value.key, nested_graph, value.adapter, value.resource)
         end
 
+        # Wraps a plain Hash so {ModelConverter} can convert it the same way it
+        # converts a nested {Valkyrie::Resource}.
+        class HashDummy
+          INTERNAL_RESOURCE = "Valkyrie::InternalHash"
+
+          attr_reader :hsh
+          delegate :[], to: :hsh
+          def initialize(hsh)
+            @hsh = hsh
+          end
+
+          def attributes
+            hsh
+          end
+
+          # A hash has no Fedora identity of its own; it lives under a hash URI
+          # in its parent's graph.
+          def id; end
+
+          # Arrays in a Hash are written as RDF lists so they keep their order.
+          def ordered_attribute?(key)
+            hsh[key].is_a?(Array)
+          end
+        end
+
         # Generate the "child" graph from the value in the ModelConverter::Property
         # @return [RDF::Graph]
         def nested_graph
-          @nested_graph ||= ModelConverter.new(resource: Valkyrie::Types::Anything[value.value], adapter: value.adapter, subject_uri: subject_uri).convert.graph
+          @nested_graph ||= ModelConverter.new(resource: nested_resource, adapter: value.adapter, subject_uri: subject_uri).convert.graph
+        end
+
+        # A plain Hash (one without an internal_resource) is stored as a nested
+        # graph marked with {HashDummy::INTERNAL_RESOURCE}, so the reader can
+        # tell it apart from a nested resource.
+        def nested_resource
+          return Valkyrie::Types::Anything[value.value] if value.value.is_a?(Valkyrie::Resource) || value.value[:internal_resource]
+          HashDummy.new(value.value.merge(internal_resource: HashDummy::INTERNAL_RESOURCE))
         end
 
         # Generate a new RDF hash URI for the "child" graph for the ModelConverter::Property

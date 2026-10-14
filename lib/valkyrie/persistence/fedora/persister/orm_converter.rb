@@ -14,9 +14,21 @@ module Valkyrie::Persistence::Fedora
       end
 
       # Convert a Fedora LDP container to a Valkyrie Resource
-      # @return [Valkyrie::Resource]
+      # @return [Valkyrie::Resource, Hash] the resource, or the Hash itself when
+      #   the container holds a stored plain Hash
       def convert
-        populate_native_lock(Valkyrie::Types::Anything[attributes])
+        attrs = attributes
+        return attrs.except(:id, :new_record, :internal_resource) if stored_hash?(attrs)
+        populate_native_lock(Valkyrie::Types::Anything[attrs])
+      end
+
+      # A plain Hash is stored as a nested graph marked with
+      # ModelConverter::NestedProperty::HashDummy::INTERNAL_RESOURCE; it reads
+      # back as just its own keys.
+      # @param [Hash] attrs
+      # @return [Boolean]
+      def stored_hash?(attrs)
+        attrs[:internal_resource] == ModelConverter::NestedProperty::HashDummy::INTERNAL_RESOURCE
       end
 
       # Generate a Hash resulting from the mapping of Fedora LDP graphs to Valkyrie Resource attributes
@@ -154,6 +166,41 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        # Applies the values of an RDF list as an Array, even when the list
+        #   holds a single value
+        class OrderedApplicator < CompositeApplicator
+          # @param [Array<Applicator>] applicators
+          # @param [Symbol] key
+          def initialize(applicators, key)
+            super(applicators)
+            @key = key.to_sym
+          end
+
+          # @param [Hash] hsh a new or existing Hash of attribute for Valkyrie resource attributes
+          # @return [Hash]
+          def apply_to(hsh)
+            super
+            hsh[@key] = Array.wrap(hsh[@key]) if hsh.key?(@key)
+            hsh
+          end
+        end
+
+        # Class for mapping an empty RDF list (rdf:nil) to an empty Array
+        class EmptyListValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+
+          # @param [Property] value
+          # @return [Boolean]
+          def self.handles?(value)
+            value.statement.object == RDF.nil
+          end
+
+          # @return [EmptyListApplicator]
+          def result
+            EmptyListApplicator.new(value)
+          end
+        end
+
         # Class for mapping resource member IDs in an RDF linked list
         class MemberID < ::Valkyrie::ValueMapper
           delegate :scope, :adapter, to: :value
@@ -205,7 +252,7 @@ module Valkyrie::Persistence::Fedora
             values = values.map do |val|
               calling_mapper.for(Property.new(statement: RDF::Statement.new(value.statement.subject, value.statement.predicate, val), scope: value.scope, adapter: value.adapter)).result
             end
-            CompositeApplicator.new(values)
+            OrderedApplicator.new(values, Applicator.new(value).key)
           end
 
           def head
@@ -556,7 +603,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-            Array(values)
+            Array.wrap(values)
           end
 
           # Retrieve a list of denied URIs for predicates
@@ -581,6 +628,15 @@ module Valkyrie::Persistence::Fedora
           # @return [RDF::URI]
           def values
             statement.object
+          end
+        end
+
+        # Class for mapping an empty RDF list
+        class EmptyListApplicator < Applicator
+          # @param [Hash] hsh a new or existing Hash of attribute for Valkyrie resource attributes
+          # @return [Hash]
+          def apply_to(hsh)
+            hsh[key.to_sym] = Array.wrap(hsh[key.to_sym]) unless deny?(key)
           end
         end
 
