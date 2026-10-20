@@ -53,6 +53,11 @@ module Valkyrie::Persistence::Fedora
     end
 
     # @return [RDF::URI]
+    def self.valkyrie_json
+      uri_for(:valkyrie_json)
+    end
+
+    # @return [RDF::URI]
     def self.optimistic_lock_token
       uri_for(:optimistic_lock_token)
     end

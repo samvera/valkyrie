@@ -18,10 +18,17 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
     after do
       Object.send(:remove_const, :UntypedHashResource)
     end
-    it "drops nil values, as the other adapters do" do
+    it "drops nil values" do
       output = persister.save(resource: UntypedHashResource.new(entries: [{ name: "Ada", note: nil }]))
 
       expect(query_service.find_by(id: output.id).entries).to eq [{ name: "Ada" }]
+    end
+
+    it "still rebuilds typed values in a hash" do
+      entry = { ref: Valkyrie::ID.new("abc"), name: "Ada" }
+      output = persister.save(resource: UntypedHashResource.new(entries: [entry]))
+
+      expect(query_service.find_by(id: output.id).entries).to eq [entry]
     end
   end
 

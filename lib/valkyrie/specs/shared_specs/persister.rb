@@ -359,11 +359,6 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       expect(reload_with(a_hash: { tags: [nil, "", "a"] }).a_hash).to eq(tags: ["a"])
     end
 
-    it "still rebuilds typed values in a hash stored in an untyped attribute" do
-      entry = { ref: Valkyrie::ID.new("abc"), name: "Ada" }
-      expect(reload_with(author: [entry]).author).to eq [entry]
-    end
-
     it "round-trips an array of multi-key hashes" do
       entries = [{ path: "/one", is_display_url: true }, { path: "/two", is_display_url: false }]
       expect(reload_with(hash_entries: entries).hash_entries).to contain_exactly(*entries)

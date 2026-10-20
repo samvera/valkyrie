@@ -89,6 +89,40 @@ RSpec.describe Valkyrie::Persistence::Fedora::Persister, :wipe_fedora do
         end
       end
 
+      context "when given a Hash" do
+        before do
+          class HashResource < Valkyrie::Resource
+            attribute :a_hash, Valkyrie::Types::Hash.optional
+          end
+
+          class UntypedHashResource < Valkyrie::Resource
+            attribute :entries
+          end
+        end
+
+        after do
+          Object.send(:remove_const, :HashResource)
+          Object.send(:remove_const, :UntypedHashResource)
+        end
+
+        it "drops nil values from a hash in an untyped attribute, at every level" do
+          entry = { name: "Ada", note: nil, source: { system: nil }, rows: [{ label: "x", note: nil }] }
+          resource = UntypedHashResource.new(id: Valkyrie::ID.new("test/untyped-hash"), entries: [entry])
+          persister.save(resource: resource)
+
+          expect(query_service.find_by(id: resource.id).entries).to eq [{ name: "Ada", source: {}, rows: [{ label: "x" }] }]
+        end
+
+        it "stores it as one JSON literal" do
+          resource = HashResource.new(a_hash: { path: "/one", tags: ["a"] })
+          graph = Valkyrie::Persistence::Fedora::Persister::ModelConverter.new(resource: resource, adapter: adapter).convert.graph
+          objects = graph.query([nil, RDF::URI("http://example.com/predicate/a_hash"), nil]).objects
+
+          expect(objects.map(&:datatype)).to eq [Valkyrie::Persistence::Fedora::PermissiveSchema.valkyrie_json]
+          expect(JSON.parse(objects.first.value)).to eq("path" => "/one", "tags" => ["a"])
+        end
+      end
+
       context "saving a server managed predicate" do
         before do
           raise 'persister must be set with `let(:persister)`' unless defined? persister
