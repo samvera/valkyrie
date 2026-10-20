@@ -186,21 +186,21 @@ attribute :source, Valkyrie::Types::Hash.optional
 attribute :aliases, Valkyrie::Types::Array.of(Valkyrie::Types::Hash).meta(ordered: true)
 ```
 
-Like any other attribute, an array of hashes keeps its order only when declared with `ordered: true`.
+Like any other attribute, an array of hashes keeps its order and any duplicate entries only when declared
+with `ordered: true`.
 
-A Hash holds JSON-like values: strings, integers, floats, booleans, nested hashes, and arrays of these
-(but not an array directly inside an array). Every adapter treats it the same way:
+A Hash holds JSON-like values: strings, integers, floats, booleans, nested hashes, and arrays of these.
+Every adapter treats it the same way:
 
 * You get back what you put in. Arrays inside a Hash stay arrays, in order, even with one element.
   Strings are not converted to other types.
 * Keys are symbols. String keys are converted to symbols when the Hash is assigned.
-* `nil` values are dropped, as are `nil` and blank string elements of an array.
-* Keys may contain only letters, digits, underscores, and hyphens. These keys are reserved: `id`,
-  `internal_resource`, `new_record`, `member_ids`, `created_at`, `updated_at`.
+* `nil` values and `nil` array elements are dropped.
+* These keys are reserved, because the adapters treat a hash containing one as an ID, a URI, an RDF
+  literal, or a nested resource: `id`, `@id`, `@value`, `internal_resource`.
 * Store IDs, URIs, RDF literals, and dates in a separate attribute with that type, not in a Hash.
 
-Assigning a Hash that breaks these rules raises a `Dry::Struct::Error`. Postgres may return a very large
-float written in exponent notation (such as `1.0e16`) as an integer.
+Assigning a Hash that breaks these rules raises a `Dry::Struct::Error`.
 
 Defining resource attributes is explained in greater detail on the [Using Types Wiki
 page](https://github.com/samvera/valkyrie/wiki/Using-Types).

@@ -51,15 +51,14 @@ module Valkyrie
     end
 
     # A Hash of JSON-like values, normalized so each adapter returns the same
-    # shape: keys are symbolized, and nil values (and nil or blank array
-    # elements) are dropped at every level. Anything an adapter cannot store
-    # and read back unchanged is rejected.
+    # shape: keys are symbolized, and nil values and nil array elements are
+    # dropped at every level. Anything an adapter cannot store and read back
+    # unchanged is rejected.
     module HashValue
-      # Keys become RDF predicates on Fedora.
-      KEY_FORMAT = /\A[A-Za-z0-9_-]+\z/.freeze
-      # Keys that adapters use for IDs and resource bookkeeping.
-      RESERVED_KEYS = [:id, :internal_resource, :new_record, :member_ids, :created_at, :updated_at].freeze
-      SCALARS = [::String, ::Integer, ::Float, ::TrueClass, ::FalseClass].freeze
+      # Keys the adapters treat as an ID, a URI, an RDF literal, or a nested
+      # resource.
+      RESERVED_KEYS = [:id, :@id, :@value, :internal_resource].freeze
+      JSON_PRIMITIVE_TYPES = [::String, ::Integer, ::Float, ::TrueClass, ::FalseClass].freeze
 
       def self.normalize(value)
         case value
@@ -68,24 +67,24 @@ module Valkyrie
             result[normalize_key(key)] = normalize(val) unless val.nil?
           end
         when ::Array
-          value.reject { |val| val.nil? || val == "" }.map { |val| normalize_element(val) }
-        when *SCALARS
-          value
+          value.compact.map { |val| normalize(val) }
         else
-          raise ArgumentError, "#{value.inspect} is not a JSON-like value and cannot be stored in a Hash"
+          raise ArgumentError, "#{value.inspect} is not a JSON-like value and cannot be stored in a Hash" unless json_primitive?(value)
+          value
         end
       end
 
+      # A Float can also be NaN or Infinity (for example 0.0 / 0.0), which JSON cannot
+      # represent; converting one to JSON writes null, so it would not read back.
+      def self.json_primitive?(value)
+        JSON_PRIMITIVE_TYPES.any? { |type| value.is_a?(type) } && !(value.is_a?(::Float) && !value.finite?)
+      end
+
       def self.normalize_key(key)
-        raise ArgumentError, "#{key.inspect} is an invalid key for a Hash" unless (key.is_a?(::String) || key.is_a?(::Symbol)) && key.match?(KEY_FORMAT)
+        raise ArgumentError, "#{key.inspect} is an invalid key for a Hash" unless key.is_a?(::String) || key.is_a?(::Symbol)
         key = key.to_sym
         raise ArgumentError, "#{key.inspect} is a reserved key and cannot be stored in a Hash" if RESERVED_KEYS.include?(key)
         key
-      end
-
-      def self.normalize_element(value)
-        raise ArgumentError, "a Hash cannot hold an array inside an array" if value.is_a?(::Array)
-        normalize(value)
       end
     end
 

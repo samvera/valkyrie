@@ -333,21 +333,28 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
     end
 
     it "rejects a reserved key" do
-      expect { resource_class.new(a_hash: { id: "abc" }) }.to raise_error(Dry::Struct::Error, /reserved key/)
+      [:id, :@id, :@value, :internal_resource].each do |key|
+        expect { resource_class.new(a_hash: { key => "abc" }) }.to raise_error(Dry::Struct::Error, /reserved key/)
+      end
     end
 
-    it "rejects a key that is not letters, digits, underscores, or hyphens" do
-      expect { resource_class.new(a_hash: { "first name" => "Ada" }) }.to raise_error(Dry::Struct::Error, /invalid key/)
+    it "rejects a key that is not a string or symbol" do
+      expect { resource_class.new(a_hash: { 1 => "one" }) }.to raise_error(Dry::Struct::Error, /invalid key/)
+    end
+
+    it "keeps a key with spaces or punctuation" do
+      expect(reload_with(a_hash: { "first name" => "Ada", "dc:title" => "A" }).a_hash).to eq("first name": "Ada", "dc:title": "A")
     end
 
     it "rejects a value that is not JSON-like" do
-      [Valkyrie::ID.new("abc"), RDF::URI("http://example.com"), :symbol, Time.current].each do |value|
+      [Valkyrie::ID.new("abc"), RDF::URI("http://example.com"), :symbol, Time.current, Float::NAN, Float::INFINITY].each do |value|
         expect { resource_class.new(a_hash: { ref: value }) }.to raise_error(Dry::Struct::Error, /JSON-like/)
       end
     end
 
-    it "rejects an array directly inside an array" do
-      expect { resource_class.new(a_hash: { rows: [["a"]] }) }.to raise_error(Dry::Struct::Error, /array inside an array/)
+    it "round-trips arrays nested in an array" do
+      value = { rows: [["a", "b"], ["c"], []] }
+      expect(reload_with(a_hash: value).a_hash).to eq value
     end
 
     it "keeps an empty string value" do
@@ -355,8 +362,8 @@ RSpec.shared_examples 'a Valkyrie::Persister' do |*flags|
       expect(reload_with(a_hash: value).a_hash).to eq value
     end
 
-    it "drops nil and blank string elements from an array" do
-      expect(reload_with(a_hash: { tags: [nil, "", "a"] }).a_hash).to eq(tags: ["a"])
+    it "drops nil elements from an array but keeps blank strings" do
+      expect(reload_with(a_hash: { tags: [nil, "", "a"] }).a_hash).to eq(tags: ["", "a"])
     end
 
     it "round-trips an array of multi-key hashes" do
