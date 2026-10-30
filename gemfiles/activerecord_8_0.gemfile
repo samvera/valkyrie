@@ -7,5 +7,6 @@ gem "activerecord", "~> 8.0.0"
 gem "ldp"
 gem "pg"
 gem "rsolr"
+gem "json", "< 3.0"
 
 gemspec path: "../"
