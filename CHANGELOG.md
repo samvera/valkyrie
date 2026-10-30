@@ -1,3 +1,7 @@
+# v3.6.2 2026-10-30
+
+* Prevent disk adapter from reading/writing outside base path. ([tpendragon](https://github.com/tpendragon))
+
 # v3.6.1 2026-07-30
 
 * Set binary encoding for fedora storage adapter responses. ([dlpierce](https://github.com/dlpierce))
