@@ -23,6 +23,7 @@ module Valkyrie::Storage
     def upload(file:, original_filename:, resource: nil, paused: false, **extra_arguments)
       version_timestamp = current_timestamp
       new_path = path_generator.generate(resource: resource, file: file, original_filename: "v-#{version_timestamp}-#{original_filename}")
+      raise ArgumentError, "path must be within base_path" unless within_base_path?(new_path)
       # If we've gone faster than milliseconds here, pause a millisecond and
       # re-call. Probably only an issue for test suites.
       return sleep(0.001) && upload(file: file, original_filename: original_filename, resource: resource, paused: true, **extra_arguments) if !paused && File.exist?(new_path)
@@ -58,7 +59,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("#{protocol}#{base_path}")
+      id.to_s.start_with?(protocol) && within_base_path?(id.to_s.delete_prefix(protocol))
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -113,13 +114,22 @@ module Valkyrie::Storage
     end
 
     def file_path(version_id)
-      version_id.to_s.gsub(/^#{Regexp.escape(protocol)}/, '')
+      path = version_id.to_s.gsub(/^#{Regexp.escape(protocol)}/, '')
+      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(path)
+      path
+    end
+
+    def within_base_path?(path)
+      expanded_base_path = File.expand_path(base_path)
+      expanded_path = File.expand_path(path)
+      expanded_path == expanded_base_path || expanded_path.start_with?("#{expanded_base_path}/")
     end
 
     # @return VersionId A VersionId value that's resolved a current reference,
     #   so we can access the `version_id` and current reference.
     def version_id(id)
       id = VersionId.new(id)
+      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(id.file_path)
       return id unless id.versioned?
       id.resolve_current
     end

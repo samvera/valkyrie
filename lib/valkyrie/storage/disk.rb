@@ -18,6 +18,7 @@ module Valkyrie::Storage
     # @return [Valkyrie::StorageAdapter::File]
     def upload(file:, original_filename:, resource: nil, **_extra_arguments)
       new_path = path_generator.generate(resource: resource, file: file, original_filename: original_filename)
+      raise ArgumentError, "path must be within base_path" unless within_base_path?(new_path)
       FileUtils.mkdir_p(new_path.parent)
       file_mover.call(file.path, new_path)
       find_by(id: Valkyrie::ID.new("#{protocol}#{new_path}"))
@@ -26,7 +27,7 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Boolean] true if this adapter can handle this type of identifer
     def handles?(id:)
-      id.to_s.start_with?("#{protocol}#{base_path}")
+      id.to_s.start_with?(protocol) && within_base_path?(id.to_s.delete_prefix(protocol))
     end
 
     # @param feature [Symbol] Feature to test for.
@@ -41,7 +42,9 @@ module Valkyrie::Storage
     end
 
     def file_path(id)
-      id.to_s.delete_prefix(protocol)
+      path = id.to_s.delete_prefix(protocol)
+      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(path)
+      path
     end
 
     # Return the file associated with the given identifier
@@ -52,6 +55,12 @@ module Valkyrie::Storage
       Valkyrie::StorageAdapter::File.new(id: Valkyrie::ID.new(id.to_s), io: LazyFile.open(file_path(id), 'rb'))
     rescue Errno::ENOENT
       raise Valkyrie::StorageAdapter::FileNotFound
+    end
+
+    def within_base_path?(path)
+      expanded_base_path = File.expand_path(base_path)
+      expanded_path = File.expand_path(path)
+      expanded_path == expanded_base_path || expanded_path.start_with?("#{expanded_base_path}/")
     end
 
     ## LazyFile takes File.open parameters but doesn't leave a file handle open on
