@@ -9,6 +9,29 @@ RSpec.describe Valkyrie::Persistence::Solr::Persister do
   let(:client) { RSolr.connect(url: SOLR_TEST_URL) }
   it_behaves_like "a Valkyrie::Persister"
 
+  context "a hash in an untyped attribute" do
+    before do
+      class UntypedHashResource < Valkyrie::Resource
+        attribute :entries
+      end
+    end
+    after do
+      Object.send(:remove_const, :UntypedHashResource)
+    end
+    it "drops nil values" do
+      output = persister.save(resource: UntypedHashResource.new(entries: [{ name: "Ada", note: nil }]))
+
+      expect(query_service.find_by(id: output.id).entries).to eq [{ name: "Ada" }]
+    end
+
+    it "still rebuilds typed values in a hash" do
+      entry = { ref: Valkyrie::ID.new("abc"), name: "Ada" }
+      output = persister.save(resource: UntypedHashResource.new(entries: [entry]))
+
+      expect(query_service.find_by(id: output.id).entries).to eq [entry]
+    end
+  end
+
   context "when given additional persisters" do
     let(:adapter) { Valkyrie::Persistence::Solr::MetadataAdapter.new(connection: client, resource_indexer: indexer) }
     let(:indexer) { ResourceIndexer }

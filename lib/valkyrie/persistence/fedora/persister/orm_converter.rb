@@ -285,6 +285,25 @@ module Valkyrie::Persistence::Fedora
           end
         end
 
+        # Class for mapping RDF literals typed as JSON into Valkyrie Resource Hash attribute values
+        class JSONValue < ::Valkyrie::ValueMapper
+          FedoraValue.register(self)
+
+          # Determines whether or not a Property statement is an RDF literal typed as JSON
+          # @param [Property] value
+          # @return [Boolean]
+          def self.handles?(value)
+            value.statement.object.is_a?(RDF::Literal) && value.statement.object.datatype == PermissiveSchema.valkyrie_json
+          end
+
+          # Parses the value of the RDF literal into a Hash with symbol keys
+          # @return [Applicator]
+          def result
+            value.statement.object = JSON.parse(value.statement.object.value, symbolize_names: true)
+            Applicator.new(value)
+          end
+        end
+
         # Class for mapping RDF boolean literals into Valkyrie Resource attribute values
         class BooleanValue < ::Valkyrie::ValueMapper
           FedoraValue.register(self)
@@ -556,7 +575,7 @@ module Valkyrie::Persistence::Fedora
           # @param [Object] values
           # @return [Array<Object>]
           def cast_array(values)
-            Array(values)
+            Array.wrap(values)
           end
 
           # Retrieve a list of denied URIs for predicates

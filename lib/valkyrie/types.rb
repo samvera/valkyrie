@@ -50,6 +50,48 @@ module Valkyrie
       end
     end
 
+    # A Hash of JSON-like values, normalized so each adapter returns the same
+    # shape: keys are symbolized, and nil values and nil array elements are
+    # dropped at every level. Anything an adapter cannot store and read back
+    # unchanged is rejected.
+    module HashValue
+      # Keys the adapters treat as an ID, a URI, an RDF literal, or a nested
+      # resource.
+      RESERVED_KEYS = [:id, :@id, :@value, :internal_resource].freeze
+      JSON_PRIMITIVE_TYPES = [::String, ::Integer, ::Float, ::TrueClass, ::FalseClass].freeze
+
+      def self.normalize(value)
+        case value
+        when ::Hash
+          value.each_with_object({}) do |(key, val), result|
+            result[normalize_key(key)] = normalize(val) unless val.nil?
+          end
+        when ::Array
+          value.compact.map { |val| normalize(val) }
+        else
+          raise ArgumentError, "#{value.inspect} is not a JSON-like value and cannot be stored in a Hash" unless json_primitive?(value)
+          value
+        end
+      end
+
+      # A Float can also be NaN or Infinity (for example 0.0 / 0.0), which JSON cannot
+      # represent; converting one to JSON writes null, so it would not read back.
+      def self.json_primitive?(value)
+        JSON_PRIMITIVE_TYPES.any? { |type| value.is_a?(type) } && !(value.is_a?(::Float) && !value.finite?)
+      end
+
+      def self.normalize_key(key)
+        raise ArgumentError, "#{key.inspect} is an invalid key for a Hash" unless key.is_a?(::String) || key.is_a?(::Symbol)
+        key = key.to_sym
+        raise ArgumentError, "#{key.inspect} is a reserved key and cannot be stored in a Hash" if RESERVED_KEYS.include?(key)
+        key
+      end
+    end
+
+    Hash = Dry::Types['nominal.hash'].constructor do |value|
+      value.is_a?(::Hash) ? HashValue.normalize(value) : value
+    end
+
     # Optimistic Lock Token
     OptimisticLockToken =
       Dry::Types::Nominal

@@ -524,6 +524,45 @@ module Valkyrie::Persistence::Fedora
         end
       end
 
+      # Class mapping Property objects for plain Hash values (those that are not
+      #   nested resources) using a typed RDF literal holding the Hash as JSON
+      class JSONValue < MappedFedoraValue
+        FedoraValue.register(self)
+
+        # Determines whether or not the value is a Property for a Hash without an internal_resource
+        # @param [Object] value
+        # @return [Boolean]
+        def self.handles?(value)
+          value.is_a?(Property) && value.value.is_a?(Hash) && !value.value[:internal_resource]
+        end
+
+        # Generates the Property for this Hash
+        # #<RDF::Literal:0x3fc8a104f570("{\"path\":\"/one\"}"^^<http://example.com/predicate/valkyrie_json>)>
+        # @return [Valkyrie::Persistence::Fedora::Persister::ModelConverter::Property]
+        def result
+          map_value(converted_value: RDF::Literal.new(
+            without_nil_values(value.value).to_json,
+            datatype: PermissiveSchema.valkyrie_json
+          ))
+        end
+
+        private
+
+        # Drops nil Hash values at every level, as the Postgres and Solr adapters do when reading
+        # @param [Object] val
+        # @return [Object]
+        def without_nil_values(val)
+          case val
+          when Hash
+            val.each_with_object({}) { |(key, element), result| result[key] = without_nil_values(element) unless element.nil? }
+          when Array
+            val.map { |element| without_nil_values(element) }
+          else
+            val
+          end
+        end
+      end
+
       # Class mapping Property objects for value arrays
       class EnumerableValue < MappedFedoraValue
         FedoraValue.register(self)

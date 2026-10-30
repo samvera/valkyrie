@@ -372,11 +372,12 @@ module Valkyrie::Persistence::Solr
         value.is_a?(Hash)
       end
 
-      # Constructs a Hash mapping each converted Solr field value to the existing keys in the Property Hash value
+      # Constructs a Hash mapping each converted Solr field value to the existing keys in the Property Hash value,
+      #   dropping nil values as the other adapters do
       # @return [Hash]
       def result
         Hash[
-          value.map do |k, v|
+          value.compact.map do |k, v|
             [k, calling_mapper.for(v).result]
           end
         ]

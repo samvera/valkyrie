@@ -85,6 +85,41 @@ module Valkyrie::Persistence::Shared
       end
     end
 
+    # Converts a stored Hash that is not a nested resource, with symbol keys.
+    #   Nested hashes are converted like any other value, but arrays are never
+    #   unwrapped and strings are never cast, so a {Valkyrie::Types::Hash} reads
+    #   back exactly as it was written.
+    class PlainHashValue < ::Valkyrie::ValueMapper
+      PostgresValue.register(self)
+
+      # Determines whether or not a value is a Hash that is not a nested resource
+      # @param [Object] value
+      # @return [Boolean]
+      def self.handles?(value)
+        value.is_a?(Hash) && !value.key?("internal_resource")
+      end
+
+      # @return [Hash]
+      def result
+        value.each_with_object({}) do |(key, val), result|
+          result[key.to_sym] = map_value(val) unless val.nil?
+        end
+      end
+
+      private
+
+      def map_value(val)
+        case val
+        when Hash
+          calling_mapper.for(val).result
+        when Array
+          val.map { |element| map_value(element) }
+        else
+          val
+        end
+      end
+    end
+
     # Converts nested records into {Valkyrie::Resource}s
     class NestedRecord < ::Valkyrie::ValueMapper
       PostgresValue.register(self)
