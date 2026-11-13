@@ -177,7 +177,7 @@ module Valkyrie::Storage
       def version_files
         root = Pathname.new(file_path)
         root.parent.children.map { |file| VersionId.new(Valkyrie::ID.new("#{protocol}#{file}")) }
-            .select { |version_id| File.basename(version_id.file_path).end_with?(filename) }
+            .select { |version_id| version_id.versioned? && version_id.filename == filename }
             .sort_by(&:string_id).reverse
       end
 

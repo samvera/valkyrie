@@ -56,6 +56,28 @@ RSpec.describe Valkyrie::Storage::VersionedDisk do
     end
   end
 
+  context "when one filename is a suffix of another in the same directory" do
+    before do
+      class Resource < Valkyrie::Resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :Resource)
+    end
+
+    it "keeps their versions separate" do
+      resource = Resource.new(id: SecureRandom.uuid)
+      short = storage_adapter.upload(file: file, original_filename: "a.jpg", resource: resource)
+      long = storage_adapter.upload(file: file, original_filename: "ba.jpg", resource: resource)
+
+      expect(storage_adapter.find_by(id: short.id).version_id).to eq short.version_id
+      expect(storage_adapter.find_versions(id: short.id).map(&:version_id)).to eq [short.version_id]
+
+      storage_adapter.delete(id: short.id)
+      expect(storage_adapter.find_by(id: long.id).version_id).to eq long.version_id
+    end
+  end
+
   context "when base_path contains the version prefix" do
     let(:storage_adapter) { described_class.new(base_path: Valkyrie::Engine.root.join("tmp", "v-files_test")) }
     before do
