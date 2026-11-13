@@ -29,6 +29,53 @@ RSpec.describe Valkyrie::Storage::VersionedDisk do
     end
   end
 
+  context "when the original filename contains the version prefix" do
+    before do
+      class Resource < Valkyrie::Resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :Resource)
+    end
+
+    ["a-iv-70042.jpg", "aiv-1.jpg", "a-v-1.jpg", "v-1.jpg", "v-current-a.jpg", "kaiser-heinrichs-iv-70043.jpg"].each do |filename|
+      it "round-trips #{filename}" do
+        resource = Resource.new(id: SecureRandom.uuid)
+        uploaded = storage_adapter.upload(file: file, original_filename: filename, resource: resource)
+
+        expect(File.basename(uploaded.id.to_s)).to eq "v-current-#{filename}"
+        expect(storage_adapter.find_by(id: uploaded.id).version_id).to eq uploaded.version_id
+
+        new_version = storage_adapter.upload_version(id: uploaded.id, file: file)
+        expect(File.basename(new_version.id.to_s)).to eq "v-current-#{filename}"
+        expect(storage_adapter.find_versions(id: uploaded.id).map(&:version_id)).to eq [new_version.version_id, uploaded.version_id]
+
+        storage_adapter.delete(id: uploaded.id)
+        expect { storage_adapter.find_by(id: uploaded.id) }.to raise_error Valkyrie::StorageAdapter::FileNotFound
+      end
+    end
+  end
+
+  context "when base_path contains the version prefix" do
+    let(:storage_adapter) { described_class.new(base_path: Valkyrie::Engine.root.join("tmp", "v-files_test")) }
+    before do
+      class Resource < Valkyrie::Resource
+      end
+      FileUtils.rm_rf(storage_adapter.base_path)
+    end
+    after do
+      Object.send(:remove_const, :Resource)
+      FileUtils.rm_rf(storage_adapter.base_path)
+    end
+
+    it "round-trips a file" do
+      uploaded = storage_adapter.upload(file: file, original_filename: "plain.tif", resource: Resource.new(id: SecureRandom.uuid))
+
+      expect(File.basename(uploaded.id.to_s)).to eq "v-current-plain.tif"
+      expect(storage_adapter.find_by(id: uploaded.id).version_id).to eq uploaded.version_id
+    end
+  end
+
   context "when given a path outside of base_path" do
     let(:outside_path) { Valkyrie::Engine.root.join("tmp", "outside_files_test", "v-1694195675462-outside.txt") }
     let(:outside_current_id) { Valkyrie::ID.new("versiondisk://#{outside_path.parent.join('v-current-outside.txt')}") }
