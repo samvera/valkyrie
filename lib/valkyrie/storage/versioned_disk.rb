@@ -21,6 +21,7 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::File]
     def upload(file:, original_filename:, resource: nil, paused: false, **extra_arguments)
+      raise ArgumentError, "original_filename must not be empty" if original_filename == ""
       version_timestamp = current_timestamp
       new_path = path_generator.generate(resource: resource, file: file, original_filename: "v-#{version_timestamp}-#{original_filename}")
       raise ArgumentError, "path must be within base_path" unless within_base_path?(new_path)
@@ -45,9 +46,9 @@ module Valkyrie::Storage
       version_timestamp = current_timestamp
       # Get the existing version_id so we can calculate the next path from it.
       current_version_id = version_id(id)
+      raise Valkyrie::StorageAdapter::FileNotFound unless current_version_id.versioned?
       current_version_id = current_version_id.version_files[1] if current_version_id.deletion_marker?
-      existing_path = current_version_id.file_path
-      new_path = Pathname.new(existing_path.gsub(current_version_id.version, version_timestamp.to_s))
+      new_path = Pathname.new(current_version_id.with_version(version_timestamp).file_path)
       # If we've gone faster than milliseconds here, pause a millisecond and
       # re-call.
       return sleep(0.001) && upload_version(id: id, file: file, paused: true) if !paused && File.exist?(new_path)
@@ -102,15 +103,14 @@ module Valkyrie::Storage
     # @param id [Valkyrie::ID]
     # @return [Array<Valkyrie::StorageAdapter::File>]
     def find_versions(id:)
-      version_files(id: id).select { |x| !x.to_s.include?("deletionmarker") }.map do |file|
-        find_by(id: Valkyrie::ID.new("#{protocol}#{file}"))
-      end
+      version_files(id: id)
+        .map { |file| VersionId.new(Valkyrie::ID.new("#{protocol}#{file}")) }
+        .reject(&:deletion_marker?)
+        .map { |version_id| find_by(id: version_id.id) }
     end
 
     def version_files(id:)
-      root = Pathname.new(file_path(id))
-      id = VersionId.new(id)
-      root.parent.children.select { |file| file.basename.to_s.end_with?(id.filename) }.sort.reverse
+      parsed_version_id(id).version_files.map { |version_id| Pathname.new(version_id.file_path) }
     end
 
     def file_path(version_id)
@@ -125,11 +125,16 @@ module Valkyrie::Storage
       expanded_path == expanded_base_path || expanded_path.start_with?("#{expanded_base_path}/")
     end
 
-    # @return VersionId A VersionId value that's resolved a current reference,
-    #   so we can access the `version_id` and current reference.
+    # Resolves an id to the version file it points to on disk. A "current"
+    # reference resolves to the newest version file. A timestamped id, or an
+    # id without a "v-<version>-" prefix, comes back as it is.
+    # @param id [Valkyrie::ID]
+    # @return [VersionId, nil] the resolved version, or nil when no version
+    #   files are left on disk
+    # @raise Valkyrie::StorageAdapter::FileNotFound if the id points outside
+    #   base_path
     def version_id(id)
-      id = VersionId.new(id)
-      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(id.file_path)
+      id = parsed_version_id(id)
       return id unless id.versioned?
       id.resolve_current
     end
@@ -139,18 +144,41 @@ module Valkyrie::Storage
     #   * "versiondisk://te/st/test/v-current-filename.jpg" (never actually saved this way on disk, just used as a reference)
     #   * "versiondisk://te/st/test/v-1694195675462560794-filename.jpg" (this timestamped form would be saved on disk)
     #   * "versiondisk://te/st/test/v-1694195675462560794-deletionmarker-filename.jpg" (this file is saved on disk but empty)
+    #
+    # Only the basename is parsed, and only its leading "v-<version>-" is
+    # treated as the version prefix, so original filenames (and directories)
+    # that themselves contain "v-" are left intact.
     class VersionId
-      attr_reader :id
+      BASENAME_PATTERN = /\Av-(?<version>current|\d+)-(?<deletion_marker>deletionmarker-)?(?<filename>.+)\z/m.freeze
+
+      attr_reader :id, :file_path, :version, :filename
+
       def initialize(id)
         @id = id
+        @file_path = id.to_s.delete_prefix(protocol)
+        @deletion_marker = false
+        match = BASENAME_PATTERN.match(File.basename(@file_path))
+        return unless match
+        @version = match[:version]
+        @filename = match[:filename]
+        @deletion_marker = !match[:deletion_marker].nil?
       end
 
       def protocol
         PROTOCOL
       end
 
+      # @return [VersionId] the "current" reference for this file, or this id
+      #   itself when it has no "v-<version>-" prefix
       def current_reference_id
-        self.class.new(Valkyrie::ID.new(string_id.gsub(version, "current")))
+        return self unless versioned?
+        with_version("current")
+      end
+
+      # @param version [String] a timestamp, or "current"
+      # @return [VersionId] the id of this file at the given version
+      def with_version(version)
+        self.class.new(Valkyrie::ID.new("#{protocol}#{File.join(File.dirname(file_path), "v-#{version}-#{filename}")}"))
       end
 
       # @return [VersionID] the version_id for the current file
@@ -159,19 +187,16 @@ module Valkyrie::Storage
         version_files.first
       end
 
-      def file_path
-        @file_path ||= string_id.gsub(/^#{Regexp.escape(protocol)}/, '')
-      end
-
       def version_files
         root = Pathname.new(file_path)
-        root.parent.children.select { |file| file.basename.to_s.end_with?(filename) }.sort.reverse.map do |file|
-          VersionId.new(Valkyrie::ID.new("#{protocol}#{file}"))
-        end
+        root.parent.children.filter_map do |file|
+          version_id = VersionId.new(Valkyrie::ID.new("#{protocol}#{file}"))
+          version_id if version_id.versioned? && version_id.filename == filename
+        end.sort_by(&:string_id).reverse
       end
 
       def deletion_marker?
-        string_id.include?("deletionmarker")
+        @deletion_marker
       end
 
       def current?
@@ -184,20 +209,24 @@ module Valkyrie::Storage
       end
 
       def versioned?
-        string_id.include?("v-")
-      end
-
-      def version
-        string_id.split("v-").last.split("-", 2).first
-      end
-
-      def filename
-        string_id.split("v-").last.split("-", 2).last.gsub("deletionmarker-", "")
+        !version.nil?
       end
 
       def string_id
         id.to_s
       end
+    end
+
+    private
+
+    # @param id [Valkyrie::ID]
+    # @return [VersionId] the parsed id
+    # @raise Valkyrie::StorageAdapter::FileNotFound if the id points outside
+    #   base_path
+    def parsed_version_id(id)
+      version_id = VersionId.new(id)
+      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(version_id.file_path)
+      version_id
     end
   end
 end
