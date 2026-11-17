@@ -145,9 +145,17 @@ module Valkyrie::Storage
     class VersionId
       BASENAME_PATTERN = /\Av-(?<version>current|\d+)-(?<deletion_marker>deletionmarker-)?(?<filename>.+)\z/m.freeze
 
-      attr_reader :id
+      attr_reader :id, :file_path, :version, :filename
+
       def initialize(id)
         @id = id
+        @file_path = id.to_s.delete_prefix(protocol)
+        @deletion_marker = false
+        match = BASENAME_PATTERN.match(File.basename(@file_path))
+        return unless match
+        @version = match[:version]
+        @filename = match[:filename]
+        @deletion_marker = !match[:deletion_marker].nil?
       end
 
       def protocol
@@ -170,19 +178,16 @@ module Valkyrie::Storage
         version_files.first
       end
 
-      def file_path
-        @file_path ||= string_id.delete_prefix(protocol)
-      end
-
       def version_files
         root = Pathname.new(file_path)
-        root.parent.children.map { |file| VersionId.new(Valkyrie::ID.new("#{protocol}#{file}")) }
-            .select { |version_id| version_id.versioned? && version_id.filename == filename }
-            .sort_by(&:string_id).reverse
+        root.parent.children.filter_map do |file|
+          version_id = VersionId.new(Valkyrie::ID.new("#{protocol}#{file}"))
+          version_id if version_id.versioned? && version_id.filename == filename
+        end.sort_by(&:string_id).reverse
       end
 
       def deletion_marker?
-        versioned? && !parsed[:deletion_marker].nil?
+        @deletion_marker
       end
 
       def current?
@@ -195,26 +200,11 @@ module Valkyrie::Storage
       end
 
       def versioned?
-        !parsed.nil?
-      end
-
-      def version
-        parsed && parsed[:version]
-      end
-
-      def filename
-        parsed && parsed[:filename]
+        !version.nil?
       end
 
       def string_id
         id.to_s
-      end
-
-      private
-
-      def parsed
-        return @parsed if defined?(@parsed)
-        @parsed = BASENAME_PATTERN.match(File.basename(file_path))
       end
     end
   end
