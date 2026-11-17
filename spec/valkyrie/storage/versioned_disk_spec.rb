@@ -98,6 +98,21 @@ RSpec.describe Valkyrie::Storage::VersionedDisk do
     end
   end
 
+  context "when the original filename is empty" do
+    before do
+      class Resource < Valkyrie::Resource
+      end
+    end
+    after do
+      Object.send(:remove_const, :Resource)
+    end
+
+    it "does not upload it" do
+      expect { storage_adapter.upload(file: file, original_filename: "", resource: Resource.new(id: SecureRandom.uuid)) }.to raise_error ArgumentError
+      expect(Dir.glob(File.join(storage_adapter.base_path, "**", "*")).select { |path| File.file?(path) }).to be_empty
+    end
+  end
+
   context "when given a path outside of base_path" do
     let(:outside_path) { Valkyrie::Engine.root.join("tmp", "outside_files_test", "v-1694195675462-outside.txt") }
     let(:outside_current_id) { Valkyrie::ID.new("versiondisk://#{outside_path.parent.join('v-current-outside.txt')}") }

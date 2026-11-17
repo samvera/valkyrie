@@ -21,6 +21,7 @@ module Valkyrie::Storage
     # @param _extra_arguments [Hash] additional arguments which may be passed to other adapters
     # @return [Valkyrie::StorageAdapter::File]
     def upload(file:, original_filename:, resource: nil, paused: false, **extra_arguments)
+      raise ArgumentError, "original_filename must not be empty" if original_filename == ""
       version_timestamp = current_timestamp
       new_path = path_generator.generate(resource: resource, file: file, original_filename: "v-#{version_timestamp}-#{original_filename}")
       raise ArgumentError, "path must be within base_path" unless within_base_path?(new_path)
