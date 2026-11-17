@@ -46,6 +46,7 @@ module Valkyrie::Storage
       version_timestamp = current_timestamp
       # Get the existing version_id so we can calculate the next path from it.
       current_version_id = version_id(id)
+      raise Valkyrie::StorageAdapter::FileNotFound unless current_version_id.versioned?
       current_version_id = current_version_id.version_files[1] if current_version_id.deletion_marker?
       new_path = Pathname.new(current_version_id.with_version(version_timestamp).file_path)
       # If we've gone faster than milliseconds here, pause a millisecond and
@@ -109,8 +110,7 @@ module Valkyrie::Storage
     end
 
     def version_files(id:)
-      file_path(id)
-      VersionId.new(id).version_files.map { |version_id| Pathname.new(version_id.file_path) }
+      parsed_version_id(id).version_files.map { |version_id| Pathname.new(version_id.file_path) }
     end
 
     def file_path(version_id)
@@ -125,11 +125,16 @@ module Valkyrie::Storage
       expanded_path == expanded_base_path || expanded_path.start_with?("#{expanded_base_path}/")
     end
 
-    # @return VersionId A VersionId value that's resolved a current reference,
-    #   so we can access the `version_id` and current reference.
+    # Resolves an id to the version file it points to on disk. A "current"
+    # reference resolves to the newest version file. A timestamped id, or an
+    # id without a "v-<version>-" prefix, comes back as it is.
+    # @param id [Valkyrie::ID]
+    # @return [VersionId, nil] the resolved version, or nil when no version
+    #   files are left on disk
+    # @raise Valkyrie::StorageAdapter::FileNotFound if the id points outside
+    #   base_path
     def version_id(id)
-      id = VersionId.new(id)
-      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(id.file_path)
+      id = parsed_version_id(id)
       return id unless id.versioned?
       id.resolve_current
     end
@@ -163,7 +168,10 @@ module Valkyrie::Storage
         PROTOCOL
       end
 
+      # @return [VersionId] the "current" reference for this file, or this id
+      #   itself when it has no "v-<version>-" prefix
       def current_reference_id
+        return self unless versioned?
         with_version("current")
       end
 
@@ -207,6 +215,18 @@ module Valkyrie::Storage
       def string_id
         id.to_s
       end
+    end
+
+    private
+
+    # @param id [Valkyrie::ID]
+    # @return [VersionId] the parsed id
+    # @raise Valkyrie::StorageAdapter::FileNotFound if the id points outside
+    #   base_path
+    def parsed_version_id(id)
+      version_id = VersionId.new(id)
+      raise Valkyrie::StorageAdapter::FileNotFound unless within_base_path?(version_id.file_path)
+      version_id
     end
   end
 end
